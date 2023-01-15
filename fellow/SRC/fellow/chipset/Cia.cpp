@@ -50,83 +50,47 @@ using namespace fellow::api::vm;
 #define CIA_KBD_IRQ 8
 #define CIA_FLAG_IRQ 16
 
-#define CIA_BUS_CYCLE_RATIO (scheduler.GetCycleFromCycle280ns(5))
-
-//#define CIA_LOGGING
+// #define CIA_LOGGING
 
 #ifdef CIA_LOGGING
 extern ULO cpuGetOriginalPC();
 #endif
 
-typedef UBY (*ciaFetchFunc)(ULO i);
-typedef void (*ciaWriteFunc)(ULO i, UBY data);
-
-ULO cia_next_event_type; /* What type of event */
-
-/* Cia registers, index 0 is Cia A, index 1 is Cia B */
-
-struct cia_state
+ULO Cia::GetBusCycleRatio()
 {
-  ULO ta;
-  ULO tb;
-  ULO ta_rem; /* Preserves remainder when downsizing from bus cycles */
-  ULO tb_rem;
-  ULO talatch;
-  ULO tblatch;
-  LON taleft;
-  LON tbleft;
-  ULO evalarm;
-  ULO evlatch;
-  bool evlatching;
-  ULO evwritelatch;
-  bool evwritelatching;
-  ULO ev;
-  UBY icrreq;
-  UBY icrmsk;
-  UBY cra;
-  UBY crb;
-  UBY pra;
-  UBY prb;
-  UBY ddra;
-  UBY ddrb;
-  UBY sp;
-};
-
-cia_state cia[2];
-
-bool cia_recheck_irq;
-ULO cia_recheck_irq_time;
-
-bool ciaIsSoundFilterEnabled()
-{
-  return (cia[0].pra & 2) == 2;
+  return _scheduler->GetCycleFromCycle280ns(5);
 }
 
-bool ciaIsPowerLEDEnabled()
+bool Cia::IsSoundFilterEnabled()
 {
-  return ciaIsSoundFilterEnabled();
+  return (_cia[0].pra & 2) == 2;
+}
+
+bool Cia::IsPowerLEDEnabled()
+{
+  return IsSoundFilterEnabled();
 }
 
 /* Translate timer -> cycles until timeout from current sof, start of frame */
 
-ULO ciaUnstabilizeValue(ULO value, ULO remainder)
+ULO Cia::UnstabilizeValue(ULO value, ULO remainder)
 {
-  return (value * CIA_BUS_CYCLE_RATIO) + scheduler.GetFrameCycle() + remainder;
+  return (value * GetBusCycleRatio()) + _scheduler->GetFrameCycle() + remainder;
 }
 
 /* Translate cycles until timeout from current sof -> timer value */
 
-ULO ciaStabilizeValue(ULO value)
+ULO Cia::StabilizeValue(ULO value)
 {
-  return (value - scheduler.GetFrameCycle()) / CIA_BUS_CYCLE_RATIO;
+  return (value - _scheduler->GetFrameCycle()) / GetBusCycleRatio();
 }
 
-ULO ciaStabilizeValueRemainder(ULO value)
+ULO Cia::StabilizeValueRemainder(ULO value)
 {
-  return (value - scheduler.GetFrameCycle()) % CIA_BUS_CYCLE_RATIO;
+  return (value - _scheduler->GetFrameCycle()) % GetBusCycleRatio();
 }
 
-ULO ciaGetTimerValue(ULO value)
+ULO Cia::GetTimerValue(ULO value)
 {
   if (value == 0)
   {
@@ -138,63 +102,63 @@ ULO ciaGetTimerValue(ULO value)
   return value;
 }
 
-void ciaTAStabilize(ULO i)
+void Cia::TAStabilize(ULO i)
 {
-  if (cia[i].cra & 1)
+  if (_cia[i].cra & 1)
   {
-    cia[i].ta = ciaStabilizeValue(cia[i].taleft);
-    cia[i].ta_rem = ciaStabilizeValueRemainder(cia[i].taleft);
+    _cia[i].ta = StabilizeValue(_cia[i].taleft);
+    _cia[i].ta_rem = StabilizeValueRemainder(_cia[i].taleft);
   }
-  cia[i].taleft = SchedulerEvent::EventDisableCycle;
+  _cia[i].taleft = SchedulerEvent::EventDisableCycle;
 }
 
-void ciaTBStabilize(ULO i)
+void Cia::TBStabilize(ULO i)
 {
-  if ((cia[i].crb & 0x41) == 1)
+  if ((_cia[i].crb & 0x41) == 1)
   { // Timer B started and not attached to timer A
-    cia[i].tb = ciaStabilizeValue(cia[i].tbleft);
-    cia[i].tb_rem = ciaStabilizeValueRemainder(cia[i].tbleft);
+    _cia[i].tb = StabilizeValue(_cia[i].tbleft);
+    _cia[i].tb_rem = StabilizeValueRemainder(_cia[i].tbleft);
   }
-  cia[i].tbleft = SchedulerEvent::EventDisableCycle;
+  _cia[i].tbleft = SchedulerEvent::EventDisableCycle;
 }
 
-void ciaStabilize(ULO i)
+void Cia::Stabilize(ULO i)
 {
-  ciaTAStabilize(i);
-  ciaTBStabilize(i);
+  TAStabilize(i);
+  TBStabilize(i);
 }
 
-void ciaTAUnstabilize(ULO i)
+void Cia::TAUnstabilize(ULO i)
 {
-  if (cia[i].cra & 1)
+  if (_cia[i].cra & 1)
   {
-    cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, cia[i].ta_rem);
+    _cia[i].taleft = UnstabilizeValue(_cia[i].ta, _cia[i].ta_rem);
   }
 }
 
-void ciaTBUnstabilize(ULO i)
+void Cia::TBUnstabilize(ULO i)
 {
-  if ((cia[i].crb & 0x41) == 1) // Timer B started and not attached to timer A
+  if ((_cia[i].crb & 0x41) == 1) // Timer B started and not attached to timer A
   {
-    cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, cia[i].tb_rem);
+    _cia[i].tbleft = UnstabilizeValue(_cia[i].tb, _cia[i].tb_rem);
   }
 }
 
-void ciaUnstabilize(ULO i)
+void Cia::Unstabilize(ULO i)
 {
-  ciaTAUnstabilize(i);
-  ciaTBUnstabilize(i);
+  TAUnstabilize(i);
+  TBUnstabilize(i);
 }
 
-void ciaUpdateIRQ(ULO i)
+void Cia::UpdateIRQ(ULO i)
 {
-  if (cia[i].icrreq & cia[i].icrmsk)
+  if (_cia[i].icrreq & _cia[i].icrmsk)
   {
 #ifdef CIA_LOGGING
-    Service->Log.AddLogDebug("CIA %c IRQ, req is %X, icrmsk is %X\n", (i == 0) ? 'A' : 'B', cia[i].icrreq, cia[i].icrmsk);
+    Service->Log.AddLogDebug("CIA %c IRQ, req is %X, icrmsk is %X\n", (i == 0) ? 'A' : 'B', _cia[i].icrreq, _cia[i].icrmsk);
 #endif
 
-    cia[i].icrreq |= 0x80;
+    _cia[i].icrreq |= 0x80;
     UWO mask = (i == 0) ? 0x0008 : 0x2000;
     if (!interruptIsRequested(mask))
     {
@@ -203,28 +167,28 @@ void ciaUpdateIRQ(ULO i)
   }
 }
 
-void ciaRaiseIRQ(ULO i, ULO req)
+void Cia::RaiseIRQ(ULO i, ULO req)
 {
-  cia[i].icrreq |= (req & 0x1f);
-  ciaUpdateIRQ(i);
+  _cia[i].icrreq |= (req & 0x1f);
+  UpdateIRQ(i);
 }
 
 /* Helps the floppy loader, Cia B Flag IRQ */
 
-void ciaRaiseIndexIRQ()
+void Cia::RaiseIndexIRQ()
 {
-  ciaRaiseIRQ(1, CIA_FLAG_IRQ);
+  RaiseIRQ(1, CIA_FLAG_IRQ);
 }
 
-void ciaCheckAlarmMatch(ULO i)
+void Cia::CheckAlarmMatch(ULO i)
 {
-  if (cia[i].evwritelatching)
+  if (_cia[i].evwritelatching)
   {
     return;
   }
 
-  bool hasRealMatch = cia[i].ev == cia[i].evalarm;
-  bool hasBuggyMatch = (!(cia[i].ev & 0x000fff)) && ((cia[i].ev - 1) & 0xfff000) == cia[i].evalarm;
+  bool hasRealMatch = _cia[i].ev == _cia[i].evalarm;
+  bool hasBuggyMatch = (!(_cia[i].ev & 0x000fff)) && ((_cia[i].ev - 1) & 0xfff000) == _cia[i].evalarm;
 
   if (hasRealMatch || hasBuggyMatch)
   {
@@ -232,81 +196,83 @@ void ciaCheckAlarmMatch(ULO i)
     Service->Log.AddLogDebug("CIA %c Alarm IRQ\n", (i == 0) ? 'A' : 'B');
 #endif
 
-    ciaRaiseIRQ(i, CIA_ALARM_IRQ);
+    RaiseIRQ(i, CIA_ALARM_IRQ);
   }
 }
 
 /* Timeout handlers */
 
-void ciaHandleTBTimeout(ULO i)
+void Cia::HandleTBTimeout(ULO i)
 {
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c Timer B expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (cia[i].crb & 8) ? "one-shot" : "continuous", cia[i].tblatch);
+  Service->Log.AddLogDebug(
+      "CIA %c Timer B expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (_cia[i].crb & 8) ? "one-shot" : "continuous", _cia[i].tblatch);
 #endif
 
-  cia[i].tb = ciaGetTimerValue(cia[i].tblatch); /* Reload from latch */
+  _cia[i].tb = GetTimerValue(_cia[i].tblatch); /* Reload from latch */
 
-  if (cia[i].crb & 8) /* One Shot Mode */
+  if (_cia[i].crb & 8) /* One Shot Mode */
   {
-    cia[i].crb &= 0xfe; /* Stop timer */
-    cia[i].tbleft = SchedulerEvent::EventDisableCycle;
+    _cia[i].crb &= 0xfe; /* Stop timer */
+    _cia[i].tbleft = SchedulerEvent::EventDisableCycle;
   }
-  else if (!(cia[i].crb & 0x40)) /* Continuous mode, no attach */
+  else if (!(_cia[i].crb & 0x40)) /* Continuous mode, no attach */
   {
-    cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, 0);
+    _cia[i].tbleft = UnstabilizeValue(_cia[i].tb, 0);
   }
 
-  ciaRaiseIRQ(i, CIA_TB_IRQ); /* Raise irq */
+  RaiseIRQ(i, CIA_TB_IRQ); /* Raise irq */
 }
 
-void ciaHandleTATimeout(ULO i)
+void Cia::HandleTATimeout(ULO i)
 {
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c Timer A expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (cia[i].cra & 8) ? "one-shot" : "continuous", cia[i].talatch);
+  Service->Log.AddLogDebug(
+      "CIA %c Timer A expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (_cia[i].cra & 8) ? "one-shot" : "continuous", _cia[i].talatch);
 #endif
 
-  cia[i].ta = ciaGetTimerValue(cia[i].talatch); /* Reload from latch */
-  if ((cia[i].crb & 0x41) == 0x41)
+  _cia[i].ta = GetTimerValue(_cia[i].talatch); /* Reload from latch */
+  if ((_cia[i].crb & 0x41) == 0x41)
   { /* Timer B attached and started */
-    cia[i].tb = (cia[i].tb - 1) & 0xffff;
-    if (cia[i].tb == 0)
+    _cia[i].tb = (_cia[i].tb - 1) & 0xffff;
+    if (_cia[i].tb == 0)
     {
-      ciaHandleTBTimeout(i);
+      HandleTBTimeout(i);
     }
   }
-  if (cia[i].cra & 8) /* One Shot Mode */
+  if (_cia[i].cra & 8) /* One Shot Mode */
   {
-    cia[i].cra &= 0xfe; /* Stop timer */
-    cia[i].taleft = SchedulerEvent::EventDisableCycle;
+    _cia[i].cra &= 0xfe; /* Stop timer */
+    _cia[i].taleft = SchedulerEvent::EventDisableCycle;
   }
   else /* Continuous mode */
   {
-    cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, 0);
+    _cia[i].taleft = UnstabilizeValue(_cia[i].ta, 0);
   }
 
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c Timer A attempt to raise irq, TA icr mask is %d\n", (i == 0) ? 'A' : 'B', cia[i].icrmsk & 1);
+  Service->Log.AddLogDebug("CIA %c Timer A attempt to raise irq, TA icr mask is %d\n", (i == 0) ? 'A' : 'B', _cia[i].icrmsk & 1);
 #endif
-  ciaRaiseIRQ(i, CIA_TA_IRQ); /* Raise irq */
+  RaiseIRQ(i, CIA_TA_IRQ); /* Raise irq */
 }
 
 /* Called from eol-handler (B) or eof handler (A) */
 
-void ciaUpdateEventCounter(ULO i)
+void Cia::UpdateEventCounter(ULO i)
 {
-  if (!cia[i].evwritelatching)
+  if (!_cia[i].evwritelatching)
   {
-    cia[i].ev = (cia[i].ev + 1) & 0xffffff;
-    ciaCheckAlarmMatch(i);
+    _cia[i].ev = (_cia[i].ev + 1) & 0xffffff;
+    CheckAlarmMatch(i);
   }
 }
 
 /* Called from the eof-handler to update timers */
 
-void ciaUpdateTimersEOF()
+void Cia::UpdateTimersEOF()
 {
-  ULO cyclesInFrame = scheduler.GetCyclesInFrame();
-  for (auto &state : cia)
+  ULO cyclesInFrame = _scheduler->GetCyclesInFrame();
+  for (auto &state : _cia)
   {
     if (state.taleft >= 0)
     {
@@ -324,104 +290,91 @@ void ciaUpdateTimersEOF()
     }
   }
 
-  if (cia_recheck_irq)
+  if (_recheck_irq)
   {
-    cia_recheck_irq_time -= cyclesInFrame;
+    _recheck_irq_time -= cyclesInFrame;
   }
 
-  scheduler.RebaseForNewFrame(&ciaEvent);
+  _scheduler->RebaseForNewFrame(&ciaEvent);
 
-  // if (ciaEvent.IsEnabled())
-  //{
-  //   ULO previousFrameCycle = ciaEvent.cycle;
-  //   busRemoveEvent(&ciaEvent);
-  //   ciaEvent.cycle = previousFrameCycle - cyclesInFrame;
-  //   if (((LON)ciaEvent.cycle) < 0)
-  //   {
-  //     // TODO: Why can this happen?
-  //     ciaEvent.cycle = 0;
-  //   }
-  //   busInsertEvent(&ciaEvent);
-  // }
-
-  ciaUpdateEventCounter(0);
+  UpdateEventCounter(0);
 }
 
 /* Record next timer timeout */
 
-void ciaEventSetup()
+void Cia::EventSetup()
 {
   if (ciaEvent.IsEnabled())
   {
-    scheduler.InsertEvent(&ciaEvent);
+    _scheduler->InsertEvent(&ciaEvent);
   }
 }
 
-void ciaSetupNextEvent()
+void Cia::SetupNextEvent()
 {
   ULO nextevtime = SchedulerEvent::EventDisableCycle, nextevtype = CIA_NO_EVENT;
 
-  if (cia_recheck_irq)
+  if (_recheck_irq)
   {
-    nextevtime = cia_recheck_irq_time;
+    nextevtime = _recheck_irq_time;
     nextevtype = CIA_RECHECK_IRQ_EVENT;
   }
 
   for (ULO i = 0; i < 2; i++)
   {
-    if (((ULO)cia[i].taleft) < nextevtime)
+    if (((ULO)_cia[i].taleft) < nextevtime)
     {
-      nextevtime = cia[i].taleft;
+      nextevtime = _cia[i].taleft;
       nextevtype = (i * 2) + 1;
     }
-    if (((ULO)cia[i].tbleft) < nextevtime)
+    if (((ULO)_cia[i].tbleft) < nextevtime)
     {
-      nextevtime = cia[i].tbleft;
+      nextevtime = _cia[i].tbleft;
       nextevtype = (i * 2) + 2;
     }
   }
 
   if (ciaEvent.IsEnabled())
   {
-    scheduler.RemoveEvent(&ciaEvent);
+    _scheduler->RemoveEvent(&ciaEvent);
     ciaEvent.Disable();
   }
 
   ciaEvent.cycle = nextevtime;
-  cia_next_event_type = nextevtype;
-  ciaEventSetup();
+  _next_event_type = nextevtype;
+  EventSetup();
 }
 
-void ciaHandleEvent()
+void Cia::HandleEvent()
 {
   ciaEvent.Disable();
-  switch (cia_next_event_type)
+  switch (_next_event_type)
   {
-    case CIAA_TA_TIMEOUT_EVENT: ciaHandleTATimeout(0); break;
-    case CIAA_TB_TIMEOUT_EVENT: ciaHandleTBTimeout(0); break;
-    case CIAB_TA_TIMEOUT_EVENT: ciaHandleTATimeout(1); break;
-    case CIAB_TB_TIMEOUT_EVENT: ciaHandleTBTimeout(1); break;
+    case CIAA_TA_TIMEOUT_EVENT: HandleTATimeout(0); break;
+    case CIAA_TB_TIMEOUT_EVENT: HandleTBTimeout(0); break;
+    case CIAB_TA_TIMEOUT_EVENT: HandleTATimeout(1); break;
+    case CIAB_TB_TIMEOUT_EVENT: HandleTBTimeout(1); break;
     case CIA_RECHECK_IRQ_EVENT:
-      cia_recheck_irq = false;
-      cia_recheck_irq_time = SchedulerEvent::EventDisableCycle;
-      ciaUpdateIRQ(0);
-      ciaUpdateIRQ(1);
+      _recheck_irq = false;
+      _recheck_irq_time = SchedulerEvent::EventDisableCycle;
+      UpdateIRQ(0);
+      UpdateIRQ(1);
       break;
     default: break;
   }
-  ciaSetupNextEvent();
+  SetupNextEvent();
 }
 
-void ciaRecheckIRQ()
+void Cia::RecheckIRQ()
 {
-  cia_recheck_irq = true;
-  cia_recheck_irq_time = scheduler.GetFrameCycle() + scheduler.GetCycleFromCycle280ns(10);
-  ciaSetupNextEvent();
+  _recheck_irq = true;
+  _recheck_irq_time = _scheduler->GetFrameCycle() + _scheduler->GetCycleFromCycle280ns(10);
+  SetupNextEvent();
 }
 
 /* PRA */
 
-UBY ciaReadApra()
+UBY Cia::ReadApra()
 {
   UBY result = 0;
 
@@ -460,77 +413,77 @@ UBY ciaReadApra()
   {
     result |= 4;
   }
-  return result | (UBY)(cia[0].pra & 2);
+  return result | (UBY)(_cia[0].pra & 2);
 }
 
-UBY ciaReadBpra()
+UBY Cia::ReadBpra()
 {
-  return (UBY)cia[1].pra;
+  return (UBY)_cia[1].pra;
 }
 
-UBY ciaReadpra(ULO i)
+UBY Cia::Readpra(ULO i)
 {
   if (i == 0)
   {
-    return ciaReadApra();
+    return ReadApra();
   }
 
-  return ciaReadBpra();
+  return ReadBpra();
 }
 
-void ciaWriteApra(UBY data)
+void Cia::WriteApra(UBY data)
 {
-  if ((data & 0x1) && !(cia[0].pra & 0x1))
+  if ((data & 0x1) && !(_cia[0].pra & 0x1))
   {
     memoryChipMap(true);
   }
-  else if ((cia[0].pra & 0x1) && !(data & 0x1))
+  else if ((_cia[0].pra & 0x1) && !(data & 0x1))
   {
     memoryChipMap(false);
   }
-  cia[0].pra = data;
+  _cia[0].pra = data;
 }
 
-void ciaWriteBpra(UBY data)
+void Cia::WriteBpra(UBY data)
 {
-  cia[1].pra = data;
+  _cia[1].pra = data;
 }
 
-void ciaWritepra(ULO i, UBY data)
+void Cia::Writepra(ULO i, UBY data)
 {
   if (i == 0)
   {
-    ciaWriteApra(data);
+    WriteApra(data);
   }
   else
   {
-    ciaWriteBpra(data);
+    WriteBpra(data);
   }
 }
 
 /* PRB */
 
-UBY ciaReadprb(ULO i)
+UBY Cia::Readprb(ULO i)
 {
-  return cia[i].prb;
+  return _cia[i].prb;
 }
 
-void ciaWriteAprb(UBY data)
+void Cia::WriteAprb(UBY data)
 {
-  cia[0].prb = data;
+  _cia[0].prb = data;
 }
 
 // Motor, drive latches this value when SEL goes from high to low
 
-void ciaWriteBprb(UBY data)
+void Cia::WriteBprb(UBY data)
 {
   int j = 0;
-  BOOLE motor_was_high = (cia[1].prb & 0x80) == 0x80;
+  BOOLE motor_was_high = (_cia[1].prb & 0x80) == 0x80;
   BOOLE motor_is_high = (data & 0x80) == 0x80;
 
   for (int i = 8; i < 0x80; i <<= 1, j++)
   {
-    BOOLE sel_was_high = cia[1].prb & i;
+    BOOLE sel_was_high = _cia[1].prb & i;
     BOOLE sel_is_high = data & i;
     if (sel_was_high && !sel_is_high)
     {
@@ -546,28 +499,28 @@ void ciaWriteBprb(UBY data)
       }
     }
   }
-  cia[1].prb = data;
+  _cia[1].prb = data;
   floppySelectedSet((data & 0x78) >> 3);
   floppySideSet((data & 4) >> 2);
   floppyDirSet((data & 2) >> 1);
   floppyStepSet(data & 1);
 }
 
-void ciaWriteprb(ULO i, UBY data)
+void Cia::Writeprb(ULO i, UBY data)
 {
   if (i == 0)
   {
-    ciaWriteAprb(data);
+    WriteAprb(data);
   }
   else
   {
-    ciaWriteBprb(data);
+    WriteBprb(data);
   }
 }
 
 /* DDRA */
 
-UBY ciaReadddra(ULO i)
+UBY Cia::Readddra(ULO i)
 {
   if (i == 0)
   {
@@ -577,97 +530,97 @@ UBY ciaReadddra(ULO i)
   return 0xff;
 }
 
-void ciaWriteddra(ULO i, UBY data)
+void Cia::Writeddra(ULO i, UBY data)
 {
 }
 
 /* DDRB */
 
-UBY ciaReadddrb(ULO i)
+UBY Cia::Readddrb(ULO i)
 {
   if (i == 0)
   {
-    return cia[0].ddrb;
+    return _cia[0].ddrb;
   }
 
   return 0xff;
 }
 
-void ciaWriteddrb(ULO i, UBY data)
+void Cia::Writeddrb(ULO i, UBY data)
 {
   if (i == 0)
   {
-    cia[0].ddrb = data;
+    _cia[0].ddrb = data;
   }
 }
 
 /* SP (Keyboard serial data on Cia A) */
 
-UBY ciaReadsp(ULO i)
+UBY Cia::Readsp(ULO i)
 {
-  return cia[i].sp;
+  return _cia[i].sp;
 }
 
-void ciaWritesp(ULO i, UBY data)
+void Cia::Writesp(ULO i, UBY data)
 {
-  cia[i].sp = data;
+  _cia[i].sp = data;
 }
 
 /* Timer A */
 
-UBY ciaReadtalo(ULO i)
+UBY Cia::Readtalo(ULO i)
 {
-  if (cia[i].cra & 1)
+  if (_cia[i].cra & 1)
   {
-    return (UBY)ciaStabilizeValue(cia[i].taleft);
+    return (UBY)StabilizeValue(_cia[i].taleft);
   }
-  return (UBY)cia[i].ta;
+  return (UBY)_cia[i].ta;
 }
 
-UBY ciaReadtahi(ULO i)
+UBY Cia::Readtahi(ULO i)
 {
-  if (cia[i].cra & 1)
+  if (_cia[i].cra & 1)
   {
-    return (UBY)(ciaStabilizeValue(cia[i].taleft) >> 8);
+    return (UBY)(StabilizeValue(_cia[i].taleft) >> 8);
   }
-  return (UBY)(cia[i].ta >> 8);
+  return (UBY)(_cia[i].ta >> 8);
 }
 
-void ciaWritetalo(ULO i, UBY data)
+void Cia::Writetalo(ULO i, UBY data)
 {
-  cia[i].talatch = (cia[i].talatch & 0xff00) | (ULO)data;
+  _cia[i].talatch = (_cia[i].talatch & 0xff00) | (ULO)data;
 
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c Timer A written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].talatch, cpuGetOriginalPC());
+  Service->Log.AddLogDebug("CIA %c Timer A written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', _cia[i].talatch, cpuGetOriginalPC());
 #endif
 }
 
-bool ciaMustReloadOnTHiWrite(UBY cr)
+bool Cia::MustReloadOnTHiWrite(UBY cr)
 {
   // Reload when not started, or one-shot mode
   return !(cr & 1) || (cr & 8);
 }
 
-void ciaWritetahi(ULO i, UBY data)
+void Cia::Writetahi(ULO i, UBY data)
 {
-  cia[i].talatch = (cia[i].talatch & 0xff) | (((ULO)data) << 8);
+  _cia[i].talatch = (_cia[i].talatch & 0xff) | (((ULO)data) << 8);
 
-  if (ciaMustReloadOnTHiWrite(cia[i].cra)) // Reload when not started, or one-shot mode
+  if (MustReloadOnTHiWrite(_cia[i].cra)) // Reload when not started, or one-shot mode
   {
-    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
-    cia[i].ta_rem = 0;
-    cia[i].taleft = SchedulerEvent::EventDisableCycle;
+    _cia[i].ta = GetTimerValue(_cia[i].talatch);
+    _cia[i].ta_rem = 0;
+    _cia[i].taleft = SchedulerEvent::EventDisableCycle;
   }
 
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c Timer A written (hi-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].talatch, cpuGetOriginalPC());
+  Service->Log.AddLogDebug("CIA %c Timer A written (hi-part): %X PC %X\n", (i == 0) ? 'A' : 'B', _cia[i].talatch, cpuGetOriginalPC());
 #endif
 
-  if (cia[i].cra & 8) // Timer A is one-shot, write starts it
+  if (_cia[i].cra & 8) // Timer A is one-shot, write starts it
   {
-    cia[i].cra |= 1;
-    ciaUnstabilize(i);
-    ciaSetupNextEvent();
+    _cia[i].cra |= 1;
+    Unstabilize(i);
+    SetupNextEvent();
 
 #ifdef CIA_LOGGING
     Service->Log.AddLogDebug("CIA %c Timer A one-shot mode automatically started PC %X\n", (i == 0) ? 'A' : 'B', cpuGetOriginalPC());
@@ -677,53 +630,53 @@ void ciaWritetahi(ULO i, UBY data)
 
 /* Timer B */
 
-UBY ciaReadtblo(ULO i)
+UBY Cia::Readtblo(ULO i)
 {
-  if ((cia[i].crb & 1) && !(cia[i].crb & 0x40))
+  if ((_cia[i].crb & 1) && !(_cia[i].crb & 0x40))
   {
-    return (UBY)ciaStabilizeValue(cia[i].tbleft);
+    return (UBY)StabilizeValue(_cia[i].tbleft);
   }
 
-  return (UBY)cia[i].tb;
+  return (UBY)_cia[i].tb;
 }
 
-UBY ciaReadtbhi(ULO i)
+UBY Cia::Readtbhi(ULO i)
 {
-  if ((cia[i].crb & 1) && !(cia[i].crb & 0x40))
+  if ((_cia[i].crb & 1) && !(_cia[i].crb & 0x40))
   {
-    return (UBY)(ciaStabilizeValue(cia[i].tbleft) >> 8);
+    return (UBY)(StabilizeValue(_cia[i].tbleft) >> 8);
   }
 
-  return (UBY)(cia[i].tb >> 8);
+  return (UBY)(_cia[i].tb >> 8);
 }
 
-void ciaWritetblo(ULO i, UBY data)
+void Cia::Writetblo(ULO i, UBY data)
 {
-  cia[i].tblatch = (cia[i].tblatch & 0xff00) | ((ULO)data);
+  _cia[i].tblatch = (_cia[i].tblatch & 0xff00) | ((ULO)data);
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c Timer B written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tblatch, cpuGetOriginalPC());
+  Service->Log.AddLogDebug("CIA %c Timer B written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', _cia[i].tblatch, cpuGetOriginalPC());
 #endif
 }
 
-void ciaWritetbhi(ULO i, UBY data)
+void Cia::Writetbhi(ULO i, UBY data)
 {
-  cia[i].tblatch = (cia[i].tblatch & 0xff) | (((ULO)data) << 8);
+  _cia[i].tblatch = (_cia[i].tblatch & 0xff) | (((ULO)data) << 8);
 
-  if (ciaMustReloadOnTHiWrite(cia[i].crb)) // Reload when not started, or one-shot mode
+  if (MustReloadOnTHiWrite(_cia[i].crb)) // Reload when not started, or one-shot mode
   {
-    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
-    cia[i].tb_rem = 0;
-    cia[i].tbleft = SchedulerEvent::EventDisableCycle;
+    _cia[i].tb = GetTimerValue(_cia[i].tblatch);
+    _cia[i].tb_rem = 0;
+    _cia[i].tbleft = SchedulerEvent::EventDisableCycle;
   }
 
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c Timer B (hi-part) written: %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tblatch, cpuGetOriginalPC());
+  Service->Log.AddLogDebug("CIA %c Timer B (hi-part) written: %X PC %X\n", (i == 0) ? 'A' : 'B', _cia[i].tblatch, cpuGetOriginalPC());
 #endif
-  if (cia[i].crb & 8) // Timer B is one-shot, write starts it
+  if (_cia[i].crb & 8) // Timer B is one-shot, write starts it
   {
-    cia[i].crb |= 1;
-    ciaUnstabilize(i);
-    ciaSetupNextEvent();
+    _cia[i].crb |= 1;
+    Unstabilize(i);
+    SetupNextEvent();
 #ifdef CIA_LOGGING
     Service->Log.AddLogDebug("CIA %c Timer B one-shot mode automatically started. PC %X\n", (i == 0) ? 'A' : 'B', cpuGetOriginalPC());
 #endif
@@ -732,306 +685,225 @@ void ciaWritetbhi(ULO i, UBY data)
 
 /* Event counter */
 
-UBY ciaReadevlo(ULO i)
+UBY Cia::Readevlo(ULO i)
 {
-  if (cia[i].evlatching)
+  if (_cia[i].evlatching)
   {
-    cia[i].evlatching = false;
-    return (UBY)cia[i].evlatch;
+    _cia[i].evlatching = false;
+    return (UBY)_cia[i].evlatch;
   }
-  return (UBY)cia[i].ev;
+  return (UBY)_cia[i].ev;
 }
 
-UBY ciaReadevmi(ULO i)
+UBY Cia::Readevmi(ULO i)
 {
-  if (cia[i].evlatching)
+  if (_cia[i].evlatching)
   {
-    return (UBY)(cia[i].evlatch >> 8);
+    return (UBY)(_cia[i].evlatch >> 8);
   }
-  return (UBY)(cia[i].ev >> 8);
+  return (UBY)(_cia[i].ev >> 8);
 }
 
-UBY ciaReadevhi(ULO i)
+UBY Cia::Readevhi(ULO i)
 {
-  cia[i].evlatching = true;
-  cia[i].evlatch = cia[i].ev;
-  return (UBY)(cia[i].ev >> 16);
+  _cia[i].evlatching = true;
+  _cia[i].evlatch = _cia[i].ev;
+  return (UBY)(_cia[i].ev >> 16);
 }
 
-void ciaWriteevlo(ULO i, UBY data)
+void Cia::Writeevlo(ULO i, UBY data)
 {
-  if (cia[i].crb & 0x80) // Alarm
+  if (_cia[i].crb & 0x80) // Alarm
   {
-    cia[i].evalarm = (cia[i].evalarm & 0xffff00) | (ULO)data;
+    _cia[i].evalarm = (_cia[i].evalarm & 0xffff00) | (ULO)data;
   }
   else // Time of day
   {
-    cia[i].evwritelatching = false;
-    cia[i].evwritelatch = (cia[i].evwritelatch & 0xffff00) | (ULO)data;
-    cia[i].ev = cia[i].evwritelatch;
+    _cia[i].evwritelatching = false;
+    _cia[i].evwritelatch = (_cia[i].evwritelatch & 0xffff00) | (ULO)data;
+    _cia[i].ev = _cia[i].evwritelatch;
   }
 
-  if ((cpuGetPC() & 0xf80000) == 0xf80000 && cia[i].ev == 0 && cia[i].evalarm == 0) return;
+  if ((cpuGetPC() & 0xf80000) == 0xf80000 && _cia[i].ev == 0 && _cia[i].evalarm == 0) return;
 
-  ciaCheckAlarmMatch(i);
+  CheckAlarmMatch(i);
 }
 
-void ciaWriteevmi(ULO i, UBY data)
+void Cia::Writeevmi(ULO i, UBY data)
 {
-  if (cia[i].crb & 0x80) // Alarm
+  if (_cia[i].crb & 0x80) // Alarm
   {
-    cia[i].evalarm = (cia[i].evalarm & 0xff00ff) | ((ULO)data << 8);
-    ciaCheckAlarmMatch(i);
+    _cia[i].evalarm = (_cia[i].evalarm & 0xff00ff) | ((ULO)data << 8);
+    CheckAlarmMatch(i);
   }
   else // Time of day
   {
-    cia[i].evwritelatching = true;
-    cia[i].evwritelatch = (cia[i].evwritelatch & 0xff00ff) | (((ULO)data) << 8);
+    _cia[i].evwritelatching = true;
+    _cia[i].evwritelatch = (_cia[i].evwritelatch & 0xff00ff) | (((ULO)data) << 8);
   }
 }
 
-void ciaWriteevhi(ULO i, UBY data)
+void Cia::Writeevhi(ULO i, UBY data)
 {
-  if (cia[i].crb & 0x80) // Alarm
+  if (_cia[i].crb & 0x80) // Alarm
   {
-    cia[i].evalarm = (cia[i].evalarm & 0xffff) | ((ULO)data << 16);
-    ciaCheckAlarmMatch(i);
+    _cia[i].evalarm = (_cia[i].evalarm & 0xffff) | ((ULO)data << 16);
+    CheckAlarmMatch(i);
   }
   else // Time of day
   {
-    cia[i].evwritelatching = true;
-    cia[i].evwritelatch = (cia[i].evwritelatch & 0xffff) | (((ULO)data) << 16);
+    _cia[i].evwritelatching = true;
+    _cia[i].evwritelatch = (_cia[i].evwritelatch & 0xffff) | (((ULO)data) << 16);
   }
 }
 
 /* ICR */
 
-UBY ciaReadicr(ULO i)
+UBY Cia::Readicr(ULO i)
 {
-  UBY tmp = cia[i].icrreq;
-  cia[i].icrreq = 0;
+  UBY tmp = _cia[i].icrreq;
+  _cia[i].icrreq = 0;
 
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c ICR read, req is %X\n", (i == 0) ? 'A' : 'B', cia[i].icrreq);
+  Service->Log.AddLogDebug("CIA %c ICR read, req is %X\n", (i == 0) ? 'A' : 'B', _cia[i].icrreq);
 #endif
 
   return tmp;
 }
 
-void ciaWriteicr(ULO i, UBY data)
+void Cia::Writeicr(ULO i, UBY data)
 {
 #ifdef CIA_LOGGING
-  ULO old = cia[i].icrmsk;
+  ULO old = _cia[i].icrmsk;
 #endif
 
   if (data & 0x80)
   {
-    cia[i].icrmsk |= (data & 0x1f);
+    _cia[i].icrmsk |= (data & 0x1f);
   }
   else
   {
-    cia[i].icrmsk &= ~(data & 0x1f);
+    _cia[i].icrmsk &= ~(data & 0x1f);
   }
 
-  ciaUpdateIRQ(i);
+  UpdateIRQ(i);
 
 #ifdef CIA_LOGGING
-  Service->Log.AddLogDebug("CIA %c IRQ mask data %X, mask was %X is %X. PC %X\n", (i == 0) ? 'A' : 'B', data, old, cia[i].icrmsk, cpuGetOriginalPC());
+  Service->Log.AddLogDebug("CIA %c IRQ mask data %X, mask was %X is %X. PC %X\n", (i == 0) ? 'A' : 'B', data, old, _cia[i].icrmsk, cpuGetOriginalPC());
 #endif
 }
 
 /* CRA */
 
-UBY ciaReadcra(ULO i)
+UBY Cia::Readcra(ULO i)
 {
-  return cia[i].cra;
+  return _cia[i].cra;
 }
 
-void ciaWritecra(ULO i, UBY data)
+void Cia::Writecra(ULO i, UBY data)
 {
-  ciaStabilize(i);
+  Stabilize(i);
   if (data & 0x10) // Force load
   {
-    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
-    cia[i].ta_rem = 0;
+    _cia[i].ta = GetTimerValue(_cia[i].talatch);
+    _cia[i].ta_rem = 0;
     data &= 0xef; // Clear force load bit
 #ifdef CIA_LOGGING
-    Service->Log.AddLogDebug("CIA %c Timer A force load %X. PC %X\n", (i == 0) ? 'A' : 'B', cia[i].ta, cpuGetOriginalPC());
+    Service->Log.AddLogDebug("CIA %c Timer A force load %X. PC %X\n", (i == 0) ? 'A' : 'B', _cia[i].ta, cpuGetOriginalPC());
 #endif
   }
 #ifdef CIA_LOGGING
-  if ((data & 1) != (cia[i].cra & 1))
+  if ((data & 1) != (_cia[i].cra & 1))
   {
-    Service->Log.AddLogDebug("CIA %c Timer A is %s, was %s. PC %X\n", (i == 0) ? 'A' : 'B', (data & 1) ? "started" : "stopped", (cia[i].cra & 1) ? "started" : "stopped", cpuGetOriginalPC());
+    Service->Log.AddLogDebug(
+        "CIA %c Timer A is %s, was %s. PC %X\n",
+        (i == 0) ? 'A' : 'B',
+        (data & 1) ? "started" : "stopped",
+        (_cia[i].cra & 1) ? "started" : "stopped",
+        cpuGetOriginalPC());
   }
 #endif
-  cia[i].cra = data;
-  ciaUnstabilize(i);
-  ciaSetupNextEvent();
+  _cia[i].cra = data;
+  Unstabilize(i);
+  SetupNextEvent();
 }
 
 /* CRB */
 
-UBY ciaReadcrb(ULO i)
+UBY Cia::Readcrb(ULO i)
 {
-  return cia[i].crb;
+  return _cia[i].crb;
 }
 
-void ciaWritecrb(ULO i, UBY data)
+void Cia::Writecrb(ULO i, UBY data)
 {
-  ciaStabilize(i);
+  Stabilize(i);
   if (data & 0x10) // Force load
   {
-    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
-    cia[i].tb_rem = 0;
+    _cia[i].tb = GetTimerValue(_cia[i].tblatch);
+    _cia[i].tb_rem = 0;
     data &= 0xef; // Clear force load bit
 #ifdef CIA_LOGGING
-    Service->Log.AddLogDebug("CIA %c Timer B force load %X. PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tb, cpuGetOriginalPC());
+    Service->Log.AddLogDebug("CIA %c Timer B force load %X. PC %X\n", (i == 0) ? 'A' : 'B', _cia[i].tb, cpuGetOriginalPC());
 #endif
   }
 #ifdef CIA_LOGGING
-  if ((data & 1) != (cia[i].cra & 1))
+  if ((data & 1) != (_cia[i].cra & 1))
   {
-    Service->Log.AddLogDebug("CIA %c Timer B is %s, was %s. PC %X\n", (i == 0) ? 'A' : 'B', (data & 1) ? "started" : "stopped", (cia[i].crb & 1) ? "started" : "stopped", cpuGetOriginalPC());
+    Service->Log.AddLogDebug(
+        "CIA %c Timer B is %s, was %s. PC %X\n",
+        (i == 0) ? 'A' : 'B',
+        (data & 1) ? "started" : "stopped",
+        (_cia[i].crb & 1) ? "started" : "stopped",
+        cpuGetOriginalPC());
   }
 #endif
-  cia[i].crb = data;
-  ciaUnstabilize(i);
-  ciaSetupNextEvent();
+  _cia[i].crb = data;
+  Unstabilize(i);
+  SetupNextEvent();
 }
 
 /* Dummy read and write */
 
-UBY ciaReadNothing(ULO i)
+UBY Cia::ReadNothing(ULO i)
 {
   return 0xff;
 }
 
-void ciaWriteNothing(ULO i, UBY data)
+void Cia::WriteNothing(ULO i, UBY data)
 {
 }
 
-/* Table of CIA read/write functions */
-
-ciaFetchFunc cia_read[16] = {
-    ciaReadpra,
-    ciaReadprb,
-    ciaReadddra,
-    ciaReadddrb,
-    ciaReadtalo,
-    ciaReadtahi,
-    ciaReadtblo,
-    ciaReadtbhi,
-    ciaReadevlo,
-    ciaReadevmi,
-    ciaReadevhi,
-    ciaReadNothing,
-    ciaReadsp,
-    ciaReadicr,
-    ciaReadcra,
-    ciaReadcrb};
-ciaWriteFunc cia_write[16] = {
-    ciaWritepra,
-    ciaWriteprb,
-    ciaWriteddra,
-    ciaWriteddrb,
-    ciaWritetalo,
-    ciaWritetahi,
-    ciaWritetblo,
-    ciaWritetbhi,
-    ciaWriteevlo,
-    ciaWriteevmi,
-    ciaWriteevhi,
-    ciaWriteNothing,
-    ciaWritesp,
-    ciaWriteicr,
-    ciaWritecra,
-    ciaWritecrb};
-
-UBY ciaReadByte(ULO address)
+UBY Cia::ReadByte(ULO address)
 {
   if ((address & 0xa01001) == 0xa00001)
   {
-    return cia_read[(address & 0xf00) >> 8](0);
+    return _read[(address & 0xf00) >> 8](0);
   }
 
   if ((address & 0xa02001) == 0xa00000)
   {
-    return cia_read[(address & 0xf00) >> 8](1);
+    return _read[(address & 0xf00) >> 8](1);
   }
 
   return 0xff;
 }
 
-UWO ciaReadWord(ULO address)
-{
-  return (((UWO)ciaReadByte(address)) << 8) | ((UWO)ciaReadByte(address + 1));
-}
-
-ULO ciaReadLong(ULO address)
-{
-  return (((ULO)ciaReadByte(address)) << 24) | (((ULO)ciaReadByte(address + 1)) << 16) | (((ULO)ciaReadByte(address + 2)) << 8) | ((ULO)ciaReadByte(address + 3));
-}
-
-void ciaWriteByte(UBY data, ULO address)
+void Cia::WriteByte(UBY data, ULO address)
 {
   if ((address & 0xa01001) == 0xa00001)
   {
-    cia_write[(address & 0xf00) >> 8](0, data);
+    _write[(address & 0xf00) >> 8](0, data);
   }
   else if ((address & 0xa02001) == 0xa00000)
   {
-    cia_write[(address & 0xf00) >> 8](1, data);
+    _write[(address & 0xf00) >> 8](1, data);
   }
 }
 
-void ciaWriteWord(UWO data, ULO address)
+void Cia::StateClear()
 {
-  ciaWriteByte((UBY)(data >> 8), address);
-  ciaWriteByte((UBY)data, address + 1);
-}
-
-void ciaWriteLong(ULO data, ULO address)
-{
-  ciaWriteByte((UBY)(data >> 24), address);
-  ciaWriteByte((UBY)(data >> 16), address + 1);
-  ciaWriteByte((UBY)(data >> 8), address + 2);
-  ciaWriteByte((UBY)data, address + 3);
-}
-
-//============================================================================
-// Map cia banks into the memory table
-//============================================================================
-
-void ciaMemoryMap()
-{
-  constexpr ULO startbank = 0xa0;
-  constexpr ULO stopbank = 0xc0;
-
-  for (ULO bank = startbank; bank < stopbank; bank++)
-  {
-    memoryBankSet(MemoryBankDescriptor{
-        .Kind = MemoryKind::CIA,
-        .BankNumber = bank,
-        .BaseBankNumber = startbank,
-        .ReadByteFunc = ciaReadByte,
-        .ReadWordFunc = ciaReadWord,
-        .ReadLongFunc = ciaReadLong,
-        .WriteByteFunc = ciaWriteByte,
-        .WriteWordFunc = ciaWriteWord,
-        .WriteLongFunc = ciaWriteLong,
-        .BasePointer = nullptr,
-        .IsBasePointerWritable = false});
-  }
-}
-
-/*============================================================================*/
-/* Cia state zeroing                                                          */
-/*============================================================================*/
-
-void ciaStateClear()
-{
-  for (auto &state : cia)
+  for (auto &state : _cia)
   {
     state.ev = 0;
     state.evlatch = 0;
@@ -1054,34 +926,71 @@ void ciaStateClear()
     state.cra = 0;
     state.crb = 0;
   }
-  cia_recheck_irq = false;
-  cia_recheck_irq_time = SchedulerEvent::EventDisableCycle;
-  cia_next_event_type = 0;
+  _recheck_irq = false;
+  _recheck_irq_time = SchedulerEvent::EventDisableCycle;
+  _next_event_type = 0;
 }
 
-/*============================================================================*/
-/* Cia module control                                                         */
-/*============================================================================*/
+void Cia::InitializeInternalReadWriteFunctions()
+{
+  _read[0] = [this](ULO ciaIndex) -> UBY { return this->Readpra(ciaIndex); };
+  _read[1] = [this](ULO ciaIndex) -> UBY { return this->Readprb(ciaIndex); };
+  _read[2] = [this](ULO ciaIndex) -> UBY { return this->Readddra(ciaIndex); };
+  _read[3] = [this](ULO ciaIndex) -> UBY { return this->Readddrb(ciaIndex); };
+  _read[4] = [this](ULO ciaIndex) -> UBY { return this->Readtalo(ciaIndex); };
+  _read[5] = [this](ULO ciaIndex) -> UBY { return this->Readtahi(ciaIndex); };
+  _read[6] = [this](ULO ciaIndex) -> UBY { return this->Readtblo(ciaIndex); };
+  _read[7] = [this](ULO ciaIndex) -> UBY { return this->Readtbhi(ciaIndex); };
+  _read[8] = [this](ULO ciaIndex) -> UBY { return this->Readevlo(ciaIndex); };
+  _read[9] = [this](ULO ciaIndex) -> UBY { return this->Readevmi(ciaIndex); };
+  _read[10] = [this](ULO ciaIndex) -> UBY { return this->Readevhi(ciaIndex); };
+  _read[11] = [this](ULO ciaIndex) -> UBY { return this->ReadNothing(ciaIndex); };
+  _read[12] = [this](ULO ciaIndex) -> UBY { return this->Readsp(ciaIndex); };
+  _read[13] = [this](ULO ciaIndex) -> UBY { return this->Readicr(ciaIndex); };
+  _read[14] = [this](ULO ciaIndex) -> UBY { return this->Readcra(ciaIndex); };
+  _read[15] = [this](ULO ciaIndex) -> UBY { return this->Readcrb(ciaIndex); };
 
-void ciaEmulationStart()
+  _write[0] = [this](ULO ciaIndex, UBY data) -> void { this->Writepra(ciaIndex, data); };
+  _write[1] = [this](ULO ciaIndex, UBY data) -> void { this->Writeprb(ciaIndex, data); };
+  _write[2] = [this](ULO ciaIndex, UBY data) -> void { this->Writeddra(ciaIndex, data); };
+  _write[3] = [this](ULO ciaIndex, UBY data) -> void { this->Writeddrb(ciaIndex, data); };
+  _write[4] = [this](ULO ciaIndex, UBY data) -> void { this->Writetalo(ciaIndex, data); };
+  _write[5] = [this](ULO ciaIndex, UBY data) -> void { this->Writetahi(ciaIndex, data); };
+  _write[6] = [this](ULO ciaIndex, UBY data) -> void { this->Writetblo(ciaIndex, data); };
+  _write[7] = [this](ULO ciaIndex, UBY data) -> void { this->Writetbhi(ciaIndex, data); };
+  _write[8] = [this](ULO ciaIndex, UBY data) -> void { this->Writeevlo(ciaIndex, data); };
+  _write[9] = [this](ULO ciaIndex, UBY data) -> void { this->Writeevmi(ciaIndex, data); };
+  _write[10] = [this](ULO ciaIndex, UBY data) -> void { this->Writeevhi(ciaIndex, data); };
+  _write[11] = [this](ULO ciaIndex, UBY data) -> void { this->WriteNothing(ciaIndex, data); };
+  _write[12] = [this](ULO ciaIndex, UBY data) -> void { this->Writesp(ciaIndex, data); };
+  _write[13] = [this](ULO ciaIndex, UBY data) -> void { this->Writeicr(ciaIndex, data); };
+  _write[14] = [this](ULO ciaIndex, UBY data) -> void { this->Writecra(ciaIndex, data); };
+  _write[15] = [this](ULO ciaIndex, UBY data) -> void { this->Writecrb(ciaIndex, data); };
+}
+
+void Cia::StartEmulation()
 {
 }
 
-void ciaEmulationStop()
+void Cia::StopEmulation()
 {
 }
 
-void ciaHardReset()
+void Cia::HardReset()
 {
-  ciaStateClear();
-  ciaMemoryMap();
+  StateClear();
 }
 
-void ciaStartup()
+void Cia::Startup()
 {
-  ciaStateClear();
+  StateClear();
+  InitializeInternalReadWriteFunctions();
+};
+
+void Cia::Shutdown()
+{
 }
 
-void ciaShutdown()
+Cia::Cia(Scheduler *scheduler) : _scheduler(scheduler)
 {
 }

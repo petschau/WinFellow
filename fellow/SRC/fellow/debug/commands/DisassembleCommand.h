@@ -2,7 +2,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/debug/commands/DebuggerCommand.h"
-#include "fellow/api/VM.h"
+#include "fellow/api/vm/IM68K.h"
 
 struct DisassembleParameters
 {
@@ -20,8 +20,12 @@ public:
 
 class DisassembleCommand : public DebuggerCommand<DisassembleParameters, DisassembleResult>
 {
+private:
+  fellow::api::vm::IM68K *_m68k;
+
 public:
   DisassembleResult Execute(const DisassembleParameters &parameters) override;
 
+  DisassembleCommand(fellow::api::vm::IM68K *m68k);
   virtual ~DisassembleCommand() = default;
 };

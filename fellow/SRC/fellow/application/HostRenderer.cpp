@@ -107,7 +107,11 @@ void HostRenderer::Configure(const HostRenderConfiguration &hostRenderConfigurat
 void HostRenderer::SetChipsetBufferMaxClip(const RectShresi &chipsetBufferMaxClip)
 {
   Service->Log.AddLogDebug(
-      "HostRenderer::SetChipsetMaxClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", chipsetBufferMaxClip.Left, chipsetBufferMaxClip.Top, chipsetBufferMaxClip.Right, chipsetBufferMaxClip.Bottom);
+      "HostRenderer::SetChipsetMaxClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n",
+      chipsetBufferMaxClip.Left,
+      chipsetBufferMaxClip.Top,
+      chipsetBufferMaxClip.Right,
+      chipsetBufferMaxClip.Bottom);
 
   _chipsetBufferRuntimeSettings.MaxClip = chipsetBufferMaxClip;
 }
@@ -115,7 +119,12 @@ void HostRenderer::SetChipsetBufferMaxClip(const RectShresi &chipsetBufferMaxCli
 // Only used by RP
 void HostRenderer::SetHostOutputClip(const RectShresi &hostOutputClip)
 {
-  Service->Log.AddLogDebug("HostRenderer::SetHostOutputClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", hostOutputClip.Left, hostOutputClip.Top, hostOutputClip.Right, hostOutputClip.Bottom);
+  Service->Log.AddLogDebug(
+      "HostRenderer::SetHostOutputClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n",
+      hostOutputClip.Left,
+      hostOutputClip.Top,
+      hostOutputClip.Right,
+      hostOutputClip.Bottom);
 
   _hostRenderConfiguration.ChipsetOutputClip = hostOutputClip;
 }
@@ -150,7 +159,8 @@ void HostRenderer::ClearDisplayModeList()
   _displayModes.clear();
 }
 
-const DisplayMode *HostRenderer::FindDisplayMode(unsigned int width, unsigned int height, unsigned int bits, unsigned int refresh, bool allowAnyRefresh) const
+const DisplayMode *HostRenderer::FindDisplayMode(
+    unsigned int width, unsigned int height, unsigned int bits, unsigned int refresh, bool allowAnyRefresh) const
 {
   for (list<DisplayMode>::const_iterator i = _displayModes.begin(); i != _displayModes.end(); ++i)
   {
@@ -336,7 +346,8 @@ void HostRenderer::CalculateOutputClipPixels()
   }
 #endif
 
-  _chipsetBufferRuntimeSettings.OutputClipPixels = RectPixels(outputClipLeft, outputClipTop, outputClipLeft + outputClipWidth, outputClipTop + outputClipHeight);
+  _chipsetBufferRuntimeSettings.OutputClipPixels =
+      RectPixels(outputClipLeft, outputClipTop, outputClipLeft + outputClipWidth, outputClipTop + outputClipHeight);
 }
 
 //==============================================
@@ -450,7 +461,7 @@ MappedChipsetFramebuffer HostRenderer::MapChipsetFramebuffer()
   return MappedChipsetFramebuffer{
       .TopPointer = mappedBufferPointer.Buffer,
       .HostLinePitch = mappedBufferPointer.Pitch,
-      .AmigaLinePitch = (ptrdiff_t) (mappedBufferPointer.Pitch * GetChipsetBufferScaleFactor() * 2), // Pitch to go to next line in field
+      .AmigaLinePitch = (ptrdiff_t)(mappedBufferPointer.Pitch * GetChipsetBufferScaleFactor() * 2), // Pitch to go to next line in field
       .IsValid = true};
 }
 
@@ -523,8 +534,8 @@ bool HostRenderer::EmulationStartPost()
   _buffer_show = 0;
   _buffer_draw = _buffer_count - 1;
 
-  // Color bit layout for the buffers are needed to finalize tables for the drawing. DirectDraw cannot provide this until after the ...post, dxgi does provide it earlier as it is fixed to 32-bit
-  // backbuffer
+  // Color bit layout for the buffers are needed to finalize tables for the drawing. DirectDraw cannot provide this until after the ...post, dxgi does
+  // provide it earlier as it is fixed to 32-bit backbuffer
   const GfxDrvColorBitsInformation colorBitsInformation = Driver->Graphics->GetColorBitsInformation();
   _chipsetBufferRuntimeSettings.ColorBits = colorBitsInformation.ColorBits;
 
@@ -535,7 +546,10 @@ bool HostRenderer::EmulationStartPost()
   DrawModeFunctionTablesInitialize(_chipsetBufferRuntimeSettings.ColorBits);
 
   Service->Log.AddLog(
-      "HostRenderer::EmulationStartPost(): Chipset buffer is (%u,%u,%u)\n", _chipsetBufferRuntimeSettings.Dimensions.Width, _chipsetBufferRuntimeSettings.Dimensions.Height, colorBitsInformation.ColorBits);
+      "HostRenderer::EmulationStartPost(): Chipset buffer is (%u,%u,%u)\n",
+      _chipsetBufferRuntimeSettings.Dimensions.Width,
+      _chipsetBufferRuntimeSettings.Dimensions.Height,
+      colorBitsInformation.ColorBits);
 
   return true;
 }
@@ -605,8 +619,8 @@ void HostRenderer::ReinitializeRendering()
 
 void HostRenderer::DrawFrameInHostLineExact(const MappedChipsetFramebuffer &mappedChipsetFramebuffer)
 {
-  // chipsetClipMax top and bottom are always pre-aligned to producing full Amiga lines, ie. they are even to avoid the complexity of splitting Amiga lines in half during rendering phase.
-  // chipsetClipOutput can be anything within chipsetClipMax.
+  // chipsetClipMax top and bottom are always pre-aligned to producing full Amiga lines, ie. they are even to avoid the complexity of splitting Amiga lines
+  // in half during rendering phase. chipsetClipOutput can be anything within chipsetClipMax.
 
   const unsigned int chipsetClipTop = _chipsetBufferRuntimeSettings.MaxClip.Top;
   const unsigned int chipsetClipHeight = _chipsetBufferRuntimeSettings.MaxClip.GetHeight();
@@ -662,12 +676,14 @@ void HostRenderer::EndOfFrame()
     {
       // Renders the entire Amiga pixel area into a host provided buffer as defined by the chipset clip max limits.
       // This represents the entire overscan area and more than most monitors would ever display.
-      // Actual visible host output might be a sub-set, as defined by draw_clip_amiga (Amiga coordinates) and draw_buffer_clip (Same area in absolute pixels within the buffer)
+      // Actual visible host output might be a sub-set, as defined by draw_clip_amiga (Amiga coordinates) and draw_buffer_clip (Same area in absolute
+      // pixels within the buffer)
 
       // Renders Amiga screen in the chipset buffer
       if (chipsetIsCycleExact())
       {
-        host_frame_copier.DrawFrameInHost(mappedFramebuffer, GetChipsetBufferScaleFactor(), _hostRenderConfiguration.ChipsetOutputClip, GetHostColors()[0]);
+        host_frame_copier.DrawFrameInHost(
+            mappedFramebuffer, GetChipsetBufferScaleFactor(), _hostRenderConfiguration.ChipsetOutputClip, GetHostColors()[0]);
       }
       else
       {
@@ -680,7 +696,8 @@ void HostRenderer::EndOfFrame()
 
       _hostRenderStatistics.FpsStatsTimestamp();
 
-      // Direct2D HUD renders with graphics commands into the D3D11 pipeline and does not require a mapped framebuffer pointer (nor does it alter the chipset buffer)
+      // Direct2D HUD renders with graphics commands into the D3D11 pipeline and does not require a mapped framebuffer pointer (nor does it alter the
+      // chipset buffer)
 
       FlipBuffer();
     }

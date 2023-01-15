@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fellow/api/defs.h"
+#include "fellow/api/IRuntimeEnvironment.h"
 
 enum class kbd_event
 {
@@ -78,24 +79,34 @@ struct kbd_state_type
   kbd_buffer_type<kbd_event> eventsEOF;
 };
 
-extern kbd_state_type kbd_state;
+class Keyboard
+{
+private:
+  fellow::api::IRuntimeEnvironment *_runtimeEnvironment;
 
-extern void kbdEventEOLAdd(kbd_event eventId);
-extern void kbdEventEOFAdd(kbd_event eventId);
-extern void kbdKeyAdd(UBY keyCode);
+  kbd_state_type _state{};
+  ULO _time_to_wait{};
+  UBY _insert_dfX[4]{}; // 0 - nothing 1- insert 2-eject
 
-extern void kbdHardReset();
-extern void kbdEmulationStart();
-extern void kbdEmulationStop();
-extern void kbdStartup();
-extern void kbdShutdown();
+  void EventDFxIntoDF0(ULO driveNumber);
+  void EventDebugToggleRenderer();
+  void EventDebugToggleLogging();
+  void EventEOFHandler();
+  void EventEOLHandler();
+  void QueueHandler();
 
-extern void kbdQueueHandler();
-extern void kbdEventEOLHandler();
+public:
+  void KeyAdd(UBY keyCode);
+  void EventEOFAdd(kbd_event eventId);
+  void EventEOLAdd(kbd_event eventId);
 
-void kbdEventEOFHandler();
+  void StartEmulation();
+  void StopEmulation();
 
-extern void kbdQueueHandler();
-extern void kbdEventEOLHandler();
+  void HardReset();
 
-extern UBY insert_dfX[4];
+  void Startup();
+  void Shutdown();
+
+  Keyboard(fellow::api::IRuntimeEnvironment *runtimeEnvironment);
+};

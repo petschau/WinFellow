@@ -57,7 +57,7 @@ extern UBY configromname[];
 typedef void (*planar2chunkyroutine)();
 
 #ifdef _DEBUG
-#define F_ASSERT(expr)                                                                                                                                                                                 \
+#define F_ASSERT(expr)                                                                                                                                    \
   if (!(expr)) throw;
 #else
 #define F_ASSERT(expr) ;

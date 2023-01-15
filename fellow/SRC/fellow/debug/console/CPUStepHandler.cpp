@@ -55,7 +55,7 @@ ConsoleCommandHandlerResult CPUStepHandler::Handle(const std::vector<std::string
     return result;
   }
 
-  auto commandResult = CPUStepCommand().Execute(parametersResult.Parameters);
+  auto commandResult = CPUStepCommand(_cpu).Execute(parametersResult.Parameters);
 
   result.ExecuteResult = ToString(commandResult);
   result.Success = true;
@@ -63,6 +63,6 @@ ConsoleCommandHandlerResult CPUStepHandler::Handle(const std::vector<std::string
   return result;
 }
 
-CPUStepHandler::CPUStepHandler() : ConsoleCommandHandler("s")
+CPUStepHandler::CPUStepHandler(fellow::api::vm::IM68K *cpu) : ConsoleCommandHandler("s"), _cpu(cpu)
 {
 }

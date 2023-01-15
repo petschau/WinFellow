@@ -23,7 +23,7 @@ private:
   bool InitializeDirectDraw();
   void ReleaseDirectDraw();
 
-  bool InitializeCommon();
+  bool InitializeCommon(fellow::api::IRuntimeEnvironment *runtimeEnvironment);
   void ReleaseCommon();
 
   void SwitchGraphicsDriver(DISPLAYDRIVER displaydriver);
@@ -60,16 +60,16 @@ public:
   bool SaveScreenshot(const bool, const char *filename) override;
 
   bool EmulationStart(
-    const HostRenderConfiguration &hostRenderConfiguration,
-    const HostRenderRuntimeSettings &hostRenderRuntimeSettings,
-    const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
-    HudPropertyProvider *hudPropertyProvider) override;
+      const HostRenderConfiguration &hostRenderConfiguration,
+      const HostRenderRuntimeSettings &hostRenderRuntimeSettings,
+      const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
+      HudPropertyProvider *hudPropertyProvider) override;
   ULO EmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings) override;
   void EmulationStop() override;
 
   std::list<DISPLAYDRIVER> GetListOfInitializedDrivers() const override;
   bool IsInitialized() const override;
-  void Initialize() override;
+  void Initialize(fellow::api::IRuntimeEnvironment *runtimeEnvironment) override;
   void Release() override;
 
   virtual ~GraphicsDriver() = default;

@@ -2,7 +2,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/debug/commands/DebuggerCommand.h"
-#include "fellow/api/vm/MemorySystemTypes.h"
+#include "fellow/api/vm/IMemorySystem.h"
 
 struct MemoryMapParameters
 {
@@ -25,11 +25,14 @@ public:
 class MemoryMapCommand : public DebuggerCommand<MemoryMapParameters, MemoryMapResult>
 {
 private:
+  fellow::api::vm::IMemorySystem *_vmMemory;
+
   std::vector<MemoryMapEntry> GetMemoryMapEntries();
   std::string GetMemoryKindDescription(fellow::api::vm::MemoryKind kind) const;
 
 public:
   MemoryMapResult Execute(const MemoryMapParameters &parameters) override;
 
+  MemoryMapCommand(fellow::api::vm::IMemorySystem *vmMemory);
   virtual ~MemoryMapCommand() = default;
 };

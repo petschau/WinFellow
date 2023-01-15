@@ -9,8 +9,6 @@ constexpr unsigned int MAX_JOYKEY_VALUE = 8;
 class IKeyboardDriver
 {
 public:
-  virtual bool GetInitializationFailed() = 0;
-
   virtual kbd_drv_pc_symbol GetPCSymbolFromDescription(const char *pcSymbolDescription) = 0;
   virtual const char *GetPCSymbolDescription(kbd_drv_pc_symbol symbolickey) = 0;
   virtual const char *GetPCSymbolPrettyDescription(kbd_drv_pc_symbol symbolickey) = 0;
@@ -31,6 +29,10 @@ public:
 
   virtual void EmulationStart() = 0;
   virtual void EmulationStop() = 0;
+
+  virtual bool GetInitializationFailed() = 0;
+  virtual void Initialize(Keyboard *keyboard) = 0;
+  virtual void Release() = 0;
 
   IKeyboardDriver() = default;
   virtual ~IKeyboardDriver() = default;

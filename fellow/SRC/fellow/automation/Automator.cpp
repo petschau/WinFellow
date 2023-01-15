@@ -10,8 +10,6 @@
 using namespace std;
 using namespace fellow::api;
 
-Automator automator;
-
 void Automator::TakeSnapshot()
 {
   if (SnapshotDirectory.empty())
@@ -25,7 +23,7 @@ void Automator::TakeSnapshot()
     _snapshotsTaken++;
 
     ostringstream filename;
-    filename << SnapshotDirectory << '\\' << setfill('0') << setw(4) << _snapshotsTaken << '_' << scheduler.GetRasterFrameCount() + 1 << ".bmp";
+    filename << SnapshotDirectory << '\\' << setfill('0') << setw(4) << _snapshotsTaken << '_' << _scheduler->GetRasterFrameCount() + 1 << ".bmp";
 
     Driver->Graphics->SaveScreenshot(false, filename.str().c_str());
   }
@@ -67,8 +65,8 @@ void Automator::EndOfLine()
 {
   if (!RecordScript)
   {
-    ULL frameNumber = scheduler.GetRasterFrameCount();
-    ULO line = scheduler.GetRasterY();
+    ULL frameNumber = _scheduler->GetRasterFrameCount();
+    ULO line = _scheduler->GetRasterY();
     _script.ExecuteUntil(frameNumber, line);
   }
 }
@@ -97,6 +95,7 @@ void Automator::Shutdown()
   }
 }
 
-Automator::Automator() : RecordScript(false), SnapshotFrequency(100), SnapshotEnable(false)
+Automator::Automator(Scheduler *scheduler, Keyboard *keyboard)
+  : _scheduler(scheduler), _script(keyboard, scheduler), RecordScript(false), SnapshotFrequency(100), SnapshotEnable(false)
 {
 }

@@ -19,7 +19,13 @@ namespace fellow::api
     IPerformanceCounterFactory &PerformanceCounterFactory;
     IFileops &Fileops;
 
-    Services(IHUD &hud, IFSWrapper &fsWrapper, ILog &log, IRetroPlatform &retroPlatform, IPerformanceCounterFactory &performanceCounterFactory, IFileops &fileops)
+    Services(
+        IHUD &hud,
+        IFSWrapper &fsWrapper,
+        ILog &log,
+        IRetroPlatform &retroPlatform,
+        IPerformanceCounterFactory &performanceCounterFactory,
+        IFileops &fileops)
       : HUD(hud), FSWrapper(fsWrapper), Log(log), RP(retroPlatform), PerformanceCounterFactory(performanceCounterFactory), Fileops(fileops)
     {
     }

@@ -36,7 +36,7 @@ ParseParametersResult<DisassembleParameters> DisassembleHandler::ParseParameters
   {
     if (tokens[1] == "pc")
     {
-      result.Parameters.Address = VM->CPU.GetPC();
+      result.Parameters.Address = _m68k->GetPC();
     }
     else
     {
@@ -62,7 +62,7 @@ ConsoleCommandHandlerResult DisassembleHandler::Handle(const vector<string> &tok
     return result;
   }
 
-  DisassembleCommand command;
+  DisassembleCommand command(_m68k);
   DisassembleResult commandResult = command.Execute(parseResult.Parameters);
 
   result.ExecuteResult = ToString(commandResult);
@@ -73,6 +73,6 @@ ConsoleCommandHandlerResult DisassembleHandler::Handle(const vector<string> &tok
   return result;
 }
 
-DisassembleHandler::DisassembleHandler() : ConsoleCommandHandler("d"), _defaultAddress(0)
+DisassembleHandler::DisassembleHandler(IM68K* m68k) : ConsoleCommandHandler("d"), _m68k(m68k), _defaultAddress(0)
 {
 }

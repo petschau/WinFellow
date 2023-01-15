@@ -31,6 +31,9 @@
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/memory/Memory.h"
+
+#include "fellow/memory/ChipsetBankHandler.h"
+#include "fellow/memory/CiaBankHandler.h"
 #include "fellow/chipset/rtc.h"
 #include "fellow/libs/zlib/src/zlib.h" // crc32 function
 #include "fellow/api/Services.h"
@@ -38,6 +41,8 @@
 
 #ifdef WIN32
 #include <tchar.h>
+
+#include <utility>
 #endif
 
 using namespace std;
@@ -167,29 +172,8 @@ ULO memoryGetRandomLong()
   return (ULO)(((rand() % 256) << 24) | ((rand() % 256) << 16) | ((rand() % 256) << 8) | (rand() % 256));
 }
 
-// ----------------------------
-// Chip read register functions
-// ----------------------------
-
-// To simulate noise, return 0 and -1 every second time.
-// Why? Bugged demos test write-only registers for various bit-values
-// and to break out of loops, both 0 and 1 values must be returned.
-
-UWO rdefault(ULO address)
-{
-  return memoryGetRandomWord();
-}
-
-void wdefault(UWO data, ULO address)
-{
-}
-
-/*============================================================================*/
-/* Table of register read/write functions                                     */
-/*============================================================================*/
-
-IoReadFunc memory_iobank_read[257];   // Account for long writes to the last
-IoWriteFunc memory_iobank_write[257]; // word
+ChipsetBankHandler _chipsetBankHandler;
+CiaBankHandler _ciaBankHandler;
 
 /*============================================================================*/
 /* Memory mapping tables                                                      */
@@ -1165,54 +1149,32 @@ void memoryMysteryMap()
 
 UBY memoryIoReadByte(ULO address)
 {
-  ULO adr = address & 0x1fe;
-  if (address & 0x1)
-  { // Odd address
-    return (UBY)memory_iobank_read[adr >> 1](adr);
-  }
-  else
-  { // Even address
-    return (UBY)(memory_iobank_read[adr >> 1](adr) >> 8);
-  }
+  return _chipsetBankHandler.ReadByte(address);
 }
 
 UWO memoryIoReadWord(ULO address)
 {
-  return memory_iobank_read[(address & 0x1fe) >> 1](address & 0x1fe);
+  return _chipsetBankHandler.ReadWord(address);
 }
 
 ULO memoryIoReadLong(ULO address)
 {
-  ULO adr = address & 0x1fe;
-  ULO r1 = (ULO)memory_iobank_read[adr >> 1](adr);
-  ULO r2 = (ULO)memory_iobank_read[(adr + 2) >> 1](adr + 2);
-  return (r1 << 16) | r2;
+  return _chipsetBankHandler.ReadLong(address);
 }
 
 void memoryIoWriteByte(UBY data, ULO address)
 {
-  ULO adr = address & 0x1fe;
-  if (address & 0x1)
-  { // Odd address
-    memory_iobank_write[adr >> 1]((UWO)data, adr);
-  }
-  else
-  { // Even address
-    memory_iobank_write[adr >> 1](((UWO)data) << 8, adr);
-  }
+  _chipsetBankHandler.WriteByte(data, address);
 }
 
 void memoryIoWriteWord(UWO data, ULO address)
 {
-  ULO adr = address & 0x1fe;
-  memory_iobank_write[adr >> 1](data, adr);
+  _chipsetBankHandler.WriteWord(data, address);
 }
 
 void memoryIoWriteLong(ULO data, ULO address)
 {
-  ULO adr = address & 0x1fe;
-  memory_iobank_write[adr >> 1]((UWO)(data >> 16), adr);
-  memory_iobank_write[(adr + 2) >> 1]((UWO)data, adr + 2);
+  _chipsetBankHandler.WriteLong(data, address);
 }
 
 ULO memoryIoGetStartBank()
@@ -1253,12 +1215,22 @@ void memoryIoMap()
 
 void memorySetIoReadStub(ULO index, IoReadFunc ioreadfunction)
 {
-  memory_iobank_read[index >> 1] = ioreadfunction;
+  _chipsetBankHandler.SetIoReadStub(index, ioreadfunction);
 }
 
 void memorySetIoWriteStub(ULO index, IoWriteFunc iowritefunction)
 {
-  memory_iobank_write[index >> 1] = iowritefunction;
+  _chipsetBankHandler.SetIoWriteStub(index, iowritefunction);
+}
+
+void memorySetIoReadFunction(ULO index, std::function<uint16_t(uint32_t)> ioreadfunction)
+{
+  _chipsetBankHandler.SetIoReadFunction(index, std::move(ioreadfunction));
+}
+
+void memorySetIoWriteFunction(ULO index, std::function<void(uint16_t, uint32_t)> iowritefunction)
+{
+  _chipsetBankHandler.SetIoWriteFunction(index, std::move(iowritefunction));
 }
 
 /*===========================================================================*/
@@ -1267,13 +1239,62 @@ void memorySetIoWriteStub(ULO index, IoWriteFunc iowritefunction)
 
 void memoryIoClear()
 {
-  // Array has 257 elements to account for long writes to the last address.
-  for (ULO i = 0; i <= 512; i += 2)
+  _chipsetBankHandler.Clear();
+}
+
+
+UBY memoryCiaReadByte(ULO address)
+{
+  return _chipsetBankHandler.ReadByte(address);
+}
+
+UWO memoryCiaReadWord(ULO address)
+{
+  return _chipsetBankHandler.ReadWord(address);
+}
+
+ULO memoryCiaReadLong(ULO address)
+{
+  return _chipsetBankHandler.ReadLong(address);
+}
+
+void memoryCiaWriteByte(UBY data, ULO address)
+{
+  _chipsetBankHandler.WriteByte(data, address);
+}
+
+void memoryCiaWriteWord(UWO data, ULO address)
+{
+  _chipsetBankHandler.WriteWord(data, address);
+}
+
+void memoryCiaWriteLong(ULO data, ULO address)
+{
+  _chipsetBankHandler.WriteLong(data, address);
+}
+
+void memoryCiaMap()
+{
+  constexpr ULO startbank = 0xa0;
+  constexpr ULO stopbank = 0xc0;
+
+  for (ULO bank = startbank; bank < stopbank; bank++)
   {
-    memorySetIoReadStub(i, rdefault);
-    memorySetIoWriteStub(i, wdefault);
+    memoryBankSet(fellow::api::vm::MemoryBankDescriptor{
+        .Kind = fellow::api::vm::MemoryKind::CIA,
+        .BankNumber = bank,
+        .BaseBankNumber = startbank,
+        .ReadByteFunc = memoryCiaReadByte,
+        .ReadWordFunc = memoryCiaReadWord,
+        .ReadLongFunc = memoryCiaReadLong,
+        .WriteByteFunc = memoryCiaWriteByte,
+        .WriteWordFunc = memoryCiaWriteWord,
+        .WriteLongFunc = memoryCiaWriteLong,
+        .BasePointer = nullptr,
+        .IsBasePointerWritable = false});
   }
 }
+
 
 /*============================================================================*/
 /* Kickstart handling                                                         */
@@ -2396,6 +2417,7 @@ void memorySoftReset()
   memoryChipMap(true);
   memorySlowMap();
   memoryIoMap();
+  memoryCiaMap();
   memoryEmemMap();
   memoryDmemMap();
   memoryMysteryMap();
@@ -2419,6 +2441,7 @@ void memoryHardReset()
   memoryChipMap(true);
   memorySlowMap();
   memoryIoMap();
+  memoryCiaMap();
   memoryEmemMap();
   memoryDmemMap();
   memoryMysteryMap();

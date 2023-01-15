@@ -18,8 +18,8 @@
 #include "fellow/application/Interrupt.h"
 #include "fellow/chipset/CycleExactCopper.h"
 
-//#define BLIT_VERIFY_MINTERMS
-//#define BLIT_OPERATION_LOG
+// #define BLIT_VERIFY_MINTERMS
+// #define BLIT_OPERATION_LOG
 
 /*============================================================================*/
 /* Blitter registers                                                          */
@@ -217,7 +217,10 @@ void blitterOperationLog()
     if (blitter_operation_log_first)
     {
       blitter_operation_log_first = FALSE;
-      fprintf(F, "FRAME\tY\tX\tPC\tBLTCON0\tBLTCON1\tBLTAFWM\tBLTALWM\tBLTAPT\tBLTBPT\tBLTCPT\tBLTDPT\tBLTAMOD\tBLTBMOD\tBLTCMOD\tBLTDMOD\tBLTADAT\tBLTBDAT\tBLTCDAT\tHEIGHT\tWIDTH\n");
+      fprintf(
+          F,
+          "FRAME\tY\tX\tPC\tBLTCON0\tBLTCON1\tBLTAFWM\tBLTALWM\tBLTAPT\tBLTBPT\tBLTCPT\tBLTDPT\tBLTAMOD\tBLTBMOD\tBLTCMOD\tBLTDMOD\tBLTADAT\tBLTBDAT\tBLTC"
+          "DAT\tHEIGHT\tWIDTH\n");
     }
     if (F)
     {
@@ -381,15 +384,18 @@ void blitterOperationLog()
 #define blitterMinterm66(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat ^ c_dat);                                          /* B xor C */
 #define blitterMinterm67(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (~a_dat & ~c_dat));                    /* (B xor C) + ac */
 
-#define blitterMinterm68(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & (a_dat ^ b_dat)) | (a_dat & b_dat & ~c_dat));                       /* C(A xor B) + ABc */
-#define blitterMinterm69(a_dat, b_dat, c_dat, d_dat) d_dat = ((~c_dat & (~(a_dat ^ b_dat))) | (c_dat & (a_dat ^ b_dat)));                  /* c(!(A xor B)) + C(A xor B) */
-#define blitterMinterm6a(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & ~b_dat) | (b_dat & (a_dat ^ c_dat)));                               /* bC + B(A xor C) */
-#define blitterMinterm6b(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & ~c_dat) | (~a_dat & ~b_dat) | (c_dat & (~a_dat | ~b_dat))); /* ABc + ab + C(a + b) */
+#define blitterMinterm68(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & (a_dat ^ b_dat)) | (a_dat & b_dat & ~c_dat));      /* C(A xor B) + ABc */
+#define blitterMinterm69(a_dat, b_dat, c_dat, d_dat) d_dat = ((~c_dat & (~(a_dat ^ b_dat))) | (c_dat & (a_dat ^ b_dat))); /* c(!(A xor B)) + C(A xor B)   \
+                                                                                                                           */
+#define blitterMinterm6a(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & ~b_dat) | (b_dat & (a_dat ^ c_dat)));              /* bC + B(A xor C) */
+#define blitterMinterm6b(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((a_dat & b_dat & ~c_dat) | (~a_dat & ~b_dat) | (c_dat & (~a_dat | ~b_dat))); /* ABc + ab + C(a + b) */
 
-#define blitterMinterm6c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat) | (b_dat & ~c_dat));            /* AbC + aB + Bc */
-#define blitterMinterm6d(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat) | (~c_dat & (b_dat | ~a_dat))); /* AbC + aB + c(B + a) */
-#define blitterMinterm6e(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (~a_dat & b_dat));                                        /* (B xor C) + aB */
-#define blitterMinterm6f(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | ~a_dat);                                                  /* (B xor C) + aB */
+#define blitterMinterm6c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat) | (b_dat & ~c_dat)); /* AbC + aB + Bc */
+#define blitterMinterm6d(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat) | (~c_dat & (b_dat | ~a_dat)));             /* AbC + aB + c(B + a) */
+#define blitterMinterm6e(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (~a_dat & b_dat)); /* (B xor C) + aB */
+#define blitterMinterm6f(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | ~a_dat);           /* (B xor C) + aB */
 
 #define blitterMinterm70(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & (~b_dat | ~c_dat));                    /* A(b + c) */
 #define blitterMinterm71(a_dat, b_dat, c_dat, d_dat) d_dat = (~c_dat & (a_dat | ~b_dat) | (a_dat & ~b_dat)); /* c(A + b) + Ab */
@@ -401,10 +407,11 @@ void blitterOperationLog()
 #define blitterMinterm76(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (a_dat & ~c_dat));  /* (B xor C) + Ac */
 #define blitterMinterm77(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat | ~c_dat);                     /* b + c */
 
-#define blitterMinterm78(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & (~b_dat | ~c_dat)));                     /* aBC + A(b + c) */
-#define blitterMinterm79(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & (~b_dat | ~c_dat)) | (~b_dat & ~c_dat)); /* aBC + A(b + c) + bc */
-#define blitterMinterm7a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | (a_dat & ~b_dat));                                         /* (A xor C) + Ab */
-#define blitterMinterm7b(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | ~b_dat);                                                   /* (A xor C) + b */
+#define blitterMinterm78(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & (~b_dat | ~c_dat))); /* aBC + A(b + c) */
+#define blitterMinterm79(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & (~b_dat | ~c_dat)) | (~b_dat & ~c_dat));            /* aBC + A(b + c) + bc */
+#define blitterMinterm7a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | (a_dat & ~b_dat)); /* (A xor C) + Ab */
+#define blitterMinterm7b(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | ~b_dat);           /* (A xor C) + b */
 
 #define blitterMinterm7c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | (a_dat & ~c_dat));                     /* (A xor B) + Ac */
 #define blitterMinterm7d(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | ~c_dat);                               /* (A xor B) + c */
@@ -436,20 +443,22 @@ void blitterOperationLog()
 #define blitterMinterm92(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~b_dat & (a_dat ^ c_dat)));           /* ABC + b(A xor C) */
 #define blitterMinterm93(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | ~((a_dat | b_dat) & (b_dat | c_dat))); /* ABC + !((A+B)(B+C)) */
 
-#define blitterMinterm94(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~c_dat & (a_dat ^ b_dat)));                     /* ABC + c(A xor B) */
-#define blitterMinterm95(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~c_dat & ~(a_dat & b_dat)));                    /* ABC + c!(AB) */
-#define blitterMinterm96(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~(b_dat ^ c_dat)) | ((b_dat ^ c_dat) & ~a_dat));                  /* A(~(B xor C)) + a(B xor C) */
-#define blitterMinterm97(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | ~((a_dat | (b_dat & c_dat)) & (b_dat | c_dat))); /* ABC + !((A+BC)(B+C)) */
+#define blitterMinterm94(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~c_dat & (a_dat ^ b_dat)));    /* ABC + c(A xor B) */
+#define blitterMinterm95(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~c_dat & ~(a_dat & b_dat)));   /* ABC + c!(AB) */
+#define blitterMinterm96(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~(b_dat ^ c_dat)) | ((b_dat ^ c_dat) & ~a_dat)); /* A(~(B xor C)) + a(B xor C) */
+#define blitterMinterm97(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((a_dat & b_dat & c_dat) | ~((a_dat | (b_dat & c_dat)) & (b_dat | c_dat))); /* ABC + !((A+BC)(B+C)) */
 
 #define blitterMinterm98(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (b_dat & c_dat));  /* Abc + BC */
 #define blitterMinterm99(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat));                             /* !(B xor C) */
 #define blitterMinterm9a(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat & c_dat) | ((a_dat ^ c_dat) & ~b_dat)); /* BC + b(A xor C)) */
 #define blitterMinterm9b(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (~a_dat & c_dat));          /* !(B xor C) + aC */
 
-#define blitterMinterm9c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (b_dat & (~a_dat | c_dat)));                   /* Abc + B(a + C) */
-#define blitterMinterm9d(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (~a_dat & b_dat));                                      /* !(B xor C) + aB */
-#define blitterMinterm9e(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (~a_dat & (b_dat | c_dat)) | (b_dat & c_dat)); /* Abc + a(B + C) + BC */
-#define blitterMinterm9f(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | ~a_dat);                                                /* !(B xor C) + a */
+#define blitterMinterm9c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (b_dat & (~a_dat | c_dat))); /* Abc + B(a + C) */
+#define blitterMinterm9d(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (~a_dat & b_dat));                    /* !(B xor C) + aB */
+#define blitterMinterm9e(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((a_dat & ~b_dat & ~c_dat) | (~a_dat & (b_dat | c_dat)) | (b_dat & c_dat));     /* Abc + a(B + C) + BC */
+#define blitterMinterm9f(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | ~a_dat); /* !(B xor C) + a */
 
 #define blitterMinterma0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & c_dat);                                /* AC */
 #define blitterMinterma1(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & ~c_dat) | (a_dat & c_dat)); /* abc + AC */
@@ -476,10 +485,11 @@ void blitterOperationLog()
 #define blitterMintermb2(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (~b_dat & (a_dat | c_dat))); /* AC + b(A + C) */
 #define blitterMintermb3(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | ~b_dat);                     /* AC + b */
 
-#define blitterMintermb4(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & (~b_dat | c_dat)));                    /* aBc + A(b + C) */
-#define blitterMintermb5(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | (a_dat & ~b_dat));                                       /* !(A xor C) + Ab */
-#define blitterMintermb6(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & ~b_dat) | (c_dat & (a_dat | ~b_dat))); /* aBc + Ab + C(A + b) */
-#define blitterMintermb7(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | ~b_dat);                                                 /* !(A xor C) + b */
+#define blitterMintermb4(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & (~b_dat | c_dat))); /* aBc + A(b + C) */
+#define blitterMintermb5(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | (a_dat & ~b_dat));                    /* !(A xor C) + Ab */
+#define blitterMintermb6(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & ~b_dat) | (c_dat & (a_dat | ~b_dat)));    /* aBc + Ab + C(A + b) */
+#define blitterMintermb7(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | ~b_dat); /* !(A xor C) + b */
 
 #define blitterMintermb8(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat & c_dat) | (a_dat & ~b_dat)); /* BC + Ab */
 #define blitterMintermb9(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (a_dat & c_dat)); /* !(B xor C) + AC */
@@ -516,10 +526,11 @@ void blitterOperationLog()
 #define blitterMintermd2(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (a_dat & (b_dat | ~c_dat))); /* abC + A(B + c) */
 #define blitterMintermd3(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | (a_dat & ~c_dat));                    /* !(A xor B) + Ac */
 
-#define blitterMintermd4(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & (b_dat | ~c_dat)) | (b_dat & ~c_dat));                             /* A(B+c) + Bc */
-#define blitterMintermd5(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | ~c_dat);                                                  /* AB + c */
-#define blitterMintermd6(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (b_dat & ~c_dat) | (a_dat & (b_dat | ~c_dat))); /* abC + Bc + Ac + AB */
-#define blitterMintermd7(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | ~c_dat);                                                 /* !(A xor B) + c */
+#define blitterMintermd4(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & (b_dat | ~c_dat)) | (b_dat & ~c_dat)); /* A(B+c) + Bc */
+#define blitterMintermd5(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | ~c_dat);                      /* AB + c */
+#define blitterMintermd6(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((~a_dat & ~b_dat & c_dat) | (b_dat & ~c_dat) | (a_dat & (b_dat | ~c_dat)));    /* abC + Bc + Ac + AB */
+#define blitterMintermd7(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | ~c_dat); /* !(A xor B) + c */
 
 #define blitterMintermd8(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~c_dat) | (b_dat & c_dat));                     /* Ac + BC */
 #define blitterMintermd9(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (a_dat & b_dat));                     /* !(B xor C) + AB */
@@ -541,10 +552,11 @@ void blitterOperationLog()
 #define blitterMinterme6(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (a_dat & b_dat));                      /* (B xor C) + AB */
 #define blitterMinterme7(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~b_dat & c_dat) | (~a_dat & ~c_dat)); /* AB + bC + ac */
 
-#define blitterMinterme8(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (c_dat & (a_dat ^ b_dat)));                              /* AB + C(A xor B) */
-#define blitterMinterme9(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & ~c_dat) | (b_dat & c_dat) | (a_dat & (b_dat | c_dat))); /* abc + BC + A(B + C) */
-#define blitterMintermea(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | a_dat & (b_dat | c_dat));                               /* aC + A(B+C) */
-#define blitterMintermeb(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | c_dat);                                                 /* !(A xor B) + C */
+#define blitterMinterme8(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (c_dat & (a_dat ^ b_dat))); /* AB + C(A xor B) */
+#define blitterMinterme9(a_dat, b_dat, c_dat, d_dat)                                                                                                      \
+  d_dat = ((~a_dat & ~b_dat & ~c_dat) | (b_dat & c_dat) | (a_dat & (b_dat | c_dat)));                      /* abc + BC + A(B + C) */
+#define blitterMintermea(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | a_dat & (b_dat | c_dat)); /* aC + A(B+C) */
+#define blitterMintermeb(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | c_dat);                   /* !(A xor B) + C */
 
 #define blitterMintermec(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | (a_dat & c_dat));  /* B + AC */
 #define blitterMintermed(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | ~(a_dat ^ c_dat)); /* B + ~(A xor C) */
@@ -578,433 +590,436 @@ void blitterOperationLog()
 #endif
 
 #ifdef BLIT_VERIFY_MINTERMS
-#define blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins)                                                                                                                                        \
-  blitterSetMintermSeen(mins);                                                                                                                                                                         \
-  d_dat = 0;                                                                                                                                                                                           \
-  if (mins & 0x80) d_dat |= (a_dat & b_dat & c_dat);                                                                                                                                                   \
-  if (mins & 0x40) d_dat |= (a_dat & b_dat & ~c_dat);                                                                                                                                                  \
-  if (mins & 0x20) d_dat |= (a_dat & ~b_dat & c_dat);                                                                                                                                                  \
-  if (mins & 0x10) d_dat |= (a_dat & ~b_dat & ~c_dat);                                                                                                                                                 \
-  if (mins & 0x08) d_dat |= (~a_dat & b_dat & c_dat);                                                                                                                                                  \
-  if (mins & 0x04) d_dat |= (~a_dat & b_dat & ~c_dat);                                                                                                                                                 \
-  if (mins & 0x02) d_dat |= (~a_dat & ~b_dat & c_dat);                                                                                                                                                 \
+#define blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins)                                                                                           \
+  blitterSetMintermSeen(mins);                                                                                                                            \
+  d_dat = 0;                                                                                                                                              \
+  if (mins & 0x80) d_dat |= (a_dat & b_dat & c_dat);                                                                                                      \
+  if (mins & 0x40) d_dat |= (a_dat & b_dat & ~c_dat);                                                                                                     \
+  if (mins & 0x20) d_dat |= (a_dat & ~b_dat & c_dat);                                                                                                     \
+  if (mins & 0x10) d_dat |= (a_dat & ~b_dat & ~c_dat);                                                                                                    \
+  if (mins & 0x08) d_dat |= (~a_dat & b_dat & c_dat);                                                                                                     \
+  if (mins & 0x04) d_dat |= (~a_dat & b_dat & ~c_dat);                                                                                                    \
+  if (mins & 0x02) d_dat |= (~a_dat & ~b_dat & c_dat);                                                                                                    \
   if (mins & 0x01) d_dat |= (~a_dat & ~b_dat & ~c_dat);
 #endif
 
-#define blitterMinterms(a_dat, b_dat, c_dat, d_dat, mins)                                                                                                                                              \
-  switch (mins)                                                                                                                                                                                        \
-  {                                                                                                                                                                                                    \
-    case 0x00: blitterMinterm00(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x01: blitterMinterm01(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x02: blitterMinterm02(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x03: blitterMinterm03(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x04: blitterMinterm04(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x05: blitterMinterm05(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x06: blitterMinterm06(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x07: blitterMinterm07(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x08: blitterMinterm08(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x09: blitterMinterm09(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x0a: blitterMinterm0a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x0b: blitterMinterm0b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x0c: blitterMinterm0c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x0d: blitterMinterm0d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x0e: blitterMinterm0e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x0f: blitterMinterm0f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x10: blitterMinterm10(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x11: blitterMinterm11(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x12: blitterMinterm12(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x13: blitterMinterm13(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x14: blitterMinterm14(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x15: blitterMinterm15(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x16: blitterMinterm16(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x17: blitterMinterm17(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x18: blitterMinterm18(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x19: blitterMinterm19(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x1a: blitterMinterm1a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x1b: blitterMinterm1b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x1c: blitterMinterm1c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x1d: blitterMinterm1d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x1e: blitterMinterm1e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x1f: blitterMinterm1f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x20: blitterMinterm20(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x21: blitterMinterm21(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x22: blitterMinterm22(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x23: blitterMinterm23(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x24: blitterMinterm24(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x25: blitterMinterm25(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x26: blitterMinterm26(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x27: blitterMinterm27(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x28: blitterMinterm28(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x29: blitterMinterm29(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x2a: blitterMinterm2a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x2b: blitterMinterm2b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x2c: blitterMinterm2c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x2d: blitterMinterm2d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x2e: blitterMinterm2e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x2f: blitterMinterm2f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x30: blitterMinterm30(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x31: blitterMinterm31(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x32: blitterMinterm32(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x33: blitterMinterm33(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x34: blitterMinterm34(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x35: blitterMinterm35(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x36: blitterMinterm36(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x37: blitterMinterm37(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x38: blitterMinterm38(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x39: blitterMinterm39(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x3a: blitterMinterm3a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x3b: blitterMinterm3b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x3c: blitterMinterm3c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x3d: blitterMinterm3d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x3e: blitterMinterm3e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x3f: blitterMinterm3f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x40: blitterMinterm40(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x41: blitterMinterm41(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x42: blitterMinterm42(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x43: blitterMinterm43(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x44: blitterMinterm44(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x45: blitterMinterm45(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x46: blitterMinterm46(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x47: blitterMinterm47(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x48: blitterMinterm48(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x49: blitterMinterm49(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x4a: blitterMinterm4a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x4b: blitterMinterm4b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x4c: blitterMinterm4c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x4d: blitterMinterm4d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x4e: blitterMinterm4e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x4f: blitterMinterm4f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x50: blitterMinterm50(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x51: blitterMinterm51(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x52: blitterMinterm52(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x53: blitterMinterm53(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x54: blitterMinterm54(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x55: blitterMinterm55(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x56: blitterMinterm56(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x57: blitterMinterm57(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x58: blitterMinterm58(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x59: blitterMinterm59(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x5a: blitterMinterm5a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x5b: blitterMinterm5b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x5c: blitterMinterm5c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x5d: blitterMinterm5d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x5e: blitterMinterm5e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x5f: blitterMinterm5f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x60: blitterMinterm60(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x61: blitterMinterm61(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x62: blitterMinterm62(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x63: blitterMinterm63(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x64: blitterMinterm64(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x65: blitterMinterm65(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x66: blitterMinterm66(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x67: blitterMinterm67(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x68: blitterMinterm68(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x69: blitterMinterm69(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x6a: blitterMinterm6a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x6b: blitterMinterm6b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x6c: blitterMinterm6c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x6d: blitterMinterm6d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x6e: blitterMinterm6e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x6f: blitterMinterm6f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x70: blitterMinterm70(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x71: blitterMinterm71(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x72: blitterMinterm72(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x73: blitterMinterm73(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x74: blitterMinterm74(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x75: blitterMinterm75(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x76: blitterMinterm76(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x77: blitterMinterm77(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x78: blitterMinterm78(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x79: blitterMinterm79(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x7a: blitterMinterm7a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x7b: blitterMinterm7b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x7c: blitterMinterm7c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x7d: blitterMinterm7d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x7e: blitterMinterm7e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x7f: blitterMinterm7f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x80: blitterMinterm80(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x81: blitterMinterm81(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x82: blitterMinterm82(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x83: blitterMinterm83(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x84: blitterMinterm84(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x85: blitterMinterm85(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x86: blitterMinterm86(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x87: blitterMinterm87(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x88: blitterMinterm88(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x89: blitterMinterm89(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x8a: blitterMinterm8a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x8b: blitterMinterm8b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x8c: blitterMinterm8c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x8d: blitterMinterm8d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x8e: blitterMinterm8e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x8f: blitterMinterm8f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x90: blitterMinterm90(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x91: blitterMinterm91(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x92: blitterMinterm92(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x93: blitterMinterm93(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x94: blitterMinterm94(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x95: blitterMinterm95(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x96: blitterMinterm96(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x97: blitterMinterm97(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x98: blitterMinterm98(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x99: blitterMinterm99(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x9a: blitterMinterm9a(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x9b: blitterMinterm9b(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x9c: blitterMinterm9c(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x9d: blitterMinterm9d(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x9e: blitterMinterm9e(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0x9f: blitterMinterm9f(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa0: blitterMinterma0(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa1: blitterMinterma1(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa2: blitterMinterma2(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa3: blitterMinterma3(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa4: blitterMinterma4(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa5: blitterMinterma5(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa6: blitterMinterma6(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa7: blitterMinterma7(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa8: blitterMinterma8(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xa9: blitterMinterma9(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xaa: blitterMintermaa(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xab: blitterMintermab(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xac: blitterMintermac(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xad: blitterMintermad(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xae: blitterMintermae(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xaf: blitterMintermaf(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb0: blitterMintermb0(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb1: blitterMintermb1(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb2: blitterMintermb2(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb3: blitterMintermb3(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb4: blitterMintermb4(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb5: blitterMintermb5(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb6: blitterMintermb6(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb7: blitterMintermb7(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb8: blitterMintermb8(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xb9: blitterMintermb9(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xba: blitterMintermba(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xbb: blitterMintermbb(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xbc: blitterMintermbc(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xbd: blitterMintermbd(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xbe: blitterMintermbe(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xbf: blitterMintermbf(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc0: blitterMintermc0(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc1: blitterMintermc1(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc2: blitterMintermc2(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc3: blitterMintermc3(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc4: blitterMintermc4(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc5: blitterMintermc5(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc6: blitterMintermc6(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc7: blitterMintermc7(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc8: blitterMintermc8(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xc9: blitterMintermc9(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xca: blitterMintermca(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xcb: blitterMintermcb(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xcc: blitterMintermcc(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xcd: blitterMintermcd(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xce: blitterMintermce(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xcf: blitterMintermcf(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd0: blitterMintermd0(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd1: blitterMintermd1(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd2: blitterMintermd2(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd3: blitterMintermd3(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd4: blitterMintermd4(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd5: blitterMintermd5(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd6: blitterMintermd6(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd7: blitterMintermd7(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd8: blitterMintermd8(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xd9: blitterMintermd9(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xda: blitterMintermda(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xdb: blitterMintermdb(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xdc: blitterMintermdc(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xdd: blitterMintermdd(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xde: blitterMintermde(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xdf: blitterMintermdf(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe0: blitterMinterme0(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe1: blitterMinterme1(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe2: blitterMinterme2(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe3: blitterMinterme3(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe4: blitterMinterme4(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe5: blitterMinterme5(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe6: blitterMinterme6(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe7: blitterMinterme7(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe8: blitterMinterme8(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xe9: blitterMinterme9(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xea: blitterMintermea(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xeb: blitterMintermeb(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xec: blitterMintermec(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xed: blitterMintermed(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xee: blitterMintermee(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xef: blitterMintermef(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf0: blitterMintermf0(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf1: blitterMintermf1(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf2: blitterMintermf2(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf3: blitterMintermf3(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf4: blitterMintermf4(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf5: blitterMintermf5(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf6: blitterMintermf6(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf7: blitterMintermf7(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf8: blitterMintermf8(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xf9: blitterMintermf9(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xfa: blitterMintermfa(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xfb: blitterMintermfb(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xfc: blitterMintermfc(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xfd: blitterMintermfd(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xfe: blitterMintermfe(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
-    case 0xff: blitterMintermff(a_dat, b_dat, c_dat, d_dat); break;                                                                                                                                    \
+#define blitterMinterms(a_dat, b_dat, c_dat, d_dat, mins)                                                                                                 \
+  switch (mins)                                                                                                                                           \
+  {                                                                                                                                                       \
+    case 0x00: blitterMinterm00(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x01: blitterMinterm01(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x02: blitterMinterm02(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x03: blitterMinterm03(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x04: blitterMinterm04(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x05: blitterMinterm05(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x06: blitterMinterm06(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x07: blitterMinterm07(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x08: blitterMinterm08(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x09: blitterMinterm09(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x0a: blitterMinterm0a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x0b: blitterMinterm0b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x0c: blitterMinterm0c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x0d: blitterMinterm0d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x0e: blitterMinterm0e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x0f: blitterMinterm0f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x10: blitterMinterm10(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x11: blitterMinterm11(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x12: blitterMinterm12(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x13: blitterMinterm13(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x14: blitterMinterm14(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x15: blitterMinterm15(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x16: blitterMinterm16(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x17: blitterMinterm17(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x18: blitterMinterm18(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x19: blitterMinterm19(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x1a: blitterMinterm1a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x1b: blitterMinterm1b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x1c: blitterMinterm1c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x1d: blitterMinterm1d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x1e: blitterMinterm1e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x1f: blitterMinterm1f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x20: blitterMinterm20(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x21: blitterMinterm21(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x22: blitterMinterm22(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x23: blitterMinterm23(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x24: blitterMinterm24(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x25: blitterMinterm25(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x26: blitterMinterm26(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x27: blitterMinterm27(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x28: blitterMinterm28(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x29: blitterMinterm29(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x2a: blitterMinterm2a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x2b: blitterMinterm2b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x2c: blitterMinterm2c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x2d: blitterMinterm2d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x2e: blitterMinterm2e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x2f: blitterMinterm2f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x30: blitterMinterm30(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x31: blitterMinterm31(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x32: blitterMinterm32(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x33: blitterMinterm33(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x34: blitterMinterm34(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x35: blitterMinterm35(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x36: blitterMinterm36(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x37: blitterMinterm37(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x38: blitterMinterm38(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x39: blitterMinterm39(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x3a: blitterMinterm3a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x3b: blitterMinterm3b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x3c: blitterMinterm3c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x3d: blitterMinterm3d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x3e: blitterMinterm3e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x3f: blitterMinterm3f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x40: blitterMinterm40(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x41: blitterMinterm41(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x42: blitterMinterm42(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x43: blitterMinterm43(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x44: blitterMinterm44(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x45: blitterMinterm45(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x46: blitterMinterm46(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x47: blitterMinterm47(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x48: blitterMinterm48(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x49: blitterMinterm49(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x4a: blitterMinterm4a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x4b: blitterMinterm4b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x4c: blitterMinterm4c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x4d: blitterMinterm4d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x4e: blitterMinterm4e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x4f: blitterMinterm4f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x50: blitterMinterm50(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x51: blitterMinterm51(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x52: blitterMinterm52(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x53: blitterMinterm53(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x54: blitterMinterm54(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x55: blitterMinterm55(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x56: blitterMinterm56(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x57: blitterMinterm57(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x58: blitterMinterm58(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x59: blitterMinterm59(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x5a: blitterMinterm5a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x5b: blitterMinterm5b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x5c: blitterMinterm5c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x5d: blitterMinterm5d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x5e: blitterMinterm5e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x5f: blitterMinterm5f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x60: blitterMinterm60(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x61: blitterMinterm61(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x62: blitterMinterm62(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x63: blitterMinterm63(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x64: blitterMinterm64(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x65: blitterMinterm65(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x66: blitterMinterm66(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x67: blitterMinterm67(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x68: blitterMinterm68(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x69: blitterMinterm69(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x6a: blitterMinterm6a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x6b: blitterMinterm6b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x6c: blitterMinterm6c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x6d: blitterMinterm6d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x6e: blitterMinterm6e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x6f: blitterMinterm6f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x70: blitterMinterm70(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x71: blitterMinterm71(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x72: blitterMinterm72(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x73: blitterMinterm73(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x74: blitterMinterm74(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x75: blitterMinterm75(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x76: blitterMinterm76(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x77: blitterMinterm77(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x78: blitterMinterm78(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x79: blitterMinterm79(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x7a: blitterMinterm7a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x7b: blitterMinterm7b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x7c: blitterMinterm7c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x7d: blitterMinterm7d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x7e: blitterMinterm7e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x7f: blitterMinterm7f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x80: blitterMinterm80(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x81: blitterMinterm81(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x82: blitterMinterm82(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x83: blitterMinterm83(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x84: blitterMinterm84(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x85: blitterMinterm85(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x86: blitterMinterm86(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x87: blitterMinterm87(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x88: blitterMinterm88(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x89: blitterMinterm89(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x8a: blitterMinterm8a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x8b: blitterMinterm8b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x8c: blitterMinterm8c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x8d: blitterMinterm8d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x8e: blitterMinterm8e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x8f: blitterMinterm8f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x90: blitterMinterm90(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x91: blitterMinterm91(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x92: blitterMinterm92(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x93: blitterMinterm93(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x94: blitterMinterm94(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x95: blitterMinterm95(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x96: blitterMinterm96(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x97: blitterMinterm97(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x98: blitterMinterm98(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x99: blitterMinterm99(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x9a: blitterMinterm9a(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x9b: blitterMinterm9b(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x9c: blitterMinterm9c(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x9d: blitterMinterm9d(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x9e: blitterMinterm9e(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0x9f: blitterMinterm9f(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa0: blitterMinterma0(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa1: blitterMinterma1(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa2: blitterMinterma2(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa3: blitterMinterma3(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa4: blitterMinterma4(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa5: blitterMinterma5(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa6: blitterMinterma6(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa7: blitterMinterma7(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa8: blitterMinterma8(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xa9: blitterMinterma9(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xaa: blitterMintermaa(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xab: blitterMintermab(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xac: blitterMintermac(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xad: blitterMintermad(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xae: blitterMintermae(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xaf: blitterMintermaf(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb0: blitterMintermb0(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb1: blitterMintermb1(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb2: blitterMintermb2(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb3: blitterMintermb3(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb4: blitterMintermb4(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb5: blitterMintermb5(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb6: blitterMintermb6(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb7: blitterMintermb7(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb8: blitterMintermb8(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xb9: blitterMintermb9(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xba: blitterMintermba(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xbb: blitterMintermbb(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xbc: blitterMintermbc(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xbd: blitterMintermbd(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xbe: blitterMintermbe(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xbf: blitterMintermbf(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc0: blitterMintermc0(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc1: blitterMintermc1(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc2: blitterMintermc2(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc3: blitterMintermc3(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc4: blitterMintermc4(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc5: blitterMintermc5(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc6: blitterMintermc6(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc7: blitterMintermc7(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc8: blitterMintermc8(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xc9: blitterMintermc9(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xca: blitterMintermca(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xcb: blitterMintermcb(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xcc: blitterMintermcc(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xcd: blitterMintermcd(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xce: blitterMintermce(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xcf: blitterMintermcf(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd0: blitterMintermd0(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd1: blitterMintermd1(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd2: blitterMintermd2(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd3: blitterMintermd3(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd4: blitterMintermd4(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd5: blitterMintermd5(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd6: blitterMintermd6(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd7: blitterMintermd7(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd8: blitterMintermd8(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xd9: blitterMintermd9(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xda: blitterMintermda(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xdb: blitterMintermdb(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xdc: blitterMintermdc(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xdd: blitterMintermdd(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xde: blitterMintermde(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xdf: blitterMintermdf(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe0: blitterMinterme0(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe1: blitterMinterme1(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe2: blitterMinterme2(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe3: blitterMinterme3(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe4: blitterMinterme4(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe5: blitterMinterme5(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe6: blitterMinterme6(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe7: blitterMinterme7(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe8: blitterMinterme8(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xe9: blitterMinterme9(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xea: blitterMintermea(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xeb: blitterMintermeb(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xec: blitterMintermec(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xed: blitterMintermed(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xee: blitterMintermee(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xef: blitterMintermef(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf0: blitterMintermf0(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf1: blitterMintermf1(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf2: blitterMintermf2(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf3: blitterMintermf3(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf4: blitterMintermf4(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf5: blitterMintermf5(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf6: blitterMintermf6(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf7: blitterMintermf7(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf8: blitterMintermf8(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xf9: blitterMintermf9(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xfa: blitterMintermfa(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xfb: blitterMintermfb(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xfc: blitterMintermfc(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xfd: blitterMintermfd(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xfe: blitterMintermfe(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
+    case 0xff: blitterMintermff(a_dat, b_dat, c_dat, d_dat); break;                                                                                       \
   }
 
-#define blitterReadWordEnabled(pt, dat, ascending)                                                                                                                                                     \
-  dat = chipmemReadWord(pt);                                                                                                                                                                           \
-  if (!ascending) pt = chipsetMaskPtr(pt - 2);                                                                                                                                                         \
+#define blitterReadWordEnabled(pt, dat, ascending)                                                                                                        \
+  dat = chipmemReadWord(pt);                                                                                                                              \
+  if (!ascending) pt = chipsetMaskPtr(pt - 2);                                                                                                            \
   if (ascending) pt = chipsetMaskPtr(pt + 2);
 
-#define blitterWriteWordEnabled(pt, pt_tmp, dat, ascending)                                                                                                                                            \
-  if (pt_tmp != 0xffffffff)                                                                                                                                                                            \
-  {                                                                                                                                                                                                    \
-    chipmemWriteWord(dat, pt_tmp);                                                                                                                                                                     \
-  }                                                                                                                                                                                                    \
-  pt_tmp = pt;                                                                                                                                                                                         \
-  if (!ascending) pt = chipsetMaskPtr(pt - 2);                                                                                                                                                         \
+#define blitterWriteWordEnabled(pt, pt_tmp, dat, ascending)                                                                                               \
+  if (pt_tmp != 0xffffffff)                                                                                                                               \
+  {                                                                                                                                                       \
+    chipmemWriteWord(dat, pt_tmp);                                                                                                                        \
+  }                                                                                                                                                       \
+  pt_tmp = pt;                                                                                                                                            \
+  if (!ascending) pt = chipsetMaskPtr(pt - 2);                                                                                                            \
   if (ascending) pt = chipsetMaskPtr(pt + 2);
 
 #define blitterReadWordDisabled(dat, dat_preload) dat = dat_preload;
 
-#define blitterReadWord(pt, dat, dat_preload, enabled, ascending)                                                                                                                                      \
-  if (enabled)                                                                                                                                                                                         \
-  {                                                                                                                                                                                                    \
-    blitterReadWordEnabled(pt, dat, ascending);                                                                                                                                                        \
-  }                                                                                                                                                                                                    \
-  else                                                                                                                                                                                                 \
-  {                                                                                                                                                                                                    \
-    blitterReadWordDisabled(dat, dat_preload);                                                                                                                                                         \
+#define blitterReadWord(pt, dat, dat_preload, enabled, ascending)                                                                                         \
+  if (enabled)                                                                                                                                            \
+  {                                                                                                                                                       \
+    blitterReadWordEnabled(pt, dat, ascending);                                                                                                           \
+  }                                                                                                                                                       \
+  else                                                                                                                                                    \
+  {                                                                                                                                                       \
+    blitterReadWordDisabled(dat, dat_preload);                                                                                                            \
   }
 
-#define blitterWriteWord(pt, pt_tmp, dat, enabled, ascending)                                                                                                                                          \
-  if (enabled)                                                                                                                                                                                         \
-  {                                                                                                                                                                                                    \
-    blitterWriteWordEnabled(pt, pt_tmp, dat, ascending);                                                                                                                                               \
+#define blitterWriteWord(pt, pt_tmp, dat, enabled, ascending)                                                                                             \
+  if (enabled)                                                                                                                                            \
+  {                                                                                                                                                       \
+    blitterWriteWordEnabled(pt, pt_tmp, dat, ascending);                                                                                                  \
   }
 
-#define blitterShiftWord(dat, dat_tmp, ascending, shift, prev)                                                                                                                                         \
-  if (ascending)                                                                                                                                                                                       \
-    dat = ((prev << 16) | dat_tmp) >> shift;                                                                                                                                                           \
-  else                                                                                                                                                                                                 \
-    dat = ((dat_tmp << 16) | prev) >> shift;                                                                                                                                                           \
+#define blitterShiftWord(dat, dat_tmp, ascending, shift, prev)                                                                                            \
+  if (ascending)                                                                                                                                          \
+    dat = ((prev << 16) | dat_tmp) >> shift;                                                                                                              \
+  else                                                                                                                                                    \
+    dat = ((dat_tmp << 16) | prev) >> shift;                                                                                                              \
   prev = dat_tmp;
 
 #define blitterFLWM(dat, is_flwm, flwm) dat &= flwm[is_flwm];
 
-#define blitterReadA(pt, dat, dat_preload, enabled, ascending, shift, prev, is_fwm, is_lwm, fwm, lwm)                                                                                                  \
-  {                                                                                                                                                                                                    \
-    ULO a_tmp;                                                                                                                                                                                         \
-    blitterReadWord(pt, a_tmp, dat_preload, enabled, ascending);                                                                                                                                       \
-    dat_preload = a_tmp; /* Need to remember unWMed value */                                                                                                                                           \
-    blitterFLWM(a_tmp, is_fwm, fwm);                                                                                                                                                                   \
-    blitterFLWM(a_tmp, is_lwm, lwm);                                                                                                                                                                   \
-    blitterShiftWord(dat, a_tmp, ascending, shift, prev);                                                                                                                                              \
+#define blitterReadA(pt, dat, dat_preload, enabled, ascending, shift, prev, is_fwm, is_lwm, fwm, lwm)                                                     \
+  {                                                                                                                                                       \
+    ULO a_tmp;                                                                                                                                            \
+    blitterReadWord(pt, a_tmp, dat_preload, enabled, ascending);                                                                                          \
+    dat_preload = a_tmp; /* Need to remember unWMed value */                                                                                              \
+    blitterFLWM(a_tmp, is_fwm, fwm);                                                                                                                      \
+    blitterFLWM(a_tmp, is_lwm, lwm);                                                                                                                      \
+    blitterShiftWord(dat, a_tmp, ascending, shift, prev);                                                                                                 \
   }
 
-#define blitterReadB(pt, dat, dat_preload, enabled, ascending, shift, prev)                                                                                                                            \
-  if (enabled)                                                                                                                                                                                         \
-  {                                                                                                                                                                                                    \
-    blitterReadWord(pt, dat_preload, dat_preload, enabled, ascending);                                                                                                                                 \
-    blitterShiftWord(dat, dat_preload, ascending, shift, prev);                                                                                                                                        \
+#define blitterReadB(pt, dat, dat_preload, enabled, ascending, shift, prev)                                                                               \
+  if (enabled)                                                                                                                                            \
+  {                                                                                                                                                       \
+    blitterReadWord(pt, dat_preload, dat_preload, enabled, ascending);                                                                                    \
+    blitterShiftWord(dat, dat_preload, ascending, shift, prev);                                                                                           \
   }
 
-#define blitterReadC(pt, dat, enabled, ascending)                                                                                                                                                      \
-  if (enabled) {blitterReadWord(pt, dat, dat, enabled, ascending);}
+#define blitterReadC(pt, dat, enabled, ascending)                                                                                                         \
+  if (enabled)                                                                                                                                            \
+  {                                                                                                                                                       \
+    blitterReadWord(pt, dat, dat, enabled, ascending);                                                                                                    \
+  }
 
 #define blitterWriteD(pt, pt_tmp, dat, enabled, ascending) blitterWriteWord(pt, pt_tmp, dat, enabled, ascending);
 
 #define blitterMakeZeroFlag(dat, flag) flag |= dat;
 
-#define blitterModulo(pt, modul, enabled)                                                                                                                                                              \
+#define blitterModulo(pt, modul, enabled)                                                                                                                 \
   if (enabled) pt = chipsetMaskPtr(pt + modul);
 
-#define blitterFillCarryReload(fill, dst, fc_original)                                                                                                                                                 \
+#define blitterFillCarryReload(fill, dst, fc_original)                                                                                                    \
   if (fill) dst = fc_original;
 
-#define blitterFill(dat, fill, exclusive, fc)                                                                                                                                                          \
-  {                                                                                                                                                                                                    \
-    if (fill)                                                                                                                                                                                          \
-    {                                                                                                                                                                                                  \
-      UBY dat1 = (UBY)dat;                                                                                                                                                                             \
-      UBY dat2 = (UBY)(dat >> 8);                                                                                                                                                                      \
-      ULO fc2 = blit_fill[exclusive][fc][dat1][0];                                                                                                                                                     \
-      dat = ((ULO)blit_fill[exclusive][fc][dat1][1]) | (((ULO)blit_fill[exclusive][fc2][dat2][1]) << 8);                                                                                               \
-      fc = blit_fill[exclusive][fc2][dat2][0];                                                                                                                                                         \
-    }                                                                                                                                                                                                  \
+#define blitterFill(dat, fill, exclusive, fc)                                                                                                             \
+  {                                                                                                                                                       \
+    if (fill)                                                                                                                                             \
+    {                                                                                                                                                     \
+      UBY dat1 = (UBY)dat;                                                                                                                                \
+      UBY dat2 = (UBY)(dat >> 8);                                                                                                                         \
+      ULO fc2 = blit_fill[exclusive][fc][dat1][0];                                                                                                        \
+      dat = ((ULO)blit_fill[exclusive][fc][dat1][1]) | (((ULO)blit_fill[exclusive][fc2][dat2][1]) << 8);                                                  \
+      fc = blit_fill[exclusive][fc2][dat2][0];                                                                                                            \
+    }                                                                                                                                                     \
   }
 
-#define blitterBlit(a_enabled, b_enabled, c_enabled, d_enabled, ascending, fill)                                                                                                                       \
-  {                                                                                                                                                                                                    \
-    LON x, y;                                                                                                                                                                                          \
-    ULO a_pt = blitter.bltapt;                                                                                                                                                                         \
-    ULO b_pt = blitter.bltbpt;                                                                                                                                                                         \
-    ULO c_pt = blitter.bltcpt;                                                                                                                                                                         \
-    ULO d_pt = blitter.bltdpt;                                                                                                                                                                         \
-    ULO d_pt_tmp = 0xffffffff;                                                                                                                                                                         \
-    ULO a_shift = (ascending) ? blitter.a_shift_asc : blitter.a_shift_desc;                                                                                                                            \
-    ULO b_shift = (ascending) ? blitter.b_shift_asc : blitter.b_shift_desc;                                                                                                                            \
-    ULO a_dat, b_dat = (b_enabled) ? 0 : blitter.bltbdat, c_dat = blitter.bltcdat, d_dat;                                                                                                              \
-    ULO a_dat_preload = blitter.bltadat;                                                                                                                                                               \
-    ULO b_dat_preload = 0;                                                                                                                                                                             \
-    ULO a_prev = 0;                                                                                                                                                                                    \
-    ULO b_prev = 0;                                                                                                                                                                                    \
-    ULO a_mod = (ascending) ? blitter.bltamod : ((ULO) - (LON)blitter.bltamod);                                                                                                                        \
-    ULO b_mod = (ascending) ? blitter.bltbmod : ((ULO) - (LON)blitter.bltbmod);                                                                                                                        \
-    ULO c_mod = (ascending) ? blitter.bltcmod : ((ULO) - (LON)blitter.bltcmod);                                                                                                                        \
-    ULO d_mod = (ascending) ? blitter.bltdmod : ((ULO) - (LON)blitter.bltdmod);                                                                                                                        \
-    ULO fwm[2];                                                                                                                                                                                        \
-    ULO lwm[2];                                                                                                                                                                                        \
-    UBY minterms = (UBY)(blitter.bltcon >> 16);                                                                                                                                                        \
-    ULO fill_exclusive = (blitter.bltcon & 0x8) ? 0 : 1;                                                                                                                                               \
-    ULO zero_flag = 0;                                                                                                                                                                                 \
-    LON height = blitter.height;                                                                                                                                                                       \
-    LON width = blitter.width;                                                                                                                                                                         \
-    BOOLE fc_original = !!(blitter.bltcon & 0x4);                                                                                                                                                      \
-    BOOLE fill_carry;                                                                                                                                                                                  \
-    fwm[0] = lwm[0] = 0xffff;                                                                                                                                                                          \
-    fwm[1] = blitter.bltafwm;                                                                                                                                                                          \
-    lwm[1] = blitter.bltalwm;                                                                                                                                                                          \
-    for (y = height; y > 0; y--)                                                                                                                                                                       \
-    {                                                                                                                                                                                                  \
-      blitterFillCarryReload(fill, fill_carry, fc_original);                                                                                                                                           \
-      for (x = width; x > 0; x--)                                                                                                                                                                      \
-      {                                                                                                                                                                                                \
-        blitterReadA(a_pt, a_dat, a_dat_preload, a_enabled, ascending, a_shift, a_prev, (x == width), (x == 1), fwm, lwm);                                                                             \
-        blitterReadB(b_pt, b_dat, b_dat_preload, b_enabled, ascending, b_shift, b_prev);                                                                                                               \
-        blitterReadC(c_pt, c_dat, c_enabled, ascending);                                                                                                                                               \
-        blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending);                                                                                                                                    \
-        blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterms);                                                                                                                                         \
-        blitterFill(d_dat, fill, fill_exclusive, fill_carry);                                                                                                                                          \
-        blitterMakeZeroFlag(d_dat, zero_flag);                                                                                                                                                         \
-      }                                                                                                                                                                                                \
-      blitterModulo(a_pt, a_mod, a_enabled);                                                                                                                                                           \
-      blitterModulo(b_pt, b_mod, b_enabled);                                                                                                                                                           \
-      blitterModulo(c_pt, c_mod, c_enabled);                                                                                                                                                           \
-      blitterModulo(d_pt, d_mod, d_enabled);                                                                                                                                                           \
-    }                                                                                                                                                                                                  \
-    blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending);                                                                                                                                        \
-    if (a_enabled)                                                                                                                                                                                     \
-    {                                                                                                                                                                                                  \
-      blitter.bltadat = a_dat_preload;                                                                                                                                                                 \
-      blitter.bltapt = a_pt;                                                                                                                                                                           \
-    }                                                                                                                                                                                                  \
-    if (b_enabled)                                                                                                                                                                                     \
-    {                                                                                                                                                                                                  \
-      ULO x_tmp = 0;                                                                                                                                                                                   \
-      blitterShiftWord(blitter.bltbdat, b_dat_preload, ascending, b_shift, x_tmp);                                                                                                                     \
-      blitter.bltbdat_original = b_dat_preload;                                                                                                                                                        \
-      blitter.bltbpt = b_pt;                                                                                                                                                                           \
-    }                                                                                                                                                                                                  \
-    if (c_enabled)                                                                                                                                                                                     \
-    {                                                                                                                                                                                                  \
-      blitter.bltcdat = c_dat;                                                                                                                                                                         \
-      blitter.bltcpt = c_pt;                                                                                                                                                                           \
-    }                                                                                                                                                                                                  \
-    if (d_enabled) blitter.bltdpt = d_pt_tmp;                                                                                                                                                          \
-    blitter.bltzero = zero_flag;                                                                                                                                                                       \
-    wintreq_direct(0x8040, 0xdff09c, true);                                                                                                                                                            \
+#define blitterBlit(a_enabled, b_enabled, c_enabled, d_enabled, ascending, fill)                                                                          \
+  {                                                                                                                                                       \
+    LON x, y;                                                                                                                                             \
+    ULO a_pt = blitter.bltapt;                                                                                                                            \
+    ULO b_pt = blitter.bltbpt;                                                                                                                            \
+    ULO c_pt = blitter.bltcpt;                                                                                                                            \
+    ULO d_pt = blitter.bltdpt;                                                                                                                            \
+    ULO d_pt_tmp = 0xffffffff;                                                                                                                            \
+    ULO a_shift = (ascending) ? blitter.a_shift_asc : blitter.a_shift_desc;                                                                               \
+    ULO b_shift = (ascending) ? blitter.b_shift_asc : blitter.b_shift_desc;                                                                               \
+    ULO a_dat, b_dat = (b_enabled) ? 0 : blitter.bltbdat, c_dat = blitter.bltcdat, d_dat;                                                                 \
+    ULO a_dat_preload = blitter.bltadat;                                                                                                                  \
+    ULO b_dat_preload = 0;                                                                                                                                \
+    ULO a_prev = 0;                                                                                                                                       \
+    ULO b_prev = 0;                                                                                                                                       \
+    ULO a_mod = (ascending) ? blitter.bltamod : ((ULO) - (LON)blitter.bltamod);                                                                           \
+    ULO b_mod = (ascending) ? blitter.bltbmod : ((ULO) - (LON)blitter.bltbmod);                                                                           \
+    ULO c_mod = (ascending) ? blitter.bltcmod : ((ULO) - (LON)blitter.bltcmod);                                                                           \
+    ULO d_mod = (ascending) ? blitter.bltdmod : ((ULO) - (LON)blitter.bltdmod);                                                                           \
+    ULO fwm[2];                                                                                                                                           \
+    ULO lwm[2];                                                                                                                                           \
+    UBY minterms = (UBY)(blitter.bltcon >> 16);                                                                                                           \
+    ULO fill_exclusive = (blitter.bltcon & 0x8) ? 0 : 1;                                                                                                  \
+    ULO zero_flag = 0;                                                                                                                                    \
+    LON height = blitter.height;                                                                                                                          \
+    LON width = blitter.width;                                                                                                                            \
+    BOOLE fc_original = !!(blitter.bltcon & 0x4);                                                                                                         \
+    BOOLE fill_carry;                                                                                                                                     \
+    fwm[0] = lwm[0] = 0xffff;                                                                                                                             \
+    fwm[1] = blitter.bltafwm;                                                                                                                             \
+    lwm[1] = blitter.bltalwm;                                                                                                                             \
+    for (y = height; y > 0; y--)                                                                                                                          \
+    {                                                                                                                                                     \
+      blitterFillCarryReload(fill, fill_carry, fc_original);                                                                                              \
+      for (x = width; x > 0; x--)                                                                                                                         \
+      {                                                                                                                                                   \
+        blitterReadA(a_pt, a_dat, a_dat_preload, a_enabled, ascending, a_shift, a_prev, (x == width), (x == 1), fwm, lwm);                                \
+        blitterReadB(b_pt, b_dat, b_dat_preload, b_enabled, ascending, b_shift, b_prev);                                                                  \
+        blitterReadC(c_pt, c_dat, c_enabled, ascending);                                                                                                  \
+        blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending);                                                                                       \
+        blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterms);                                                                                            \
+        blitterFill(d_dat, fill, fill_exclusive, fill_carry);                                                                                             \
+        blitterMakeZeroFlag(d_dat, zero_flag);                                                                                                            \
+      }                                                                                                                                                   \
+      blitterModulo(a_pt, a_mod, a_enabled);                                                                                                              \
+      blitterModulo(b_pt, b_mod, b_enabled);                                                                                                              \
+      blitterModulo(c_pt, c_mod, c_enabled);                                                                                                              \
+      blitterModulo(d_pt, d_mod, d_enabled);                                                                                                              \
+    }                                                                                                                                                     \
+    blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending);                                                                                           \
+    if (a_enabled)                                                                                                                                        \
+    {                                                                                                                                                     \
+      blitter.bltadat = a_dat_preload;                                                                                                                    \
+      blitter.bltapt = a_pt;                                                                                                                              \
+    }                                                                                                                                                     \
+    if (b_enabled)                                                                                                                                        \
+    {                                                                                                                                                     \
+      ULO x_tmp = 0;                                                                                                                                      \
+      blitterShiftWord(blitter.bltbdat, b_dat_preload, ascending, b_shift, x_tmp);                                                                        \
+      blitter.bltbdat_original = b_dat_preload;                                                                                                           \
+      blitter.bltbpt = b_pt;                                                                                                                              \
+    }                                                                                                                                                     \
+    if (c_enabled)                                                                                                                                        \
+    {                                                                                                                                                     \
+      blitter.bltcdat = c_dat;                                                                                                                            \
+      blitter.bltcpt = c_pt;                                                                                                                              \
+    }                                                                                                                                                     \
+    if (d_enabled) blitter.bltdpt = d_pt_tmp;                                                                                                             \
+    blitter.bltzero = zero_flag;                                                                                                                          \
+    wintreq_direct(0x8040, 0xdff09c, true);                                                                                                               \
   }
 
 void blitterCopyABCD()
@@ -1105,23 +1120,23 @@ void blitterCopyABCD()
   }
 }
 
-#define blitterLineIncreaseX(a_shift, cpt)                                                                                                                                                             \
-  if (a_shift < 15)                                                                                                                                                                                    \
-    a_shift++;                                                                                                                                                                                         \
-  else                                                                                                                                                                                                 \
-  {                                                                                                                                                                                                    \
-    a_shift = 0;                                                                                                                                                                                       \
-    cpt = chipsetMaskPtr(cpt + 2);                                                                                                                                                                     \
+#define blitterLineIncreaseX(a_shift, cpt)                                                                                                                \
+  if (a_shift < 15)                                                                                                                                       \
+    a_shift++;                                                                                                                                            \
+  else                                                                                                                                                    \
+  {                                                                                                                                                       \
+    a_shift = 0;                                                                                                                                          \
+    cpt = chipsetMaskPtr(cpt + 2);                                                                                                                        \
   }
 
-#define blitterLineDecreaseX(a_shift, cpt)                                                                                                                                                             \
-  {                                                                                                                                                                                                    \
-    if (a_shift == 0)                                                                                                                                                                                  \
-    {                                                                                                                                                                                                  \
-      a_shift = 16;                                                                                                                                                                                    \
-      cpt = chipsetMaskPtr(cpt - 2);                                                                                                                                                                   \
-    }                                                                                                                                                                                                  \
-    a_shift--;                                                                                                                                                                                         \
+#define blitterLineDecreaseX(a_shift, cpt)                                                                                                                \
+  {                                                                                                                                                       \
+    if (a_shift == 0)                                                                                                                                     \
+    {                                                                                                                                                     \
+      a_shift = 16;                                                                                                                                       \
+      cpt = chipsetMaskPtr(cpt - 2);                                                                                                                      \
+    }                                                                                                                                                     \
+    a_shift--;                                                                                                                                            \
   }
 
 #define blitterLineIncreaseY(cpt, cmod) cpt = chipsetMaskPtr(cpt + cmod);

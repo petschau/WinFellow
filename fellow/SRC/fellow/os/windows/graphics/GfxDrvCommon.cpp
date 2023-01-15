@@ -28,7 +28,7 @@ bool GfxDrvCommon::GetDisplayChange() const
 }
 
 void GfxDrvCommon::DelayFlipTimerCallback(ULO timeMilliseconds)
-  {
+{
   _time = timeMilliseconds;
 
   if (_wait_for_time > 0)
@@ -359,14 +359,14 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       if (IsHostBufferWindowed())
       {
         _displayChange = (wParam != _current_draw_mode.Bits);
-        fellow_request_emulation_stop = TRUE;
+        _runtimeEnvironment->RequestEmulationStop();
       }
       break;
     case WM_DIACQUIRE: /* Re-evaluate the active status of DI-devices */
       NotifyDirectInputDevicesAboutActiveState(_win_active_original);
       return 0;
       break;
-    case WM_CLOSE: fellowRequestEmulationStop(); return 0; /* We handled this message */
+    case WM_CLOSE: _runtimeEnvironment->RequestEmulationStop(); return 0; /* We handled this message */
 
 #ifdef RETRO_PLATFORM
     case WM_LBUTTONUP:
@@ -480,7 +480,7 @@ HWND GfxDrvCommon::GetHWND()
 
 bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
 {
-  string versionstring = fellowGetVersionString();
+  string versionstring = _runtimeEnvironment->GetVersionString();
 
   SizeChanged(_current_draw_mode.Width, _current_draw_mode.Height);
   unsigned int width = _current_draw_mode.Width;
@@ -521,7 +521,8 @@ bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
   }
   else
   {
-    _hwnd = CreateWindowEx(WS_EX_TOPMOST, _fellowWindowClassName, versionstring.c_str(), WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, this);
+    _hwnd = CreateWindowEx(
+        WS_EX_TOPMOST, _fellowWindowClassName, versionstring.c_str(), WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, this);
   }
 
   if (_hwnd == nullptr)
@@ -627,8 +628,9 @@ bool GfxDrvCommon::IsInitialized() const
   return _isInitialized;
 }
 
-void GfxDrvCommon::Initialize()
+void GfxDrvCommon::Initialize(IRuntimeEnvironment *runtimeEnvironment)
 {
+  _runtimeEnvironment = runtimeEnvironment;
   _isInitialized = InitializeRunEvent();
   if (!_isInitialized)
   {

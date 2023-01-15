@@ -4,12 +4,15 @@
 #include <vector>
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/hardfile/HardfileStructs.h"
+#include "fellow/api/VM.h"
 
 namespace fellow::hardfile
 {
   class HardfileHandler : public fellow::api::modules::IHardfileHandler
   {
   private:
+    fellow::api::VirtualMachine *_vm;
+
     HardfileDevice _devices[FHFILE_MAX_DEVICES];
     std::vector<std::unique_ptr<HardfileFileSystemEntry>> _fileSystems;
     std::vector<std::unique_ptr<HardfileMountListEntry>> _mountList;
@@ -119,7 +122,7 @@ namespace fellow::hardfile
     void Startup() override;
     void Shutdown() override;
 
-    HardfileHandler();
+    HardfileHandler(fellow::api::VirtualMachine *vm);
     virtual ~HardfileHandler();
   };
 }

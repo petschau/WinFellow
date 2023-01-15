@@ -779,7 +779,8 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
 
 #define MODRIP_KNOWNFORMATS 6
 
-static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {modripDetectProTracker, modripDetectSoundFX, modripDetectSoundMon, modripDetectFred, modripDetectProRunner2, modripDetectThePlayer4};
+static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
+    modripDetectProTracker, modripDetectSoundFX, modripDetectSoundMon, modripDetectFred, modripDetectProRunner2, modripDetectThePlayer4};
 
 /*==============================================*/
 /* scan the emulated amiga's memory for modules */

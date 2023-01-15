@@ -203,7 +203,6 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
@@ -412,7 +411,6 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <SDLCheck>
       </SDLCheck>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CallingConvention>FastCall</CallingConvention>
@@ -838,6 +836,8 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\zlib\zlibwrap.cpp" />
+    <ClCompile Include="..\..\..\fellow\memory\ChipsetBankHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\memory\CiaBankHandler.cpp" />
     <ClCompile Include="..\..\..\fellow\memory\Memory.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\application\DriversFactory.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
@@ -956,7 +956,9 @@
     <ClInclude Include="..\..\..\fellow\api\drivers\IniValues.h" />
     <ClInclude Include="..\..\..\fellow\api\drivers\ISoundDriver.h" />
     <ClInclude Include="..\..\..\fellow\api\drivers\ITimerDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\IRuntimeEnvironment.h" />
     <ClInclude Include="..\..\..\fellow\api\modules\IHardfileHandler.h" />
+    <ClInclude Include="..\..\..\fellow\api\ChipsetConstants.h" />
     <ClInclude Include="..\..\..\fellow\api\Services.h" />
     <ClInclude Include="..\..\..\fellow\api\service\IFileops.h" />
     <ClInclude Include="..\..\..\fellow\api\service\IFSWrapper.h" />
@@ -986,6 +988,7 @@
     <ClInclude Include="..\..\..\fellow\application\Interrupt.h" />
     <ClInclude Include="..\..\..\fellow\application\ListTree.h" />
     <ClInclude Include="..\..\..\fellow\application\modrip.h" />
+    <ClInclude Include="..\..\..\fellow\application\Modules.h" />
     <ClInclude Include="..\..\..\fellow\automation\Automator.h" />
     <ClInclude Include="..\..\..\fellow\automation\Script.h" />
     <ClInclude Include="..\..\..\fellow\automation\ScriptLine.h" />
@@ -1101,6 +1104,8 @@
     <ClInclude Include="..\..\..\fellow\libs\zlib\src\zlib.h" />
     <ClInclude Include="..\..\..\fellow\libs\zlib\src\zutil.h" />
     <ClInclude Include="..\..\..\fellow\libs\zlib\zlibwrap.h" />
+    <ClInclude Include="..\..\..\fellow\memory\ChipsetBankHandler.h" />
+    <ClInclude Include="..\..\..\fellow\memory\CiaBankHandler.h" />
     <ClInclude Include="..\..\..\fellow\memory\Memory.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\application\DriversFactory.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\application\OSServicesFactory.h" />

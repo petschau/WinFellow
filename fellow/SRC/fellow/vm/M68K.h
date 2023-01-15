@@ -1,11 +1,15 @@
 #pragma once
 
 #include "fellow/api/vm/IM68K.h"
+#include "fellow/api/IRuntimeEnvironment.h"
 
 namespace fellow::vm
 {
   class M68K : public fellow::api::vm::IM68K
   {
+  private:
+    fellow::api::IRuntimeEnvironment *_runtimeEnvironment;
+
   public:
     void SetDReg(unsigned int registerNumber, uint32_t value) override;
     uint32_t GetDReg(unsigned int registerNumber) override;
@@ -25,7 +29,7 @@ namespace fellow::vm
     void StepOver() override;
     void StepUntilBreakpoint(uint32_t breakpointAddress) override;
 
-    M68K() = default;
+    M68K(fellow::api::IRuntimeEnvironment* runtimeEnvironment);
     virtual ~M68K() = default;
   };
 }

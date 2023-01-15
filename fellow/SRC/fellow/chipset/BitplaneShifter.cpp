@@ -39,8 +39,6 @@
 
 using namespace fellow::api;
 
-BitplaneShifter bitplane_shifter;
-
 class BitplaneShifter_AddDataCallback : public IBitplaneShifter_AddDataCallback
 {
 private:
@@ -101,8 +99,8 @@ void BitplaneShifter::AddOutputUntilLogEntry(ULO outputLine, ULO startX, ULO pix
   {
     DebugLog.AddBitplaneShifterLogEntry(
         DebugLogSource::BITPLANESHIFTER_ACTION,
-        scheduler.GetRasterFrameCount(),
-        scheduler.GetSHResTimestamp(),
+        _scheduler->GetRasterFrameCount(),
+        _scheduler->GetSHResTimestamp(),
         BitplaneShifterLogReasons::BitplaneShifter_output_until,
         outputLine,
         startX,
@@ -115,14 +113,20 @@ void BitplaneShifter::AddDuplicateLogEntry(ULO outputLine, ULO startX)
   if (DebugLog.Enabled)
   {
     DebugLog.AddBitplaneShifterLogEntry(
-        DebugLogSource::BITPLANESHIFTER_ACTION, scheduler.GetRasterFrameCount(), scheduler.GetSHResTimestamp(), BitplaneShifterLogReasons::BitplaneShifter_output_until, outputLine, startX, 0);
+        DebugLogSource::BITPLANESHIFTER_ACTION,
+        _scheduler->GetRasterFrameCount(),
+        _scheduler->GetSHResTimestamp(),
+        BitplaneShifterLogReasons::BitplaneShifter_output_until,
+        outputLine,
+        startX,
+        0);
   }
 }
 
 void BitplaneShifter::SetupEvent(ULO line, ULO cycle)
 {
-  shifterEvent.cycle = scheduler.GetBaseClockTimestamp(line, cycle);
-  scheduler.InsertEvent(&shifterEvent);
+  shifterEvent.cycle = _scheduler->GetBaseClockTimestamp(line, cycle);
+  _scheduler->InsertEvent(&shifterEvent);
 }
 
 void BitplaneShifter::ShiftActive(const ULO pixelCount)
@@ -166,9 +170,9 @@ void BitplaneShifter::AddArmEntry(unsigned int first, unsigned int stride, ULO a
 // The committed data will be armed in OCS/ECS at the first cycle position in the next cylinder
 void BitplaneShifter::AddData(const UWO *dat)
 {
-  SHResTimestamp addedAtPosition(scheduler.GetRasterY(), scheduler.GetLastCycleInCurrentCylinder());
+  SHResTimestamp addedAtPosition(_scheduler->GetRasterY(), _scheduler->GetLastCycleInCurrentCylinder());
 
-  if (addedAtPosition.Line < scheduler.GetVerticalBlankEnd())
+  if (addedAtPosition.Line < _scheduler->GetVerticalBlankEnd())
   {
     // Ignore bpldat commits on lines that can not be displayed
     return;
@@ -207,13 +211,13 @@ ULO BitplaneShifter::CalculateArmX(ULO baseX, ULO waitMask, bool isLores)
   {
     ULO armX = (baseX & 0xffffffc0) | (waitMask << 2);
     ULO adjustedArmX = (armX < baseX) ? armX + (16 * 4) : armX;
-    return (adjustedArmX < scheduler.GetHorisontalBlankStart()) ? (adjustedArmX + scheduler.GetCyclesInLine()) : adjustedArmX;
+    return (adjustedArmX < _scheduler->GetHorisontalBlankStart()) ? (adjustedArmX + _scheduler->GetCyclesInLine()) : adjustedArmX;
   }
 
   // hires
   ULO armX = (baseX & 0xffffffe0) | ((waitMask & 0x7) << 2); // Remove the upper bit of the arm position mask, hires arms data twice as fast
   ULO adjustedArmX = (armX < baseX) ? (armX + (8 * 4)) : armX;
-  return ((adjustedArmX < scheduler.GetHorisontalBlankStart()) ? (adjustedArmX + scheduler.GetCyclesInLine()) : adjustedArmX) + 4;
+  return ((adjustedArmX < _scheduler->GetHorisontalBlankStart()) ? (adjustedArmX + _scheduler->GetCyclesInLine()) : adjustedArmX) + 4;
 }
 
 void BitplaneShifter::ShiftPixels(ULO pixelCount, bool isVisible)
@@ -252,7 +256,8 @@ void BitplaneShifter::ShiftPixels(ULO pixelCount, bool isVisible)
       ULO remainingPixels = pixelCount & 3;
       if (remainingPixels > 0)
       {
-        Planar2ChunkyDecoder::P2CNextPixels(remainingPixels, _input[0].b[1], _input[1].b[1], _input[2].b[1], _input[3].b[1], _input[4].b[1], _input[5].b[1]);
+        Planar2ChunkyDecoder::P2CNextPixels(
+            remainingPixels, _input[0].b[1], _input[1].b[1], _input[2].b[1], _input[3].b[1], _input[4].b[1], _input[5].b[1]);
 
         ShiftActive(remainingPixels);
       }
@@ -309,7 +314,8 @@ void BitplaneShifter::ShiftPixelsDual(ULO pixelCount, bool isVisible)
       ULO remainingPixels = pixelCount & 3;
       if (remainingPixels > 0)
       {
-        Planar2ChunkyDecoder::P2CNextPixelsDual(remainingPixels, _input[0].b[1], _input[1].b[1], _input[2].b[1], _input[3].b[1], _input[4].b[1], _input[5].b[1]);
+        Planar2ChunkyDecoder::P2CNextPixelsDual(
+            remainingPixels, _input[0].b[1], _input[1].b[1], _input[2].b[1], _input[3].b[1], _input[4].b[1], _input[5].b[1]);
 
         ShiftActive(remainingPixels);
       }
@@ -425,13 +431,13 @@ void BitplaneShifter::ShiftBitplaneBatch(ULO pixelCount)
 
 void BitplaneShifter::Flush()
 {
-  Flush(SHResTimestamp(scheduler.GetRasterY(), scheduler.GetLastCycleInCurrentCylinder()));
+  Flush(SHResTimestamp(_scheduler->GetRasterY(), _scheduler->GetLastCycleInCurrentCylinder()));
 }
 
 void BitplaneShifter::Flush(const SHResTimestamp &untilPosition)
 {
   ULO outputLine = untilPosition.GetUnwrappedLine();
-  if (outputLine < scheduler.GetVerticalBlankEnd())
+  if (outputLine < _scheduler->GetVerticalBlankEnd())
   {
     // Above hard start
     return;
@@ -474,7 +480,7 @@ void BitplaneShifter::Flush(const SHResTimestamp &untilPosition)
       host_frame_immediate_renderer.DrawBatchImmediate(outputLine, _lastOutputX + 1);
       Planar2ChunkyDecoder::NewImmediateBatch();
     }
-    else if (outputUntilX < (scheduler.GetCyclesInLine() + scheduler.GetHorisontalBlankStart() - 1))
+    else if (outputUntilX < (_scheduler->GetCyclesInLine() + _scheduler->GetHorisontalBlankStart() - 1))
     {
       // Not at end of line, initialize next batch
       NewChangelistBatch(outputLine, outputUntilX + 1);
@@ -498,9 +504,9 @@ void BitplaneShifter::Handler()
 {
   shifterEvent.Disable();
 
-  const SHResTimestamp &shresPosition = scheduler.GetSHResTimestamp();
+  const SHResTimestamp &shresPosition = _scheduler->GetSHResTimestamp();
 
-  if (shresPosition.Line == scheduler.GetVerticalBlankEnd())
+  if (shresPosition.Line == _scheduler->GetVerticalBlankEnd())
   {
     // Finishing last line in vertical blank, pixel output starts on next line
 
@@ -510,7 +516,7 @@ void BitplaneShifter::Handler()
     {
       NewChangelistBatch(shresPosition.Line, shresPosition.Pixel + 1);
     }
-    SetupEvent(shresPosition.Line + 1, scheduler.GetHorisontalBlankStart() - 1);
+    SetupEvent(shresPosition.Line + 1, _scheduler->GetHorisontalBlankStart() - 1);
     return;
   }
 
@@ -522,7 +528,7 @@ void BitplaneShifter::Handler()
 void BitplaneShifter::InitializeNewLine(const SHResTimestamp &currentSHResPosition)
 {
   _activated = false;
-  _lastOutputX = scheduler.GetHorisontalBlankStart() - 1;
+  _lastOutputX = _scheduler->GetHorisontalBlankStart() - 1;
   _armList.Clear();
 
   if (currentSHResPosition.Line == 0)
@@ -554,18 +560,18 @@ void BitplaneShifter::InitializeNewFrame()
   if (!chipset_info.GfxDebugImmediateRendering)
   {
     Planar2ChunkyDecoder::InitializeNewFrame();
-    host_frame_delayed_renderer.ChangeList.InitializeNewFrame(scheduler.GetLinesInFrame());
+    host_frame_delayed_renderer.ChangeList.InitializeNewFrame(_scheduler->GetLinesInFrame());
   }
   else
   {
-    host_frame_immediate_renderer.InitializeNewFrame(scheduler.GetLinesInFrame());
+    host_frame_immediate_renderer.InitializeNewFrame(_scheduler->GetLinesInFrame());
   }
 
   Draw.EndOfFrame();
 
   UpdateDrawBatchFunc();
 
-  SetupEvent(scheduler.GetVerticalBlankEnd(), scheduler.GetHorisontalBlankStart() - 1);
+  SetupEvent(_scheduler->GetVerticalBlankEnd(), _scheduler->GetHorisontalBlankStart() - 1);
 }
 
 void BitplaneShifter::UpdateDrawBatchFunc()
@@ -584,12 +590,16 @@ void BitplaneShifter::NewChangelistBatch(ULO line, ULO pixel) const
 {
   Planar2ChunkyDecoder::NewChangelistBatch();
   host_frame_delayed_renderer.ChangeList.AddBufferChange(
-      line, pixel, Planar2ChunkyDecoder::GetOddPlayfieldStart<UBY>(), Planar2ChunkyDecoder::GetEvenPlayfieldStart<UBY>(), Planar2ChunkyDecoder::GetHamSpritesPlayfieldStart<UBY>());
+      line,
+      pixel,
+      Planar2ChunkyDecoder::GetOddPlayfieldStart<UBY>(),
+      Planar2ChunkyDecoder::GetEvenPlayfieldStart<UBY>(),
+      Planar2ChunkyDecoder::GetHamSpritesPlayfieldStart<UBY>());
 }
 
 void BitplaneShifter::Clear()
 {
-  _lastOutputX = scheduler.GetHorisontalBlankStart() - 1;
+  _lastOutputX = _scheduler->GetHorisontalBlankStart() - 1;
   _armList.Clear();
   _activated = false;
 
@@ -606,14 +616,14 @@ void BitplaneShifter::Clear()
   else
   {
     host_frame_delayed_renderer.UpdateDrawBatchFunc();
-    host_frame_delayed_renderer.ChangeList.InitializeNewFrame(scheduler.GetLinesInFrame());
+    host_frame_delayed_renderer.ChangeList.InitializeNewFrame(_scheduler->GetLinesInFrame());
   }
 }
 
 void BitplaneShifter::Reset()
 {
   Clear();
-  SetupEvent(scheduler.GetVerticalBlankEnd(), scheduler.GetHorisontalBlankStart() - 1);
+  SetupEvent(_scheduler->GetVerticalBlankEnd(), _scheduler->GetHorisontalBlankStart() - 1);
 }
 
 /* Fellow events */
@@ -622,10 +632,10 @@ void BitplaneShifter::EndOfFrame()
 {
   if (shifterEvent.IsEnabled())
   {
-    scheduler.RemoveEvent(&shifterEvent);
+    _scheduler->RemoveEvent(&shifterEvent);
   }
 
-  SetupEvent(0, scheduler.GetHorisontalBlankStart() - 1);
+  SetupEvent(0, _scheduler->GetHorisontalBlankStart() - 1);
 }
 
 void BitplaneShifter::SoftReset()
@@ -651,8 +661,8 @@ void BitplaneShifter::Startup()
   PerformanceCounter = Service->PerformanceCounterFactory.Create("BitplaneShifter");
   Clear();
 
-  bitplane_registers.SetAddDataCallback(new BitplaneShifter_AddDataCallback(this));
-  bitplane_registers.SetFlushCallback(new BitplaneShifter_FlushCallback(this));
+  _bitplaneRegisters->SetAddDataCallback(new BitplaneShifter_AddDataCallback(this));
+  _bitplaneRegisters->SetFlushCallback(new BitplaneShifter_FlushCallback(this));
 }
 
 void BitplaneShifter::Shutdown()
@@ -661,7 +671,8 @@ void BitplaneShifter::Shutdown()
   PerformanceCounter = nullptr;
 }
 
-BitplaneShifter::BitplaneShifter() : PerformanceCounter(nullptr)
+BitplaneShifter::BitplaneShifter(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters)
+  : _scheduler(scheduler), _bitplaneRegisters(bitplaneRegisters), PerformanceCounter(nullptr)
 {
 }
 

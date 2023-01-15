@@ -1,4 +1,6 @@
 #include "fellow/chipset/BitplaneRegisters.h"
+
+#include "fellow/api/ChipsetConstants.h"
 #include "fellow/chipset/BitplaneUtility.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/chipset/DDFStateMachine.h"
@@ -6,285 +8,65 @@
 #include "fellow/chipset/DIWYStateMachine.h"
 #include "fellow/chipset/HostFrameDelayedRenderer.h"
 #include "fellow/chipset/HostFrameImmediateRenderer.h"
+#include "fellow/memory/ChipsetBankHandler.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/memory/Memory.h"
 
-BitplaneRegisters bitplane_registers;
+// VPOSR - $dff004
+// Bit 15 14 13 12 11 10 09 08  07 06 05 04 03 02  01 00
+//    LOF I6 I5 I4 I3 I2 II 10 LOL -- -- -- -- V1O V9 V8
 
-// vposr - $dff004 Read vpos and Agnus/Alice ID bits on ECS and later
-UWO rvposr(ULO address)
-{
-  return bitplane_registers.GetVPosR();
-}
+// LOF    Long frame = 1, short frame = 0
+// I6-I0  Agnus ID is ECS/AGA only
+// LOL    Long/short line
+// V10-V8 Vertical position high bits, V10 and V9 is ECS/AGA only
 
-// vhposr - $dff006
-UWO rvhposr(ULO address)
-{
-  return BitplaneRegisters::GetVHPosR();
-}
-
-// vpos - $dff02a
-void wvpos(UWO data, ULO address)
-{
-  bitplane_registers.SetVPos(data);
-}
-
-// vhpos - $dff02c
-void wvhpos(UWO data, ULO address)
-{
-  bitplane_registers.SetVHPos(data);
-}
-
-// deniseid - $dff07c, ECS Denise and later
-UWO rdeniseid(ULO address)
-{
-  return BitplaneRegisters::GetDeniseId();
-}
-
-// diwstrt - $dff08e
-void wdiwstrt(UWO data, ULO address)
-{
-  bitplane_registers.SetDIWStrt(data);
-}
-
-// diwstop - $dff090
-void wdiwstop(UWO data, ULO address)
-{
-  bitplane_registers.SetDIWStop(data);
-}
-
-// ddfstrt - $dff092
-void wddfstrt(UWO data, ULO address)
-{
-  bitplane_registers.SetDDFStrt(data);
-}
-
-// ddfstop - $dff094
-void wddfstop(UWO data, ULO address)
-{
-  bitplane_registers.SetDDFStop(data);
-}
-
-// bplxpt - $dff0e0 to $dff0f6
-void wbpl1pth(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtHigh(0, data);
-}
-
-void wbpl1ptl(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtLow(0, data);
-}
-
-void wbpl2pth(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtHigh(1, data);
-}
-
-void wbpl2ptl(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtLow(1, data);
-}
-
-void wbpl3pth(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtHigh(2, data);
-}
-
-void wbpl3ptl(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtLow(2, data);
-}
-
-void wbpl4pth(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtHigh(3, data);
-}
-
-void wbpl4ptl(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtLow(3, data);
-}
-
-void wbpl5pth(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtHigh(4, data);
-}
-
-void wbpl5ptl(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtLow(4, data);
-}
-
-void wbpl6pth(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtHigh(5, data);
-}
-
-void wbpl6ptl(UWO data, ULO address)
-{
-  bitplane_registers.SetBplPtLow(5, data);
-}
-
-// bplcon0 - $dff100
-void wbplcon0(UWO data, ULO address)
-{
-  bitplane_registers.SetBplCon0(data);
-}
-
-// bplcon1 - $dff102
-void wbplcon1(UWO data, ULO address)
-{
-  bitplane_registers.SetBplCon1(data);
-}
-
-// bplcon2 - $dff104
-void wbplcon2(UWO data, ULO address)
-{
-  bitplane_registers.SetBplCon2(data);
-}
-
-// bplxmod - $dff108 to $dff10a
-void wbpl1mod(UWO data, ULO address)
-{
-  bitplane_registers.SetBpl1Mod(data);
-}
-
-void wbpl2mod(UWO data, ULO address)
-{
-  bitplane_registers.SetBpl2Mod(data);
-}
-
-// bplxdat - $dff110 to $dff11a
-void wbpl1dat(UWO data, ULO address)
-{
-  bitplane_registers.SetBplDat(0, data);
-}
-
-void wbpl2dat(UWO data, ULO address)
-{
-  bitplane_registers.SetBplDat(1, data);
-}
-
-void wbpl3dat(UWO data, ULO address)
-{
-  bitplane_registers.SetBplDat(2, data);
-}
-
-void wbpl4dat(UWO data, ULO address)
-{
-  bitplane_registers.SetBplDat(3, data);
-}
-
-void wbpl5dat(UWO data, ULO address)
-{
-  bitplane_registers.SetBplDat(4, data);
-}
-
-void wbpl6dat(UWO data, ULO address)
-{
-  bitplane_registers.SetBplDat(5, data);
-}
-
-// color - $dff180 to $dff1be
-void wcolor(UWO data, ULO address)
-{
-  const ULO colorIndex = ((address & 0x1ff) - 0x180) >> 1;
-  bitplane_registers.SetColor(colorIndex, data);
-}
-
-void wdiwhigh(UWO data, ULO address)
-{
-  bitplane_registers.SetDIWHigh(data);
-}
-
-void whtotal(UWO data, ULO address)
-{
-  bitplane_registers.SetHTotal(data);
-}
-
-void whcenter(UWO data, ULO address)
-{
-  bitplane_registers.SetHCenter(data);
-}
-
-void whbstrt(UWO data, ULO address)
-{
-  bitplane_registers.SetHBStrt(data);
-}
-
-void whbstop(UWO data, ULO address)
-{
-  bitplane_registers.SetHBStop(data);
-}
-
-void whsstrt(UWO data, ULO address)
-{
-  bitplane_registers.SetHSStrt(data);
-}
-
-void whsstop(UWO data, ULO address)
-{
-  bitplane_registers.SetHSStop(data);
-}
-
-void wvtotal(UWO data, ULO address)
-{
-  bitplane_registers.SetVTotal(data);
-}
-
-void wvbstrt(UWO data, ULO address)
-{
-  bitplane_registers.SetVBStrt(data);
-}
-
-void wvbstop(UWO data, ULO address)
-{
-  bitplane_registers.SetVBStop(data);
-}
-
-void wvsstrt(UWO data, ULO address)
-{
-  bitplane_registers.SetVSStrt(data);
-}
-
-void wvsstop(UWO data, ULO address)
-{
-  bitplane_registers.SetVSStop(data);
-}
-
-void wbeamcon0(UWO data, ULO address)
-{
-  bitplane_registers.SetBeamcon0(data);
-}
+// Agnus/Alice IDs
+// 8361/8370 (NTSC original or fat) = 0x10
+// 8367/8371 (PAL original or fat) = 0x00
+// 8372 (NTSC until rev4) = 0x30
+// 8372 (PAL until rev4) = 0x20
+// 8372 (NTSC rev5) = 0x31
+// 8372 (PAL rev5) = 0x21
+// 8374 (NTSC until rev2) = 0x32
+// 8374 (PAL until rev2) = 0x22
+// 8374 (NTSC rev3 and rev4) = 0x33
+// 8374 (PAL rev3 and rev4) = 0x23
 
 UWO BitplaneRegisters::GetVPosR() const
 {
   UWO value = lof;
   if (chipsetGetECS())
   {
-    value |= GetAgnusId() << 8;                   // Fat Pal Agnus id
-    value |= (scheduler.GetRasterY() >> 8) & 0x7; // ECS adds V9 and V10
+    value |= GetAgnusId() << 8;
+    value |= (_scheduler->GetRasterY() >> 8) & 0x7;
   }
   else // OCS
   {
-    value |= (scheduler.GetRasterY() >> 8) & 1;
+    value |= (_scheduler->GetRasterY() >> 8) & 1;
   }
   return value;
 }
 
+// VHPOSR - $dff006
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     V7 V6 V5 V4 V3 V2 V1 V0 H8 H7 H6 H5 H4 H3 H2 H1
+
+// H8-H1 Horisontal raster position. Has bus cycle clock resolution, for instance range 0x00-0xe2 for standard PAL mode
+// V7-V0 Vertical raster position
 UWO BitplaneRegisters::GetVHPosR()
 {
-  return (UWO)((scheduler.GetRasterX() >> 3) | ((scheduler.GetRasterY() & 0x000000FF) << 8));
+  return (UWO)((_scheduler->GetRasterX() >> 3) | ((_scheduler->GetRasterY() & 0x000000FF) << 8));
 }
 
+// VPOSW - $dff02a, see VPOSR for bits
 void BitplaneRegisters::SetVPos(UWO data)
 {
   lof = (UWO)(data & 0x8000);
-
   // TODO: Add changing of raster position counters
 }
 
+// VHPOSW - $dff02c, see VHPOSR for bits
 void BitplaneRegisters::SetVHPos(UWO data)
 {
   // TODO: Add changing of raster position counters
@@ -292,23 +74,31 @@ void BitplaneRegisters::SetVHPos(UWO data)
 
 UWO BitplaneRegisters::GetAgnusId()
 {
-  return chipsetGetECS() ? 0x20 : 0;
+  return chipsetGetECS() ? AgnusId::Agnus_8372_ECS_PAL_until_Rev4 : AgnusId::Agnus_8371_Fat_PAL;
 }
 
+// DENISEID - $dff006 (sometimes called LISAID)
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     -- -- -- -- -- -- -- -- I7 I6 I5 I4 I3 I2 I1 I0
+
+// Known values:
+// 0xfc - Denise 8373 (ECS)
+// 0xf8 - Lisa (AGA)
+
+// OCS Denise 8362 does not have this register
 UWO BitplaneRegisters::GetDeniseId()
 {
-  // Not installed in the io map on OCS, in that case random values are returned
-  return chipsetGetECS() ? 0xfc : 0; // 0xfc = ECS Denise
+  return DeniseId::Denise_8373_ECS;
 }
 
 UWO BitplaneRegisters::GetVerticalPosition()
 {
-  return (UWO)scheduler.GetRasterY();
+  return (UWO)_scheduler->GetRasterY();
 }
 
 UWO BitplaneRegisters::GetHorisontalPosition()
 {
-  return (UWO)scheduler.GetRasterX();
+  return (UWO)_scheduler->GetRasterX();
 }
 
 void BitplaneRegisters::ResetDiwhigh()
@@ -316,6 +106,26 @@ void BitplaneRegisters::ResetDiwhigh()
   diwhigh = (~diwstop >> 7) & 0x100;
 }
 
+// DIWSTRT - $dff08e
+// OCS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     V7 V6 V5 V4 V3 V2 V1 V0 H7 H6 H5 H4 H3 H2 H1 HO
+//
+// H8 cannot be set, it is written as 0
+// V8 cannot be set, it is written as 0
+// Horisontal resolution is lores color clocks
+//
+// ECS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     V7 V6 V5 V4 V3 V2 VI V0 H9 H8 H7 H6 H5 H4 H3 H2
+//
+// Horisontal resolution accessible on ECS through this register is still lores color clocks and limited to the left part of the screen.
+// H10, H1 and H0 can be updated through DIWHIGH for superhires color clock accuracy and full width.
+// The inaccessible bits are still initially written as 0. (TODO: Verify this)
+//
+// Vertical resolution accessible on ECS through this register is still limited to the upper part of the screen.
+// V10, V9 and V8 can be updated through DIWHIGH for full height.
+// The inaccessible bits are still initially written as 0. (TODO: Verify this)
 void BitplaneRegisters::SetDIWStrt(UWO data)
 {
   const UWO newDiwXStart = (data & 0xff) << 2;
@@ -352,6 +162,26 @@ void BitplaneRegisters::SetDIWStrt(UWO data)
   }
 }
 
+// DIWSTOP - $dff090
+// OCS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     V7 V6 V5 V4 V3 V2 V1 V0 H7 H6 H5 H4 H3 H2 H1 HO
+//
+// H8 cannot be set, it is written as 1
+// V8 cannot be set, it is written as 1
+// Horisontal resolution is lores color clocks
+//
+// ECS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     V7 V6 V5 V4 V3 V2 VI V0 H9 H8 H7 H6 H5 H4 H3 H2
+//
+// Horisontal resolution accessible on ECS through this register is still lores color clocks and limited to the right part of the screen.
+// H10, H1 and H0 can be updated through DIWHIGH for superhires color clock accuracy and full width.
+// H10 is still initially written as 1, and H1,H0 is written as 0. (TODO: Verify this)
+//
+// Vertical resolution accessible on ECS through this register is still limited to the lower part of the screen.
+// V10, V9 and V8 can be updated through DIWHIGH for full height.
+// V8 is still initially written as 1, and V10,V9 is written as 0. (TODO: Verify this)
 void BitplaneRegisters::SetDIWStop(UWO data)
 {
   const UWO newDiwXStop = ((data & 0xff) ^ 0x100) << 2;
@@ -388,6 +218,15 @@ void BitplaneRegisters::SetDIWStop(UWO data)
   }
 }
 
+// DDFSTRT - $dff092
+// OCS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     -- -- -- -- -- -- -- -- H8 H7 H6 H5 H4 H4 -- --
+//
+// ECS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     -- -- -- -- -- -- -- -- H8 H7 H6 H5 H4 H4 H3 --
+//
 void BitplaneRegisters::SetDDFStrt(UWO data)
 {
   const UWO ddfstrtNew = data & chipsetGetDDFMask();
@@ -412,6 +251,15 @@ void BitplaneRegisters::SetDDFStrt(UWO data)
   }
 }
 
+// DDFSTOP - $dff094
+// OCS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     -- -- -- -- -- -- -- -- H8 H7 H6 H5 H4 H4 -- --
+//
+// ECS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//     -- -- -- -- -- -- -- -- H8 H7 H6 H5 H4 H4 H3 --
+//
 void BitplaneRegisters::SetDDFStop(UWO data)
 {
   const UWO ddfstopNew = data & chipsetGetDDFMask();
@@ -435,6 +283,14 @@ void BitplaneRegisters::SetDDFStop(UWO data)
   }
 }
 
+// BPLxPTH - $dff0e0,$dff0e4,$dff0e8,$dff0ec,$dff0f0,$dff0f4
+// OCS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04 03 02  01 00
+//     -- -- -- -- -- -- -- -- -- -- -- -- -- A10 A9 A8
+//
+// ECS:
+// Bit 15 14 13 12 11 10 09 08 07 06 05 04  03  02  01 00
+//     -- -- -- -- -- -- -- -- -- -- -- A12 A11 A10 A9 A8
 void BitplaneRegisters::SetBplPtHigh(unsigned int index, UWO data)
 {
   const ULO newValue = chipsetReplaceHighPtr(bplpt[index], data);
@@ -449,6 +305,10 @@ void BitplaneRegisters::SetBplPtHigh(unsigned int index, UWO data)
   }
 }
 
+// BPLxPTH - $dff0e2,$dff0e6,$dff0ea,$dff0ee,$dff0f2,$dff0f6
+// OCS and ECS:
+// Bit 15  14  13  12  11  10  09 08 07 06 05 04 03 02 01 00
+//     A15 A14 A13 A12 A11 A10 A9 A8 A7 A6 A5 A4 A3 A2 A1 --
 void BitplaneRegisters::SetBplPtLow(unsigned int index, UWO data)
 {
   const ULO newValue = chipsetReplaceLowPtr(bplpt[index], data);
@@ -473,11 +333,11 @@ void BitplaneRegisters::SetBplCon0(UWO data)
     }
 
     bplcon0 = data;
-    IsLores = (bitplane_registers.bplcon0 & 0x8000) == 0;
+    IsLores = (bplcon0 & 0x8000) == 0;
     IsHires = !IsLores;
-    IsDualPlayfield = (bitplane_registers.bplcon0 & 0x0400) == 0x0400;
-    IsHam = (bitplane_registers.bplcon0 & 0x0800) == 0x0800;
-    EnabledBitplaneCount = (bitplane_registers.bplcon0 >> 12) & 7;
+    IsDualPlayfield = (bplcon0 & 0x0400) == 0x0400;
+    IsHam = (bplcon0 & 0x0800) == 0x0800;
+    EnabledBitplaneCount = (bplcon0 >> 12) & 7;
 
     if (!chipset_info.IsCycleExact)
     {
@@ -567,9 +427,9 @@ void BitplaneRegisters::SetColor(unsigned int index, UWO data)
 
     if (chipset_info.IsCycleExact)
     {
-      const SHResTimestamp &shresTimestamp = scheduler.GetSHResTimestamp();
+      const SHResTimestamp &shresTimestamp = _scheduler->GetSHResTimestamp();
       ULO line = shresTimestamp.GetUnwrappedLine();
-      bool isOutsideVerticalBlank = line >= scheduler.GetVerticalBlankEnd();
+      bool isOutsideVerticalBlank = line >= _scheduler->GetVerticalBlankEnd();
 
       if (chipset_info.GfxDebugImmediateRendering)
       {
@@ -584,7 +444,8 @@ void BitplaneRegisters::SetColor(unsigned int index, UWO data)
       {
         if (isOutsideVerticalBlank)
         {
-          host_frame_delayed_renderer.ChangeList.AddColorChange(line, shresTimestamp.GetUnwrappedFirstPixelInNextCylinder(), index, newColor, newHalfbriteColor);
+          host_frame_delayed_renderer.ChangeList.AddColorChange(
+              line, shresTimestamp.GetUnwrappedFirstPixelInNextCylinder(), index, newColor, newHalfbriteColor);
         }
         else
         {
@@ -804,61 +665,57 @@ void BitplaneRegisters::PublishColorChanged(const unsigned int colorIndex, const
   }
 }
 
-void BitplaneRegisters::InstallIOHandlers()
+void BitplaneRegisters::InstallIOHandlers(ChipsetBankHandler &chipsetBankHandler, bool isECS)
 {
-  memorySetIoReadStub(0x004, rvposr);
-  memorySetIoReadStub(0x006, rvhposr);
-  memorySetIoWriteStub(0x02a, wvpos);
-  memorySetIoWriteStub(0x02c, wvhpos);
-  memorySetIoWriteStub(0x08e, wdiwstrt);
-  memorySetIoWriteStub(0x090, wdiwstop);
-  memorySetIoWriteStub(0x092, wddfstrt);
-  memorySetIoWriteStub(0x094, wddfstop);
-  memorySetIoWriteStub(0x0e0, wbpl1pth);
-  memorySetIoWriteStub(0x0e2, wbpl1ptl);
-  memorySetIoWriteStub(0x0e4, wbpl2pth);
-  memorySetIoWriteStub(0x0e6, wbpl2ptl);
-  memorySetIoWriteStub(0x0e8, wbpl3pth);
-  memorySetIoWriteStub(0x0ea, wbpl3ptl);
-  memorySetIoWriteStub(0x0ec, wbpl4pth);
-  memorySetIoWriteStub(0x0ee, wbpl4ptl);
-  memorySetIoWriteStub(0x0f0, wbpl5pth);
-  memorySetIoWriteStub(0x0f2, wbpl5ptl);
-  memorySetIoWriteStub(0x0f4, wbpl6pth);
-  memorySetIoWriteStub(0x0f6, wbpl6ptl);
-  memorySetIoWriteStub(0x100, wbplcon0);
-  memorySetIoWriteStub(0x102, wbplcon1);
-  memorySetIoWriteStub(0x104, wbplcon2);
-  memorySetIoWriteStub(0x108, wbpl1mod);
-  memorySetIoWriteStub(0x10a, wbpl2mod);
-  memorySetIoWriteStub(0x110, wbpl1dat);
-  memorySetIoWriteStub(0x112, wbpl2dat);
-  memorySetIoWriteStub(0x114, wbpl3dat);
-  memorySetIoWriteStub(0x116, wbpl4dat);
-  memorySetIoWriteStub(0x118, wbpl5dat);
-  memorySetIoWriteStub(0x11a, wbpl6dat);
+  chipsetBankHandler.SetIoReadFunction(0x004, [this](uint32_t address) -> uint16_t { return this->GetVPosR(); });
+  chipsetBankHandler.SetIoReadFunction(0x006, [this](uint32_t address) -> uint16_t { return this->GetVHPosR(); });
 
-  for (unsigned int i = 0x180; i < 0x1c0; i += 2)
+  chipsetBankHandler.SetIoWriteFunction(0x02a, [this](uint16_t data, uint32_t address) -> void { this->SetVPos(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x02c, [this](uint16_t data, uint32_t address) -> void { this->SetVHPos(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x08e, [this](uint16_t data, uint32_t address) -> void { this->SetDIWStrt(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x090, [this](uint16_t data, uint32_t address) -> void { this->SetDIWStop(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x092, [this](uint16_t data, uint32_t address) -> void { this->SetDDFStrt(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x094, [this](uint16_t data, uint32_t address) -> void { this->SetDDFStop(data); });
+
+  for (unsigned int i = 0; i < 6; i++)
   {
-    memorySetIoWriteStub(i, wcolor);
+    chipsetBankHandler.SetIoWriteFunction(0x0e0 + i * 4, [this, i](uint16_t data, uint32_t address) -> void { this->SetBplPtHigh(i, data); });
+    chipsetBankHandler.SetIoWriteFunction(0x0e2 + i * 4, [this, i](uint16_t data, uint32_t address) -> void { this->SetBplPtLow(i, data); });
   }
 
-  if (chipsetGetECS())
+  chipsetBankHandler.SetIoWriteFunction(0x100, [this](uint16_t data, uint32_t address) -> void { this->SetBplCon0(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x102, [this](uint16_t data, uint32_t address) -> void { this->SetBplCon1(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x104, [this](uint16_t data, uint32_t address) -> void { this->SetBplCon2(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x108, [this](uint16_t data, uint32_t address) -> void { this->SetBpl1Mod(data); });
+  chipsetBankHandler.SetIoWriteFunction(0x10a, [this](uint16_t data, uint32_t address) -> void { this->SetBpl2Mod(data); });
+
+  for (unsigned int i = 0; i < 6; i++)
   {
-    memorySetIoReadStub(0x07c, rdeniseid);
-    memorySetIoWriteStub(0x1c0, whtotal);
-    memorySetIoWriteStub(0x1c2, whsstop);
-    memorySetIoWriteStub(0x1c4, whbstrt);
-    memorySetIoWriteStub(0x1c6, whbstop);
-    memorySetIoWriteStub(0x1c8, wvtotal);
-    memorySetIoWriteStub(0x1ca, wvsstop);
-    memorySetIoWriteStub(0x1cc, wvbstrt);
-    memorySetIoWriteStub(0x1ce, wvbstop);
-    memorySetIoWriteStub(0x1dc, wbeamcon0);
-    memorySetIoWriteStub(0x1de, whsstrt);
-    memorySetIoWriteStub(0x1e0, wvsstrt);
-    memorySetIoWriteStub(0x1e2, whcenter);
-    memorySetIoWriteStub(0x1e4, wdiwhigh);
+    chipsetBankHandler.SetIoWriteFunction(0x110 + i * 2, [this, i](uint16_t data, uint32_t address) -> void { this->SetBplDat(i, data); });
+  }
+
+  for (unsigned int i = 0; i < 32; i++)
+  {
+    chipsetBankHandler.SetIoWriteFunction(0x180 + i * 2, [this, i](uint16_t data, uint32_t address) -> void { this->SetColor(i, data); });
+  }
+
+  if (isECS)
+  {
+    chipsetBankHandler.SetIoReadFunction(0x07c, [this](uint32_t address) -> uint16_t { return this->GetDeniseId(); });
+
+    chipsetBankHandler.SetIoWriteFunction(0x1c0, [this](uint16_t data, uint32_t address) -> void { this->SetHTotal(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1c2, [this](uint16_t data, uint32_t address) -> void { this->SetHSStop(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1c4, [this](uint16_t data, uint32_t address) -> void { this->SetHBStrt(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1c6, [this](uint16_t data, uint32_t address) -> void { this->SetHBStop(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1c8, [this](uint16_t data, uint32_t address) -> void { this->SetVTotal(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1ca, [this](uint16_t data, uint32_t address) -> void { this->SetVSStop(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1cc, [this](uint16_t data, uint32_t address) -> void { this->SetVBStrt(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1ce, [this](uint16_t data, uint32_t address) -> void { this->SetVBStop(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1dc, [this](uint16_t data, uint32_t address) -> void { this->SetBeamcon0(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1de, [this](uint16_t data, uint32_t address) -> void { this->SetHSStrt(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1e0, [this](uint16_t data, uint32_t address) -> void { this->SetVSStrt(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1e2, [this](uint16_t data, uint32_t address) -> void { this->SetHCenter(data); });
+    chipsetBankHandler.SetIoWriteFunction(0x1e4, [this](uint16_t data, uint32_t address) -> void { this->SetDIWHigh(data); });
   }
 }
 
@@ -940,9 +797,14 @@ void BitplaneRegisters::ClearState()
   EnabledBitplaneCount = 0;
 }
 
+void BitplaneRegisters::Initialize(Scheduler *scheduler)
+{
+  _scheduler = scheduler;
+  ClearState();
+}
+
 BitplaneRegisters::BitplaneRegisters() : BitplaneShifter_AddData(nullptr), BitplaneShifter_Flush(nullptr), _colorChangeEventHandler(nullptr)
 {
-  ClearState();
 }
 
 BitplaneRegisters::~BitplaneRegisters()

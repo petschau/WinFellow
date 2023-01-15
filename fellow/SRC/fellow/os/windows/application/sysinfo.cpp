@@ -602,9 +602,9 @@ static void sysinfoParseMemoryStatus()
   Service->Log.AddTimelessLog("\tfree virtual address space: \t%I64d MB\n", MemoryStatusEx.ullAvailVirtual / 1024 / 1024);
 }
 
-static void sysinfoVersionInfo()
+static void sysinfoVersionInfo(IRuntimeEnvironment* runtimeEnvironment)
 {
-  Service->Log.AddTimelessLog(fellowGetVersionString());
+  Service->Log.AddTimelessLog(runtimeEnvironment->GetVersionString());
 
 #ifdef _DEBUG
   Service->Log.AddTimelessLog(" (debug build)\n");
@@ -616,9 +616,9 @@ static void sysinfoVersionInfo()
 /*===============*/
 /* Do the thing. */
 /*===============*/
-void sysinfoLogSysInfo()
+void sysinfoLogSysInfo(IRuntimeEnvironment *runtimeEnvironment)
 {
-  sysinfoVersionInfo();
+  sysinfoVersionInfo(runtimeEnvironment);
   Service->Log.AddTimelessLog("\nsystem information:\n\n");
   sysinfoParseRegistry();
   Service->Log.AddTimelessLog("\n");

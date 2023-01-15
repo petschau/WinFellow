@@ -241,7 +241,11 @@ bool GraphicsDriver::SaveScreenshot(const bool bSaveFilteredScreenshot, const ch
     result = _gfxDrvDirectDraw->SaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
   }
 
-  Service->Log.AddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n", bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
+  Service->Log.AddLog(
+      "gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n",
+      bSaveFilteredScreenshot ? "true" : "false",
+      szActualFilename,
+      result ? "successful" : "failed");
 
   return result;
 }
@@ -322,9 +326,9 @@ void GraphicsDriver::ReleaseDirectDraw()
   }
 }
 
-bool GraphicsDriver::InitializeCommon()
+bool GraphicsDriver::InitializeCommon(IRuntimeEnvironment *runtimeEnvironment)
 {
-  _gfxDrvCommon.Initialize();
+  _gfxDrvCommon.Initialize(runtimeEnvironment);
   return _gfxDrvCommon.IsInitialized();
 }
 
@@ -343,9 +347,9 @@ list<DISPLAYDRIVER> GraphicsDriver::GetListOfInitializedDrivers() const
   return _listOfInitializedDrivers;
 }
 
-void GraphicsDriver::Initialize()
+void GraphicsDriver::Initialize(IRuntimeEnvironment *runtimeEnvironment)
 {
-  _isInitialized = InitializeCommon();
+  _isInitialized = InitializeCommon(runtimeEnvironment);
   if (!_isInitialized)
   {
     return;

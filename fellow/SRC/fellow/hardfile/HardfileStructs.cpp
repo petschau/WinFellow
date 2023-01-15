@@ -2,6 +2,7 @@
 #include "fellow/api/VM.h"
 
 using namespace fellow::api;
+using namespace fellow::api::vm;
 using namespace fellow::hardfile::rdb;
 using namespace fellow::hardfile::hunks;
 
@@ -41,15 +42,16 @@ namespace fellow::hardfile
   {
     InitialHunk *hunk = Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex);
     hunk->SetVMAddress(destinationAddress);
-    memcpy(VM->Memory.AddressToPtr(destinationAddress), hunk->GetContent(), hunk->GetContentSizeInBytes());
+    memcpy(_vmMemory->AddressToPtr(destinationAddress), hunk->GetContent(), hunk->GetContentSizeInBytes());
     if (hunk->GetAllocateSizeInBytes() > hunk->GetContentSizeInBytes())
     {
       ULO overflow = hunk->GetAllocateSizeInBytes() - hunk->GetContentSizeInBytes();
-      memset(VM->Memory.AddressToPtr(destinationAddress), 0, overflow);
+      memset(_vmMemory->AddressToPtr(destinationAddress), 0, overflow);
     }
   }
 
-  HardfileFileSystemEntry::HardfileFileSystemEntry(RDBFileSystemHeader *header, ULO segListAddress) : Header(header), SegListAddress(segListAddress)
+  HardfileFileSystemEntry::HardfileFileSystemEntry(RDBFileSystemHeader *header, ULO segListAddress, IMemorySystem *vmMemory)
+    : Header(header), SegListAddress(segListAddress), _vmMemory(vmMemory)
   {
   }
 }

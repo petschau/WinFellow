@@ -2,14 +2,12 @@
 
 #include "fellow/api/vm/IChipset.h"
 
-using namespace fellow::api::vm;
-
 namespace fellow::vm
 {
-  class Chipset : public IChipset
+  class Chipset : public fellow::api::vm::IChipset
   {
   public:
-    Chipset(ICopper &copper, IDisplay &display);
+    Chipset(fellow::api::vm::ICopper *copper, fellow::api::vm::IDisplay *display);
     virtual ~Chipset();
   };
 }

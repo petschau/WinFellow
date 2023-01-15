@@ -105,7 +105,8 @@ void BitplaneDMA::ScheduleFetch(const ChipBusTimestamp &currentTime)
 
 bool BitplaneDMA::CanFetch()
 {
-  return BitplaneUtility::IsBitplaneDMAEnabled() && BitplaneUtility::GetEnabledBitplaneCount() > 0 && diwy_state_machine.IsVisible() && ddf_state_machine.IsFetchEnabled();
+  return BitplaneUtility::IsBitplaneDMAEnabled() && BitplaneUtility::GetEnabledBitplaneCount() > 0 && diwy_state_machine.IsVisible() &&
+         ddf_state_machine.IsFetchEnabled();
 }
 
 bool BitplaneDMA::CalculateIsLastFetch(ULO atCycle)

@@ -7,6 +7,8 @@
 class ChipsetRegisterHandler : public ConsoleCommandHandler
 {
 private:
+  fellow::api::vm::IChipset *_chipset;
+
   template <typename T> void WriteRegister(DebugWriter &writer, ULO address, const std::string &name, T value, unsigned int valueDigits) const
   {
     writer.Hex24(address).Char(' ').String(name).Char(' ').Hex(value, valueDigits).Endl();
@@ -28,6 +30,6 @@ public:
   HelpText Help() const override;
   ConsoleCommandHandlerResult Handle(const std::vector<std::string> &tokens) override;
 
-  ChipsetRegisterHandler();
+  ChipsetRegisterHandler(fellow::api::vm::IChipset *chipset);
   virtual ~ChipsetRegisterHandler() = default;
 };

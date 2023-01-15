@@ -756,6 +756,12 @@
     <ClCompile Include="..\..\..\fellow\os\windows\libs\caps\caps.c">
       <Filter>fellow\os\windows\libs\caps</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\fellow\memory\ChipsetBankHandler.cpp">
+      <Filter>fellow\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\fellow\memory\CiaBankHandler.cpp">
+      <Filter>fellow\memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\fellow\api\defs.h">
@@ -1495,6 +1501,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\caps.h">
       <Filter>fellow\os\windows\libs\caps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\api\IRuntimeEnvironment.h">
+      <Filter>fellow\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\application\Modules.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\memory\ChipsetBankHandler.h">
+      <Filter>fellow\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\api\ChipsetConstants.h">
+      <Filter>fellow\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\memory\CiaBankHandler.h">
+      <Filter>fellow\memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

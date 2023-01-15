@@ -39,6 +39,7 @@
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 #include "fellow/api/defs.h"
+#include "fellow/api/IRuntimeEnvironment.h"
 
 #define RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS 100
 #define RETRO_PLATFORM_KEYSET_COUNT 6 ///< north, east, south, west, fire, autofire
@@ -53,7 +54,7 @@ class RetroPlatform
 public:
   void EmulationStart(void);
   void EmulationStop(void);
-  void EnterHeadlessMode(void);
+  void EnterHeadlessMode(fellow::api::IRuntimeEnvironment* runtimeEnvironment);
 
   // getters
   ULO GetClippingOffsetLeftAdjusted(void);
@@ -197,6 +198,7 @@ private:
   HWND hGuestWindow = NULL;
 
   cfg *pConfig; ///< RetroPlatform copy of WinFellow configuration
+  fellow::api::IRuntimeEnvironment *pRuntimeEnvironment;
 };
 
 extern RetroPlatform RP;

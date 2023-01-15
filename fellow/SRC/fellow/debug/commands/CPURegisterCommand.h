@@ -15,8 +15,12 @@ public:
 
 class CPURegisterCommand : public DebuggerCommand<CPURegisterParameters, CPURegisterResult>
 {
+private:
+  fellow::api::vm::IM68K *_cpu{};
+
 public:
   CPURegisterResult Execute(const CPURegisterParameters &parameters) override;
 
+  CPURegisterCommand(fellow::api::vm::IM68K *cpu);
   virtual ~CPURegisterCommand() = default;
 };

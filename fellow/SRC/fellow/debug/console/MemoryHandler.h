@@ -7,6 +7,7 @@
 class MemoryHandler : public ConsoleCommandHandler
 {
 private:
+  fellow::api::vm::IMemorySystem *_vmMemory;
   const unsigned int DefaultLineCount = 8;
   const unsigned int DefaultLongsPerLine = 8;
   uint32_t _defaultAddress;
@@ -19,6 +20,6 @@ public:
   HelpText Help() const override;
   ConsoleCommandHandlerResult Handle(const std::vector<std::string> &tokens) override;
 
-  MemoryHandler();
+  MemoryHandler(fellow::api::vm::IMemorySystem *vmMemory);
   virtual ~MemoryHandler() = default;
 };

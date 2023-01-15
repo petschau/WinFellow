@@ -285,15 +285,15 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_PING: return true;
     case RP_IPC_TO_GUEST_CLOSE:
       Service->Log.AddLog("RetroPlatform::HostMessageFunction(): received close event.\n");
-      fellowRequestEmulationStop();
+      pRuntimeEnvironment->RequestEmulationStop();
       GraphicsDriverWin32()->RunEventSet();
       RP.SetEmulatorQuit(true);
       return true;
     case RP_IPC_TO_GUEST_RESET:
-      if (wParam == RP_RESET_HARD) fellowSetPerformResetBeforeStartingEmulation(true);
+      if (wParam == RP_RESET_HARD) pRuntimeEnvironment->RequestResetBeforeStartingEmulation();
       RP.SetEmulationPaused(false);
       GraphicsDriverWin32()->RunEventSet();
-      fellowRequestEmulationStop();
+      pRuntimeEnvironment->RequestEmulationStop();
       return true;
     case RP_IPC_TO_GUEST_TURBO:
       if (wParam & RP_TURBO_CPU)
@@ -307,7 +307,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
           cpuIntegrationSetSpeed(0);
           cpuIntegrationCalculateMultiplier();
           scheduler.DetermineCpuInstructionEventHandler();
-          fellowRequestEmulationStop();
+          pRuntimeEnvironment->RequestEmulationStop();
         }
         else
         {
@@ -315,7 +315,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
           cpuIntegrationSetSpeed(lOriginalSpeed);
           cpuIntegrationCalculateMultiplier();
           scheduler.DetermineCpuInstructionEventHandler();
-          fellowRequestEmulationStop();
+          pRuntimeEnvironment->RequestEmulationStop();
         }
       }
       if (wParam & RP_TURBO_FLOPPY) floppySetFastDMA(lParam & RP_TURBO_FLOPPY ? true : false);
@@ -1393,7 +1393,7 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
   // paused again.
   GraphicsDriverWin32()->RunEventSet();
   RegisterRetroPlatformScreenMode(false);
-  fellowRequestEmulationStop();
+  pRuntimeEnvironment->RequestEmulationStop();
 }
 
 void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
@@ -1821,14 +1821,19 @@ bool RetroPlatform::CheckEmulationNecessities(void)
  * This function performs the start of the emulator session. On a reset event,
  * winDrvEmulationStart will exit without bRetroPlatformEmulatorQuit being set.
  */
-void RetroPlatform::EnterHeadlessMode(void)
+void RetroPlatform::EnterHeadlessMode(IRuntimeEnvironment* runtimeEnvironment)
 {
+  pRuntimeEnvironment = runtimeEnvironment;
+
   if (RetroPlatform::CheckEmulationNecessities() == true)
   {
     cfgManagerSetCurrentConfig(&cfg_manager, pConfig);
     // check for manual or needed reset
     bool needResetAfterConfigurationActivation = cfgManagerConfigurationActivate(&cfg_manager);
-    fellowSetPerformResetBeforeStartingEmulation(fellowGetPerformResetBeforeStartingEmulation() || needResetAfterConfigurationActivation);
+    if (needResetAfterConfigurationActivation)
+    {
+      runtimeEnvironment->RequestResetBeforeStartingEmulation();
+    }
 
     RetroPlatform::SendEnabledFloppyDrives();
     RetroPlatform::SendEnabledHardDrives();

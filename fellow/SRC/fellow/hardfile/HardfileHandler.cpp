@@ -40,13 +40,10 @@ using namespace fellow::api::vm;
 using namespace fellow::api;
 using namespace std;
 
-namespace fellow::api::modules
-{
-  IHardfileHandler *HardfileHandler = new fellow::hardfile::HardfileHandler();
-}
-
 namespace fellow::hardfile
 {
+  static HardfileHandler *hardfileHandlerInstance = nullptr;
+
   /*====================*/
   /* fhfile.device      */
   /*====================*/
@@ -62,29 +59,30 @@ namespace fellow::hardfile
   /* Hardfile card init                                                        */
   /*===========================================================================*/
 
+  // TODO: Should not use hardcoded instance, will have to be done later
   void HardfileHandler_CardInit()
   {
-    fellow::api::modules::HardfileHandler->CardInit();
+    hardfileHandlerInstance->CardInit();
   }
 
   void HardfileHandler_CardMap(ULO mapping)
   {
-    fellow::api::modules::HardfileHandler->CardMap(mapping);
+    hardfileHandlerInstance->CardMap(mapping);
   }
 
   UBY HardfileHandler_ReadByte(ULO address)
   {
-    return fellow::api::modules::HardfileHandler->ReadByte(address);
+    return hardfileHandlerInstance->ReadByte(address);
   }
 
   UWO HardfileHandler_ReadWord(ULO address)
   {
-    return fellow::api::modules::HardfileHandler->ReadWord(address);
+    return hardfileHandlerInstance->ReadWord(address);
   }
 
   ULO HardfileHandler_ReadLong(ULO address)
   {
-    return fellow::api::modules::HardfileHandler->ReadLong(address);
+    return hardfileHandlerInstance->ReadLong(address);
   }
 
   void HardfileHandler_WriteByte(UBY data, ULO address)
@@ -109,19 +107,19 @@ namespace fellow::hardfile
 
   void HardfileHandler::CardInit()
   {
-    VM->Memory.EmemSet(0, 0xd1);
-    VM->Memory.EmemSet(8, 0xc0);
-    VM->Memory.EmemSet(4, 2);
-    VM->Memory.EmemSet(0x10, 2011 >> 8);
-    VM->Memory.EmemSet(0x14, 2011 & 0xf);
-    VM->Memory.EmemSet(0x18, 0);
-    VM->Memory.EmemSet(0x1c, 0);
-    VM->Memory.EmemSet(0x20, 0);
-    VM->Memory.EmemSet(0x24, 1);
-    VM->Memory.EmemSet(0x28, 0x10);
-    VM->Memory.EmemSet(0x2c, 0);
-    VM->Memory.EmemSet(0x40, 0);
-    VM->Memory.EmemMirror(0x1000, _rom + 0x1000, 0xa0);
+    _vm->Memory->EmemSet(0, 0xd1);
+    _vm->Memory->EmemSet(8, 0xc0);
+    _vm->Memory->EmemSet(4, 2);
+    _vm->Memory->EmemSet(0x10, 2011 >> 8);
+    _vm->Memory->EmemSet(0x14, 2011 & 0xf);
+    _vm->Memory->EmemSet(0x18, 0);
+    _vm->Memory->EmemSet(0x1c, 0);
+    _vm->Memory->EmemSet(0x20, 0);
+    _vm->Memory->EmemSet(0x24, 1);
+    _vm->Memory->EmemSet(0x28, 0x10);
+    _vm->Memory->EmemSet(0x2c, 0);
+    _vm->Memory->EmemSet(0x40, 0);
+    _vm->Memory->EmemMirror(0x1000, _rom + 0x1000, 0xa0);
   }
 
   /*====================================================*/
@@ -133,7 +131,7 @@ namespace fellow::hardfile
   {
     _romstart = (mapping << 8) & 0xff0000;
     ULO bank = _romstart >> 16;
-    VM->Memory.BankSet(MemoryBankDescriptor{.Kind = MemoryKind::FellowHardfileROM,
+    _vm->Memory->BankSet(MemoryBankDescriptor{.Kind = MemoryKind::FellowHardfileROM,
                                             .BankNumber = bank,
                                             .BaseBankNumber = bank,
                                             .ReadByteFunc = HardfileHandler_ReadByte,
@@ -274,12 +272,12 @@ namespace fellow::hardfile
       bool hasOlderOrSameFileSystemVersion = FindOlderOrSameFileSystemVersion(header->DOSType, header->Version, olderOrSameFileSystemIndex);
       if (!hasOlderOrSameFileSystemVersion)
       {
-        _fileSystems.push_back(make_unique<HardfileFileSystemEntry>(header.get(), 0));
+        _fileSystems.push_back(make_unique<HardfileFileSystemEntry>(header.get(), 0, _vm->Memory));
       }
       else if (_fileSystems[olderOrSameFileSystemIndex]->IsOlderVersion(header->Version))
       {
         // Replace older fs version with this one
-        _fileSystems[olderOrSameFileSystemIndex].reset(new HardfileFileSystemEntry(header.get(), 0));
+        _fileSystems[olderOrSameFileSystemIndex].reset(new HardfileFileSystemEntry(header.get(), 0, _vm->Memory));
       }
       // Ignore if newer or same fs version already added
     }
@@ -538,22 +536,22 @@ namespace fellow::hardfile
 
   void HardfileHandler::SetIOError(BYT errorCode)
   {
-    VM->Memory.WriteByte(errorCode, VM->CPU.GetAReg(1) + 31);
+    _vm->Memory->WriteByte(errorCode, _vm->CPU->GetAReg(1) + 31);
   }
 
   void HardfileHandler::SetIOActual(ULO ioActual)
   {
-    VM->Memory.WriteLong(ioActual, VM->CPU.GetAReg(1) + 32);
+    _vm->Memory->WriteLong(ioActual, _vm->CPU->GetAReg(1) + 32);
   }
 
   ULO HardfileHandler::GetUnitNumber()
   {
-    return VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 24);
+    return _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 24);
   }
 
   UWO HardfileHandler::GetCommand()
   {
-    return VM->Memory.ReadWord(VM->CPU.GetAReg(1) + 28);
+    return _vm->Memory->ReadWord(_vm->CPU->GetAReg(1) + 28);
   }
 
   /*==================*/
@@ -578,9 +576,9 @@ namespace fellow::hardfile
       return 32; // TDERR_BadUnitNum
     }
 
-    ULO dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
-    ULO offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
-    ULO length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
+    ULO dest = _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 40);
+    ULO offset = _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 44);
+    ULO length = _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 36);
 
     Service->Log.AddLogDebug("CMD_READ Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
 
@@ -592,7 +590,7 @@ namespace fellow::hardfile
     Service->HUD.NotifyHarddiskLEDChanged(index, true, false);
 
     fseek(_devices[index].F, offset, SEEK_SET);
-    fread(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
+    fread(_vm->Memory->AddressToPtr(dest), 1, length, _devices[index].F);
     SetIOActual(length);
 
     Service->HUD.NotifyHarddiskLEDChanged(index, false, false);
@@ -608,9 +606,9 @@ namespace fellow::hardfile
       return 32; // TDERR_BadUnitNum
     }
 
-    ULO dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
-    ULO offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
-    ULO length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
+    ULO dest = _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 40);
+    ULO offset = _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 44);
+    ULO length = _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 36);
 
     Service->Log.AddLogDebug("CMD_WRITE Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
 
@@ -622,7 +620,7 @@ namespace fellow::hardfile
     Service->HUD.NotifyHarddiskLEDChanged(index, true, true);
 
     fseek(_devices[index].F, offset, SEEK_SET);
-    fwrite(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
+    fwrite(_vm->Memory->AddressToPtr(dest), 1, length, _devices[index].F);
     SetIOActual(length);
 
     Service->HUD.NotifyHarddiskLEDChanged(index, false, true);
@@ -661,177 +659,177 @@ namespace fellow::hardfile
   BYT HardfileHandler::ScsiDirect(ULO index)
   {
     BYT error = 0;
-    ULO scsiCmdStruct = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40); // io_Data
+    ULO scsiCmdStruct = _vm->Memory->ReadLong(_vm->CPU->GetAReg(1) + 40); // io_Data
 
     Service->Log.AddLogDebug("HD_SCSICMD Unit %d (%d) ScsiCmd at %.8X\n", GetUnitNumberFromIndex(index), index, scsiCmdStruct);
 
-    ULO scsiCommand = VM->Memory.ReadLong(scsiCmdStruct + 12);
-    UWO scsiCommandLength = VM->Memory.ReadWord(scsiCmdStruct + 16);
+    ULO scsiCommand = _vm->Memory->ReadLong(scsiCmdStruct + 12);
+    UWO scsiCommandLength = _vm->Memory->ReadWord(scsiCmdStruct + 16);
 
     Service->Log.AddLogDebug("HD_SCSICMD Command length %d, data", scsiCommandLength);
 
     for (int i = 0; i < scsiCommandLength; i++)
     {
-      Service->Log.AddLogDebug(" %.2X", VM->Memory.ReadByte(scsiCommand + i));
+      Service->Log.AddLogDebug(" %.2X", _vm->Memory->ReadByte(scsiCommand + i));
     }
     Service->Log.AddLogDebug("\n");
 
-    UBY commandNumber = VM->Memory.ReadByte(scsiCommand);
-    ULO returnData = VM->Memory.ReadLong(scsiCmdStruct);
+    UBY commandNumber = _vm->Memory->ReadByte(scsiCommand);
+    ULO returnData = _vm->Memory->ReadLong(scsiCmdStruct);
     switch (commandNumber)
     {
       case 0x25: // Read capacity (10)
         Service->Log.AddLogDebug("SCSI direct command 0x25 Read Capacity\n");
         {
           ULO bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
-          bool pmi = !!(VM->Memory.ReadByte(scsiCommand + 8) & 1);
+          bool pmi = !!(_vm->Memory->ReadByte(scsiCommand + 8) & 1);
 
           if (pmi)
           {
             ULO blocksPerCylinder = (_devices[index].Configuration.Geometry.SectorsPerTrack * _devices[index].Configuration.Geometry.Surfaces) - 1;
-            VM->Memory.WriteByte(blocksPerCylinder >> 24, returnData);
-            VM->Memory.WriteByte(blocksPerCylinder >> 16, returnData + 1);
-            VM->Memory.WriteByte(blocksPerCylinder >> 8, returnData + 2);
-            VM->Memory.WriteByte(blocksPerCylinder, returnData + 3);
+            _vm->Memory->WriteByte(blocksPerCylinder >> 24, returnData);
+            _vm->Memory->WriteByte(blocksPerCylinder >> 16, returnData + 1);
+            _vm->Memory->WriteByte(blocksPerCylinder >> 8, returnData + 2);
+            _vm->Memory->WriteByte(blocksPerCylinder, returnData + 3);
           }
           else
           {
             ULO blocksOnDevice = (_devices[index].GeometrySize / _devices[index].Configuration.Geometry.BytesPerSector) - 1;
-            VM->Memory.WriteByte(blocksOnDevice >> 24, returnData);
-            VM->Memory.WriteByte(blocksOnDevice >> 16, returnData + 1);
-            VM->Memory.WriteByte(blocksOnDevice >> 8, returnData + 2);
-            VM->Memory.WriteByte(blocksOnDevice, returnData + 3);
+            _vm->Memory->WriteByte(blocksOnDevice >> 24, returnData);
+            _vm->Memory->WriteByte(blocksOnDevice >> 16, returnData + 1);
+            _vm->Memory->WriteByte(blocksOnDevice >> 8, returnData + 2);
+            _vm->Memory->WriteByte(blocksOnDevice, returnData + 3);
           }
-          VM->Memory.WriteByte(bytesPerSector >> 24, returnData + 4);
-          VM->Memory.WriteByte(bytesPerSector >> 16, returnData + 5);
-          VM->Memory.WriteByte(bytesPerSector >> 8, returnData + 6);
-          VM->Memory.WriteByte(bytesPerSector, returnData + 7);
+          _vm->Memory->WriteByte(bytesPerSector >> 24, returnData + 4);
+          _vm->Memory->WriteByte(bytesPerSector >> 16, returnData + 5);
+          _vm->Memory->WriteByte(bytesPerSector >> 8, returnData + 6);
+          _vm->Memory->WriteByte(bytesPerSector, returnData + 7);
 
-          VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
-          VM->Memory.WriteByte(0, scsiCmdStruct + 9);
-          VM->Memory.WriteByte(0, scsiCmdStruct + 10);
-          VM->Memory.WriteByte(8, scsiCmdStruct + 11);
+          _vm->Memory->WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+          _vm->Memory->WriteByte(0, scsiCmdStruct + 9);
+          _vm->Memory->WriteByte(0, scsiCmdStruct + 10);
+          _vm->Memory->WriteByte(8, scsiCmdStruct + 11);
 
-          VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+          _vm->Memory->WriteByte(0, scsiCmdStruct + 21); // Status
         }
         break;
       case 0x37: // Read defect Data (10)
         Service->Log.AddLogDebug("SCSI direct command 0x37 Read defect Data\n");
 
-        VM->Memory.WriteByte(0, returnData);
-        VM->Memory.WriteByte(VM->Memory.ReadByte(scsiCommand + 2), returnData + 1);
-        VM->Memory.WriteByte(0, returnData + 2); // No defects (word)
-        VM->Memory.WriteByte(0, returnData + 3);
+        _vm->Memory->WriteByte(0, returnData);
+        _vm->Memory->WriteByte(_vm->Memory->ReadByte(scsiCommand + 2), returnData + 1);
+        _vm->Memory->WriteByte(0, returnData + 2); // No defects (word)
+        _vm->Memory->WriteByte(0, returnData + 3);
 
-        VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
-        VM->Memory.WriteByte(0, scsiCmdStruct + 9);
-        VM->Memory.WriteByte(0, scsiCmdStruct + 10);
-        VM->Memory.WriteByte(4, scsiCmdStruct + 11);
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 9);
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 10);
+        _vm->Memory->WriteByte(4, scsiCmdStruct + 11);
 
-        VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 21); // Status
         break;
       case 0x12: // Inquiry
         Service->Log.AddLogDebug("SCSI direct command 0x12 Inquiry\n");
 
-        VM->Memory.WriteByte(0, returnData);     // Pheripheral type 0 connected (magnetic disk)
-        VM->Memory.WriteByte(0, returnData + 1); // Not removable
-        VM->Memory.WriteByte(0, returnData + 2); // Does not claim conformance to any standard
-        VM->Memory.WriteByte(2, returnData + 3);
-        VM->Memory.WriteByte(32, returnData + 4); // Additional length
-        VM->Memory.WriteByte(0, returnData + 5);
-        VM->Memory.WriteByte(0, returnData + 6);
-        VM->Memory.WriteByte(0, returnData + 7);
-        VM->Memory.WriteByte('F', returnData + 8);
-        VM->Memory.WriteByte('E', returnData + 9);
-        VM->Memory.WriteByte('L', returnData + 10);
-        VM->Memory.WriteByte('L', returnData + 11);
-        VM->Memory.WriteByte('O', returnData + 12);
-        VM->Memory.WriteByte('W', returnData + 13);
-        VM->Memory.WriteByte(' ', returnData + 14);
-        VM->Memory.WriteByte(' ', returnData + 15);
-        VM->Memory.WriteByte('H', returnData + 16);
-        VM->Memory.WriteByte('a', returnData + 17);
-        VM->Memory.WriteByte('r', returnData + 18);
-        VM->Memory.WriteByte('d', returnData + 19);
-        VM->Memory.WriteByte('f', returnData + 20);
-        VM->Memory.WriteByte('i', returnData + 21);
-        VM->Memory.WriteByte('l', returnData + 22);
-        VM->Memory.WriteByte('e', returnData + 23);
-        VM->Memory.WriteByte(' ', returnData + 24);
-        VM->Memory.WriteByte(' ', returnData + 25);
-        VM->Memory.WriteByte(' ', returnData + 26);
-        VM->Memory.WriteByte(' ', returnData + 27);
-        VM->Memory.WriteByte(' ', returnData + 28);
-        VM->Memory.WriteByte(' ', returnData + 29);
-        VM->Memory.WriteByte(' ', returnData + 30);
-        VM->Memory.WriteByte(' ', returnData + 31);
-        VM->Memory.WriteByte('1', returnData + 32);
-        VM->Memory.WriteByte('.', returnData + 33);
-        VM->Memory.WriteByte('0', returnData + 34);
-        VM->Memory.WriteByte(' ', returnData + 35);
+        _vm->Memory->WriteByte(0, returnData);     // Pheripheral type 0 connected (magnetic disk)
+        _vm->Memory->WriteByte(0, returnData + 1); // Not removable
+        _vm->Memory->WriteByte(0, returnData + 2); // Does not claim conformance to any standard
+        _vm->Memory->WriteByte(2, returnData + 3);
+        _vm->Memory->WriteByte(32, returnData + 4); // Additional length
+        _vm->Memory->WriteByte(0, returnData + 5);
+        _vm->Memory->WriteByte(0, returnData + 6);
+        _vm->Memory->WriteByte(0, returnData + 7);
+        _vm->Memory->WriteByte('F', returnData + 8);
+        _vm->Memory->WriteByte('E', returnData + 9);
+        _vm->Memory->WriteByte('L', returnData + 10);
+        _vm->Memory->WriteByte('L', returnData + 11);
+        _vm->Memory->WriteByte('O', returnData + 12);
+        _vm->Memory->WriteByte('W', returnData + 13);
+        _vm->Memory->WriteByte(' ', returnData + 14);
+        _vm->Memory->WriteByte(' ', returnData + 15);
+        _vm->Memory->WriteByte('H', returnData + 16);
+        _vm->Memory->WriteByte('a', returnData + 17);
+        _vm->Memory->WriteByte('r', returnData + 18);
+        _vm->Memory->WriteByte('d', returnData + 19);
+        _vm->Memory->WriteByte('f', returnData + 20);
+        _vm->Memory->WriteByte('i', returnData + 21);
+        _vm->Memory->WriteByte('l', returnData + 22);
+        _vm->Memory->WriteByte('e', returnData + 23);
+        _vm->Memory->WriteByte(' ', returnData + 24);
+        _vm->Memory->WriteByte(' ', returnData + 25);
+        _vm->Memory->WriteByte(' ', returnData + 26);
+        _vm->Memory->WriteByte(' ', returnData + 27);
+        _vm->Memory->WriteByte(' ', returnData + 28);
+        _vm->Memory->WriteByte(' ', returnData + 29);
+        _vm->Memory->WriteByte(' ', returnData + 30);
+        _vm->Memory->WriteByte(' ', returnData + 31);
+        _vm->Memory->WriteByte('1', returnData + 32);
+        _vm->Memory->WriteByte('.', returnData + 33);
+        _vm->Memory->WriteByte('0', returnData + 34);
+        _vm->Memory->WriteByte(' ', returnData + 35);
 
-        VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
-        VM->Memory.WriteByte(0, scsiCmdStruct + 9);
-        VM->Memory.WriteByte(0, scsiCmdStruct + 10);
-        VM->Memory.WriteByte(36, scsiCmdStruct + 11);
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 9);
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 10);
+        _vm->Memory->WriteByte(36, scsiCmdStruct + 11);
 
-        VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+        _vm->Memory->WriteByte(0, scsiCmdStruct + 21); // Status
         break;
       case 0x1a: // Mode sense
         Service->Log.AddLogDebug("SCSI direct command 0x1a Mode sense\n");
         {
           // Show values for debug
-          ULO senseData = VM->Memory.ReadLong(scsiCmdStruct + 22);            // senseData and related fields are only used for autosensing error condition when the command fail
-          UWO senseLengthAllocated = VM->Memory.ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
-          UBY scsciCommandFlags = VM->Memory.ReadByte(scsiCmdStruct + 20);
+          ULO senseData = _vm->Memory->ReadLong(scsiCmdStruct + 22);            // senseData and related fields are only used for autosensing error condition when the command fail
+          UWO senseLengthAllocated = _vm->Memory->ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
+          UBY scsciCommandFlags = _vm->Memory->ReadByte(scsiCmdStruct + 20);
 
-          UBY pageCode = VM->Memory.ReadByte(scsiCommand + 2) & 0x3f;
+          UBY pageCode = _vm->Memory->ReadByte(scsiCommand + 2) & 0x3f;
           if (pageCode == 3)
           {
             UWO sectorsPerTrack = _devices[index].Configuration.Geometry.SectorsPerTrack;
             UWO bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
 
             // Header
-            VM->Memory.WriteByte(24 + 3, returnData);
-            VM->Memory.WriteByte(0, returnData + 1);
-            VM->Memory.WriteByte(0, returnData + 2);
-            VM->Memory.WriteByte(0, returnData + 3);
+            _vm->Memory->WriteByte(24 + 3, returnData);
+            _vm->Memory->WriteByte(0, returnData + 1);
+            _vm->Memory->WriteByte(0, returnData + 2);
+            _vm->Memory->WriteByte(0, returnData + 3);
 
             // Page
             ULO destination = returnData + 4;
-            VM->Memory.WriteByte(3, destination);        // Page 3 format device
-            VM->Memory.WriteByte(0x16, destination + 1); // Page length
-            VM->Memory.WriteByte(0, destination + 2);    // Tracks per zone
-            VM->Memory.WriteByte(1, destination + 3);
-            VM->Memory.WriteByte(0, destination + 4); // Alternate sectors per zone
-            VM->Memory.WriteByte(0, destination + 5);
-            VM->Memory.WriteByte(0, destination + 6); // Alternate tracks per zone
-            VM->Memory.WriteByte(0, destination + 7);
-            VM->Memory.WriteByte(0, destination + 8); // Alternate tracks per volume
-            VM->Memory.WriteByte(0, destination + 9);
-            VM->Memory.WriteByte(sectorsPerTrack >> 8, destination + 10); // Sectors per track
-            VM->Memory.WriteByte(sectorsPerTrack & 0xff, destination + 11);
-            VM->Memory.WriteByte(bytesPerSector >> 8, destination + 12); // Data bytes per physical sector
-            VM->Memory.WriteByte(bytesPerSector & 0xff, destination + 13);
-            VM->Memory.WriteByte(0, destination + 14); // Interleave
-            VM->Memory.WriteByte(1, destination + 15);
-            VM->Memory.WriteByte(0, destination + 16); // Track skew factor
-            VM->Memory.WriteByte(0, destination + 17);
-            VM->Memory.WriteByte(0, destination + 18); // Cylinder skew factor
-            VM->Memory.WriteByte(0, destination + 19);
-            VM->Memory.WriteByte(0x80, destination + 20);
-            VM->Memory.WriteByte(0, destination + 21);
-            VM->Memory.WriteByte(0, destination + 22);
-            VM->Memory.WriteByte(0, destination + 23);
+            _vm->Memory->WriteByte(3, destination);        // Page 3 format device
+            _vm->Memory->WriteByte(0x16, destination + 1); // Page length
+            _vm->Memory->WriteByte(0, destination + 2);    // Tracks per zone
+            _vm->Memory->WriteByte(1, destination + 3);
+            _vm->Memory->WriteByte(0, destination + 4); // Alternate sectors per zone
+            _vm->Memory->WriteByte(0, destination + 5);
+            _vm->Memory->WriteByte(0, destination + 6); // Alternate tracks per zone
+            _vm->Memory->WriteByte(0, destination + 7);
+            _vm->Memory->WriteByte(0, destination + 8); // Alternate tracks per volume
+            _vm->Memory->WriteByte(0, destination + 9);
+            _vm->Memory->WriteByte(sectorsPerTrack >> 8, destination + 10); // Sectors per track
+            _vm->Memory->WriteByte(sectorsPerTrack & 0xff, destination + 11);
+            _vm->Memory->WriteByte(bytesPerSector >> 8, destination + 12); // Data bytes per physical sector
+            _vm->Memory->WriteByte(bytesPerSector & 0xff, destination + 13);
+            _vm->Memory->WriteByte(0, destination + 14); // Interleave
+            _vm->Memory->WriteByte(1, destination + 15);
+            _vm->Memory->WriteByte(0, destination + 16); // Track skew factor
+            _vm->Memory->WriteByte(0, destination + 17);
+            _vm->Memory->WriteByte(0, destination + 18); // Cylinder skew factor
+            _vm->Memory->WriteByte(0, destination + 19);
+            _vm->Memory->WriteByte(0x80, destination + 20);
+            _vm->Memory->WriteByte(0, destination + 21);
+            _vm->Memory->WriteByte(0, destination + 22);
+            _vm->Memory->WriteByte(0, destination + 23);
 
-            VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
-            VM->Memory.WriteByte(0, scsiCmdStruct + 9);
-            VM->Memory.WriteByte(0, scsiCmdStruct + 10);
-            VM->Memory.WriteByte(24 + 4, scsiCmdStruct + 11);
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 9);
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 10);
+            _vm->Memory->WriteByte(24 + 4, scsiCmdStruct + 11);
 
-            VM->Memory.WriteByte(0, scsiCmdStruct + 28); // sense actual length (word)
-            VM->Memory.WriteByte(0, scsiCmdStruct + 29);
-            VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 28); // sense actual length (word)
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 29);
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 21); // Status
           }
           else if (pageCode == 4)
           {
@@ -839,46 +837,46 @@ namespace fellow::hardfile
             UBY surfaces = _devices[index].Configuration.Geometry.Surfaces;
 
             // Header
-            VM->Memory.WriteByte(24 + 3, returnData);
-            VM->Memory.WriteByte(0, returnData + 1);
-            VM->Memory.WriteByte(0, returnData + 2);
-            VM->Memory.WriteByte(0, returnData + 3);
+            _vm->Memory->WriteByte(24 + 3, returnData);
+            _vm->Memory->WriteByte(0, returnData + 1);
+            _vm->Memory->WriteByte(0, returnData + 2);
+            _vm->Memory->WriteByte(0, returnData + 3);
 
             // Page
             ULO destination = returnData + 4;
-            VM->Memory.WriteByte(4, destination);                           // Page 4 Rigid disk geometry
-            VM->Memory.WriteByte(0x16, destination + 1);                    // Page length
-            VM->Memory.WriteByte(numberOfCylinders >> 16, destination + 2); // Number of cylinders (3 bytes)
-            VM->Memory.WriteByte(numberOfCylinders >> 8, destination + 3);
-            VM->Memory.WriteByte(numberOfCylinders, destination + 4);
-            VM->Memory.WriteByte(surfaces, destination + 5); // Number of heads
-            VM->Memory.WriteByte(0, destination + 6);        // Starting cylinder write precomp (3 bytes)
-            VM->Memory.WriteByte(0, destination + 7);
-            VM->Memory.WriteByte(0, destination + 8);
-            VM->Memory.WriteByte(0, destination + 9); // Starting cylinder reduces write current (3 bytes)
-            VM->Memory.WriteByte(0, destination + 10);
-            VM->Memory.WriteByte(0, destination + 11);
-            VM->Memory.WriteByte(0, destination + 12); // Drive step rate
-            VM->Memory.WriteByte(0, destination + 13);
-            VM->Memory.WriteByte(numberOfCylinders >> 16, destination + 14); // Landing zone cylinder (3 bytes)
-            VM->Memory.WriteByte(numberOfCylinders >> 8, destination + 15);
-            VM->Memory.WriteByte(numberOfCylinders, destination + 16);
-            VM->Memory.WriteByte(0, destination + 17);    // Nothing
-            VM->Memory.WriteByte(0, destination + 18);    // Rotational offset
-            VM->Memory.WriteByte(0, destination + 19);    // Reserved
-            VM->Memory.WriteByte(0x1c, destination + 20); // Medium rotation rate
-            VM->Memory.WriteByte(0x20, destination + 21);
-            VM->Memory.WriteByte(0, destination + 22); // Reserved
-            VM->Memory.WriteByte(0, destination + 23); // Reserved
+            _vm->Memory->WriteByte(4, destination);                           // Page 4 Rigid disk geometry
+            _vm->Memory->WriteByte(0x16, destination + 1);                    // Page length
+            _vm->Memory->WriteByte(numberOfCylinders >> 16, destination + 2); // Number of cylinders (3 bytes)
+            _vm->Memory->WriteByte(numberOfCylinders >> 8, destination + 3);
+            _vm->Memory->WriteByte(numberOfCylinders, destination + 4);
+            _vm->Memory->WriteByte(surfaces, destination + 5); // Number of heads
+            _vm->Memory->WriteByte(0, destination + 6);        // Starting cylinder write precomp (3 bytes)
+            _vm->Memory->WriteByte(0, destination + 7);
+            _vm->Memory->WriteByte(0, destination + 8);
+            _vm->Memory->WriteByte(0, destination + 9); // Starting cylinder reduces write current (3 bytes)
+            _vm->Memory->WriteByte(0, destination + 10);
+            _vm->Memory->WriteByte(0, destination + 11);
+            _vm->Memory->WriteByte(0, destination + 12); // Drive step rate
+            _vm->Memory->WriteByte(0, destination + 13);
+            _vm->Memory->WriteByte(numberOfCylinders >> 16, destination + 14); // Landing zone cylinder (3 bytes)
+            _vm->Memory->WriteByte(numberOfCylinders >> 8, destination + 15);
+            _vm->Memory->WriteByte(numberOfCylinders, destination + 16);
+            _vm->Memory->WriteByte(0, destination + 17);    // Nothing
+            _vm->Memory->WriteByte(0, destination + 18);    // Rotational offset
+            _vm->Memory->WriteByte(0, destination + 19);    // Reserved
+            _vm->Memory->WriteByte(0x1c, destination + 20); // Medium rotation rate
+            _vm->Memory->WriteByte(0x20, destination + 21);
+            _vm->Memory->WriteByte(0, destination + 22); // Reserved
+            _vm->Memory->WriteByte(0, destination + 23); // Reserved
 
-            VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
-            VM->Memory.WriteByte(0, scsiCmdStruct + 9);
-            VM->Memory.WriteByte(0, scsiCmdStruct + 10);
-            VM->Memory.WriteByte(24 + 4, scsiCmdStruct + 11);
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 9);
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 10);
+            _vm->Memory->WriteByte(24 + 4, scsiCmdStruct + 11);
 
-            VM->Memory.WriteByte(0, scsiCmdStruct + 28); // sense actual length (word)
-            VM->Memory.WriteByte(0, scsiCmdStruct + 29);
-            VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 28); // sense actual length (word)
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 29);
+            _vm->Memory->WriteByte(0, scsiCmdStruct + 21); // Status
           }
           else
           {
@@ -915,10 +913,10 @@ namespace fellow::hardfile
 
     CreateDOSDevPackets(_devicename);
 
-    _configdev = VM->CPU.GetAReg(3);
-    VM->Memory.DmemSetLongNoCounter(FHFILE_MAX_DEVICES, 4088);
-    VM->Memory.DmemSetLongNoCounter(_configdev, 4092);
-    VM->CPU.SetDReg(0, 1);
+    _configdev = _vm->CPU->GetAReg(3);
+    _vm->Memory->DmemSetLongNoCounter(FHFILE_MAX_DEVICES, 4088);
+    _vm->Memory->DmemSetLongNoCounter(_configdev, 4092);
+    _vm->CPU->SetDReg(0, 1);
   }
 
   /*======================================*/
@@ -928,39 +926,39 @@ namespace fellow::hardfile
   // Returns D0 - 0 - Success, non-zero - Error
   void HardfileHandler::DoOpen()
   {
-    ULO unit = VM->CPU.GetDReg(0);
+    ULO unit = _vm->CPU->GetDReg(0);
     unsigned int index = GetIndexFromUnitNumber(unit);
 
     if (index < FHFILE_MAX_DEVICES && _devices[index].F != nullptr)
     {
-      VM->Memory.WriteByte(7, VM->CPU.GetAReg(1) + 8);                                                 /* ln_type (NT_REPLYMSG) */
+      _vm->Memory->WriteByte(7, _vm->CPU->GetAReg(1) + 8);                                                 /* ln_type (NT_REPLYMSG) */
       SetIOError(0);                                                                                   /* io_error */
-      VM->Memory.WriteLong(VM->CPU.GetDReg(0), VM->CPU.GetAReg(1) + 24);                               /* io_unit */
-      VM->Memory.WriteLong(VM->Memory.ReadLong(VM->CPU.GetAReg(6) + 32) + 1, VM->CPU.GetAReg(6) + 32); /* LIB_OPENCNT */
-      VM->CPU.SetDReg(0, 0);                                                                           /* Success */
+      _vm->Memory->WriteLong(_vm->CPU->GetDReg(0), _vm->CPU->GetAReg(1) + 24);                               /* io_unit */
+      _vm->Memory->WriteLong(_vm->Memory->ReadLong(_vm->CPU->GetAReg(6) + 32) + 1, _vm->CPU->GetAReg(6) + 32); /* LIB_OPENCNT */
+      _vm->CPU->SetDReg(0, 0);                                                                           /* Success */
     }
     else
     {
-      VM->Memory.WriteLong(static_cast<ULO>(-1), VM->CPU.GetAReg(1) + 20);
+      _vm->Memory->WriteLong(static_cast<ULO>(-1), _vm->CPU->GetAReg(1) + 20);
       SetIOError(-1);                           /* io_error */
-      VM->CPU.SetDReg(0, static_cast<ULO>(-1)); /* Fail */
+      _vm->CPU->SetDReg(0, static_cast<ULO>(-1)); /* Fail */
     }
   }
 
   void HardfileHandler::DoClose()
   {
-    VM->Memory.WriteLong(VM->Memory.ReadLong(VM->CPU.GetAReg(6) + 32) - 1, VM->CPU.GetAReg(6) + 32); /* LIB_OPENCNT */
-    VM->CPU.SetDReg(0, 0);                                                                           /* Causes invalid free-mem entry recoverable alert if omitted */
+    _vm->Memory->WriteLong(_vm->Memory->ReadLong(_vm->CPU->GetAReg(6) + 32) - 1, _vm->CPU->GetAReg(6) + 32); /* LIB_OPENCNT */
+    _vm->CPU->SetDReg(0, 0);                                                                           /* Causes invalid free-mem entry recoverable alert if omitted */
   }
 
   void HardfileHandler::DoExpunge()
   {
-    VM->CPU.SetDReg(0, 0); /* ? */
+    _vm->CPU->SetDReg(0, 0); /* ? */
   }
 
   void HardfileHandler::DoNULL()
   {
-    VM->CPU.SetDReg(0, 0); /* ? */
+    _vm->CPU->SetDReg(0, 0); /* ? */
   }
 
   // void BeginIO(io_req)
@@ -1058,14 +1056,14 @@ namespace fellow::hardfile
         error = -3;
         break;
     }
-    VM->Memory.WriteByte(5, VM->CPU.GetAReg(1) + 8); /* ln_type (Reply message) */
+    _vm->Memory->WriteByte(5, _vm->CPU->GetAReg(1) + 8); /* ln_type (Reply message) */
     SetIOError(error);                               // ln_error
   }
 
   void HardfileHandler::DoAbortIO()
   {
     // Set some more success values here, this is ok, we never have pending io.
-    VM->CPU.SetDReg(0, static_cast<ULO>(-3));
+    _vm->CPU->SetDReg(0, static_cast<ULO>(-3));
   }
 
   // RDB support functions, native callbacks
@@ -1105,15 +1103,15 @@ namespace fellow::hardfile
     }
 
     ULO hunkSize = fileSystem->Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex)->GetAllocateSizeInBytes();
-    VM->Memory.WriteLong(hunkSize + 8, destinationAddress); // Total size of allocation
-    VM->Memory.WriteLong(0, destinationAddress + 4);        // No next segment for now
+    _vm->Memory->WriteLong(hunkSize + 8, destinationAddress); // Total size of allocation
+    _vm->Memory->WriteLong(0, destinationAddress + 4);        // No next segment for now
   }
 
   void HardfileHandler::DoRelocateFileSystem(ULO fileSystemIndex)
   {
     Service->Log.AddLogDebug("fhfile: DoRelocateFileSystem(fileSystemIndex: %u\n", fileSystemIndex);
     HardfileFileSystemEntry *fsEntry = _fileSystems[fileSystemIndex].get();
-    fellow::hardfile::hunks::HunkRelocator hunkRelocator(fsEntry->Header->FileSystemHandler.FileImage);
+    fellow::hardfile::hunks::HunkRelocator hunkRelocator(fsEntry->Header->FileSystemHandler.FileImage, _vm->Memory);
     hunkRelocator.RelocateHunks();
   }
 
@@ -1124,24 +1122,24 @@ namespace fellow::hardfile
     HardfileFileSystemEntry *fsEntry = _fileSystems[fileSystemIndex].get();
     RDBFileSystemHeader *fsHeader = fsEntry->Header;
 
-    VM->Memory.WriteLong(_fsname, fileSystemEntry + 10);
-    VM->Memory.WriteLong(fsHeader->DOSType, fileSystemEntry + 14);
-    VM->Memory.WriteLong(fsHeader->Version, fileSystemEntry + 18);
-    VM->Memory.WriteLong(fsHeader->PatchFlags, fileSystemEntry + 22);
-    VM->Memory.WriteLong(fsHeader->DnType, fileSystemEntry + 26);
-    VM->Memory.WriteLong(fsHeader->DnTask, fileSystemEntry + 30);
-    VM->Memory.WriteLong(fsHeader->DnLock, fileSystemEntry + 34);
-    VM->Memory.WriteLong(fsHeader->DnHandler, fileSystemEntry + 38);
-    VM->Memory.WriteLong(fsHeader->DnStackSize, fileSystemEntry + 42);
-    VM->Memory.WriteLong(fsHeader->DnPriority, fileSystemEntry + 46);
-    VM->Memory.WriteLong(fsHeader->DnStartup, fileSystemEntry + 50);
-    VM->Memory.WriteLong(fsEntry->SegListAddress >> 2, fileSystemEntry + 54);
-    //  VM->Memory.WriteLong(fsHeader.DnSegListBlock, fileSystemEntry + 54);
-    VM->Memory.WriteLong(fsHeader->DnGlobalVec, fileSystemEntry + 58);
+    _vm->Memory->WriteLong(_fsname, fileSystemEntry + 10);
+    _vm->Memory->WriteLong(fsHeader->DOSType, fileSystemEntry + 14);
+    _vm->Memory->WriteLong(fsHeader->Version, fileSystemEntry + 18);
+    _vm->Memory->WriteLong(fsHeader->PatchFlags, fileSystemEntry + 22);
+    _vm->Memory->WriteLong(fsHeader->DnType, fileSystemEntry + 26);
+    _vm->Memory->WriteLong(fsHeader->DnTask, fileSystemEntry + 30);
+    _vm->Memory->WriteLong(fsHeader->DnLock, fileSystemEntry + 34);
+    _vm->Memory->WriteLong(fsHeader->DnHandler, fileSystemEntry + 38);
+    _vm->Memory->WriteLong(fsHeader->DnStackSize, fileSystemEntry + 42);
+    _vm->Memory->WriteLong(fsHeader->DnPriority, fileSystemEntry + 46);
+    _vm->Memory->WriteLong(fsHeader->DnStartup, fileSystemEntry + 50);
+    _vm->Memory->WriteLong(fsEntry->SegListAddress >> 2, fileSystemEntry + 54);
+    //  _vm->Memory->WriteLong(fsHeader.DnSegListBlock, fileSystemEntry + 54);
+    _vm->Memory->WriteLong(fsHeader->DnGlobalVec, fileSystemEntry + 58);
 
     for (int i = 0; i < 23; i++)
     {
-      VM->Memory.WriteLong(fsHeader->Reserved2[i], fileSystemEntry + 62 + i * 4);
+      _vm->Memory->WriteLong(fsHeader->Reserved2[i], fileSystemEntry + 62 + i * 4);
     }
   }
 
@@ -1158,12 +1156,12 @@ namespace fellow::hardfile
     }
 
     string name;
-    char c = VM->Memory.ReadByte(address);
+    char c = _vm->Memory->ReadByte(address);
     address++;
     while (c != 0)
     {
       name.push_back(c == '\n' ? '.' : c);
-      c = VM->Memory.ReadByte(address);
+      c = _vm->Memory->ReadByte(address);
       address++;
     }
     return name;
@@ -1173,25 +1171,25 @@ namespace fellow::hardfile
   {
     Service->Log.AddLogDebug("fhfile: DoLogAvailableResources()\n");
 
-    ULO execBase = VM->Memory.ReadLong(4); // Fetch list from exec
-    ULO rsListHeader = VM->Memory.ReadLong(execBase + 0x150);
+    ULO execBase = _vm->Memory->ReadLong(4); // Fetch list from exec
+    ULO rsListHeader = _vm->Memory->ReadLong(execBase + 0x150);
 
-    Service->Log.AddLogDebug("fhfile: Resource list header (%.8X): Head %.8X Tail %.8X TailPred %.8X Type %d\n", rsListHeader, VM->Memory.ReadLong(rsListHeader), VM->Memory.ReadLong(rsListHeader + 4),
-                             VM->Memory.ReadLong(rsListHeader + 8), VM->Memory.ReadByte(rsListHeader + 9));
+    Service->Log.AddLogDebug("fhfile: Resource list header (%.8X): Head %.8X Tail %.8X TailPred %.8X Type %d\n", rsListHeader, _vm->Memory->ReadLong(rsListHeader), _vm->Memory->ReadLong(rsListHeader + 4),
+                             _vm->Memory->ReadLong(rsListHeader + 8), _vm->Memory->ReadByte(rsListHeader + 9));
 
-    if (rsListHeader == VM->Memory.ReadLong(rsListHeader + 8))
+    if (rsListHeader == _vm->Memory->ReadLong(rsListHeader + 8))
     {
       Service->Log.AddLogDebug("fhfile: Resource list is empty.\n");
       return;
     }
 
-    ULO fsNode = VM->Memory.ReadLong(rsListHeader);
+    ULO fsNode = _vm->Memory->ReadLong(rsListHeader);
     while (fsNode != 0 && (fsNode != rsListHeader + 4))
     {
-      Service->Log.AddLogDebug("fhfile: ResourceEntry Node (%.8X): Succ %.8X Pred %.8X Type %d Pri %d NodeName '%s'\n", fsNode, VM->Memory.ReadLong(fsNode), VM->Memory.ReadLong(fsNode + 4),
-                               VM->Memory.ReadByte(fsNode + 8), VM->Memory.ReadByte(fsNode + 9), LogGetStringFromMemory(VM->Memory.ReadLong(fsNode + 10)).c_str());
+      Service->Log.AddLogDebug("fhfile: ResourceEntry Node (%.8X): Succ %.8X Pred %.8X Type %d Pri %d NodeName '%s'\n", fsNode, _vm->Memory->ReadLong(fsNode), _vm->Memory->ReadLong(fsNode + 4),
+                               _vm->Memory->ReadByte(fsNode + 8), _vm->Memory->ReadByte(fsNode + 9), LogGetStringFromMemory(_vm->Memory->ReadLong(fsNode + 10)).c_str());
 
-      fsNode = VM->Memory.ReadLong(fsNode);
+      fsNode = _vm->Memory->ReadLong(fsNode);
     }
   }
 
@@ -1210,32 +1208,32 @@ namespace fellow::hardfile
     Service->Log.AddLogDebug("fhfile: DoRemoveRDBFileSystemsAlreadySupportedBySystem(filesystemResource: %.8X)\n", filesystemResource);
 
     ULO fsList = filesystemResource + 18;
-    if (fsList == VM->Memory.ReadLong(fsList + 8))
+    if (fsList == _vm->Memory->ReadLong(fsList + 8))
     {
       Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
-    ULO fsNode = VM->Memory.ReadLong(fsList);
+    ULO fsNode = _vm->Memory->ReadLong(fsList);
     while (fsNode != 0 && (fsNode != fsList + 4))
     {
       ULO fsEntry = fsNode + 14;
-      ULO dosType = VM->Memory.ReadLong(fsEntry);
-      ULO version = VM->Memory.ReadLong(fsEntry + 4);
+      ULO dosType = _vm->Memory->ReadLong(fsEntry);
+      ULO version = _vm->Memory->ReadLong(fsEntry + 4);
 
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", VM->Memory.ReadLong(fsEntry));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", VM->Memory.ReadLong(fsEntry + 4));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
-      fsNode = VM->Memory.ReadLong(fsNode);
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", _vm->Memory->ReadLong(fsEntry));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", _vm->Memory->ReadLong(fsEntry + 4));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", _vm->Memory->ReadLong(fsEntry + 8));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", _vm->Memory->ReadLong(fsEntry + 12));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", _vm->Memory->ReadLong(fsEntry + 16));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", _vm->Memory->ReadLong(fsEntry + 20));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", _vm->Memory->ReadLong(fsEntry + 24));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", _vm->Memory->ReadLong(fsEntry + 28));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", _vm->Memory->ReadLong(fsEntry + 32));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", _vm->Memory->ReadLong(fsEntry + 36));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", _vm->Memory->ReadLong(fsEntry + 40));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", _vm->Memory->ReadLong(fsEntry + 44));
+      fsNode = _vm->Memory->ReadLong(fsNode);
 
       EraseOlderOrSameFileSystemVersion(dosType, version);
     }
@@ -1247,33 +1245,33 @@ namespace fellow::hardfile
     Service->Log.AddLogDebug("fhfile: DoLogAvailableFileSystems(fileSystemResource: %.8X)\n", fileSystemResource);
 
     ULO fsList = fileSystemResource + 18;
-    if (fsList == VM->Memory.ReadLong(fsList + 8))
+    if (fsList == _vm->Memory->ReadLong(fsList + 8))
     {
       Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
-    ULO fsNode = VM->Memory.ReadLong(fsList);
+    ULO fsNode = _vm->Memory->ReadLong(fsList);
     while (fsNode != 0 && (fsNode != fsList + 4))
     {
       ULO fsEntry = fsNode + 14;
 
-      ULO dosType = VM->Memory.ReadLong(fsEntry);
-      ULO version = VM->Memory.ReadLong(fsEntry + 4);
+      ULO dosType = _vm->Memory->ReadLong(fsEntry);
+      ULO version = _vm->Memory->ReadLong(fsEntry + 4);
 
       Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", dosType);
       Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", version);
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
-      fsNode = VM->Memory.ReadLong(fsNode);
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", _vm->Memory->ReadLong(fsEntry + 8));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", _vm->Memory->ReadLong(fsEntry + 12));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", _vm->Memory->ReadLong(fsEntry + 16));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", _vm->Memory->ReadLong(fsEntry + 20));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", _vm->Memory->ReadLong(fsEntry + 24));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", _vm->Memory->ReadLong(fsEntry + 28));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", _vm->Memory->ReadLong(fsEntry + 32));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", _vm->Memory->ReadLong(fsEntry + 36));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", _vm->Memory->ReadLong(fsEntry + 40));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", _vm->Memory->ReadLong(fsEntry + 44));
+      fsNode = _vm->Memory->ReadLong(fsNode);
     }
   }
 
@@ -1281,24 +1279,24 @@ namespace fellow::hardfile
   {
     Service->Log.AddLogDebug("fhfile: DoPatchDOSDeviceNode(node: %.8X, packet: %.8X)\n", node, packet);
 
-    VM->Memory.WriteLong(0, node + 8);                     // dn_Task = 0
-    VM->Memory.WriteLong(0, node + 16);                    // dn_Handler = 0
-    VM->Memory.WriteLong(static_cast<ULO>(-1), node + 36); // dn_GlobalVec = -1
+    _vm->Memory->WriteLong(0, node + 8);                     // dn_Task = 0
+    _vm->Memory->WriteLong(0, node + 16);                    // dn_Handler = 0
+    _vm->Memory->WriteLong(static_cast<ULO>(-1), node + 36); // dn_GlobalVec = -1
 
-    HardfileFileSystemEntry *fs = GetFileSystemForDOSType(VM->Memory.ReadLong(packet + 80));
+    HardfileFileSystemEntry *fs = GetFileSystemForDOSType(_vm->Memory->ReadLong(packet + 80));
     if (fs != nullptr)
     {
       if (fs->Header->PatchFlags & 0x10)
       {
-        VM->Memory.WriteLong(fs->Header->DnStackSize, node + 20);
+        _vm->Memory->WriteLong(fs->Header->DnStackSize, node + 20);
       }
       if (fs->Header->PatchFlags & 0x80)
       {
-        VM->Memory.WriteLong(fs->SegListAddress >> 2, node + 32);
+        _vm->Memory->WriteLong(fs->SegListAddress >> 2, node + 32);
       }
       if (fs->Header->PatchFlags & 0x100)
       {
-        VM->Memory.WriteLong(fs->Header->DnGlobalVec, node + 36);
+        _vm->Memory->WriteLong(fs->Header->DnGlobalVec, node + 36);
       }
     }
   }
@@ -1339,23 +1337,23 @@ namespace fellow::hardfile
     {
       switch (operation)
       {
-        case 1: VM->CPU.SetDReg(0, DoGetRDBFileSystemCount()); break;
-        case 2: VM->CPU.SetDReg(0, DoGetRDBFileSystemHunkCount(VM->CPU.GetDReg(1))); break;
-        case 3: VM->CPU.SetDReg(0, DoGetRDBFileSystemHunkSize(VM->CPU.GetDReg(1), VM->CPU.GetDReg(2))); break;
+        case 1: _vm->CPU->SetDReg(0, DoGetRDBFileSystemCount()); break;
+        case 2: _vm->CPU->SetDReg(0, DoGetRDBFileSystemHunkCount(_vm->CPU->GetDReg(1))); break;
+        case 3: _vm->CPU->SetDReg(0, DoGetRDBFileSystemHunkSize(_vm->CPU->GetDReg(1), _vm->CPU->GetDReg(2))); break;
         case 4:
-          DoCopyRDBFileSystemHunk(VM->CPU.GetDReg(0),  // VM memory allocated for hunk
-                                  VM->CPU.GetDReg(1),  // Filesystem index on the device
-                                  VM->CPU.GetDReg(2)); // Hunk index in filesystem fileimage
+          DoCopyRDBFileSystemHunk(_vm->CPU->GetDReg(0),  // VM memory allocated for hunk
+                                  _vm->CPU->GetDReg(1),  // Filesystem index on the device
+                                  _vm->CPU->GetDReg(2)); // Hunk index in filesystem fileimage
           break;
-        case 5: DoInitializeRDBFileSystemEntry(VM->CPU.GetDReg(0), VM->CPU.GetDReg(1)); break;
-        case 6: DoRemoveRDBFileSystemsAlreadySupportedBySystem(VM->CPU.GetDReg(0)); break;
-        case 7: DoPatchDOSDeviceNode(VM->CPU.GetDReg(0), VM->CPU.GetAReg(5)); break;
-        case 8: DoRelocateFileSystem(VM->CPU.GetDReg(1)); break;
-        case 9: VM->CPU.SetDReg(0, DoGetDosDevPacketListStart()); break;
-        case 0xa0: DoLogAllocMemResult(VM->CPU.GetDReg(0)); break;
-        case 0xa1: DoLogOpenResourceResult(VM->CPU.GetDReg(0)); break;
+        case 5: DoInitializeRDBFileSystemEntry(_vm->CPU->GetDReg(0), _vm->CPU->GetDReg(1)); break;
+        case 6: DoRemoveRDBFileSystemsAlreadySupportedBySystem(_vm->CPU->GetDReg(0)); break;
+        case 7: DoPatchDOSDeviceNode(_vm->CPU->GetDReg(0), _vm->CPU->GetAReg(5)); break;
+        case 8: DoRelocateFileSystem(_vm->CPU->GetDReg(1)); break;
+        case 9: _vm->CPU->SetDReg(0, DoGetDosDevPacketListStart()); break;
+        case 0xa0: DoLogAllocMemResult(_vm->CPU->GetDReg(0)); break;
+        case 0xa1: DoLogOpenResourceResult(_vm->CPU->GetDReg(0)); break;
         case 0xa2: DoLogAvailableResources(); break;
-        case 0xa3: DoLogAvailableFileSystems(VM->CPU.GetDReg(0)); break;
+        case 0xa3: DoLogAvailableFileSystems(_vm->CPU->GetDReg(0)); break;
         default: DoUnknownOperation(operation);
       }
     }
@@ -1372,32 +1370,32 @@ namespace fellow::hardfile
     {
       ULO unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
       const HardfileGeometry &geometry = device.Configuration.Geometry;
-      VM->Memory.DmemSetLong(mountListEntry.DeviceIndex); /* Flag to initcode */
+      _vm->Memory->DmemSetLong(mountListEntry.DeviceIndex); /* Flag to initcode */
 
-      VM->Memory.DmemSetLong(mountListEntry.NameAddress); /*  0 Unit name "FELLOWX" or similar */
-      VM->Memory.DmemSetLong(deviceNameAddress);          /*  4 Device name "fhfile.device" */
-      VM->Memory.DmemSetLong(unit);                       /*  8 Unit # */
-      VM->Memory.DmemSetLong(0);                          /* 12 OpenDevice flags */
+      _vm->Memory->DmemSetLong(mountListEntry.NameAddress); /*  0 Unit name "FELLOWX" or similar */
+      _vm->Memory->DmemSetLong(deviceNameAddress);          /*  4 Device name "fhfile.device" */
+      _vm->Memory->DmemSetLong(unit);                       /*  8 Unit # */
+      _vm->Memory->DmemSetLong(0);                          /* 12 OpenDevice flags */
 
       // Struct DosEnvec
-      VM->Memory.DmemSetLong(16);                           /* 16 Environment size in long words */
-      VM->Memory.DmemSetLong(geometry.BytesPerSector >> 2); /* 20 Longwords in a block */
-      VM->Memory.DmemSetLong(0);                            /* 24 sector origin (unused) */
-      VM->Memory.DmemSetLong(geometry.Surfaces);            /* 28 Heads */
-      VM->Memory.DmemSetLong(1);                            /* 32 Sectors per logical block (unused) */
-      VM->Memory.DmemSetLong(geometry.SectorsPerTrack);     /* 36 Sectors per track */
-      VM->Memory.DmemSetLong(geometry.ReservedBlocks);      /* 40 Reserved blocks, min. 1 */
-      VM->Memory.DmemSetLong(0);                            /* 44 mdn_prefac - Unused */
-      VM->Memory.DmemSetLong(0);                            /* 48 Interleave */
-      VM->Memory.DmemSetLong(0);                            /* 52 Lower cylinder */
-      VM->Memory.DmemSetLong(geometry.HighCylinder);        /* 56 Upper cylinder */
-      VM->Memory.DmemSetLong(0);                            /* 60 Number of buffers */
-      VM->Memory.DmemSetLong(0);                            /* 64 Type of memory for buffers */
-      VM->Memory.DmemSetLong(0x7fffffff);                   /* 68 Largest transfer */
-      VM->Memory.DmemSetLong(~1U);                          /* 72 Add mask */
-      VM->Memory.DmemSetLong(static_cast<ULO>(-1));         /* 76 Boot priority */
-      VM->Memory.DmemSetLong(0x444f5300);                   /* 80 DOS file handler name */
-      VM->Memory.DmemSetLong(0);
+      _vm->Memory->DmemSetLong(16);                           /* 16 Environment size in long words */
+      _vm->Memory->DmemSetLong(geometry.BytesPerSector >> 2); /* 20 Longwords in a block */
+      _vm->Memory->DmemSetLong(0);                            /* 24 sector origin (unused) */
+      _vm->Memory->DmemSetLong(geometry.Surfaces);            /* 28 Heads */
+      _vm->Memory->DmemSetLong(1);                            /* 32 Sectors per logical block (unused) */
+      _vm->Memory->DmemSetLong(geometry.SectorsPerTrack);     /* 36 Sectors per track */
+      _vm->Memory->DmemSetLong(geometry.ReservedBlocks);      /* 40 Reserved blocks, min. 1 */
+      _vm->Memory->DmemSetLong(0);                            /* 44 mdn_prefac - Unused */
+      _vm->Memory->DmemSetLong(0);                            /* 48 Interleave */
+      _vm->Memory->DmemSetLong(0);                            /* 52 Lower cylinder */
+      _vm->Memory->DmemSetLong(geometry.HighCylinder);        /* 56 Upper cylinder */
+      _vm->Memory->DmemSetLong(0);                            /* 60 Number of buffers */
+      _vm->Memory->DmemSetLong(0);                            /* 64 Type of memory for buffers */
+      _vm->Memory->DmemSetLong(0x7fffffff);                   /* 68 Largest transfer */
+      _vm->Memory->DmemSetLong(~1U);                          /* 72 Add mask */
+      _vm->Memory->DmemSetLong(static_cast<ULO>(-1));         /* 76 Boot priority */
+      _vm->Memory->DmemSetLong(0x444f5300);                   /* 80 DOS file handler name */
+      _vm->Memory->DmemSetLong(0);
     }
   }
 
@@ -1409,32 +1407,32 @@ namespace fellow::hardfile
     {
       ULO unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
 
-      VM->Memory.DmemSetLong(mountListEntry.DeviceIndex); /* Flag to initcode */
+      _vm->Memory->DmemSetLong(mountListEntry.DeviceIndex); /* Flag to initcode */
 
-      VM->Memory.DmemSetLong(mountListEntry.NameAddress); /*  0 Unit name "FELLOWX" or similar */
-      VM->Memory.DmemSetLong(deviceNameAddress);          /*  4 Device name "fhfile.device" */
-      VM->Memory.DmemSetLong(unit);                       /*  8 Unit # */
-      VM->Memory.DmemSetLong(0);                          /* 12 OpenDevice flags */
+      _vm->Memory->DmemSetLong(mountListEntry.NameAddress); /*  0 Unit name "FELLOWX" or similar */
+      _vm->Memory->DmemSetLong(deviceNameAddress);          /*  4 Device name "fhfile.device" */
+      _vm->Memory->DmemSetLong(unit);                       /*  8 Unit # */
+      _vm->Memory->DmemSetLong(0);                          /* 12 OpenDevice flags */
 
       // Struct DosEnvec
-      VM->Memory.DmemSetLong(16);                         /* 16 Environment size in long words*/
-      VM->Memory.DmemSetLong(partition->SizeBlock);       /* 20 Longwords in a block */
-      VM->Memory.DmemSetLong(partition->SecOrg);          /* 24 sector origin (unused) */
-      VM->Memory.DmemSetLong(partition->Surfaces);        /* 28 Heads */
-      VM->Memory.DmemSetLong(partition->SectorsPerBlock); /* 32 Sectors per logical block (unused) */
-      VM->Memory.DmemSetLong(partition->BlocksPerTrack);  /* 36 Sectors per track */
-      VM->Memory.DmemSetLong(partition->Reserved);        /* 40 Reserved blocks, min. 1 */
-      VM->Memory.DmemSetLong(partition->PreAlloc);        /* 44 mdn_prefac - Unused */
-      VM->Memory.DmemSetLong(partition->Interleave);      /* 48 Interleave */
-      VM->Memory.DmemSetLong(partition->LowCylinder);     /* 52 Lower cylinder */
-      VM->Memory.DmemSetLong(partition->HighCylinder);    /* 56 Upper cylinder */
-      VM->Memory.DmemSetLong(partition->NumBuffer);       /* 60 Number of buffers */
-      VM->Memory.DmemSetLong(partition->BufMemType);      /* 64 Type of memory for buffers */
-      VM->Memory.DmemSetLong(partition->MaxTransfer);     /* 68 Largest transfer */
-      VM->Memory.DmemSetLong(partition->Mask);            /* 72 Add mask */
-      VM->Memory.DmemSetLong(partition->BootPri);         /* 76 Boot priority */
-      VM->Memory.DmemSetLong(partition->DOSType);         /* 80 DOS file handler name */
-      VM->Memory.DmemSetLong(0);
+      _vm->Memory->DmemSetLong(16);                         /* 16 Environment size in long words*/
+      _vm->Memory->DmemSetLong(partition->SizeBlock);       /* 20 Longwords in a block */
+      _vm->Memory->DmemSetLong(partition->SecOrg);          /* 24 sector origin (unused) */
+      _vm->Memory->DmemSetLong(partition->Surfaces);        /* 28 Heads */
+      _vm->Memory->DmemSetLong(partition->SectorsPerBlock); /* 32 Sectors per logical block (unused) */
+      _vm->Memory->DmemSetLong(partition->BlocksPerTrack);  /* 36 Sectors per track */
+      _vm->Memory->DmemSetLong(partition->Reserved);        /* 40 Reserved blocks, min. 1 */
+      _vm->Memory->DmemSetLong(partition->PreAlloc);        /* 44 mdn_prefac - Unused */
+      _vm->Memory->DmemSetLong(partition->Interleave);      /* 48 Interleave */
+      _vm->Memory->DmemSetLong(partition->LowCylinder);     /* 52 Lower cylinder */
+      _vm->Memory->DmemSetLong(partition->HighCylinder);    /* 56 Upper cylinder */
+      _vm->Memory->DmemSetLong(partition->NumBuffer);       /* 60 Number of buffers */
+      _vm->Memory->DmemSetLong(partition->BufMemType);      /* 64 Type of memory for buffers */
+      _vm->Memory->DmemSetLong(partition->MaxTransfer);     /* 68 Largest transfer */
+      _vm->Memory->DmemSetLong(partition->Mask);            /* 72 Add mask */
+      _vm->Memory->DmemSetLong(partition->BootPri);         /* 76 Boot priority */
+      _vm->Memory->DmemSetLong(partition->DOSType);         /* 80 DOS file handler name */
+      _vm->Memory->DmemSetLong(0);
     }
   }
 
@@ -1461,810 +1459,810 @@ namespace fellow::hardfile
 
   void HardfileHandler::HardReset()
   {
-    if (!HasZeroDevices() && GetEnabled() && VM->Memory.GetKickImageVersion() >= 34)
+    if (!HasZeroDevices() && GetEnabled() && _vm->Memory->GetKickImageVersion() >= 34)
     {
-      VM->Memory.DmemSetCounter(0);
+      _vm->Memory->DmemSetCounter(0);
 
       /* Device-name and ID string */
 
-      _devicename = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetString("fhfile.device");
-      ULO idstr = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetString("Fellow Hardfile device V5");
-      ULO doslibname = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetString("dos.library");
-      _fsname = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetString("Fellow hardfile RDB fs");
+      _devicename = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetString("fhfile.device");
+      ULO idstr = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetString("Fellow Hardfile device V5");
+      ULO doslibname = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetString("dos.library");
+      _fsname = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetString("Fellow hardfile RDB fs");
 
       /* fhfile.open */
 
-      ULO fhfile_t_open = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x23fc);
-      VM->Memory.DmemSetLong(0x00010002);
-      VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010002,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);   /* rts */
+      ULO fhfile_t_open = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x23fc);
+      _vm->Memory->DmemSetLong(0x00010002);
+      _vm->Memory->DmemSetLong(0xf40000); /* move.l #$00010002,$f40000 */
+      _vm->Memory->DmemSetWord(0x4e75);   /* rts */
 
       /* fhfile.close */
 
-      ULO fhfile_t_close = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x23fc);
-      VM->Memory.DmemSetLong(0x00010003);
-      VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010003,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);   /* rts */
+      ULO fhfile_t_close = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x23fc);
+      _vm->Memory->DmemSetLong(0x00010003);
+      _vm->Memory->DmemSetLong(0xf40000); /* move.l #$00010003,$f40000 */
+      _vm->Memory->DmemSetWord(0x4e75);   /* rts */
 
       /* fhfile.expunge */
 
-      ULO fhfile_t_expunge = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x23fc);
-      VM->Memory.DmemSetLong(0x00010004);
-      VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010004,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);   /* rts */
+      ULO fhfile_t_expunge = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x23fc);
+      _vm->Memory->DmemSetLong(0x00010004);
+      _vm->Memory->DmemSetLong(0xf40000); /* move.l #$00010004,$f40000 */
+      _vm->Memory->DmemSetWord(0x4e75);   /* rts */
 
       /* fhfile.null */
 
-      ULO fhfile_t_null = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x23fc);
-      VM->Memory.DmemSetLong(0x00010005);
-      VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010005,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);   /* rts */
+      ULO fhfile_t_null = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x23fc);
+      _vm->Memory->DmemSetLong(0x00010005);
+      _vm->Memory->DmemSetLong(0xf40000); /* move.l #$00010005,$f40000 */
+      _vm->Memory->DmemSetWord(0x4e75);   /* rts */
 
       /* fhfile.beginio */
 
-      ULO fhfile_t_beginio = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x23fc);
-      VM->Memory.DmemSetLong(0x00010006);
-      VM->Memory.DmemSetLong(0xf40000);   /* move.l #$00010006,$f40000  BeginIO */
-      VM->Memory.DmemSetLong(0x48e78002); /* movem.l d0/a6,-(a7)    push        */
-      VM->Memory.DmemSetLong(0x08290000);
-      VM->Memory.DmemSetWord(0x001e);     /* btst   #$0,30(a1)      IOF_QUICK   */
-      VM->Memory.DmemSetWord(0x6608);     /* bne    (to pop)                    */
-      VM->Memory.DmemSetLong(0x2c780004); /* move.l $4.w,a6         exec        */
-      VM->Memory.DmemSetLong(0x4eaefe86); /* jsr    -378(a6)        ReplyMsg(a1)*/
-      VM->Memory.DmemSetLong(0x4cdf4001); /* movem.l (a7)+,d0/a6    pop         */
-      VM->Memory.DmemSetWord(0x4e75);     /* rts */
+      ULO fhfile_t_beginio = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x23fc);
+      _vm->Memory->DmemSetLong(0x00010006);
+      _vm->Memory->DmemSetLong(0xf40000);   /* move.l #$00010006,$f40000  BeginIO */
+      _vm->Memory->DmemSetLong(0x48e78002); /* movem.l d0/a6,-(a7)    push        */
+      _vm->Memory->DmemSetLong(0x08290000);
+      _vm->Memory->DmemSetWord(0x001e);     /* btst   #$0,30(a1)      IOF_QUICK   */
+      _vm->Memory->DmemSetWord(0x6608);     /* bne    (to pop)                    */
+      _vm->Memory->DmemSetLong(0x2c780004); /* move.l $4.w,a6         exec        */
+      _vm->Memory->DmemSetLong(0x4eaefe86); /* jsr    -378(a6)        ReplyMsg(a1)*/
+      _vm->Memory->DmemSetLong(0x4cdf4001); /* movem.l (a7)+,d0/a6    pop         */
+      _vm->Memory->DmemSetWord(0x4e75);     /* rts */
 
       /* fhfile.abortio */
 
-      ULO fhfile_t_abortio = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x23fc);
-      VM->Memory.DmemSetLong(0x00010007);
-      VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010007,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);   /* rts */
+      ULO fhfile_t_abortio = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x23fc);
+      _vm->Memory->DmemSetLong(0x00010007);
+      _vm->Memory->DmemSetLong(0xf40000); /* move.l #$00010007,$f40000 */
+      _vm->Memory->DmemSetWord(0x4e75);   /* rts */
 
       /* Func-table */
 
-      ULO functable = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetLong(fhfile_t_open);
-      VM->Memory.DmemSetLong(fhfile_t_close);
-      VM->Memory.DmemSetLong(fhfile_t_expunge);
-      VM->Memory.DmemSetLong(fhfile_t_null);
-      VM->Memory.DmemSetLong(fhfile_t_beginio);
-      VM->Memory.DmemSetLong(fhfile_t_abortio);
-      VM->Memory.DmemSetLong(0xffffffff);
+      ULO functable = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetLong(fhfile_t_open);
+      _vm->Memory->DmemSetLong(fhfile_t_close);
+      _vm->Memory->DmemSetLong(fhfile_t_expunge);
+      _vm->Memory->DmemSetLong(fhfile_t_null);
+      _vm->Memory->DmemSetLong(fhfile_t_beginio);
+      _vm->Memory->DmemSetLong(fhfile_t_abortio);
+      _vm->Memory->DmemSetLong(0xffffffff);
 
       /* Data-table */
 
-      ULO datatable = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0xE000); /* INITBYTE */
-      VM->Memory.DmemSetWord(0x0008); /* LN_TYPE */
-      VM->Memory.DmemSetWord(0x0300); /* NT_DEVICE */
-      VM->Memory.DmemSetWord(0xC000); /* INITLONG */
-      VM->Memory.DmemSetWord(0x000A); /* LN_NAME */
-      VM->Memory.DmemSetLong(_devicename);
-      VM->Memory.DmemSetWord(0xE000); /* INITBYTE */
-      VM->Memory.DmemSetWord(0x000E); /* LIB_FLAGS */
-      VM->Memory.DmemSetWord(0x0600); /* LIBF_SUMUSED+LIBF_CHANGED */
-      VM->Memory.DmemSetWord(0xD000); /* INITWORD */
-      VM->Memory.DmemSetWord(0x0014); /* LIB_VERSION */
-      VM->Memory.DmemSetWord(0x0002);
-      VM->Memory.DmemSetWord(0xD000); /* INITWORD */
-      VM->Memory.DmemSetWord(0x0016); /* LIB_REVISION */
-      VM->Memory.DmemSetWord(0x0000);
-      VM->Memory.DmemSetWord(0xC000); /* INITLONG */
-      VM->Memory.DmemSetWord(0x0018); /* LIB_IDSTRING */
-      VM->Memory.DmemSetLong(idstr);
-      VM->Memory.DmemSetLong(0); /* END */
+      ULO datatable = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0xE000); /* INITBYTE */
+      _vm->Memory->DmemSetWord(0x0008); /* LN_TYPE */
+      _vm->Memory->DmemSetWord(0x0300); /* NT_DEVICE */
+      _vm->Memory->DmemSetWord(0xC000); /* INITLONG */
+      _vm->Memory->DmemSetWord(0x000A); /* LN_NAME */
+      _vm->Memory->DmemSetLong(_devicename);
+      _vm->Memory->DmemSetWord(0xE000); /* INITBYTE */
+      _vm->Memory->DmemSetWord(0x000E); /* LIB_FLAGS */
+      _vm->Memory->DmemSetWord(0x0600); /* LIBF_SUMUSED+LIBF_CHANGED */
+      _vm->Memory->DmemSetWord(0xD000); /* INITWORD */
+      _vm->Memory->DmemSetWord(0x0014); /* LIB_VERSION */
+      _vm->Memory->DmemSetWord(0x0002);
+      _vm->Memory->DmemSetWord(0xD000); /* INITWORD */
+      _vm->Memory->DmemSetWord(0x0016); /* LIB_REVISION */
+      _vm->Memory->DmemSetWord(0x0000);
+      _vm->Memory->DmemSetWord(0xC000); /* INITLONG */
+      _vm->Memory->DmemSetWord(0x0018); /* LIB_IDSTRING */
+      _vm->Memory->DmemSetLong(idstr);
+      _vm->Memory->DmemSetLong(0); /* END */
 
       /* bootcode */
 
-      _bootcode = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x227c);
-      VM->Memory.DmemSetLong(doslibname); /* move.l #doslibname,a1 */
-      VM->Memory.DmemSetLong(0x4eaeffa0); /* jsr    -96(a6) ; FindResident() */
-      VM->Memory.DmemSetWord(0x2040);     /* move.l d0,a0 */
-      VM->Memory.DmemSetLong(0x20280016); /* move.l 22(a0),d0 */
-      VM->Memory.DmemSetWord(0x2040);     /* move.l d0,a0 */
-      VM->Memory.DmemSetWord(0x4e90);     /* jsr    (a0) */
-      VM->Memory.DmemSetWord(0x4e75);     /* rts */
+      _bootcode = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x227c);
+      _vm->Memory->DmemSetLong(doslibname); /* move.l #doslibname,a1 */
+      _vm->Memory->DmemSetLong(0x4eaeffa0); /* jsr    -96(a6) ; FindResident() */
+      _vm->Memory->DmemSetWord(0x2040);     /* move.l d0,a0 */
+      _vm->Memory->DmemSetLong(0x20280016); /* move.l 22(a0),d0 */
+      _vm->Memory->DmemSetWord(0x2040);     /* move.l d0,a0 */
+      _vm->Memory->DmemSetWord(0x4e90);     /* jsr    (a0) */
+      _vm->Memory->DmemSetWord(0x4e75);     /* rts */
 
       /* fhfile.init */
 
-      ULO fhfile_t_init = VM->Memory.DmemGetCounter();
+      ULO fhfile_t_init = _vm->Memory->DmemGetCounter();
 
-      VM->Memory.DmemSetByte(0x48);
-      VM->Memory.DmemSetByte(0xE7);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0xFE);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF6);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x67);
-      VM->Memory.DmemSetByte(0x24);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xD6);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0xB0);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x66);
-      VM->Memory.DmemSetByte(0x0C);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x6A);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0xA4);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x67);
-      VM->Memory.DmemSetByte(0x0C);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x12);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x0A);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xC2);
-      VM->Memory.DmemSetByte(0x2C);
-      VM->Memory.DmemSetByte(0x78);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x43);
-      VM->Memory.DmemSetByte(0xFA);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFE);
-      VM->Memory.DmemSetByte(0x68);
-      VM->Memory.DmemSetByte(0x28);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x1C);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x2E);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x47);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x90);
-      VM->Memory.DmemSetByte(0x6B);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x70);
-      VM->Memory.DmemSetByte(0x58);
-      VM->Memory.DmemSetByte(0x87);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x3C);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x58);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x10);
-      VM->Memory.DmemSetByte(0x2A);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x47);
-      VM->Memory.DmemSetByte(0x70);
-      VM->Memory.DmemSetByte(0x54);
-      VM->Memory.DmemSetByte(0x2B);
-      VM->Memory.DmemSetByte(0xB0);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x59);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x64);
-      VM->Memory.DmemSetByte(0xF6);
-      VM->Memory.DmemSetByte(0xCD);
-      VM->Memory.DmemSetByte(0x4C);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x4D);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x70);
-      VM->Memory.DmemSetByte(0xCD);
-      VM->Memory.DmemSetByte(0x4C);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xCE);
-      VM->Memory.DmemSetByte(0x26);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x70);
-      VM->Memory.DmemSetByte(0x14);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xEA);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x47);
-      VM->Memory.DmemSetByte(0x2C);
-      VM->Memory.DmemSetByte(0x29);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x70);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x33);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x0E);
-      VM->Memory.DmemSetByte(0x33);
-      VM->Memory.DmemSetByte(0x7C);
-      VM->Memory.DmemSetByte(0x10);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x9D);
-      VM->Memory.DmemSetByte(0x69);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0x79);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x0F);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x0A);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0x4B);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x10);
-      VM->Memory.DmemSetByte(0x41);
-      VM->Memory.DmemSetByte(0xEC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFE);
-      VM->Memory.DmemSetByte(0xF2);
-      VM->Memory.DmemSetByte(0x06);
-      VM->Memory.DmemSetByte(0x87);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x58);
-      VM->Memory.DmemSetByte(0x60);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x8C);
-      VM->Memory.DmemSetByte(0x2C);
-      VM->Memory.DmemSetByte(0x78);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x4C);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFE);
-      VM->Memory.DmemSetByte(0x62);
-      VM->Memory.DmemSetByte(0x4C);
-      VM->Memory.DmemSetByte(0xDF);
-      VM->Memory.DmemSetByte(0x7F);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xA0);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xA1);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xA2);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xA3);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x03);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x05);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x06);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x07);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x23);
-      VM->Memory.DmemSetByte(0xFC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x02);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x09);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xF4);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x48);
-      VM->Memory.DmemSetByte(0xE7);
-      VM->Memory.DmemSetByte(0x78);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x3C);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x2C);
-      VM->Memory.DmemSetByte(0x78);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x3A);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x50);
-      VM->Memory.DmemSetByte(0x4C);
-      VM->Memory.DmemSetByte(0xDF);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x1E);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x3C);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0xDC);
-      VM->Memory.DmemSetByte(0x2A);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x1B);
-      VM->Memory.DmemSetByte(0x7C);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x41);
-      VM->Memory.DmemSetByte(0xFA);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xD0);
-      VM->Memory.DmemSetByte(0x2B);
-      VM->Memory.DmemSetByte(0x48);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x0A);
-      VM->Memory.DmemSetByte(0x41);
-      VM->Memory.DmemSetByte(0xFA);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xDC);
-      VM->Memory.DmemSetByte(0x2B);
-      VM->Memory.DmemSetByte(0x48);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x0E);
-      VM->Memory.DmemSetByte(0x49);
-      VM->Memory.DmemSetByte(0xED);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x12);
-      VM->Memory.DmemSetByte(0x28);
-      VM->Memory.DmemSetByte(0x8C);
-      VM->Memory.DmemSetByte(0x06);
-      VM->Memory.DmemSetByte(0x94);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x42);
-      VM->Memory.DmemSetByte(0xAC);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x29);
-      VM->Memory.DmemSetByte(0x4C);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x4D);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFE);
-      VM->Memory.DmemSetByte(0x1A);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x2C);
-      VM->Memory.DmemSetByte(0x78);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x70);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x43);
-      VM->Memory.DmemSetByte(0xFA);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x9E);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFE);
-      VM->Memory.DmemSetByte(0x0E);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x06);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x30);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x67);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x26);
-      VM->Memory.DmemSetByte(0x28);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x74);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x2E);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x67);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x0C);
-      VM->Memory.DmemSetByte(0x50);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x76);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x2A);
-      VM->Memory.DmemSetByte(0x52);
-      VM->Memory.DmemSetByte(0x82);
-      VM->Memory.DmemSetByte(0xB8);
-      VM->Memory.DmemSetByte(0x82);
-      VM->Memory.DmemSetByte(0x66);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0xE6);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x2F);
-      VM->Memory.DmemSetByte(0x08);
-      VM->Memory.DmemSetByte(0x2F);
-      VM->Memory.DmemSetByte(0x01);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0xCA);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x3C);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xBE);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x52);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x1F);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x10);
-      VM->Memory.DmemSetByte(0x2C);
-      VM->Memory.DmemSetByte(0x79);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x04);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x57);
-      VM->Memory.DmemSetByte(0x41);
-      VM->Memory.DmemSetByte(0xE8);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x12);
-      VM->Memory.DmemSetByte(0x22);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0xAE);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0x10);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x5F);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x2F);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x40);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFE);
-      VM->Memory.DmemSetByte(0xC2);
-      VM->Memory.DmemSetByte(0x4A);
-      VM->Memory.DmemSetByte(0x80);
-      VM->Memory.DmemSetByte(0x67);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x12);
-      VM->Memory.DmemSetByte(0x26);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x72);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0xBE);
-      VM->Memory.DmemSetByte(0x52);
-      VM->Memory.DmemSetByte(0x81);
-      VM->Memory.DmemSetByte(0xB6);
-      VM->Memory.DmemSetByte(0x81);
-      VM->Memory.DmemSetByte(0x66);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0xFF);
-      VM->Memory.DmemSetByte(0xF6);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x1F);
-      VM->Memory.DmemSetByte(0x4E);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x78);
-      VM->Memory.DmemSetByte(0x70);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x6E);
-      VM->Memory.DmemSetByte(0x73);
-      VM->Memory.DmemSetByte(0x69);
-      VM->Memory.DmemSetByte(0x6F);
-      VM->Memory.DmemSetByte(0x6E);
-      VM->Memory.DmemSetByte(0x2E);
-      VM->Memory.DmemSetByte(0x6C);
-      VM->Memory.DmemSetByte(0x69);
-      VM->Memory.DmemSetByte(0x62);
-      VM->Memory.DmemSetByte(0x72);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x72);
-      VM->Memory.DmemSetByte(0x79);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x46);
-      VM->Memory.DmemSetByte(0x69);
-      VM->Memory.DmemSetByte(0x6C);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x53);
-      VM->Memory.DmemSetByte(0x79);
-      VM->Memory.DmemSetByte(0x73);
-      VM->Memory.DmemSetByte(0x74);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x6D);
-      VM->Memory.DmemSetByte(0x2E);
-      VM->Memory.DmemSetByte(0x72);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x73);
-      VM->Memory.DmemSetByte(0x6F);
-      VM->Memory.DmemSetByte(0x75);
-      VM->Memory.DmemSetByte(0x72);
-      VM->Memory.DmemSetByte(0x63);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x46);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x6C);
-      VM->Memory.DmemSetByte(0x6C);
-      VM->Memory.DmemSetByte(0x6F);
-      VM->Memory.DmemSetByte(0x77);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x68);
-      VM->Memory.DmemSetByte(0x61);
-      VM->Memory.DmemSetByte(0x72);
-      VM->Memory.DmemSetByte(0x64);
-      VM->Memory.DmemSetByte(0x66);
-      VM->Memory.DmemSetByte(0x69);
-      VM->Memory.DmemSetByte(0x6C);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x20);
-      VM->Memory.DmemSetByte(0x64);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x76);
-      VM->Memory.DmemSetByte(0x69);
-      VM->Memory.DmemSetByte(0x63);
-      VM->Memory.DmemSetByte(0x65);
-      VM->Memory.DmemSetByte(0x00);
-      VM->Memory.DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x48);
+      _vm->Memory->DmemSetByte(0xE7);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0xFE);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF6);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x67);
+      _vm->Memory->DmemSetByte(0x24);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xD6);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0xB0);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x66);
+      _vm->Memory->DmemSetByte(0x0C);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x6A);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0xA4);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x67);
+      _vm->Memory->DmemSetByte(0x0C);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x12);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x0A);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xC2);
+      _vm->Memory->DmemSetByte(0x2C);
+      _vm->Memory->DmemSetByte(0x78);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x43);
+      _vm->Memory->DmemSetByte(0xFA);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFE);
+      _vm->Memory->DmemSetByte(0x68);
+      _vm->Memory->DmemSetByte(0x28);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x1C);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x2E);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x47);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x90);
+      _vm->Memory->DmemSetByte(0x6B);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x70);
+      _vm->Memory->DmemSetByte(0x58);
+      _vm->Memory->DmemSetByte(0x87);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x3C);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x58);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x10);
+      _vm->Memory->DmemSetByte(0x2A);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x47);
+      _vm->Memory->DmemSetByte(0x70);
+      _vm->Memory->DmemSetByte(0x54);
+      _vm->Memory->DmemSetByte(0x2B);
+      _vm->Memory->DmemSetByte(0xB0);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x59);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x64);
+      _vm->Memory->DmemSetByte(0xF6);
+      _vm->Memory->DmemSetByte(0xCD);
+      _vm->Memory->DmemSetByte(0x4C);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x4D);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x70);
+      _vm->Memory->DmemSetByte(0xCD);
+      _vm->Memory->DmemSetByte(0x4C);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xCE);
+      _vm->Memory->DmemSetByte(0x26);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x70);
+      _vm->Memory->DmemSetByte(0x14);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xEA);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x47);
+      _vm->Memory->DmemSetByte(0x2C);
+      _vm->Memory->DmemSetByte(0x29);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x70);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x33);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x0E);
+      _vm->Memory->DmemSetByte(0x33);
+      _vm->Memory->DmemSetByte(0x7C);
+      _vm->Memory->DmemSetByte(0x10);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x9D);
+      _vm->Memory->DmemSetByte(0x69);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0x79);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x0F);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x0A);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0x4B);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x10);
+      _vm->Memory->DmemSetByte(0x41);
+      _vm->Memory->DmemSetByte(0xEC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFE);
+      _vm->Memory->DmemSetByte(0xF2);
+      _vm->Memory->DmemSetByte(0x06);
+      _vm->Memory->DmemSetByte(0x87);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x58);
+      _vm->Memory->DmemSetByte(0x60);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x8C);
+      _vm->Memory->DmemSetByte(0x2C);
+      _vm->Memory->DmemSetByte(0x78);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x4C);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFE);
+      _vm->Memory->DmemSetByte(0x62);
+      _vm->Memory->DmemSetByte(0x4C);
+      _vm->Memory->DmemSetByte(0xDF);
+      _vm->Memory->DmemSetByte(0x7F);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xA0);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xA1);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xA2);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xA3);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x03);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x05);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x06);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x07);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x23);
+      _vm->Memory->DmemSetByte(0xFC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x02);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x09);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xF4);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x48);
+      _vm->Memory->DmemSetByte(0xE7);
+      _vm->Memory->DmemSetByte(0x78);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x3C);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x2C);
+      _vm->Memory->DmemSetByte(0x78);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x3A);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x50);
+      _vm->Memory->DmemSetByte(0x4C);
+      _vm->Memory->DmemSetByte(0xDF);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x1E);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x3C);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0xDC);
+      _vm->Memory->DmemSetByte(0x2A);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x1B);
+      _vm->Memory->DmemSetByte(0x7C);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x41);
+      _vm->Memory->DmemSetByte(0xFA);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xD0);
+      _vm->Memory->DmemSetByte(0x2B);
+      _vm->Memory->DmemSetByte(0x48);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x0A);
+      _vm->Memory->DmemSetByte(0x41);
+      _vm->Memory->DmemSetByte(0xFA);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xDC);
+      _vm->Memory->DmemSetByte(0x2B);
+      _vm->Memory->DmemSetByte(0x48);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x0E);
+      _vm->Memory->DmemSetByte(0x49);
+      _vm->Memory->DmemSetByte(0xED);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x12);
+      _vm->Memory->DmemSetByte(0x28);
+      _vm->Memory->DmemSetByte(0x8C);
+      _vm->Memory->DmemSetByte(0x06);
+      _vm->Memory->DmemSetByte(0x94);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x42);
+      _vm->Memory->DmemSetByte(0xAC);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x29);
+      _vm->Memory->DmemSetByte(0x4C);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x4D);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFE);
+      _vm->Memory->DmemSetByte(0x1A);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x2C);
+      _vm->Memory->DmemSetByte(0x78);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x70);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x43);
+      _vm->Memory->DmemSetByte(0xFA);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x9E);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFE);
+      _vm->Memory->DmemSetByte(0x0E);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x06);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x30);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x67);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x26);
+      _vm->Memory->DmemSetByte(0x28);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x74);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x2E);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x67);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x0C);
+      _vm->Memory->DmemSetByte(0x50);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x76);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x2A);
+      _vm->Memory->DmemSetByte(0x52);
+      _vm->Memory->DmemSetByte(0x82);
+      _vm->Memory->DmemSetByte(0xB8);
+      _vm->Memory->DmemSetByte(0x82);
+      _vm->Memory->DmemSetByte(0x66);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0xE6);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x2F);
+      _vm->Memory->DmemSetByte(0x08);
+      _vm->Memory->DmemSetByte(0x2F);
+      _vm->Memory->DmemSetByte(0x01);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0xCA);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x3C);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xBE);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x52);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x1F);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x10);
+      _vm->Memory->DmemSetByte(0x2C);
+      _vm->Memory->DmemSetByte(0x79);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x04);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x57);
+      _vm->Memory->DmemSetByte(0x41);
+      _vm->Memory->DmemSetByte(0xE8);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x12);
+      _vm->Memory->DmemSetByte(0x22);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0xAE);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0x10);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x5F);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x2F);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x40);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFE);
+      _vm->Memory->DmemSetByte(0xC2);
+      _vm->Memory->DmemSetByte(0x4A);
+      _vm->Memory->DmemSetByte(0x80);
+      _vm->Memory->DmemSetByte(0x67);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x12);
+      _vm->Memory->DmemSetByte(0x26);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x72);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0xBE);
+      _vm->Memory->DmemSetByte(0x52);
+      _vm->Memory->DmemSetByte(0x81);
+      _vm->Memory->DmemSetByte(0xB6);
+      _vm->Memory->DmemSetByte(0x81);
+      _vm->Memory->DmemSetByte(0x66);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0xFF);
+      _vm->Memory->DmemSetByte(0xF6);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x1F);
+      _vm->Memory->DmemSetByte(0x4E);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x78);
+      _vm->Memory->DmemSetByte(0x70);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x6E);
+      _vm->Memory->DmemSetByte(0x73);
+      _vm->Memory->DmemSetByte(0x69);
+      _vm->Memory->DmemSetByte(0x6F);
+      _vm->Memory->DmemSetByte(0x6E);
+      _vm->Memory->DmemSetByte(0x2E);
+      _vm->Memory->DmemSetByte(0x6C);
+      _vm->Memory->DmemSetByte(0x69);
+      _vm->Memory->DmemSetByte(0x62);
+      _vm->Memory->DmemSetByte(0x72);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x72);
+      _vm->Memory->DmemSetByte(0x79);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x46);
+      _vm->Memory->DmemSetByte(0x69);
+      _vm->Memory->DmemSetByte(0x6C);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x53);
+      _vm->Memory->DmemSetByte(0x79);
+      _vm->Memory->DmemSetByte(0x73);
+      _vm->Memory->DmemSetByte(0x74);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x6D);
+      _vm->Memory->DmemSetByte(0x2E);
+      _vm->Memory->DmemSetByte(0x72);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x73);
+      _vm->Memory->DmemSetByte(0x6F);
+      _vm->Memory->DmemSetByte(0x75);
+      _vm->Memory->DmemSetByte(0x72);
+      _vm->Memory->DmemSetByte(0x63);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x46);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x6C);
+      _vm->Memory->DmemSetByte(0x6C);
+      _vm->Memory->DmemSetByte(0x6F);
+      _vm->Memory->DmemSetByte(0x77);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x68);
+      _vm->Memory->DmemSetByte(0x61);
+      _vm->Memory->DmemSetByte(0x72);
+      _vm->Memory->DmemSetByte(0x64);
+      _vm->Memory->DmemSetByte(0x66);
+      _vm->Memory->DmemSetByte(0x69);
+      _vm->Memory->DmemSetByte(0x6C);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x20);
+      _vm->Memory->DmemSetByte(0x64);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x76);
+      _vm->Memory->DmemSetByte(0x69);
+      _vm->Memory->DmemSetByte(0x63);
+      _vm->Memory->DmemSetByte(0x65);
+      _vm->Memory->DmemSetByte(0x00);
+      _vm->Memory->DmemSetByte(0x00);
 
       /* Init-struct */
 
-      ULO initstruct = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetLong(0x100);         /* Data-space size, min LIB_SIZE */
-      VM->Memory.DmemSetLong(functable);     /* Function-table */
-      VM->Memory.DmemSetLong(datatable);     /* Data-table */
-      VM->Memory.DmemSetLong(fhfile_t_init); /* Init-routine */
+      ULO initstruct = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetLong(0x100);         /* Data-space size, min LIB_SIZE */
+      _vm->Memory->DmemSetLong(functable);     /* Function-table */
+      _vm->Memory->DmemSetLong(datatable);     /* Data-table */
+      _vm->Memory->DmemSetLong(fhfile_t_init); /* Init-routine */
 
       /* RomTag structure */
 
-      ULO romtagstart = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetWord(0x4afc);           /* Start of structure */
-      VM->Memory.DmemSetLong(romtagstart);      /* Pointer to start of structure */
-      VM->Memory.DmemSetLong(romtagstart + 26); /* Pointer to end of code */
-      VM->Memory.DmemSetByte(0x81);             /* Flags, AUTOINIT+COLDSTART */
-      VM->Memory.DmemSetByte(0x1);              /* Version */
-      VM->Memory.DmemSetByte(3);                /* DEVICE */
-      VM->Memory.DmemSetByte(0);                /* Priority */
-      VM->Memory.DmemSetLong(_devicename);      /* Pointer to name (used in opendev)*/
-      VM->Memory.DmemSetLong(idstr);            /* ID string */
-      VM->Memory.DmemSetLong(initstruct);       /* Init_struct */
+      ULO romtagstart = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetWord(0x4afc);           /* Start of structure */
+      _vm->Memory->DmemSetLong(romtagstart);      /* Pointer to start of structure */
+      _vm->Memory->DmemSetLong(romtagstart + 26); /* Pointer to end of code */
+      _vm->Memory->DmemSetByte(0x81);             /* Flags, AUTOINIT+COLDSTART */
+      _vm->Memory->DmemSetByte(0x1);              /* Version */
+      _vm->Memory->DmemSetByte(3);                /* DEVICE */
+      _vm->Memory->DmemSetByte(0);                /* Priority */
+      _vm->Memory->DmemSetLong(_devicename);      /* Pointer to name (used in opendev)*/
+      _vm->Memory->DmemSetLong(idstr);            /* ID string */
+      _vm->Memory->DmemSetLong(initstruct);       /* Init_struct */
 
-      _endOfDmem = VM->Memory.DmemGetCounterWithoutOffset();
+      _endOfDmem = _vm->Memory->DmemGetCounterWithoutOffset();
 
       /* Clear hardfile rom */
 
@@ -2309,28 +2307,28 @@ namespace fellow::hardfile
 
       /* NULLIFY pointer to configdev */
 
-      VM->Memory.DmemSetLongNoCounter(0, 4092);
-      VM->Memory.EmemCardAdd(HardfileHandler_CardInit, HardfileHandler_CardMap);
+      _vm->Memory->DmemSetLongNoCounter(0, 4092);
+      _vm->Memory->EmemCardAdd(HardfileHandler_CardInit, HardfileHandler_CardMap);
     }
     else
     {
-      VM->Memory.DmemClear();
+      _vm->Memory->DmemClear();
     }
   }
 
   void HardfileHandler::CreateDOSDevPackets(ULO devicename)
   {
-    VM->Memory.DmemSetCounter(_endOfDmem);
+    _vm->Memory->DmemSetCounter(_endOfDmem);
 
     /* Device name as seen in Amiga DOS */
 
     for (auto &mountListEntry : _mountList)
     {
-      mountListEntry->NameAddress = VM->Memory.DmemGetCounter();
-      VM->Memory.DmemSetString(mountListEntry->Name.c_str());
+      mountListEntry->NameAddress = _vm->Memory->DmemGetCounter();
+      _vm->Memory->DmemSetString(mountListEntry->Name.c_str());
     }
 
-    _dosDevPacketListStart = VM->Memory.DmemGetCounter();
+    _dosDevPacketListStart = _vm->Memory->DmemGetCounter();
 
     /* The mkdosdev packets */
 
@@ -2345,7 +2343,7 @@ namespace fellow::hardfile
         MakeDOSDevPacketForRDBPartition(*mountListEntry, devicename);
       }
     }
-    VM->Memory.DmemSetLong(static_cast<ULO>(-1)); // Terminate list
+    _vm->Memory->DmemSetLong(static_cast<ULO>(-1)); // Terminate list
   }
 
   void HardfileHandler::EmulationStart()
@@ -2462,10 +2460,19 @@ namespace fellow::hardfile
     return configuration;
   }
 
-  HardfileHandler::HardfileHandler()
+  HardfileHandler::HardfileHandler(VirtualMachine *vm) : _vm(vm)
   {
     memset(&_rom, 0, sizeof(_rom));
   }
 
   HardfileHandler::~HardfileHandler() = default;
+}
+
+namespace fellow::api::modules
+{
+  IHardfileHandler *CreateHardfileHandler(VirtualMachine *vm)
+  {
+    hardfile::hardfileHandlerInstance = new fellow::hardfile::HardfileHandler(vm);
+    return hardfile::hardfileHandlerInstance;
+  }
 }

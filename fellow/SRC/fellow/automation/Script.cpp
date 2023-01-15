@@ -14,12 +14,18 @@ void Script::ExecuteMouseCommand(const string &parameters)
 
   sscanf(parameters.c_str(), "%u %d %d %u %u %u", &port, &x, &y, &button1, &button2, &button3);
 
-  gameportMouseHandler((port == 0) ? gameport_inputs::GP_MOUSE0 : gameport_inputs::GP_MOUSE1, x, y, BoolFromUnsignedInt(button1), BoolFromUnsignedInt(button2), BoolFromUnsignedInt(button3));
+  gameportMouseHandler(
+      (port == 0) ? gameport_inputs::GP_MOUSE0 : gameport_inputs::GP_MOUSE1,
+      x,
+      y,
+      BoolFromUnsignedInt(button1),
+      BoolFromUnsignedInt(button2),
+      BoolFromUnsignedInt(button3));
 }
 
 void Script::ExecuteKeyCommand(const string &parameters)
 {
-  kbdKeyAdd(atoi(parameters.c_str()));
+  _keyboard->KeyAdd(atoi(parameters.c_str()));
 }
 
 void Script::ExecuteJoystickCommand(const string &parameters)
@@ -28,7 +34,14 @@ void Script::ExecuteJoystickCommand(const string &parameters)
   unsigned int left, up, right, down, button1, button2;
 
   sscanf(parameters.c_str(), "%u %u %u %u %u %u %u", &port, &left, &up, &right, &down, &button1, &button2);
-  gameportJoystickHandler((port == 0) ? gameport_inputs::GP_JOYKEY0 : gameport_inputs::GP_JOYKEY1, BoolFromUnsignedInt(left), BoolFromUnsignedInt(up), BoolFromUnsignedInt(right), BoolFromUnsignedInt(down), BoolFromUnsignedInt(button1), BoolFromUnsignedInt(button2));
+  gameportJoystickHandler(
+      (port == 0) ? gameport_inputs::GP_JOYKEY0 : gameport_inputs::GP_JOYKEY1,
+      BoolFromUnsignedInt(left),
+      BoolFromUnsignedInt(up),
+      BoolFromUnsignedInt(right),
+      BoolFromUnsignedInt(down),
+      BoolFromUnsignedInt(button1),
+      BoolFromUnsignedInt(button2));
 }
 
 void Script::ExecuteEmulatorActionCommand(const string &parameters)
@@ -36,7 +49,7 @@ void Script::ExecuteEmulatorActionCommand(const string &parameters)
   kbd_event kbdEvent = GetKbdEventForAction(parameters);
   if (kbdEvent != kbd_event::EVENT_NONE)
   {
-    kbdEventEOFAdd(kbdEvent);
+    _keyboard->EventEOFAdd(kbdEvent);
   }
 }
 
@@ -66,7 +79,8 @@ void Script::ExecuteUntil(ULL frameNumber, ULO lineNumber)
   {
     return;
   }
-  while (_lines.size() > _nextLine && (_lines[_nextLine].FrameNumber < frameNumber || (_lines[_nextLine].FrameNumber == frameNumber && _lines[_nextLine].LineNumber <= lineNumber)))
+  while (_lines.size() > _nextLine &&
+         (_lines[_nextLine].FrameNumber < frameNumber || (_lines[_nextLine].FrameNumber == frameNumber && _lines[_nextLine].LineNumber <= lineNumber)))
   {
     Execute(_lines[_nextLine]);
     _nextLine++;
@@ -77,7 +91,7 @@ void Script::RecordKey(UBY keyCode)
 {
   char parameters[32];
   sprintf(parameters, "%u", (ULO)keyCode);
-  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), KeyCommand, parameters);
+  _lines.emplace_back(_scheduler->GetRasterFrameCount(), _scheduler->GetRasterY(), KeyCommand, parameters);
 }
 
 unsigned int Script::BoolToUnsignedInt(bool value)
@@ -96,7 +110,7 @@ void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, bool button1, b
   char parameters[128];
 
   sprintf(parameters, "%u %d %d %u %u %u", port, x, y, BoolToUnsignedInt(button1), BoolToUnsignedInt(button2), BoolToUnsignedInt(button3));
-  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), MouseCommand, parameters);
+  _lines.emplace_back(_scheduler->GetRasterFrameCount(), _scheduler->GetRasterY(), MouseCommand, parameters);
 }
 
 void Script::RecordJoystick(gameport_inputs joydev, bool left, bool up, bool right, bool down, bool button1, bool button2)
@@ -104,8 +118,17 @@ void Script::RecordJoystick(gameport_inputs joydev, bool left, bool up, bool rig
   ULO port = (joydev == gameport_inputs::GP_JOYKEY0 || joydev == gameport_inputs::GP_ANALOG0) ? 0 : 1;
   char parameters[128];
 
-  sprintf(parameters, "%u %u %u %u %u %u %u", port, BoolToUnsignedInt(left), BoolToUnsignedInt(up), BoolToUnsignedInt(right), BoolToUnsignedInt(down), BoolToUnsignedInt(button1), BoolToUnsignedInt(button2));
-  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), JoystickCommand, parameters);
+  sprintf(
+      parameters,
+      "%u %u %u %u %u %u %u",
+      port,
+      BoolToUnsignedInt(left),
+      BoolToUnsignedInt(up),
+      BoolToUnsignedInt(right),
+      BoolToUnsignedInt(down),
+      BoolToUnsignedInt(button1),
+      BoolToUnsignedInt(button2));
+  _lines.emplace_back(_scheduler->GetRasterFrameCount(), _scheduler->GetRasterY(), JoystickCommand, parameters);
 }
 
 string Script::GetStringForAction(kbd_event action) const
@@ -151,7 +174,7 @@ void Script::RecordEmulatorAction(kbd_event action)
     return;
   }
 
-  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), EmulatorActionCommand, actionString);
+  _lines.emplace_back(_scheduler->GetRasterFrameCount(), _scheduler->GetRasterY(), EmulatorActionCommand, actionString);
 }
 
 void Script::Load(const string &filename)
@@ -200,6 +223,6 @@ void Script::Save(const string &filename)
   ofs.close();
 }
 
-Script::Script() : _nextLine(0)
+Script::Script(Keyboard *keyboard, Scheduler *scheduler) : _keyboard(keyboard), _scheduler(scheduler), _nextLine(0)
 {
 }

@@ -45,6 +45,8 @@ struct BitplaneArmList
 class BitplaneShifter
 {
 private:
+  Scheduler *_scheduler;
+  BitplaneRegisters *_bitplaneRegisters;
   BitplaneArmList _armList;
 
   ByteWordUnion _input[6];
@@ -52,15 +54,15 @@ private:
   ULO _lastOutputX;
   bool _activated;
 
-  static ULO CalculateArmX(ULO baseX, ULO waitMask, bool isLores);
+  ULO CalculateArmX(ULO baseX, ULO waitMask, bool isLores);
   void AddArmEntry(unsigned int first, unsigned int stride, ULO armX, const UWO *dat);
   ULO GetNextArmSplitX(ULO batchEndX);
   void ActivateArmedBitplaneData(ULO x);
 
-  static void AddOutputUntilLogEntry(ULO outputLine, ULO startX, ULO pixelCount);
-  static void AddDuplicateLogEntry(ULO outputLine, ULO startX);
+  void AddOutputUntilLogEntry(ULO outputLine, ULO startX, ULO pixelCount);
+  void AddDuplicateLogEntry(ULO outputLine, ULO startX);
 
-  static void SetupEvent(ULO line, ULO cycle);
+  void SetupEvent(ULO line, ULO cycle);
   void ShiftActive(ULO pixelCount);
   void ClearActive();
 
@@ -98,7 +100,7 @@ public:
   void Startup();
   void Shutdown();
 
-  BitplaneShifter();
+  BitplaneShifter(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters);
   ~BitplaneShifter();
 };
 

@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+#include "fellow/api/IRuntimeEnvironment.h"
 #include "fellow/configuration/Configuration.h"
 #include "fellow/application/HostRenderConfiguration.h"
 #include "fellow/application/DisplayMode.h"
@@ -10,6 +11,8 @@
 class GfxDrvCommon
 {
 private:
+  fellow::api::IRuntimeEnvironment *_runtimeEnvironment{};
+
   HANDLE _run_event{}; // Event indicating running or paused status
   HWND _hwnd{};        // The emulation output window
   volatile bool _syskey_down{};
@@ -46,7 +49,7 @@ private:
 
   bool InitializeDelayFlipEvent();
   void ReleaseDelayFlipEvent();
-  
+
   void SetDrawMode(const DisplayMode &dm);
 
 public:
@@ -85,6 +88,6 @@ public:
   void EmulationStop();
 
   bool IsInitialized() const;
-  void Initialize();
+  void Initialize(fellow::api::IRuntimeEnvironment *runtimeEnvironment);
   void Release();
 };

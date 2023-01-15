@@ -6,24 +6,28 @@ using namespace fellow::api::vm;
 
 CPUStepResult CPUStepCommand::Execute(const CPUStepParameters &parameters)
 {
-  uint32_t pc = VM->CPU.GetPC();
-  M68KDisassemblyLine disassembly = VM->CPU.GetDisassembly(pc);
+  uint32_t pc = _cpu->GetPC();
+  M68KDisassemblyLine disassembly = _cpu->GetDisassembly(pc);
 
   if (parameters.CPUStepType == CPUStepType::One)
   {
-    VM->CPU.StepOne();
+    _cpu->StepOne();
   }
   else if (parameters.CPUStepType == CPUStepType::Over)
   {
-    VM->CPU.StepOver();
+    _cpu->StepOver();
   }
   else if (parameters.CPUStepType == CPUStepType::UntilBreakpoint)
   {
-    VM->CPU.StepUntilBreakpoint(parameters.BreakpointAddress);
+    _cpu->StepUntilBreakpoint(parameters.BreakpointAddress);
   }
 
-  uint32_t pcNext = VM->CPU.GetPC();
-  M68KDisassemblyLine disassemblyNext = VM->CPU.GetDisassembly(pcNext);
+  uint32_t pcNext = _cpu->GetPC();
+  M68KDisassemblyLine disassemblyNext = _cpu->GetDisassembly(pcNext);
 
-  return CPUStepResult{.RegistersAfter = VM->CPU.GetRegisters(), .Disassembly = disassembly, .DisassemblyNext = disassemblyNext, .PC = pc, .PCNext = pcNext};
+  return CPUStepResult{.RegistersAfter = _cpu->GetRegisters(), .Disassembly = disassembly, .DisassemblyNext = disassemblyNext, .PC = pc, .PCNext = pcNext};
+}
+
+CPUStepCommand::CPUStepCommand(fellow::api::vm::IM68K *cpu) : _cpu(cpu)
+{
 }

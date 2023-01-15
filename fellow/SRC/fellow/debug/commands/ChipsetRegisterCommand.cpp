@@ -5,5 +5,9 @@ using namespace fellow::api;
 
 ChipsetRegisterResult ChipsetRegisterCommand::Execute(const ChipsetRegisterParameters &parameters)
 {
-  return ChipsetRegisterResult{.DisplayState = VM->Chipset.Display.GetState(), .CopperState = VM->Chipset.Copper.GetState()};
+  return ChipsetRegisterResult{.DisplayState = _chipset->Display->GetState(), .CopperState = _chipset->Copper->GetState()};
+}
+
+ChipsetRegisterCommand::ChipsetRegisterCommand(vm::IChipset *chipset) : _chipset(chipset)
+{
 }

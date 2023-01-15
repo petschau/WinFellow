@@ -26,7 +26,6 @@
 #include "fellow/api/defs.h"
 #include "versioninfo.h"
 #include "fellow/api/Drivers.h"
-#include "fellow/api/Services.h"
 #include "fellow/os/windows/application/DriversFactory.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
@@ -71,11 +70,7 @@ using namespace fellow::api::modules;
 using namespace fellow::api;
 using namespace fellow::service;
 
-BOOLE fellow_request_emulation_stop;
-
-IPerformanceCounter *fellow_emulation_run_performance_counter = nullptr;
-
-void fellowLogPerformanceCounterPercentage(const IPerformanceCounter *counter, LLO ticksPerFrame, ULL frameCount)
+void Fellow::LogPerformanceCounterPercentage(const IPerformanceCounter *counter, LLO ticksPerFrame, ULL frameCount)
 {
   float callsPerFrame = (float)counter->GetCallCount() / (float)frameCount;
   float timePerFrame = (float)counter->GetAverage() * callsPerFrame;
@@ -84,64 +79,53 @@ void fellowLogPerformanceCounterPercentage(const IPerformanceCounter *counter, L
   Service->Log.AddLog("\t%s percentage per frame: %f\n", counter->GetName(), percentagePerFrame);
 }
 
-void fellowLogPerformanceReport()
+void Fellow::LogPerformanceReport()
 {
-  ULL frameCount = scheduler.GetRasterFrameCount();
-  LLO totalRuntime = fellow_emulation_run_performance_counter->GetTotalTime();
-  if (frameCount != 0 && totalRuntime != 0)
-  {
-    LLO frequency = fellow_emulation_run_performance_counter->GetFrequency();
-    LLO ticksPerFrame = totalRuntime / frameCount;
-    LLO ticksPer50Frames = (totalRuntime * 50) / frameCount;
-    float framesPerSecond = ((float)frequency) / (float)ticksPerFrame;
-
-    Service->Log.AddLog("Performance report:\n");
-    Service->Log.AddLog("\tFrame count:         %llu\n", frameCount);
-    Service->Log.AddLog("\tTotal runtime ticks: %lld\n", totalRuntime);
-    Service->Log.AddLog("\tTicks per frame:     %lld\n", ticksPerFrame);
-    Service->Log.AddLog("\tTicks per 50 frames: %lld\n", ticksPer50Frames);
-    Service->Log.AddLog("\tFrames per second:   %f\n", framesPerSecond);
-
-    fellowLogPerformanceCounterPercentage(bitplane_shifter.PerformanceCounter, ticksPerFrame, frameCount);
-    fellowLogPerformanceCounterPercentage(host_frame_delayed_renderer.PerformanceCounter, ticksPerFrame, frameCount);
-    fellowLogPerformanceCounterPercentage(host_frame_copier.PerformanceCounter, ticksPerFrame, frameCount);
-  }
-  else
+  ULL frameCount = _scheduler.GetRasterFrameCount();
+  LLO totalRuntime = _emulationRunPerformanceCounter->GetTotalTime();
+  if (frameCount == 0 || totalRuntime == 0)
   {
     Service->Log.AddLog("Performance report: Not available, no emulation sessions run\n");
+    return;
   }
+
+  LLO frequency = _emulationRunPerformanceCounter->GetFrequency();
+  LLO ticksPerFrame = totalRuntime / frameCount;
+  LLO ticksPer50Frames = (totalRuntime * 50) / frameCount;
+  float framesPerSecond = ((float)frequency) / (float)ticksPerFrame;
+
+  Service->Log.AddLog("Performance report:\n");
+  Service->Log.AddLog("\tFrame count:         %llu\n", frameCount);
+  Service->Log.AddLog("\tTotal runtime ticks: %lld\n", totalRuntime);
+  Service->Log.AddLog("\tTicks per frame:     %lld\n", ticksPerFrame);
+  Service->Log.AddLog("\tTicks per 50 frames: %lld\n", ticksPer50Frames);
+  Service->Log.AddLog("\tFrames per second:   %f\n", framesPerSecond);
+
+  LogPerformanceCounterPercentage(bitplane_shifter.PerformanceCounter, ticksPerFrame, frameCount);
+  LogPerformanceCounterPercentage(host_frame_delayed_renderer.PerformanceCounter, ticksPerFrame, frameCount);
+  LogPerformanceCounterPercentage(host_frame_copier.PerformanceCounter, ticksPerFrame, frameCount);
 }
 
-bool fellowPerformResetBeforeStartingEmulation;
-
-void fellowSetPerformResetBeforeStartingEmulation(bool reset)
+void Fellow::RequestResetBeforeStartingEmulation()
 {
-  fellowPerformResetBeforeStartingEmulation = reset;
+  _performResetBeforeStartingEmulation = true;
 }
 
-bool fellowGetPerformResetBeforeStartingEmulation()
+//===============
+// setjmp support
+//===============
+
+void Fellow::SetRuntimeErrorCode(fellow_runtime_error_codes error_code)
 {
-  return fellowPerformResetBeforeStartingEmulation;
+  _runtimeErrorCode = error_code;
 }
 
-/*============================================================================*/
-/* setjmp support                                                             */
-/*============================================================================*/
-
-static jmp_buf fellow_runtime_error_env;
-static fellow_runtime_error_codes fellow_runtime_error_code;
-
-void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code)
+fellow_runtime_error_codes Fellow::GetRuntimeErrorCode()
 {
-  fellow_runtime_error_code = error_code;
+  return _runtimeErrorCode;
 }
 
-static fellow_runtime_error_codes fellowGetRuntimeErrorCode()
-{
-  return fellow_runtime_error_code;
-}
-
-string fellowGetVersionString()
+string Fellow::GetVersionString()
 {
   ostringstream versionstring;
 
@@ -156,34 +140,27 @@ string fellowGetVersionString()
   return versionstring.str();
 }
 
-/*============================================================================*/
-/* Runtime Error Check                                                        */
-/*============================================================================*/
-
-void fellowHandleCpuPcBadBank()
+void Fellow::HandleCpuPcBadBank()
 {
-  const char *errorMessage = "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.";
+  const char *errorMessage = "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. "
+                             "Emulation could not continue.";
   Service->Log.AddLog(errorMessage);
   Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
 }
 
-static void fellowRuntimeErrorCheck()
+void Fellow::RuntimeErrorCheck()
 {
-  switch (fellowGetRuntimeErrorCode())
+  switch (GetRuntimeErrorCode())
   {
-    case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK: fellowHandleCpuPcBadBank(); break;
+    case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK: HandleCpuPcBadBank(); break;
     case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR: break;
   }
-  fellowSetRuntimeErrorCode(fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR);
+  SetRuntimeErrorCode(fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR);
 }
 
-/*============================================================================*/
-/* Softreset                                                                  */
-/*============================================================================*/
-
-void fellowSoftReset()
+void Fellow::SoftReset()
 {
-  scheduler.SoftReset();
+  _scheduler.SoftReset();
   if (chipsetIsCycleExact())
   {
     dma_controller.SoftReset();
@@ -194,10 +171,10 @@ void fellowSoftReset()
   }
   memorySoftReset();
   interruptSoftReset();
-  HardfileHandler->HardReset();
+  _modules.HardfileHandler->HardReset();
   spriteHardReset();
   Draw.HardReset();
-  kbdHardReset();
+  _modules.Keyboard->HardReset();
   gameportHardReset();
   soundHardReset();
   blitterHardReset();
@@ -207,31 +184,27 @@ void fellowSoftReset()
   graphHardReset();
   ffilesysHardReset();
   memoryHardResetPost();
-  fellowSetPerformResetBeforeStartingEmulation(false);
+  _performResetBeforeStartingEmulation = false;
 }
 
-/*============================================================================*/
-/* Hardreset                                                                  */
-/*============================================================================*/
-
-void fellowHardReset()
+void Fellow::HardReset()
 {
-  scheduler.HardReset();
+  _scheduler.HardReset();
   if (chipsetIsCycleExact())
   {
     dma_controller.HardReset();
     ddf_state_machine.HardReset();
     diwx_state_machine.HardReset();
     diwy_state_machine.HardReset();
-    bitplane_registers.ClearState();
+    _modules.BitplaneRegisters->ClearState();
     bitplane_shifter.HardReset();
   }
   memoryHardReset();
   interruptHardReset();
-  HardfileHandler->HardReset();
+  _modules.HardfileHandler->HardReset();
   spriteHardReset();
   Draw.HardReset();
-  kbdHardReset();
+  _modules.Keyboard->HardReset();
   gameportHardReset();
   soundHardReset();
   blitterHardReset();
@@ -242,31 +215,21 @@ void fellowHardReset()
   ffilesysHardReset();
   memoryHardResetPost();
   cpuIntegrationHardReset();
-  fellowSetPerformResetBeforeStartingEmulation(false);
+  _performResetBeforeStartingEmulation = false;
 }
 
-/*============================================================================*/
-/* Modules use this to request that emulation stop safely.                    */
-/* Emulation will stop at the beginning of the next frame                     */
-/*============================================================================*/
+//=======================================================
+// Modules use this to request that emulation stop safely
+// Emulation will stop at the beginning of the next frame
+//=======================================================
 
-void fellowRequestEmulationStop()
+void Fellow::RequestEmulationStop()
 {
-  fellow_request_emulation_stop = TRUE;
+  _scheduler.RequestEmulationStop();
 }
 
-void fellowRequestEmulationStopClear()
+bool Fellow::StartEmulation()
 {
-  fellow_request_emulation_stop = FALSE;
-}
-
-/*============================================================================*/
-/* Controls the process of starting actual emulation                          */
-/*============================================================================*/
-
-bool fellowEmulationStart()
-{
-  fellowRequestEmulationStopClear();
   Driver->Ini->EmulationStart();
   memoryEmulationStart();
   interruptEmulationStart();
@@ -281,7 +244,7 @@ bool fellowEmulationStart()
     return false;
   }
 
-  kbdEmulationStart();
+  _modules.Keyboard->StartEmulation();
   gameportEmulationStart();
 
   if (!Draw.EmulationStartPost())
@@ -291,7 +254,7 @@ bool fellowEmulationStart()
 
   graphEmulationStart();
   soundEmulationStart();
-  scheduler.EmulationStart();
+  _scheduler.EmulationStart();
   floppyEmulationStart();
   ffilesysEmulationStart();
   Driver->Timer->EmulationStart();
@@ -310,28 +273,35 @@ bool fellowEmulationStart()
   }
 
   uart.EmulationStart();
-  HardfileHandler->EmulationStart();
+  _modules.HardfileHandler->EmulationStart();
 
-  fellow_emulation_run_performance_counter->Start();
+  _emulationRunPerformanceCounter->Start();
 
-  return memoryGetKickImageOK();
+  bool kickstartOk = memoryGetKickImageOK();
+
+  if (_performResetBeforeStartingEmulation)
+  {
+    HardReset();
+  }
+
+  return kickstartOk;
 }
 
-void fellowEmulationStop()
+void Fellow::StopEmulation()
 {
-  fellow_emulation_run_performance_counter->Stop();
+  _emulationRunPerformanceCounter->Stop();
 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.EmulationStop();
 #endif
-  HardfileHandler->EmulationStop();
+  _modules.HardfileHandler->EmulationStop();
   Driver->Timer->EmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
-  scheduler.EmulationStop();
+  _scheduler.EmulationStop();
   soundEmulationStop();
   gameportEmulationStop();
-  kbdEmulationStop();
+  _modules.Keyboard->StopEmulation();
   Draw.EmulationStop();
   copperEmulationStop();
   blitterEmulationStop();
@@ -354,63 +324,39 @@ void fellowEmulationStop()
   uart.EmulationStop();
 }
 
-/*============================================================================*/
-/* Starts emulation                                                           */
-/* FellowEmulationStart() has already been called                             */
-/* FellowEmulationStop() will be called elsewhere                             */
-/*============================================================================*/
-
-void fellowRun()
+void Fellow::Run()
 {
-  if (fellowGetPerformResetBeforeStartingEmulation())
+  SetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(_runtimeErrorEnvironment));
+  if (GetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
-    fellowHardReset();
+    _scheduler.Run();
   }
 
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
-  {
-    scheduler.Run();
-  }
-
-  fellowRequestEmulationStopClear();
-  fellowRuntimeErrorCheck();
+  RuntimeErrorCheck();
 }
 
-/*============================================================================*/
-/* Steps one CPU instruction                                                  */
-/*============================================================================*/
+//==========================
+// Steps one CPU instruction
+//==========================
 
-void fellowStepOne()
+void Fellow::StepOne()
 {
-  fellowRequestEmulationStopClear();
-  if (fellowGetPerformResetBeforeStartingEmulation())
+  SetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(_runtimeErrorEnvironment));
+  if (GetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
-    fellowHardReset();
+    _scheduler.DebugStepOneInstruction();
   }
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
-  {
-    scheduler.DebugStepOneInstruction();
-  }
-  fellowRequestEmulationStopClear();
-  fellowRuntimeErrorCheck();
+  RuntimeErrorCheck();
 }
 
-/*============================================================================*/
-/* Steps over a CPU instruction                                               */
-/*============================================================================*/
+//=============================
+// Steps over a CPU instruction
+//=============================
 
-void fellowStepOver()
+void Fellow::StepOver()
 {
-  fellowRequestEmulationStopClear();
-  if (fellowGetPerformResetBeforeStartingEmulation())
-  {
-    fellowHardReset();
-  }
-
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
+  SetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(_runtimeErrorEnvironment));
+  if (GetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
     char saddress[128];
     char sdata[128];
@@ -418,115 +364,101 @@ void fellowStepOver()
     char soperands[128];
     ULO current_pc = cpuGetPC();
     ULO over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
-    while ((cpuGetPC() != over_pc) && !fellow_request_emulation_stop)
+    bool emulationStopRequested = false;
+
+    while ((cpuGetPC() != over_pc) && !emulationStopRequested)
     {
-      scheduler.DebugStepOneInstruction();
+      emulationStopRequested = _scheduler.DebugStepOneInstruction();
     }
   }
 
-  fellowRequestEmulationStopClear();
-  fellowRuntimeErrorCheck();
+  RuntimeErrorCheck();
 }
 
-/*============================================================================*/
-/* Run until we crash or is exited in debug-mode                              */
-/*============================================================================*/
+//==============================================
+// Run until we crash or is exited in debug-mode
+//==============================================
 
-void fellowRunDebug(ULO breakpoint)
+void Fellow::RunDebug(ULO breakpoint)
 {
-  fellowRequestEmulationStopClear();
-  if (fellowGetPerformResetBeforeStartingEmulation())
-  {
-    fellowHardReset();
-  }
+  SetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(_runtimeErrorEnvironment));
 
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
+  if (GetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
-    while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
+    bool emulationStopRequested = false;
+
+    while ((!emulationStopRequested) && (breakpoint != cpuGetPC()))
     {
-      scheduler.DebugStepOneInstruction();
+      emulationStopRequested = _scheduler.DebugStepOneInstruction();
     }
   }
 
-  fellowRequestEmulationStopClear();
-  fellowRuntimeErrorCheck();
+  RuntimeErrorCheck();
 }
 
-/*============================================================================*/
-/* Run until we're past the current raster line                               */
-/*============================================================================*/
+//=============================================
+// Run until we're past the current raster line
+//=============================================
 
-void fellowStepLine()
+void Fellow::StepLine()
 {
-  fellowRequestEmulationStopClear();
-  if (fellowGetPerformResetBeforeStartingEmulation())
-  {
-    fellowHardReset();
-  }
+  SetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(_runtimeErrorEnvironment));
 
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
+  if (GetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
-    ULL currentFrame = scheduler.GetRasterFrameCount();
-    ULO currentLine = scheduler.GetRasterY();
-    while ((!fellow_request_emulation_stop) && currentLine == scheduler.GetRasterY() && currentFrame == scheduler.GetRasterFrameCount())
+    ULL currentFrame = _scheduler.GetRasterFrameCount();
+    ULO currentLine = _scheduler.GetRasterY();
+    bool emulationStopRequested = false;
+
+    while ((!emulationStopRequested) && currentLine == _scheduler.GetRasterY() && currentFrame == _scheduler.GetRasterFrameCount())
     {
-      scheduler.DebugStepOneInstruction();
+      emulationStopRequested = _scheduler.DebugStepOneInstruction();
     }
   }
 
-  fellowRequestEmulationStopClear();
-  fellowRuntimeErrorCheck();
+  RuntimeErrorCheck();
 }
 
-/*============================================================================*/
-/* Run until we're past the current frame                                     */
-/*============================================================================*/
+//=======================================
+// Run until we're past the current frame
+//=======================================
 
-void fellowStepFrame()
+void Fellow::StepFrame()
 {
-  fellowRequestEmulationStopClear();
-  if (fellowGetPerformResetBeforeStartingEmulation())
-  {
-    fellowHardReset();
-  }
+  SetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(_runtimeErrorEnvironment));
 
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
+  if (GetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
-    ULL currentFrame = scheduler.GetRasterFrameCount();
-    while ((!fellow_request_emulation_stop) && currentFrame == scheduler.GetRasterFrameCount())
+    ULL currentFrame = _scheduler.GetRasterFrameCount();
+    bool emulationStopRequested = false;
+
+    while ((!emulationStopRequested) && currentFrame == _scheduler.GetRasterFrameCount())
     {
-      scheduler.DebugStepOneInstruction();
+      emulationStopRequested = _scheduler.DebugStepOneInstruction();
     }
   }
 
-  fellowRequestEmulationStopClear();
-  fellowRuntimeErrorCheck();
+  RuntimeErrorCheck();
 }
 
-/*============================================================================*/
-/* Something really bad happened, immediate emulation stop                    */
-/*============================================================================*/
+//========================================================
+// Something really bad happened, immediate emulation stop
+//========================================================
 
-void fellowNastyExit()
+void Fellow::NastyExit()
 {
-  longjmp(fellow_runtime_error_env, (int)fellowGetRuntimeErrorCode());
+  longjmp(_runtimeErrorEnvironment, (int)GetRuntimeErrorCode());
   fprintf(stderr, "You only die twice, I give in!\n");
   soundShutdown();
   fprintf(stderr, "Serious error! Exit.\n");
   exit(EXIT_FAILURE);
 }
 
-/*============================================================================*/
-/* Draw subsystem failure message and exit                                    */
-/*============================================================================*/
+//========================================
+// Draw subsystem failure message and exit
+//========================================
 
-static void fellowDrawFailed()
+void Fellow::DrawFailed()
 {
   const char *errorMessage = "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.";
   Service->Log.AddLog(errorMessage);
@@ -534,25 +466,32 @@ static void fellowDrawFailed()
   exit(EXIT_FAILURE);
 }
 
-//===========================================================
-// Inititalize all modules in the emulator, called on startup
-//===========================================================
-
-static void fellowModulesStartup(int argc, char *argv[])
+void Fellow::CreateModules()
 {
-  fellowSetPerformResetBeforeStartingEmulation(true);
+  _emulationRunPerformanceCounter = Service->PerformanceCounterFactory.Create("Fellow emulation runtime");
 
-  fellow_emulation_run_performance_counter = Service->PerformanceCounterFactory.Create("Fellow emulation runtime");
+  _modules.HardfileHandler = CreateHardfileHandler(_vm);
+  _modules.Keyboard = new Keyboard(this);
+  _modules.BitplaneRegisters = new BitplaneRegisters();
+}
+
+void Fellow::InitializeModules(int argc, char *argv[])
+{
+  RequestResetBeforeStartingEmulation();
 
   chipsetStartup();
-  HardfileHandler->Startup();
+  _modules.HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
-  kbdStartup();
+  _modules.Keyboard->Startup();
   cfgStartup(argc, argv);
-  if (!Draw.Startup()) fellowDrawFailed();
+  if (!Draw.Startup())
+  {
+    DrawFailed();
+  }
   gameportStartup();
-  scheduler.Startup();
+  _scheduler.Startup(&_modules);
+  _modules.BitplaneRegisters->Initialize(&_scheduler);
   soundStartup();
   blitterStartup();
   copperStartup();
@@ -578,12 +517,12 @@ static void fellowModulesStartup(int argc, char *argv[])
   uart.Startup();
   automator.Startup();
 
-  fellow_emulation_run_performance_counter->LogTimerProperties();
+  _emulationRunPerformanceCounter->LogTimerProperties();
 }
 
-static void fellowModulesShutdown()
+void Fellow::DeleteModules()
 {
-  fellowLogPerformanceReport();
+  LogPerformanceReport();
 
   automator.Shutdown();
   uart.Shutdown();
@@ -606,35 +545,45 @@ static void fellowModulesShutdown()
   copperShutdown();
   blitterShutdown();
   soundShutdown();
-  scheduler.Shutdown();
+
+  delete _modules.BitplaneRegisters;
+
+  _scheduler.Shutdown();
+
   gameportShutdown();
   Draw.Shutdown();
   cfgShutdown();
-  kbdShutdown();
+
+  _modules.Keyboard->Shutdown();
+  delete _modules.Keyboard;
+
   spriteShutdown();
   ffilesysShutdown();
-  HardfileHandler->Shutdown();
 
-  delete HardfileHandler;
+  _modules.HardfileHandler->Shutdown();
+  delete _modules.HardfileHandler;
 
-  delete VM;
-
-  delete fellow_emulation_run_performance_counter;
-  fellow_emulation_run_performance_counter = nullptr;
+  delete _emulationRunPerformanceCounter;
+  _emulationRunPerformanceCounter = nullptr;
 }
 
-void fellowCreateDrivers()
+void Fellow::CreateDrivers()
 {
   Driver = DriversFactory::Create();
-
-  Driver->Timer->Initialize();
-  Driver->Ini->Initialize();
-  Driver->Graphics->Initialize();
-  Driver->Gui->Initialize();
 }
 
-void fellowDeleteDrivers()
+void Fellow::InitializeDrivers()
 {
+  Driver->Timer->Initialize();
+  Driver->Ini->Initialize();
+  Driver->Graphics->Initialize(this);
+  Driver->Gui->Initialize(this);
+  Driver->Keyboard->Initialize(_modules.Keyboard);
+}
+
+void Fellow::DeleteDrivers()
+{
+  Driver->Keyboard->Release();
   Driver->Gui->Release();
   Driver->Graphics->Release();
   Driver->Ini->Release();
@@ -644,27 +593,34 @@ void fellowDeleteDrivers()
   Driver = nullptr;
 }
 
-void fellowCreateServices()
+void Fellow::CreateServices()
 {
   Service = CoreServicesFactory::Create();
 }
 
-void fellowDeleteServices()
+void Fellow::DeleteServices()
 {
   CoreServicesFactory::Delete(Service);
   Service = nullptr;
 }
 
-int __cdecl main(int argc, char *argv[])
+void Fellow::CreateVM()
 {
-  fellowCreateServices();
+  _vm = CreateVirtualMachine(this);
+}
 
-  sysinfoLogSysInfo();
+void Fellow::DeleteVM()
+{
+  delete _vm;
+}
 
-  fellowCreateDrivers();
+VirtualMachine *Fellow::GetVM()
+{
+  return _vm;
+}
 
-  fellowModulesStartup(argc, argv);
-
+void Fellow::RunApplication()
+{
 #ifdef RETRO_PLATFORM
   if (!RP.GetHeadlessMode())
   {
@@ -674,18 +630,40 @@ int __cdecl main(int argc, char *argv[])
     Driver->Gui->BeforeEnter();
     while (!Driver->Gui->Enter())
     {
-      fellowRun();
+      Run();
     }
 #ifdef RETRO_PLATFORM
   }
   else
-    RP.EnterHeadlessMode();
+    RP.EnterHeadlessMode(this);
 #endif
+}
 
-  fellowModulesShutdown();
+Fellow::Fellow(int argc, char *argv[])
+{
+  CreateServices();
+  sysinfoLogSysInfo(this);
+  CreateVM();
+  CreateDrivers();
+  CreateModules();
 
-  fellowDeleteDrivers();
-  fellowDeleteServices();
+  InitializeDrivers();
+  InitializeModules(argc, argv);
+}
+
+Fellow::~Fellow()
+{
+  DeleteModules();
+  DeleteDrivers();
+  DeleteVM();
+  DeleteServices();
+}
+
+int __cdecl main(int argc, char *argv[])
+{
+  auto fellow = new Fellow(argc, argv);
+  fellow->RunApplication();
+  delete fellow;
 
   return EXIT_SUCCESS;
 }

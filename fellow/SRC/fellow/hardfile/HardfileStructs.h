@@ -2,6 +2,7 @@
 
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/hardfile/rdb/RDB.h"
+#include "fellow/api/vm/IMemorySystem.h"
 
 namespace fellow::hardfile
 {
@@ -27,6 +28,7 @@ namespace fellow::hardfile
   {
     rdb::RDBFileSystemHeader *Header;
     ULO SegListAddress;
+    fellow::api::vm::IMemorySystem *_vmMemory;
 
     bool IsOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
 
@@ -38,7 +40,7 @@ namespace fellow::hardfile
     ULO GetVersion();
     void CopyHunkToAddress(ULO destinationAddress, ULO hunkIndex);
 
-    HardfileFileSystemEntry(rdb::RDBFileSystemHeader *header, ULO segListAddress);
+    HardfileFileSystemEntry(rdb::RDBFileSystemHeader *header, ULO segListAddress, fellow::api::vm::IMemorySystem *vmMemory);
   };
 
   class HardfileDevice

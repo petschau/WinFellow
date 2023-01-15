@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fellow/api/defs.h"
+#include "fellow/api/IRuntimeEnvironment.h"
 
 enum class FELLOW_REQUESTER_TYPE
 {
@@ -18,7 +19,7 @@ public:
   virtual void SetProcessDPIAwareness(const char *pszAwareness) = 0;
   virtual void BeforeEnter() = 0;
   virtual BOOLE Enter() = 0;
-  virtual void Initialize() = 0;
+  virtual void Initialize(fellow::api::IRuntimeEnvironment *runtimeEnvironment) = 0;
   virtual void Release() = 0;
 
   virtual ~IGuiDriver() = default;

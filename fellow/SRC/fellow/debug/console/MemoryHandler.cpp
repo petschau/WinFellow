@@ -2,6 +2,7 @@
 #include "fellow/debug/console/ParameterUtils.h"
 
 using namespace std;
+using namespace fellow::api::vm;
 
 string MemoryHandler::ToString(const MemoryResult &result, const MemoryParameters &parameters) const
 {
@@ -67,7 +68,7 @@ ConsoleCommandHandlerResult MemoryHandler::Handle(const vector<string> &tokens)
     return result;
   }
 
-  auto commandResult = MemoryCommand().Execute(parametersResult.Parameters);
+  auto commandResult = MemoryCommand(_vmMemory).Execute(parametersResult.Parameters);
 
   result.ExecuteResult = ToString(commandResult, parametersResult.Parameters);
   result.Success = true;
@@ -77,6 +78,6 @@ ConsoleCommandHandlerResult MemoryHandler::Handle(const vector<string> &tokens)
   return result;
 }
 
-MemoryHandler::MemoryHandler() : ConsoleCommandHandler("m"), _defaultAddress(0)
+MemoryHandler::MemoryHandler(IMemorySystem *vmMemory) : ConsoleCommandHandler("m"), _vmMemory(vmMemory), _defaultAddress(0)
 {
 }

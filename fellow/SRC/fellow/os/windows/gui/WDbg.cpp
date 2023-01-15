@@ -69,7 +69,7 @@ using namespace fellow::api;
 
 HWND wdbg_hDialog;
 
-//#define FELLOW_USE_LEGACY_DEBUGGER
+// #define FELLOW_USE_LEGACY_DEBUGGER
 #ifdef FELLOW_USE_LEGACY_DEBUGGER
 // the legacy debugger has more features, but is text-based and has been replaced
 // by a more modern version; the code is retained for educational reasons
@@ -206,7 +206,16 @@ INT_PTR CALLBACK wdbgSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 #define DEBUG_PROP_SHEETS 10
 
 UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
-    IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA, IDD_DEBUG_FLOPPY, IDD_DEBUG_BLITTER, IDD_DEBUG_COPPER, IDD_DEBUG_SPRITES, IDD_DEBUG_SCREEN, IDD_DEBUG_EVENTS, IDD_DEBUG_SOUND};
+    IDD_DEBUG_CPU,
+    IDD_DEBUG_MEMORY,
+    IDD_DEBUG_CIA,
+    IDD_DEBUG_FLOPPY,
+    IDD_DEBUG_BLITTER,
+    IDD_DEBUG_COPPER,
+    IDD_DEBUG_SPRITES,
+    IDD_DEBUG_SCREEN,
+    IDD_DEBUG_EVENTS,
+    IDD_DEBUG_SOUND};
 
 typedef INT_PTR(CALLBACK *wdbgDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
@@ -278,19 +287,47 @@ INT_PTR wdbgSessionMainDialog()
 
 STR *wdbgGetDataRegistersStr(STR *s)
 {
-  sprintf(s, "D0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :D7", cpuGetDReg(0), cpuGetDReg(1), cpuGetDReg(2), cpuGetDReg(3), cpuGetDReg(4), cpuGetDReg(5), cpuGetDReg(6), cpuGetDReg(7));
+  sprintf(
+      s,
+      "D0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :D7",
+      cpuGetDReg(0),
+      cpuGetDReg(1),
+      cpuGetDReg(2),
+      cpuGetDReg(3),
+      cpuGetDReg(4),
+      cpuGetDReg(5),
+      cpuGetDReg(6),
+      cpuGetDReg(7));
   return s;
 }
 
 STR *wdbgGetAddressRegistersStr(STR *s)
 {
-  sprintf(s, "A0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :A7", cpuGetAReg(0), cpuGetAReg(1), cpuGetAReg(2), cpuGetAReg(3), cpuGetAReg(4), cpuGetAReg(5), cpuGetAReg(6), cpuGetAReg(7));
+  sprintf(
+      s,
+      "A0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :A7",
+      cpuGetAReg(0),
+      cpuGetAReg(1),
+      cpuGetAReg(2),
+      cpuGetAReg(3),
+      cpuGetAReg(4),
+      cpuGetAReg(5),
+      cpuGetAReg(6),
+      cpuGetAReg(7));
   return s;
 }
 
 STR *wdbgGetSpecialRegistersStr(STR *s)
 {
-  sprintf(s, "USP:%.8X SSP:%.8X SR:%.4X FRAME: %u y: %u x: %u", cpuGetUspAutoMap(), cpuGetSspAutoMap(), cpuGetSR(), draw_frame_count, busGetRasterY(), busGetRasterX());
+  sprintf(
+      s,
+      "USP:%.8X SSP:%.8X SR:%.4X FRAME: %u y: %u x: %u",
+      cpuGetUspAutoMap(),
+      cpuGetSspAutoMap(),
+      cpuGetSR(),
+      draw_frame_count,
+      busGetRasterY(),
+      busGetRasterX());
   return s;
 }
 
@@ -626,7 +663,15 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 
     for (ULO i = 0; i < 4; i++)
     {
-      sprintf(s, "DF%u: Track-%u Sel-%d Motor-%d Side-%d WP-%d", i, floppy[i].track, floppy[i].sel, floppy[i].motor, floppy[i].side, floppy[i].writeprotconfig);
+      sprintf(
+          s,
+          "DF%u: Track-%u Sel-%d Motor-%d Side-%d WP-%d",
+          i,
+          floppy[i].track,
+          floppy[i].sel,
+          floppy[i].motor,
+          floppy[i].side,
+          floppy[i].writeprotconfig);
       y = wdbgLineOut(hDC, s, x, y);
     }
 
@@ -783,10 +828,21 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 
     ULO atpc = (copper_registers.copper_pc & 0xfffffe); /* Make sure debug doesn't trap odd ex */
 
-    sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%u Copper PC - %.6X", copper_registers.cop1lc, copper_registers.cop2lc, copper_registers.copcon, copper_registers.copper_pc);
+    sprintf(
+        s,
+        "Cop1lc-%.6X Cop2lc-%.6X Copcon-%u Copper PC - %.6X",
+        copper_registers.cop1lc,
+        copper_registers.cop2lc,
+        copper_registers.copcon,
+        copper_registers.copper_pc);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next cycle - %u  Y - %u  X - %u", copperEvent.cycle, (copperEvent.cycle != -1) ? (copperEvent.cycle / 228) : 0, (copperEvent.cycle != -1) ? (copperEvent.cycle % 228) : 0);
+    sprintf(
+        s,
+        "Next cycle - %u  Y - %u  X - %u",
+        copperEvent.cycle,
+        (copperEvent.cycle != -1) ? (copperEvent.cycle / 228) : 0,
+        (copperEvent.cycle != -1) ? (copperEvent.cycle % 228) : 0);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "List 1:        List 2:        At PC:");
@@ -861,10 +917,22 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
-    sprintf(s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprite_registers.sprpt[0], sprite_registers.sprpt[1], sprite_registers.sprpt[2], sprite_registers.sprpt[3]);
+    sprintf(
+        s,
+        "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X",
+        sprite_registers.sprpt[0],
+        sprite_registers.sprpt[1],
+        sprite_registers.sprpt[2],
+        sprite_registers.sprpt[3]);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Spr4pt-%.6X Spr5pt-%.6X Spr6pt-%.6X Spr7pt - %.6X", sprite_registers.sprpt[4], sprite_registers.sprpt[5], sprite_registers.sprpt[6], sprite_registers.sprpt[7]);
+    sprintf(
+        s,
+        "Spr4pt-%.6X Spr5pt-%.6X Spr6pt-%.6X Spr7pt - %.6X",
+        sprite_registers.sprpt[4],
+        sprite_registers.sprpt[5],
+        sprite_registers.sprpt[6],
+        sprite_registers.sprpt[7]);
     wdbgLineOut(hDC, s, x, y);
 
     DeleteDC(hDC_image);
@@ -1539,7 +1607,8 @@ void wdebUpdateInstructionColumns()
 //---------------------------------------------------------------------------
 // Register table
 
-STR *wdbg_registernames[] = {"D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "PC", "USP", "SSP", "MSP", "ISP", "VBR", "SR"};
+STR *wdbg_registernames[] = {"D0", "D1", "D2", "D3", "D4", "D5",  "D6",  "D7",  "A0",  "A1",  "A2", "A3",
+                             "A4", "A5", "A6", "A7", "PC", "USP", "SSP", "MSP", "ISP", "VBR", "SR"};
 
 void wdebInitRegisterColumns()
 {
@@ -1856,7 +1925,7 @@ void wdebDebug()
 
   if (Driver->Gui->CheckEmulationNecessities())
   {
-    auto graphicsDriver = (GraphicsDriver*)Driver->Graphics;
+    auto graphicsDriver = (GraphicsDriver *)Driver->Graphics;
     bool previousPauseEmulationOnLostFocus = graphicsDriver->GetPauseEmulationWhenWindowLosesFocus();
     graphicsDriver->SetPauseEmulationWhenWindowLosesFocus(false);
 
@@ -1868,17 +1937,12 @@ void wdebDebug()
       return;
     }
 
-    if (fellowGetPerformResetBeforeStartingEmulation())
-    {
-      fellowHardReset();
-    }
-
     wdeb_action = WDEB_NO_ACTION;
     wdebCreateDialog();
     wdebDoMessages();
     wdebCloseDialog();
 
-    fellowEmulationStop();
+    EmulationStop();
     graphicsDriver->SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
   }
   else

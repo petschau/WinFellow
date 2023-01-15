@@ -11,13 +11,8 @@ using namespace fellow::vm;
 
 namespace fellow::api
 {
-  M68K m68k;
-  Clocks clocks;
-  MemorySystem memorySystem;
-  Display display;
-  Copper copper;
-  Chipset chipset(copper, display);
-  EventLog eventLog;
-
-  VirtualMachine *VM = new VirtualMachine(m68k, clocks, memorySystem, chipset, eventLog);
+  VirtualMachine *CreateVM(IRuntimeEnvironment* runtimeEnvironment)
+  {
+    return new VirtualMachine(new M68K(runtimeEnvironment), new Clocks(), new MemorySystem(), new Chipset(new Copper(), new Display()), new EventLog());
+  }
 }

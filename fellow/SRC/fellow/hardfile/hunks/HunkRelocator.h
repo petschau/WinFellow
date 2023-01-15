@@ -2,6 +2,7 @@
 
 #include "fellow/hardfile/hunks/FileImage.h"
 #include "fellow/hardfile/hunks/Reloc32Hunk.h"
+#include "fellow/api/vm/IMemorySystem.h"
 
 namespace fellow::hardfile::hunks
 {
@@ -9,6 +10,7 @@ namespace fellow::hardfile::hunks
   {
   private:
     FileImage &_fileImage;
+    fellow::api::vm::IMemorySystem *_vmMemory;
 
     void ProcessReloc32OffsetTable(Reloc32OffsetTable *offsetTable, ULO hunkBaseAddress);
     void ProcessReloc32Hunk(Reloc32Hunk *reloc32Hunk, ULO hunkBaseAddress);
@@ -17,6 +19,6 @@ namespace fellow::hardfile::hunks
   public:
     void RelocateHunks();
 
-    HunkRelocator(FileImage &fileImage);
+    HunkRelocator(FileImage &fileImage, fellow::api::vm::IMemorySystem *vmMemory);
   };
 }

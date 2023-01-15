@@ -6,6 +6,7 @@
 class Automator
 {
 private:
+  Scheduler *_scheduler;
   Script _script;
   int _snapshotsTaken = 0;
   int _snapshotCounter = 0;
@@ -29,7 +30,5 @@ public:
   void Startup();
   void Shutdown();
 
-  Automator();
+  Automator(Scheduler *scheduler, Keyboard *keyboard);
 };
-
-extern Automator automator;

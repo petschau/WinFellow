@@ -5,5 +5,9 @@ using namespace fellow::api;
 
 CPURegisterResult CPURegisterCommand::Execute(const CPURegisterParameters &parameters)
 {
-  return CPURegisterResult{.Registers = VM->CPU.GetRegisters()};
+  return CPURegisterResult{.Registers = _cpu->GetRegisters()};
+}
+
+CPURegisterCommand::CPURegisterCommand(fellow::api::vm::IM68K *cpu) : _cpu(cpu)
+{
 }

@@ -6,7 +6,7 @@
 class ITimerDriver
 {
 public:
-  virtual void AddCallback(const std::function<void(ULO)>& callback) = 0;
+  virtual void AddCallback(const std::function<void(ULO)> &callback) = 0;
   virtual ULO GetTimeMs() = 0;
 
   virtual void EmulationStart() = 0;

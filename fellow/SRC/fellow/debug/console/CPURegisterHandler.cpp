@@ -58,7 +58,7 @@ ConsoleCommandHandlerResult CPURegisterHandler::Handle(const std::vector<std::st
     return result;
   }
 
-  auto commandResult = CPURegisterCommand().Execute(CPURegisterParameters());
+  auto commandResult = CPURegisterCommand(_cpu).Execute(CPURegisterParameters());
 
   result.ExecuteResult = ToString(commandResult);
   result.Success = true;
@@ -66,6 +66,6 @@ ConsoleCommandHandlerResult CPURegisterHandler::Handle(const std::vector<std::st
   return result;
 }
 
-CPURegisterHandler::CPURegisterHandler() : ConsoleCommandHandler("r")
+CPURegisterHandler::CPURegisterHandler(fellow::api::vm::IM68K *cpu) : ConsoleCommandHandler("r"), _cpu(cpu)
 {
 }

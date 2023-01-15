@@ -8,6 +8,7 @@ class CPURegisterHandler : public ConsoleCommandHandler
 {
 private:
   std::string _command = "r";
+  fellow::api::vm::IM68K *_cpu;
 
   void WriteCPURegisters(DebugWriter &writer, const CPURegisterResult &result) const;
   std::string ToString(const CPURegisterResult &result) const;
@@ -18,6 +19,6 @@ public:
   HelpText Help() const override;
   ConsoleCommandHandlerResult Handle(const std::vector<std::string> &tokens) override;
 
-  CPURegisterHandler();
+  CPURegisterHandler(fellow::api::vm::IM68K *cpu);
   virtual ~CPURegisterHandler() = default;
 };

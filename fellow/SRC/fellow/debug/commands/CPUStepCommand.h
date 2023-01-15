@@ -28,8 +28,12 @@ public:
 
 class CPUStepCommand : public DebuggerCommand<CPUStepParameters, CPUStepResult>
 {
+private:
+  fellow::api::vm::IM68K *_cpu;
+
 public:
   CPUStepResult Execute(const CPUStepParameters &parameters) override;
 
+  CPUStepCommand(fellow::api::vm::IM68K *cpu);
   virtual ~CPUStepCommand() = default;
 };

@@ -65,6 +65,7 @@ constexpr unsigned int PROP_SHEETS = 10;
 class GuiDriver : public IGuiDriver
 {
 private:
+  fellow::api::IRuntimeEnvironment *_runtimeEnvironment;
   HWND _hMainDialog = nullptr;
   STR _extractedfilename[CFG_FILENAME_LENGTH]{};
   STR _extractedpathname[CFG_FILENAME_LENGTH]{};
@@ -112,21 +113,19 @@ private:
   // so that a refresh can be triggered by the presets propery sheet
   HWND _propsheetHWND[PROP_SHEETS] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
-  typedef INT_PTR (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
+  typedef INT_PTR(CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
   wguiDlgProc _propsheetDialogProc[PROP_SHEETS]{};
 
-  template <INT_PTR (GuiDriver::*P)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)>
-  wguiDlgProc DialogCallbackWrapper()
+  template <INT_PTR (GuiDriver::*P)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)> wguiDlgProc DialogCallbackWrapper()
   {
-    return [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) -> INT_PTR
-    {
+    return [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) -> INT_PTR {
       if (uMsg == WM_INITDIALOG)
       {
         SetWindowLongPtr(hWnd, DWLP_USER, lParam);
       }
 
-      GuiDriver *pThis = (GuiDriver *) (GetWindowLongPtr(hWnd, DWLP_USER));
+      GuiDriver *pThis = (GuiDriver *)(GetWindowLongPtr(hWnd, DWLP_USER));
       return pThis ? (pThis->*P)(hWnd, uMsg, wParam, lParam) : FALSE;
     };
   };
@@ -136,7 +135,7 @@ private:
     return [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) -> INT_PTR {
       if (uMsg == WM_INITDIALOG)
       {
-        SetWindowLongPtr(hWnd, DWLP_USER, ((PROPSHEETPAGE*)lParam)->lParam);
+        SetWindowLongPtr(hWnd, DWLP_USER, ((PROPSHEETPAGE *)lParam)->lParam);
       }
 
       GuiDriver *pThis = (GuiDriver *)(GetWindowLongPtr(hWnd, DWLP_USER));
@@ -149,7 +148,7 @@ private:
   template <INT_PTR (GuiDriver::*P)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)>
   HWND CreateDialogBox(HINSTANCE hInstance, LPCSTR lpTemplateName, HWND hWndParent)
   {
-    return ::CreateDialogParam(hInstance, lpTemplateName, hWndParent, DialogCallbackWrapper<P>(),reinterpret_cast<LPARAM>(this));
+    return ::CreateDialogParam(hInstance, lpTemplateName, hWndParent, DialogCallbackWrapper<P>(), reinterpret_cast<LPARAM>(this));
   };
 
   // Creates a dialog box and waits for it to finish, typically OK or Cancel type dialog
@@ -168,7 +167,7 @@ private:
   static bool InitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_presets);
   void UpdatePowerLedButtonImage();
 
-  public:
+public:
   bool CheckEmulationNecessities() override;
   INT_PTR VariousDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -189,7 +188,6 @@ private:
   INT_PTR HardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
   INT_PTR FilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-
   void LoadBitmaps();
   void ReleaseBitmaps();
   void CheckMemorySettingsForChipset();
@@ -200,7 +198,8 @@ private:
   wgui_drawmode *GetUIDrawModeFromIndex(unsigned int index, wgui_drawmode_list &list);
   void GetResolutionStrWithIndex(LONG index, char char_buffer[]);
   void GetFrameSkippingStrWithIndex(LONG index, char char_buffer[]);
-  void SetSliderTextAccordingToPosition(HWND windowHandle, int sliderIdentifier, int sliderTextIdentifier, std::function<void(LONG, char[])> getSliderStrWithIndex);
+  void SetSliderTextAccordingToPosition(
+      HWND windowHandle, int sliderIdentifier, int sliderTextIdentifier, std::function<void(LONG, char[])> getSliderStrWithIndex);
   ULO GetColorBitsFromComboboxIndex(LONG index);
   LONG GetComboboxIndexFromColorBits(ULO colorbits);
   DISPLAYDRIVER GetDisplayDriverFromComboboxIndex(LONG index);
@@ -215,7 +214,7 @@ private:
   void RemoveAllHistory();
   void InstallHistoryIntoMenu();
   void PutCfgInHistoryOnTop(ULO cfgtotop);
-  void InsertCfgIntoHistory(const std::string& cfgfilenametoinsert);
+  void InsertCfgIntoHistory(const std::string &cfgfilenametoinsert);
   void DeleteCfgFromHistory(ULO itemtodelete);
   void SwapCfgsInHistory(ULO itemA, ULO itemB);
   bool SaveConfigurationFileAs(cfg *conf, HWND hwndDlg);
@@ -240,10 +239,16 @@ private:
   void ToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniValues *ini);
   void InstallMenuGfxDebugImmediateRendering(HWND hwndDlg, IniValues *ini);
   void ToggleMenuGfxDebugImmediateRendering(HWND hwndDlg, IniValues *ini);
-  void HardfileSetInformationString(STR *s, const char *deviceName, int partitionNumber, const HardfilePartition &partition);
-  HTREEITEM HardfileTreeViewAddDisk(HWND hwndTree, STR *filename, rdb_status rdbStatus, const HardfileGeometry &geometry, int hardfileIndex);
+  void HardfileSetInformationString(STR *s, const char *deviceName, int partitionNumber, const fellow::api::modules::HardfilePartition &partition);
+  HTREEITEM HardfileTreeViewAddDisk(
+      HWND hwndTree, STR *filename, fellow::api::modules::rdb_status rdbStatus, const fellow::api::modules::HardfileGeometry &geometry, int hardfileIndex);
   void HardfileTreeViewAddPartition(
-      HWND hwndTree, HTREEITEM parent, int partitionNumber, const char *deviceName, const HardfilePartition &partition, int hardfileIndex);
+      HWND hwndTree,
+      HTREEITEM parent,
+      int partitionNumber,
+      const char *deviceName,
+      const fellow::api::modules::HardfilePartition &partition,
+      int hardfileIndex);
   void HardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfileIndex);
   void InstallHardfileConfig(HWND hwndDlg, cfg *conf);
   void ExtractHardfileConfig(HWND hwndDlg, cfg *conf);
@@ -291,7 +296,7 @@ public:
   void BeforeEnter() override;
   BOOLE Enter() override;
 
-  void Initialize() override;
+  void Initialize(fellow::api::IRuntimeEnvironment *runtimeEnvironment) override;
   void Release() override;
 
   virtual ~GuiDriver() = default;

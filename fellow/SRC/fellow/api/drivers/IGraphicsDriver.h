@@ -3,6 +3,7 @@
 #include <list>
 
 #include "fellow/api/defs.h"
+#include "fellow/api/IRuntimeEnvironment.h"
 #include "fellow/configuration/Configuration.h"
 #include "fellow/api/drivers/GfxDrvMappedBufferPointer.h"
 #include "fellow/api/drivers/GfxDrvColorBitsInformation.h"
@@ -15,7 +16,7 @@
 
 class IGraphicsDriver
 {
-  public:
+public:
   virtual void ClearCurrentBuffer() = 0;
   virtual void BufferFlip() = 0;
   virtual void SizeChanged(unsigned int width, unsigned int height) = 0;
@@ -27,17 +28,19 @@ class IGraphicsDriver
   virtual void DrawHUD(const MappedChipsetFramebuffer &mappedFramebuffer) = 0;
   virtual void NotifyActiveStatus(bool active) = 0;
   virtual bool SaveScreenshot(const bool, const char *filename) = 0;
-  
+
   virtual bool EmulationStart(
-    const HostRenderConfiguration &hostRenderConfiguration,
-    const HostRenderRuntimeSettings &hostRenderRuntimeSettings,
-    const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
-    HudPropertyProvider *hudPropertyProvider) = 0;
+      const HostRenderConfiguration &hostRenderConfiguration,
+      const HostRenderRuntimeSettings &hostRenderRuntimeSettings,
+      const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
+      HudPropertyProvider *hudPropertyProvider) = 0;
   virtual ULO EmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings) = 0;
   virtual void EmulationStop() = 0;
 
   virtual std::list<DISPLAYDRIVER> GetListOfInitializedDrivers() const = 0;
   virtual bool IsInitialized() const = 0;
-  virtual void Initialize() = 0;
+  virtual void Initialize(fellow::api::IRuntimeEnvironment *runtimeEnvironment) = 0;
   virtual void Release() = 0;
+
+  virtual ~IGraphicsDriver() = default;
 };

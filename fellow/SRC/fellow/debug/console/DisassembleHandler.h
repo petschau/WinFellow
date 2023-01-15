@@ -9,6 +9,7 @@
 class DisassembleHandler : public ConsoleCommandHandler
 {
 private:
+  fellow::api::vm::IM68K *_m68k;
   const unsigned int DefaultLineCount = 16;
   ULO _defaultAddress;
   std::string ToString(const DisassembleResult &result) const;
@@ -19,6 +20,6 @@ public:
   HelpText Help() const override;
   ConsoleCommandHandlerResult Handle(const std::vector<std::string> &tokens) override;
 
-  DisassembleHandler();
+  DisassembleHandler(fellow::api::vm::IM68K *_m68k);
   virtual ~DisassembleHandler() = default;
 };

@@ -11,8 +11,6 @@
 #include "fellow/api/Drivers.h"
 #include "fellow/os/windows/graphics/GraphicsDriver.h"
 
-//#include "fellow/os/windows/graphics/GfxDrvCommon.h"
-
 using namespace std;
 using namespace fellow::api;
 
@@ -99,10 +97,10 @@ bool ConsoleDebuggerHost::StartVM()
 {
   // The configuration has been activated
   // Prepare the modules for emulation
-  _previousPauseEmulationOnLostFocus = ((GraphicsDriver &)(Driver->Graphics)).GetPauseEmulationWhenWindowLosesFocus();
-  ((GraphicsDriver &)(Driver->Graphics)).SetPauseEmulationWhenWindowLosesFocus(false);
+  _previousPauseEmulationOnLostFocus = ((GraphicsDriver *)(Driver->Graphics))->GetPauseEmulationWhenWindowLosesFocus();
+  ((GraphicsDriver *)(Driver->Graphics))->SetPauseEmulationWhenWindowLosesFocus(false);
 
-  if (!fellowEmulationStart())
+  if (!_runtimeEnvironment->StartEmulation())
   {
     Service->Log.AddLog("ConsoleDebuggerHost::StartVM() - Failed to start emulation\n");
     StopVM();
@@ -110,18 +108,13 @@ bool ConsoleDebuggerHost::StartVM()
     return false;
   }
 
-  if (fellowGetPerformResetBeforeStartingEmulation())
-  {
-    fellowHardReset();
-  }
-
   return true;
 }
 
 void ConsoleDebuggerHost::StopVM()
 {
-  fellowEmulationStop();
-  ((GraphicsDriver &)(Driver->Graphics)) .SetPauseEmulationWhenWindowLosesFocus(_previousPauseEmulationOnLostFocus);
+  _runtimeEnvironment->StopEmulation();
+  ((GraphicsDriver *)(Driver->Graphics))->SetPauseEmulationWhenWindowLosesFocus(_previousPauseEmulationOnLostFocus);
 }
 
 bool ConsoleDebuggerHost::RunInDebugger()
@@ -138,7 +131,7 @@ bool ConsoleDebuggerHost::RunInDebugger()
     return false;
   }
 
-  WriteLine(fellowGetVersionString() + "\r\n");
+  WriteLine(_runtimeEnvironment->GetVersionString() + "\r\n");
   WriteLine(string("Console debugger - type h for command summary") + "\r\n");
 
   ReadCommands();
@@ -149,7 +142,7 @@ bool ConsoleDebuggerHost::RunInDebugger()
   return true;
 }
 
-ConsoleDebuggerHost::ConsoleDebuggerHost(ConsoleDebugger &debugger) : _debugger(debugger), _conIn(nullptr), _conOut(nullptr), _previousPauseEmulationOnLostFocus(false)
+ConsoleDebuggerHost::ConsoleDebuggerHost(ConsoleDebugger &debugger, IRuntimeEnvironment* runtimeEnvironment) : _debugger(debugger), _runtimeEnvironment(runtimeEnvironment), _conIn(nullptr), _conOut(nullptr), _previousPauseEmulationOnLostFocus(false)
 
 {
 }

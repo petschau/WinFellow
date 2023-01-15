@@ -3,6 +3,7 @@
 
 using namespace std;
 using namespace fellow::api;
+using namespace fellow::api::vm;
 
 MemoryResult MemoryCommand::Execute(const MemoryParameters &parameters)
 {
@@ -21,5 +22,10 @@ MemoryResult MemoryCommand::Execute(const MemoryParameters &parameters)
 
 ULO MemoryCommand::ReadLongAsBytes(ULO address) const
 {
-  return VM->Memory.ReadByte(address) << 24 | VM->Memory.ReadByte(address + 1) << 16 | VM->Memory.ReadByte(address + 2) << 8 | VM->Memory.ReadByte(address + 3);
+  return _vmMemory->ReadByte(address) << 24 | _vmMemory->ReadByte(address + 1) << 16 | _vmMemory->ReadByte(address + 2) << 8 |
+         _vmMemory->ReadByte(address + 3);
+}
+
+MemoryCommand::MemoryCommand(IMemorySystem *vmMemory) : _vmMemory(vmMemory)
+{
 }

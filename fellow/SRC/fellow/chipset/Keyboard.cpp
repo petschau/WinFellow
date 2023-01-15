@@ -21,7 +21,6 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "fellow/api/Drivers.h"
 #include "fellow/chipset/Keycodes.h"
@@ -40,38 +39,30 @@
 
 using namespace fellow::api;
 
-kbd_state_type kbd_state;
-ULO kbd_time_to_wait;
-
-UBY insert_dfX[4]; // 0 - nothing 1- insert 2-eject
-
 // Add an EOL event to the core, used by KeyboardDriver
-
-void kbdEventEOLAdd(kbd_event eventId)
+void Keyboard::EventEOLAdd(kbd_event eventId)
 {
-  kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.inpos & KBDBUFFERMASK] = eventId;
-  kbd_state.eventsEOL.inpos++;
+  _state.eventsEOL.buffer[_state.eventsEOL.inpos & KBDBUFFERMASK] = eventId;
+  _state.eventsEOL.inpos++;
 }
 
 // Add an EOF event to the core, used by KeyboardDriver
-
-void kbdEventEOFAdd(kbd_event eventId)
+void Keyboard::EventEOFAdd(kbd_event eventId)
 {
-  kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.inpos & KBDBUFFERMASK] = eventId;
-  kbd_state.eventsEOF.inpos++;
+  _state.eventsEOF.buffer[_state.eventsEOF.inpos & KBDBUFFERMASK] = eventId;
+  _state.eventsEOF.inpos++;
 }
 
 // Add a key to the core, used by KeyboardDriver
-
-void kbdKeyAdd(UBY keyCode)
+void Keyboard::KeyAdd(UBY keyCode)
 {
   automator.RecordKey(keyCode);
 
-  kbd_state.scancodes.buffer[(kbd_state.scancodes.inpos) & KBDBUFFERMASK] = keyCode;
-  kbd_state.scancodes.inpos++;
+  _state.scancodes.buffer[(_state.scancodes.inpos) & KBDBUFFERMASK] = keyCode;
+  _state.scancodes.inpos++;
 }
 
-void kbdEventDFxIntoDF0(ULO driveNumber)
+void Keyboard::EventDFxIntoDF0(ULO driveNumber)
 {
   char tmp[CFG_FILENAME_LENGTH];
   cfg *currentConfig = cfgManagerGetCurrentConfig(&cfg_manager);
@@ -83,12 +74,12 @@ void kbdEventDFxIntoDF0(ULO driveNumber)
   floppySetDiskImage(driveNumber, cfgGetDiskImage(currentConfig, driveNumber));
 }
 
-void kbdEventDebugToggleRenderer()
+void Keyboard::EventDebugToggleRenderer()
 {
   chipset_info.GfxDebugImmediateRenderingFromConfig = !chipset_info.GfxDebugImmediateRenderingFromConfig;
 }
 
-void kbdEventDebugToggleLogging()
+void Keyboard::EventDebugToggleLogging()
 {
   DebugLog.Enabled = !DebugLog.Enabled;
 }
@@ -97,60 +88,60 @@ void kbdEventDebugToggleLogging()
 // Called from the main end of frame handler
 //==========================================
 
-void kbdEventEOFHandler()
+void Keyboard::EventEOFHandler()
 {
-  while (kbd_state.eventsEOF.outpos < kbd_state.eventsEOF.inpos)
+  while (_state.eventsEOF.outpos < _state.eventsEOF.inpos)
   {
-    kbd_event thisev = (kbd_event)(kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.outpos & KBDBUFFERMASK]);
+    kbd_event thisev = (kbd_event)(_state.eventsEOF.buffer[_state.eventsEOF.outpos & KBDBUFFERMASK]);
 
     automator.RecordEmulatorAction(thisev);
 
     switch (thisev)
     {
       case kbd_event::EVENT_INSERT_DF0:
-        insert_dfX[0] = 1;
-        fellowRequestEmulationStop();
+        _insert_dfX[0] = 1;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
       case kbd_event::EVENT_INSERT_DF1:
-        insert_dfX[1] = 1;
-        fellowRequestEmulationStop();
+        _insert_dfX[1] = 1;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
       case kbd_event::EVENT_INSERT_DF2:
-        insert_dfX[2] = 1;
-        fellowRequestEmulationStop();
+        _insert_dfX[2] = 1;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
       case kbd_event::EVENT_INSERT_DF3:
-        insert_dfX[3] = 1;
-        fellowRequestEmulationStop();
+        _insert_dfX[3] = 1;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
       case kbd_event::EVENT_EJECT_DF0:
-        insert_dfX[0] = 2;
-        fellowRequestEmulationStop();
+        _insert_dfX[0] = 2;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
       case kbd_event::EVENT_EJECT_DF1:
-        insert_dfX[1] = 2;
-        fellowRequestEmulationStop();
+        _insert_dfX[1] = 2;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
       case kbd_event::EVENT_EJECT_DF2:
-        insert_dfX[2] = 2;
-        fellowRequestEmulationStop();
+        _insert_dfX[2] = 2;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
       case kbd_event::EVENT_EJECT_DF3:
-        insert_dfX[3] = 2;
-        fellowRequestEmulationStop();
+        _insert_dfX[3] = 2;
+        _runtimeEnvironment->RequestEmulationStop();
         break;
-      case kbd_event::EVENT_DF1_INTO_DF0: kbdEventDFxIntoDF0(1); break;
-      case kbd_event::EVENT_DF2_INTO_DF0: kbdEventDFxIntoDF0(2); break;
-      case kbd_event::EVENT_DF3_INTO_DF0: kbdEventDFxIntoDF0(3); break;
-      case kbd_event::EVENT_DEBUG_TOGGLE_RENDERER: kbdEventDebugToggleRenderer(); break;
-      case kbd_event::EVENT_DEBUG_TOGGLE_LOGGING: kbdEventDebugToggleLogging(); break;
+      case kbd_event::EVENT_DF1_INTO_DF0: EventDFxIntoDF0(1); break;
+      case kbd_event::EVENT_DF2_INTO_DF0: EventDFxIntoDF0(2); break;
+      case kbd_event::EVENT_DF3_INTO_DF0: EventDFxIntoDF0(3); break;
+      case kbd_event::EVENT_DEBUG_TOGGLE_RENDERER: EventDebugToggleRenderer(); break;
+      case kbd_event::EVENT_DEBUG_TOGGLE_LOGGING: EventDebugToggleLogging(); break;
       case kbd_event::EVENT_EXIT:
 #ifdef RETRO_PLATFORM
         if (RP.GetHeadlessMode())
           RP.SendClose();
         else
 #endif
-          fellowRequestEmulationStop();
+          _runtimeEnvironment->RequestEmulationStop();
 
         break;
       case kbd_event::EVENT_HARD_RESET:
@@ -162,7 +153,7 @@ void kbdEventEOFHandler()
       case kbd_event::EVENT_BMP_DUMP: Driver->Graphics->SaveScreenshot(true, ""); break;
       default: break;
     }
-    kbd_state.eventsEOF.outpos++;
+    _state.eventsEOF.outpos++;
   }
 }
 
@@ -170,9 +161,8 @@ void kbdEventEOFHandler()
 // Called from the main end of line handler
 //=========================================
 
-void kbdEventEOLHandler()
+void Keyboard::EventEOLHandler()
 {
-  kbd_event thisev;
   bool left[2], up[2], right[2], down[2], fire0[2], fire1[2];
   bool left_changed[2], up_changed[2], right_changed[2], down_changed[2];
   bool fire0_changed[2], fire1_changed[2];
@@ -182,9 +172,9 @@ void kbdEventEOLHandler()
     left_changed[i] = up_changed[i] = right_changed[i] = down_changed[i] = fire0_changed[i] = fire1_changed[i] = false;
   }
 
-  while (kbd_state.eventsEOL.outpos < kbd_state.eventsEOL.inpos)
+  while (_state.eventsEOL.outpos < _state.eventsEOL.inpos)
   {
-    thisev = (kbd_event)(kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.outpos & KBDBUFFERMASK]);
+    kbd_event thisev = (kbd_event)(_state.eventsEOL.buffer[_state.eventsEOL.outpos & KBDBUFFERMASK]);
     switch (thisev)
     {
       case kbd_event::EVENT_JOY0_UP_ACTIVE:
@@ -258,7 +248,7 @@ void kbdEventEOLHandler()
       default: break;
     }
 
-    kbd_state.eventsEOL.outpos++;
+    _state.eventsEOL.outpos++;
   }
 
   for (unsigned int i = 0; i < 2; i++)
@@ -285,15 +275,15 @@ void kbdEventEOLHandler()
 // Called from end_of_line
 //=======================================
 
-void kbdQueueHandler()
+void Keyboard::QueueHandler()
 {
-  if (kbd_state.scancodes.outpos < kbd_state.scancodes.inpos)
+  if (_state.scancodes.outpos < _state.scancodes.inpos)
   {
-    if (--kbd_time_to_wait <= 0)
+    if (--_time_to_wait <= 0)
     {
-      kbd_time_to_wait = 10;
-      ULO scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos & KBDBUFFERMASK];
-      kbd_state.scancodes.outpos++;
+      _time_to_wait = 10;
+      ULO scode = _state.scancodes.buffer[_state.scancodes.outpos & KBDBUFFERMASK];
+      _state.scancodes.outpos++;
       if (scode != A_NONE)
       {
 #ifdef _DEBUG
@@ -306,39 +296,43 @@ void kbdQueueHandler()
   }
 }
 
-void kbdHardReset()
+void Keyboard::HardReset()
 {
-  kbd_state.eventsEOL.inpos = 0;
-  kbd_state.eventsEOL.outpos = 0;
-  kbd_state.eventsEOF.inpos = 0;
-  kbd_state.eventsEOF.outpos = 0;
-  kbd_state.scancodes.inpos = 2;
-  kbd_state.scancodes.outpos = 0;
-  kbd_state.scancodes.buffer[0] = 0xfd; /* Start of keys pressed on reset */
-  kbd_state.scancodes.buffer[1] = 0xfe; /* End of keys pressed during reset */
-  kbd_time_to_wait = 10;
+  _state.eventsEOL.inpos = 0;
+  _state.eventsEOL.outpos = 0;
+  _state.eventsEOF.inpos = 0;
+  _state.eventsEOF.outpos = 0;
+  _state.scancodes.inpos = 2;
+  _state.scancodes.outpos = 0;
+  _state.scancodes.buffer[0] = 0xfd; // Start of keys pressed on reset
+  _state.scancodes.buffer[1] = 0xfe; // End of keys pressed during reset
+  _time_to_wait = 10;
   Driver->Keyboard->HardReset();
 }
 
-void kbdEmulationStart()
+void Keyboard::StartEmulation()
 {
   for (unsigned int i = 0; i < 4; i++)
   {
-    insert_dfX[i] = FALSE;
+    _insert_dfX[i] = FALSE;
   }
 
   Driver->Keyboard->EmulationStart();
 }
 
-void kbdEmulationStop()
+void Keyboard::StopEmulation()
 {
   Driver->Keyboard->EmulationStop();
 }
 
-void kbdStartup()
+void Keyboard::Startup()
 {
 }
 
-void kbdShutdown()
+void Keyboard::Shutdown()
+{
+}
+
+Keyboard::Keyboard(IRuntimeEnvironment *runtimeEnvironment) : _runtimeEnvironment(runtimeEnvironment)
 {
 }

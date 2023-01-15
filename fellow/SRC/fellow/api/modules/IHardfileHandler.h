@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "fellow/api/defs.h"
+#include "fellow/api/VM.h"
 
 constexpr auto FHFILE_MAX_DEVICES = 20;
 
@@ -31,7 +32,8 @@ namespace fellow::api::modules
 
     bool operator==(const HardfileGeometry &other) const
     {
-      return BytesPerSector == other.BytesPerSector && SectorsPerTrack == other.SectorsPerTrack && Surfaces == other.Surfaces && ReservedBlocks == other.ReservedBlocks;
+      return BytesPerSector == other.BytesPerSector && SectorsPerTrack == other.SectorsPerTrack && Surfaces == other.Surfaces &&
+             ReservedBlocks == other.ReservedBlocks;
     }
   };
 
@@ -109,5 +111,5 @@ namespace fellow::api::modules
     virtual void Shutdown() = 0;
   };
 
-  extern IHardfileHandler *HardfileHandler;
+  IHardfileHandler *CreateHardfileHandler(fellow::api::VirtualMachine *vm);
 }

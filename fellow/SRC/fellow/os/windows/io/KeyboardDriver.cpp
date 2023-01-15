@@ -45,7 +45,7 @@ constexpr auto MAPPING_FILENAME = "mapping.key";
 // Map symbolic key to a description string
 //=========================================
 
-const char *KeyboardDriver::kbd_drv_pc_symbol_to_string[PCSymbolCount] = {
+const char *KeyboardDriver::_pc_symbol_to_string[PCSymbolCount] = {
     "NONE",
     "ESCAPE",
     "F1",
@@ -153,63 +153,160 @@ const char *KeyboardDriver::kbd_drv_pc_symbol_to_string[PCSymbolCount] = {
     "NUMPAD_0",
     "NUMPAD_DOT"};
 
-const char *KeyboardDriver::symbol_pretty_name[PCSymbolCount] = {"none",        "Escape",      "F1",
-                                       "F2",          "F3",          "F4",
-                                       "F5",          "F6",          "F7",
-                                       "F8",          "F9",          "F10",
-                                       "F11",         "F12",         "Print screen",
-                                       "Scroll lock", "Pause",       "Grave",
-                                       "1",           "2",           "3",
-                                       "4",           "5",           "6",
-                                       "7",           "8",           "9",
-                                       "0",           "-",           "=",
-                                       "Backspace",   "Insert",      "Home",
-                                       "Page up",     "Num lock",    "/ (numpad)",
-                                       "* (numpad)",  "- (numpad)",  "Tab",
-                                       "Q",           "W",           "E",
-                                       "R",           "T",           "Y",
-                                       "U",           "I",           "O",
-                                       "P",           "[",           "]",
-                                       "Return",      "Delete",      "End",
-                                       "Page down",   "7 (numpad)",  "8 (numpad)",
-                                       "9 (numpad)",  "+ (numpad)",  "Caps lock",
-                                       "A",           "S",           "D",
-                                       "F",           "G",           "H",
-                                       "J",           "K",           "L",
-                                       ";",           "'",           "\\",
-                                       "4 (numpad)",  "5 (numpad)",  "6 (numpad)",
-                                       "Left shift",  "<",           "Z",
-                                       "X",           "C",           "V",
-                                       "B",           "N",           "M",
-                                       ",",           ".",           "/",
-                                       "Right shift", "Arrow up",    "1 (numpad)",
-                                       "2 (numpad)",  "3 (numpad)",  "Enter (numpad)",
-                                       "Left ctrl",   "Left win",    "Left alt",
-                                       " ",           "Right alt",   "Right win",
-                                       "Right menu",  "Right ctrl",  "Arrow left",
-                                       "Arrow down",  "Arrow right", "0 (numpad)",
-                                       ". (numpad)"};
+const char *KeyboardDriver::_symbol_pretty_name[PCSymbolCount] = {"none",        "Escape",      "F1",
+                                                                  "F2",          "F3",          "F4",
+                                                                  "F5",          "F6",          "F7",
+                                                                  "F8",          "F9",          "F10",
+                                                                  "F11",         "F12",         "Print screen",
+                                                                  "Scroll lock", "Pause",       "Grave",
+                                                                  "1",           "2",           "3",
+                                                                  "4",           "5",           "6",
+                                                                  "7",           "8",           "9",
+                                                                  "0",           "-",           "=",
+                                                                  "Backspace",   "Insert",      "Home",
+                                                                  "Page up",     "Num lock",    "/ (numpad)",
+                                                                  "* (numpad)",  "- (numpad)",  "Tab",
+                                                                  "Q",           "W",           "E",
+                                                                  "R",           "T",           "Y",
+                                                                  "U",           "I",           "O",
+                                                                  "P",           "[",           "]",
+                                                                  "Return",      "Delete",      "End",
+                                                                  "Page down",   "7 (numpad)",  "8 (numpad)",
+                                                                  "9 (numpad)",  "+ (numpad)",  "Caps lock",
+                                                                  "A",           "S",           "D",
+                                                                  "F",           "G",           "H",
+                                                                  "J",           "K",           "L",
+                                                                  ";",           "'",           "\\",
+                                                                  "4 (numpad)",  "5 (numpad)",  "6 (numpad)",
+                                                                  "Left shift",  "<",           "Z",
+                                                                  "X",           "C",           "V",
+                                                                  "B",           "N",           "M",
+                                                                  ",",           ".",           "/",
+                                                                  "Right shift", "Arrow up",    "1 (numpad)",
+                                                                  "2 (numpad)",  "3 (numpad)",  "Enter (numpad)",
+                                                                  "Left ctrl",   "Left win",    "Left alt",
+                                                                  " ",           "Right alt",   "Right win",
+                                                                  "Right menu",  "Right ctrl",  "Arrow left",
+                                                                  "Arrow down",  "Arrow right", "0 (numpad)",
+                                                                  ". (numpad)"};
 
 //===================================================
 // Map windows virtual key to intermediate key symbol
 //===================================================
 
-int KeyboardDriver::symbol_to_DIK_kbddrv[PCSymbolCount] = {
-    0,           DIK_ESCAPE,  DIK_F1,          DIK_F2,          DIK_F3,        DIK_F4,         DIK_F5,        DIK_F6,      DIK_F7,      DIK_F8,      DIK_F9,       DIK_F10,      DIK_F11,
-    DIK_F12,     DIK_SYSRQ,   DIK_SCROLL,      0 /*DIK_PAUSE*/, DIK_GRAVE,     DIK_1,          DIK_2,         DIK_3,       DIK_4,       DIK_5,       DIK_6,        DIK_7,        DIK_8,
-    DIK_9,       DIK_0,       DIK_MINUS,       DIK_EQUALS,      DIK_BACK,      DIK_INSERT,     DIK_HOME,      DIK_PRIOR,   DIK_NUMLOCK, DIK_DIVIDE,  DIK_MULTIPLY, DIK_MINUS,    DIK_TAB,
-    DIK_Q,       DIK_W,       DIK_E,           DIK_R,           DIK_T,         DIK_Y,          DIK_U,         DIK_I,       DIK_O,       DIK_P,       DIK_LBRACKET, DIK_RBRACKET, DIK_RETURN,
-    DIK_DELETE,  DIK_END,     DIK_NEXT,        DIK_NUMPAD7,     DIK_NUMPAD8,   DIK_NUMPAD9,    DIK_ADD,       DIK_CAPITAL, DIK_A,       DIK_S,       DIK_D,        DIK_F,        DIK_G,
-    DIK_H,       DIK_J,       DIK_K,           DIK_L,           DIK_SEMICOLON, DIK_APOSTROPHE, DIK_BACKSLASH, DIK_NUMPAD4, DIK_NUMPAD5, DIK_NUMPAD6, DIK_LSHIFT,   0x56, /* Not defined */
-    DIK_Z,       DIK_X,       DIK_C,           DIK_V,           DIK_B,         DIK_N,          DIK_M,         DIK_COMMA,   DIK_PERIOD,  DIK_SLASH,   DIK_RSHIFT,   DIK_UP,       DIK_NUMPAD1,
-    DIK_NUMPAD2, DIK_NUMPAD3, DIK_NUMPADENTER, DIK_LCONTROL,    DIK_LWIN,      DIK_LMENU,      DIK_SPACE,     DIK_RMENU,   DIK_RWIN,    DIK_APPS,    DIK_RCONTROL, DIK_LEFT,     DIK_DOWN,
-    DIK_RIGHT,   DIK_NUMPAD0, DIK_DECIMAL};
+int KeyboardDriver::_symbol_to_dik[PCSymbolCount] = {
+    0,
+    DIK_ESCAPE,
+    DIK_F1,
+    DIK_F2,
+    DIK_F3,
+    DIK_F4,
+    DIK_F5,
+    DIK_F6,
+    DIK_F7,
+    DIK_F8,
+    DIK_F9,
+    DIK_F10,
+    DIK_F11,
+    DIK_F12,
+    DIK_SYSRQ,
+    DIK_SCROLL,
+    0 /*DIK_PAUSE*/,
+    DIK_GRAVE,
+    DIK_1,
+    DIK_2,
+    DIK_3,
+    DIK_4,
+    DIK_5,
+    DIK_6,
+    DIK_7,
+    DIK_8,
+    DIK_9,
+    DIK_0,
+    DIK_MINUS,
+    DIK_EQUALS,
+    DIK_BACK,
+    DIK_INSERT,
+    DIK_HOME,
+    DIK_PRIOR,
+    DIK_NUMLOCK,
+    DIK_DIVIDE,
+    DIK_MULTIPLY,
+    DIK_MINUS,
+    DIK_TAB,
+    DIK_Q,
+    DIK_W,
+    DIK_E,
+    DIK_R,
+    DIK_T,
+    DIK_Y,
+    DIK_U,
+    DIK_I,
+    DIK_O,
+    DIK_P,
+    DIK_LBRACKET,
+    DIK_RBRACKET,
+    DIK_RETURN,
+    DIK_DELETE,
+    DIK_END,
+    DIK_NEXT,
+    DIK_NUMPAD7,
+    DIK_NUMPAD8,
+    DIK_NUMPAD9,
+    DIK_ADD,
+    DIK_CAPITAL,
+    DIK_A,
+    DIK_S,
+    DIK_D,
+    DIK_F,
+    DIK_G,
+    DIK_H,
+    DIK_J,
+    DIK_K,
+    DIK_L,
+    DIK_SEMICOLON,
+    DIK_APOSTROPHE,
+    DIK_BACKSLASH,
+    DIK_NUMPAD4,
+    DIK_NUMPAD5,
+    DIK_NUMPAD6,
+    DIK_LSHIFT,
+    0x56, /* Not defined */
+    DIK_Z,
+    DIK_X,
+    DIK_C,
+    DIK_V,
+    DIK_B,
+    DIK_N,
+    DIK_M,
+    DIK_COMMA,
+    DIK_PERIOD,
+    DIK_SLASH,
+    DIK_RSHIFT,
+    DIK_UP,
+    DIK_NUMPAD1,
+    DIK_NUMPAD2,
+    DIK_NUMPAD3,
+    DIK_NUMPADENTER,
+    DIK_LCONTROL,
+    DIK_LWIN,
+    DIK_LMENU,
+    DIK_SPACE,
+    DIK_RMENU,
+    DIK_RWIN,
+    DIK_APPS,
+    DIK_RCONTROL,
+    DIK_LEFT,
+    DIK_DOWN,
+    DIK_RIGHT,
+    DIK_NUMPAD0,
+    DIK_DECIMAL};
 
 //======================================
 // Map symbolic pc key to amiga scancode
 //======================================
 
-UBY KeyboardDriver::kbd_drv_pc_symbol_to_amiga_scancode[PCSymbolCount] = {
+UBY KeyboardDriver::_pc_symbol_to_amiga_scancode[PCSymbolCount] = {
     /* 0x00 */
 
     A_NONE,   /* PCK_NONE            */
@@ -369,8 +466,6 @@ constexpr unsigned int JOYKEY_AUTOFIRE1 = 7;
 
 void KeyboardDriver::ClearPressedKeys()
 {
-  kbd_drv_home_pressed = false;
-  kbd_drv_end_pressed = false;
   memset(_prevkeys, 0, sizeof(_prevkeys));
   memset(_keys, 0, sizeof(_keys));
 }
@@ -390,7 +485,8 @@ const char *KeyboardDriver::DInputErrorString(HRESULT hResult)
     case DIERR_GENERIC: return "An undetermined error occurred inside the DirectInput subsystem.";
     case DIERR_HANDLEEXISTS: return "The device already has an event notification associated with it.";
     case DIERR_INPUTLOST: return "Access to the input device has been lost. It must be re-acquired.";
-    case DIERR_INVALIDPARAM: return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
+    case DIERR_INVALIDPARAM:
+      return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
     case DIERR_NOAGGREGATION: return "This object does not support aggregation.";
     case DIERR_NOINTERFACE: return "The specified interface is not supported by the object.";
     case DIERR_NOTACQUIRED: return "The operation cannot be performed unless the device is acquired.";
@@ -478,11 +574,11 @@ void KeyboardDriver::EOFHandler()
 
     if (t < tCurrentTime)
     {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
+      UBY a_code = _pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
       Service->Log.AddLog("RetroPlatform escape key simulation interval ended.\n");
       RP.SetEscapeKeySimulatedTargetTime(0);
-      kbdKeyAdd(a_code | 0x80); // release escape key
+      _keyboard->KeyAdd(a_code | 0x80); // release escape key
     }
   }
 }
@@ -525,10 +621,10 @@ void KeyboardDriver::DInputRelease()
     IDirectInputDevice_Release(_lpDID);
     _lpDID = nullptr;
   }
-  if (_DIevent != nullptr)
+  if (_di_event != nullptr)
   {
-    CloseHandle(_DIevent);
-    _DIevent = nullptr;
+    CloseHandle(_di_event);
+    _di_event = nullptr;
   }
   if (_lpDI != nullptr)
   {
@@ -553,7 +649,7 @@ bool KeyboardDriver::DInputInitialize()
 
   _lpDI = nullptr;
   _lpDID = nullptr;
-  _DIevent = nullptr;
+  _di_event = nullptr;
   _initializationFailed = false;
   HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&_lpDI, nullptr);
   if (res != DI_OK)
@@ -597,8 +693,8 @@ bool KeyboardDriver::DInputInitialize()
 
   // Create event for notification
 
-  _DIevent = CreateEvent(nullptr, 0, 0, nullptr);
-  if (_DIevent == nullptr)
+  _di_event = CreateEvent(nullptr, 0, 0, nullptr);
+  if (_di_event == nullptr)
   {
     Service->Log.AddLog("KeyboardDriver::DInputInitialize(): CreateEvent() failed\n");
     _initializationFailed = true;
@@ -617,7 +713,7 @@ bool KeyboardDriver::DInputInitialize()
   }
 
   // Set event notification
-  res = IDirectInputDevice_SetEventNotification(_lpDID, _DIevent);
+  res = IDirectInputDevice_SetEventNotification(_lpDID, _di_event);
   if (res != DI_OK)
   {
     DInputFailure("KeyboardDriver::DInputInitialize(): SetEventNotification()", res);
@@ -642,39 +738,34 @@ void KeyboardDriver::StateHasChanged(bool active)
   }
 }
 
-void KeyboardDriver::issue_event(kbd_event the_event)
+kbd_drv_pc_symbol KeyboardDriver::ToSymbolicKey(unsigned int scancode) const
 {
-  kbdEventEOFAdd(the_event);
+  return _dik_to_symbol[scancode];
 }
 
-kbd_drv_pc_symbol KeyboardDriver::symbolickey(int scancode)
+int KeyboardDriver::Map(kbd_drv_pc_symbol sym) const
 {
-  return kbddrv_DIK_to_symbol[scancode];
+  return _symbol_to_dik[sym];
 }
 
-int KeyboardDriver::map(kbd_drv_pc_symbol sym)
+bool KeyboardDriver::WasPressed(kbd_drv_pc_symbol sym) const
 {
-  return symbol_to_DIK_kbddrv[sym];
+  return _prevkeys[Map(sym)];
 }
 
-bool KeyboardDriver::waspressed(kbd_drv_pc_symbol sym)
+bool KeyboardDriver::IsPressed(kbd_drv_pc_symbol sym) const
 {
-  return _prevkeys[map(sym)];
+  return _keys[Map(sym)];
 }
 
-bool KeyboardDriver::ispressed(kbd_drv_pc_symbol sym)
+bool KeyboardDriver::Released(kbd_drv_pc_symbol sym) const
 {
-  return _keys[map(sym)];
+  return !IsPressed(sym) && WasPressed(sym);
 }
 
-bool KeyboardDriver::released(kbd_drv_pc_symbol sym)
+bool KeyboardDriver::Pressed(kbd_drv_pc_symbol sym) const
 {
-  return !ispressed(sym) && waspressed(sym);
-}
-
-bool KeyboardDriver::pressed(kbd_drv_pc_symbol sym)
-{
-  return ispressed(sym) && !waspressed(sym);
+  return IsPressed(sym) && !WasPressed(sym);
 }
 
 //==================================================
@@ -685,104 +776,110 @@ bool KeyboardDriver::pressed(kbd_drv_pc_symbol sym)
 
 bool KeyboardDriver::EventChecker(kbd_drv_pc_symbol symbol_key)
 {
-  ULO eol_evpos = kbd_state.eventsEOL.inpos;
-  ULO eof_evpos = kbd_state.eventsEOF.inpos;
+  bool eventIssued = false;
 
   for (;;)
   {
 
-    if (kbd_drv_capture)
+    if (_capture)
     {
 
 #ifdef _DEBUG
       Service->Log.AddLog("Key captured: %s\n", GetPCSymbolDescription(symbol_key));
 #endif
 
-      kbd_drv_captured_key = symbol_key;
+      _captured_key = symbol_key;
       return true;
     }
 
-    if (released(PCK_PAGE_DOWN))
+    if (Released(PCK_PAGE_DOWN))
     {
-      if (ispressed(PCK_HOME))
+      if (IsPressed(PCK_HOME))
       {
-        issue_event(kbd_event::EVENT_RESOLUTION_NEXT);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_RESOLUTION_NEXT);
+        eventIssued = true;
         break;
       }
       else
       {
-        if (ispressed(PCK_END))
+        if (IsPressed(PCK_END))
         {
-          issue_event(kbd_event::EVENT_SCALEY_NEXT);
+          _keyboard->EventEOFAdd(kbd_event::EVENT_SCALEY_NEXT);
+          eventIssued = true;
           break;
         }
       }
     }
-    if (released(PCK_PAGE_UP))
+    if (Released(PCK_PAGE_UP))
     {
-      if (ispressed(PCK_HOME))
+      if (IsPressed(PCK_HOME))
       {
-        issue_event(kbd_event::EVENT_RESOLUTION_PREV);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_RESOLUTION_PREV);
+        eventIssued = true;
         break;
       }
       else
       {
-        if (ispressed(PCK_END))
+        if (IsPressed(PCK_END))
         {
-          issue_event(kbd_event::EVENT_SCALEY_PREV);
+          _keyboard->EventEOFAdd(kbd_event::EVENT_SCALEY_PREV);
+          eventIssued = true;
           break;
         }
       }
     }
 
-    if (ispressed(PCK_RIGHT_WINDOWS) || ispressed(PCK_START_MENU))
+    if (IsPressed(PCK_RIGHT_WINDOWS) || IsPressed(PCK_START_MENU))
     {
-      if (ispressed(PCK_LEFT_WINDOWS))
+      if (IsPressed(PCK_LEFT_WINDOWS))
       {
-        if (ispressed(PCK_LEFT_CTRL))
+        if (IsPressed(PCK_LEFT_CTRL))
         {
-          issue_event(kbd_event::EVENT_HARD_RESET);
+          _keyboard->EventEOFAdd(kbd_event::EVENT_HARD_RESET);
+          eventIssued = true;
           break;
         }
       }
     }
 
-    if (ispressed(PCK_PRINT_SCREEN))
+    if (IsPressed(PCK_PRINT_SCREEN))
     {
-      issue_event(kbd_event::EVENT_BMP_DUMP);
+      _keyboard->EventEOFAdd(kbd_event::EVENT_BMP_DUMP);
+      eventIssued = true;
       break;
     }
 
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
     {
-      if (ispressed(PCK_LEFT_ALT))
+      if (IsPressed(PCK_LEFT_ALT))
       {
-        if (ispressed(PCK_F4))
+        if (IsPressed(PCK_F4))
         {
-          issue_event(kbd_event::EVENT_EXIT);
+          _keyboard->EventEOFAdd(kbd_event::EVENT_EXIT);
+          eventIssued = true;
           break;
         }
       }
 
       if (!RP.GetEmulationPaused())
       {
-        if (pressed((kbd_drv_pc_symbol)RP.GetEscapeKey()))
+        if (Pressed((kbd_drv_pc_symbol)RP.GetEscapeKey()))
         {
           RP.SetEscapeKeyHeld(true);
           return true;
         }
-        if (released((kbd_drv_pc_symbol)RP.GetEscapeKey()))
+        if (Released((kbd_drv_pc_symbol)RP.GetEscapeKey()))
         {
           ULONGLONG t = RP.SetEscapeKeyHeld(false);
 
           if ((t != 0) && (t < RP.GetEscapeKeyHoldTime()))
           {
-            UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
+            UBY a_code = _pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
             Service->Log.AddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n", t);
             RP.SetEscapeKeySimulatedTargetTime(RP.GetTime() + RP.GetEscapeKeyHoldTime());
-            kbdKeyAdd(a_code); // hold escape key
+            _keyboard->KeyAdd(a_code); // hold escape key
             return true;
           }
           else
@@ -794,7 +891,7 @@ bool KeyboardDriver::EventChecker(kbd_drv_pc_symbol symbol_key)
 #ifndef FELLOW_SUPPORT_RP_API_VERSION_71
       else
       {
-        if (pressed(RP.GetEscapeKey())) RP.PostEscaped();
+        if (Pressed(RP.GetEscapeKey())) RP.PostEscaped();
       }
 #endif
     }
@@ -803,90 +900,104 @@ bool KeyboardDriver::EventChecker(kbd_drv_pc_symbol symbol_key)
 #ifdef RETRO_PLATFORM
     if (!RP.GetHeadlessMode())
 #endif
-      if (released(PCK_F11))
+      if (Released(PCK_F11))
       {
-        issue_event(kbd_event::EVENT_EXIT);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_EXIT);
+        eventIssued = true;
         break;
       }
 
 #ifdef RETRO_PLATFORM
     if (!RP.GetHeadlessMode())
 #endif
-      if (released(PCK_F12))
+      if (Released(PCK_F12))
       {
         Driver->Mouse->ToggleFocus();
         Driver->Joystick->ToggleFocus();
         break;
       }
 
-    if (ispressed(PCK_HOME))
+    if (IsPressed(PCK_HOME))
     {
-      if (released(PCK_F1))
+      if (Released(PCK_F1))
       {
-        issue_event(kbd_event::EVENT_INSERT_DF0);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_INSERT_DF0);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F2))
+      if (Released(PCK_F2))
       {
-        issue_event(kbd_event::EVENT_INSERT_DF1);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_INSERT_DF1);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F3))
+      if (Released(PCK_F3))
       {
-        issue_event(kbd_event::EVENT_INSERT_DF2);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_INSERT_DF2);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F4))
+      if (Released(PCK_F4))
       {
-        issue_event(kbd_event::EVENT_INSERT_DF3);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_INSERT_DF3);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F5))
+      if (Released(PCK_F5))
       {
-        issue_event(kbd_event::EVENT_DF1_INTO_DF0);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_DF1_INTO_DF0);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F6))
+      if (Released(PCK_F6))
       {
-        issue_event(kbd_event::EVENT_DF2_INTO_DF0);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_DF2_INTO_DF0);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F7))
+      if (Released(PCK_F7))
       {
-        issue_event(kbd_event::EVENT_DF3_INTO_DF0);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_DF3_INTO_DF0);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F8))
+      if (Released(PCK_F8))
       {
-        issue_event(kbd_event::EVENT_DEBUG_TOGGLE_RENDERER);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_DEBUG_TOGGLE_RENDERER);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F9))
+      if (Released(PCK_F9))
       {
-        issue_event(kbd_event::EVENT_DEBUG_TOGGLE_LOGGING);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_DEBUG_TOGGLE_LOGGING);
+        eventIssued = true;
         break;
       }
     }
-    else if (ispressed(PCK_END))
+    else if (IsPressed(PCK_END))
     {
-      if (released(PCK_F1))
+      if (Released(PCK_F1))
       {
-        issue_event(kbd_event::EVENT_EJECT_DF0);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_EJECT_DF0);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F2))
+      if (Released(PCK_F2))
       {
-        issue_event(kbd_event::EVENT_EJECT_DF1);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_EJECT_DF1);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F3))
+      if (Released(PCK_F3))
       {
-        issue_event(kbd_event::EVENT_EJECT_DF2);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_EJECT_DF2);
+        eventIssued = true;
         break;
       }
-      if (released(PCK_F4))
+      if (Released(PCK_F4))
       {
-        issue_event(kbd_event::EVENT_EJECT_DF3);
+        _keyboard->EventEOFAdd(kbd_event::EVENT_EJECT_DF3);
+        eventIssued = true;
         break;
       }
     }
@@ -898,15 +1009,16 @@ bool KeyboardDriver::EventChecker(kbd_drv_pc_symbol symbol_key)
     {
       for (unsigned int setting = 0; setting < 2; setting++)
       {
-        if (kbd_drv_joykey_enabled[port][setting])
+        if (_joykey_enabled[port][setting])
         {
-          for (int direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
+          for (unsigned int direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
           {
-            if (symbol_key == kbd_drv_joykey[setting][direction])
+            if (symbol_key == _joykey[setting][direction])
             {
-              if (pressed(symbol_key) || released(symbol_key))
+              if (Pressed(symbol_key) || Released(symbol_key))
               {
-                kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
+                _keyboard->EventEOLAdd(_joykey_event[port][Pressed(symbol_key)][direction]);
+                eventIssued = true;
               }
             }
           }
@@ -916,7 +1028,7 @@ bool KeyboardDriver::EventChecker(kbd_drv_pc_symbol symbol_key)
     break;
   }
 
-  return (eol_evpos != kbd_state.eventsEOL.inpos) || (eof_evpos != kbd_state.eventsEOF.inpos);
+  return eventIssued;
 }
 
 //===================================
@@ -925,7 +1037,7 @@ bool KeyboardDriver::EventChecker(kbd_drv_pc_symbol symbol_key)
 
 void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
 {
-  kbd_drv_pc_symbol symbolic_key = symbolickey(keycode);
+  kbd_drv_pc_symbol symbolic_key = ToSymbolicKey(keycode);
   bool keycode_pressed = pressed;
   bool keycode_was_pressed = _prevkeys[keycode];
 
@@ -935,22 +1047,23 @@ void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
   // In particular, missing release of LEFT-ALT is problematic.
 
   // left-alt already pressed, and now TAB pressed as well
-  if (!_kbd_in_task_switcher && _keys[map(PCK_LEFT_ALT)] && keycode == map(PCK_TAB) && pressed)
+  if (!_kbd_in_task_switcher && _keys[Map(PCK_LEFT_ALT)] && keycode == Map(PCK_TAB) && pressed)
   {
     Service->Log.AddLog("KeyboardDriver::Keypress(): ALT-TAB start detected\n");
 
     // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
-    _kbd_in_task_switcher = ((GraphicsDriver*)Driver->Graphics)->IsHostBufferWindowed();
+    _kbd_in_task_switcher = ((GraphicsDriver *)Driver->Graphics)->IsHostBufferWindowed();
 
     // Don't pass this TAB press along to emulation, pass left-ALT release instead
-    keycode = map(PCK_LEFT_ALT);
-    symbolic_key = symbolickey(keycode);
+    keycode = Map(PCK_LEFT_ALT);
+    symbolic_key = ToSymbolicKey(keycode);
     pressed = false;
     keycode_pressed = pressed;
     keycode_was_pressed = _prevkeys[keycode];
 
 #ifdef _DEBUG
-    Service->Log.AddLog("Keypress TAB converted to %s %s due to ALT-TAB started\n", GetPCSymbolDescription(symbolic_key), pressed ? "pressed" : "released");
+    Service->Log.AddLog(
+        "Keypress TAB converted to %s %s due to ALT-TAB started\n", GetPCSymbolDescription(symbolic_key), pressed ? "pressed" : "released");
 #endif
   }
   else if (_kbd_in_task_switcher && symbolic_key == PCK_LEFT_ALT && !pressed)
@@ -975,8 +1088,8 @@ void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!EventChecker(symbolic_key))
     {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-      kbdKeyAdd(a_code | 0x80);
+      UBY a_code = _pc_symbol_to_amiga_scancode[symbolic_key];
+      _keyboard->KeyAdd(a_code | 0x80);
     }
   }
   else if (keycode_pressed && !keycode_was_pressed)
@@ -984,8 +1097,8 @@ void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!EventChecker(symbolic_key))
     {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-      kbdKeyAdd(a_code);
+      UBY a_code = _pc_symbol_to_amiga_scancode[symbolic_key];
+      _keyboard->KeyAdd(a_code);
     }
   }
   _prevkeys[keycode] = pressed;
@@ -999,11 +1112,6 @@ void KeyboardDriver::KeypressRaw(ULO lRawKeyCode, bool pressed)
 {
 #ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
   BOOLE keycode_was_pressed = prevkeys[lRawKeyCode];
-#endif
-
-#ifdef _DEBUG
-  Service->Log.AddLog(
-      "  KeyboardDriver::KeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n", lRawKeyCode, pressed ? "pressed" : "released", kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
 #endif
 
 #ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
@@ -1023,11 +1131,11 @@ void KeyboardDriver::KeypressRaw(ULO lRawKeyCode, bool pressed)
 #else
   if (!pressed)
   {
-    kbdKeyAdd(lRawKeyCode | 0x80);
+    _keyboard->KeyAdd(lRawKeyCode | 0x80);
   }
   else
   {
-    kbdKeyAdd(lRawKeyCode);
+    _keyboard->KeyAdd(lRawKeyCode);
   }
 #endif
 }
@@ -1036,7 +1144,7 @@ void KeyboardDriver::BufferOverflowHandler()
 {
 }
 
-void KeyboardDriver:: KeypressHandler()
+void KeyboardDriver::KeypressHandler()
 {
   if (!_active)
   {
@@ -1081,13 +1189,14 @@ kbd_drv_pc_symbol KeyboardDriver::GetPCSymbolFromDescription(const char *pcSymbo
 {
   for (unsigned int i = 0; i < PCSymbolCount; i++)
   {
-    if (stricmp(pcSymbolDescription, kbd_drv_pc_symbol_to_string[i]) == 0)
+    if (stricmp(pcSymbolDescription, _pc_symbol_to_string[i]) == 0)
     {
       return (kbd_drv_pc_symbol)i;
     }
   }
 
-  Service->Log.AddLogDebug("KeyboardDriver::GetPCSymbolFromDescription() - No match for '%s' was found in the pc symbolic key mapping table", pcSymbolDescription);
+  Service->Log.AddLogDebug(
+      "KeyboardDriver::GetPCSymbolFromDescription() - No match for '%s' was found in the pc symbolic key mapping table", pcSymbolDescription);
   return PCK_NONE;
 }
 
@@ -1101,7 +1210,7 @@ const char *KeyboardDriver::GetPCSymbolDescription(kbd_drv_pc_symbol symbolickey
     return "";
   }
 
-  return kbd_drv_pc_symbol_to_string[symbolickey];
+  return _pc_symbol_to_string[symbolickey];
 }
 
 const char *KeyboardDriver::GetPCSymbolPrettyDescription(kbd_drv_pc_symbol symbolickey)
@@ -1114,14 +1223,14 @@ const char *KeyboardDriver::GetPCSymbolPrettyDescription(kbd_drv_pc_symbol symbo
     return "";
   }
 
-  return symbol_pretty_name[pcSymbolIndex];
+  return _symbol_pretty_name[pcSymbolIndex];
 }
 
 kbd_drv_pc_symbol KeyboardDriver::GetPCSymbolFromDIK(int dikkey)
 {
   for (unsigned int j = 0; j < PCSymbolCount; j++)
   {
-    if (dikkey == symbol_to_DIK_kbddrv[j])
+    if (dikkey == _symbol_to_dik[j])
     {
       return (kbd_drv_pc_symbol)j;
     }
@@ -1135,7 +1244,7 @@ const char *KeyboardDriver::GetDIKDescription(int dikkey)
 {
   for (unsigned int j = 0; j < PCSymbolCount; j++)
   {
-    if (dikkey == symbol_to_DIK_kbddrv[j])
+    if (dikkey == _symbol_to_dik[j])
     {
       return GetPCSymbolDescription((kbd_drv_pc_symbol)j);
     }
@@ -1153,22 +1262,22 @@ void KeyboardDriver::JoystickReplacementSet(kbd_event event, kbd_drv_pc_symbol s
 {
   switch (event)
   {
-    case kbd_event::EVENT_JOY0_UP_ACTIVE: kbd_drv_joykey[0][JOYKEY_UP] = symbolickey; break;
-    case kbd_event::EVENT_JOY0_DOWN_ACTIVE: kbd_drv_joykey[0][JOYKEY_DOWN] = symbolickey; break;
-    case kbd_event::EVENT_JOY0_LEFT_ACTIVE: kbd_drv_joykey[0][JOYKEY_LEFT] = symbolickey; break;
-    case kbd_event::EVENT_JOY0_RIGHT_ACTIVE: kbd_drv_joykey[0][JOYKEY_RIGHT] = symbolickey; break;
-    case kbd_event::EVENT_JOY0_FIRE0_ACTIVE: kbd_drv_joykey[0][JOYKEY_FIRE0] = symbolickey; break;
-    case kbd_event::EVENT_JOY0_FIRE1_ACTIVE: kbd_drv_joykey[0][JOYKEY_FIRE1] = symbolickey; break;
-    case kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE: kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = symbolickey; break;
-    case kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE: kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_UP_ACTIVE: kbd_drv_joykey[1][JOYKEY_UP] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_DOWN_ACTIVE: kbd_drv_joykey[1][JOYKEY_DOWN] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_LEFT_ACTIVE: kbd_drv_joykey[1][JOYKEY_LEFT] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_RIGHT_ACTIVE: kbd_drv_joykey[1][JOYKEY_RIGHT] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_FIRE0_ACTIVE: kbd_drv_joykey[1][JOYKEY_FIRE0] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_FIRE1_ACTIVE: kbd_drv_joykey[1][JOYKEY_FIRE1] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE: kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = symbolickey; break;
-    case kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE: kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_UP_ACTIVE: _joykey[0][JOYKEY_UP] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_DOWN_ACTIVE: _joykey[0][JOYKEY_DOWN] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_LEFT_ACTIVE: _joykey[0][JOYKEY_LEFT] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_RIGHT_ACTIVE: _joykey[0][JOYKEY_RIGHT] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_FIRE0_ACTIVE: _joykey[0][JOYKEY_FIRE0] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_FIRE1_ACTIVE: _joykey[0][JOYKEY_FIRE1] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE: _joykey[0][JOYKEY_AUTOFIRE0] = symbolickey; break;
+    case kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE: _joykey[0][JOYKEY_AUTOFIRE1] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_UP_ACTIVE: _joykey[1][JOYKEY_UP] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_DOWN_ACTIVE: _joykey[1][JOYKEY_DOWN] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_LEFT_ACTIVE: _joykey[1][JOYKEY_LEFT] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_RIGHT_ACTIVE: _joykey[1][JOYKEY_RIGHT] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_FIRE0_ACTIVE: _joykey[1][JOYKEY_FIRE0] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_FIRE1_ACTIVE: _joykey[1][JOYKEY_FIRE1] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE: _joykey[1][JOYKEY_AUTOFIRE0] = symbolickey; break;
+    case kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE: _joykey[1][JOYKEY_AUTOFIRE1] = symbolickey; break;
   }
 }
 
@@ -1180,22 +1289,22 @@ kbd_drv_pc_symbol KeyboardDriver::JoystickReplacementGet(kbd_event event)
 {
   switch (event)
   {
-    case kbd_event::EVENT_JOY0_UP_ACTIVE: return kbd_drv_joykey[0][JOYKEY_UP];
-    case kbd_event::EVENT_JOY0_DOWN_ACTIVE: return kbd_drv_joykey[0][JOYKEY_DOWN];
-    case kbd_event::EVENT_JOY0_LEFT_ACTIVE: return kbd_drv_joykey[0][JOYKEY_LEFT];
-    case kbd_event::EVENT_JOY0_RIGHT_ACTIVE: return kbd_drv_joykey[0][JOYKEY_RIGHT];
-    case kbd_event::EVENT_JOY0_FIRE0_ACTIVE: return kbd_drv_joykey[0][JOYKEY_FIRE0];
-    case kbd_event::EVENT_JOY0_FIRE1_ACTIVE: return kbd_drv_joykey[0][JOYKEY_FIRE1];
-    case kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE: return kbd_drv_joykey[0][JOYKEY_AUTOFIRE0];
-    case kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE: return kbd_drv_joykey[0][JOYKEY_AUTOFIRE1];
-    case kbd_event::EVENT_JOY1_UP_ACTIVE: return kbd_drv_joykey[1][JOYKEY_UP];
-    case kbd_event::EVENT_JOY1_DOWN_ACTIVE: return kbd_drv_joykey[1][JOYKEY_DOWN];
-    case kbd_event::EVENT_JOY1_LEFT_ACTIVE: return kbd_drv_joykey[1][JOYKEY_LEFT];
-    case kbd_event::EVENT_JOY1_RIGHT_ACTIVE: return kbd_drv_joykey[1][JOYKEY_RIGHT];
-    case kbd_event::EVENT_JOY1_FIRE0_ACTIVE: return kbd_drv_joykey[1][JOYKEY_FIRE0];
-    case kbd_event::EVENT_JOY1_FIRE1_ACTIVE: return kbd_drv_joykey[1][JOYKEY_FIRE1];
-    case kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE: return kbd_drv_joykey[1][JOYKEY_AUTOFIRE0];
-    case kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE: return kbd_drv_joykey[1][JOYKEY_AUTOFIRE1];
+    case kbd_event::EVENT_JOY0_UP_ACTIVE: return _joykey[0][JOYKEY_UP];
+    case kbd_event::EVENT_JOY0_DOWN_ACTIVE: return _joykey[0][JOYKEY_DOWN];
+    case kbd_event::EVENT_JOY0_LEFT_ACTIVE: return _joykey[0][JOYKEY_LEFT];
+    case kbd_event::EVENT_JOY0_RIGHT_ACTIVE: return _joykey[0][JOYKEY_RIGHT];
+    case kbd_event::EVENT_JOY0_FIRE0_ACTIVE: return _joykey[0][JOYKEY_FIRE0];
+    case kbd_event::EVENT_JOY0_FIRE1_ACTIVE: return _joykey[0][JOYKEY_FIRE1];
+    case kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE: return _joykey[0][JOYKEY_AUTOFIRE0];
+    case kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE: return _joykey[0][JOYKEY_AUTOFIRE1];
+    case kbd_event::EVENT_JOY1_UP_ACTIVE: return _joykey[1][JOYKEY_UP];
+    case kbd_event::EVENT_JOY1_DOWN_ACTIVE: return _joykey[1][JOYKEY_DOWN];
+    case kbd_event::EVENT_JOY1_LEFT_ACTIVE: return _joykey[1][JOYKEY_LEFT];
+    case kbd_event::EVENT_JOY1_RIGHT_ACTIVE: return _joykey[1][JOYKEY_RIGHT];
+    case kbd_event::EVENT_JOY1_FIRE0_ACTIVE: return _joykey[1][JOYKEY_FIRE0];
+    case kbd_event::EVENT_JOY1_FIRE1_ACTIVE: return _joykey[1][JOYKEY_FIRE1];
+    case kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE: return _joykey[1][JOYKEY_AUTOFIRE0];
+    case kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE: return _joykey[1][JOYKEY_AUTOFIRE1];
   }
   return kbd_drv_pc_symbol::PCK_NONE;
 }
@@ -1204,127 +1313,127 @@ void KeyboardDriver::InitializeDIKToSymbolKeyTable()
 {
   for (int i = 0; i < PCK_LAST_KEY; i++)
   {
-    kbddrv_DIK_to_symbol[i] = PCK_NONE;
+    _dik_to_symbol[i] = PCK_NONE;
   }
 
-  kbddrv_DIK_to_symbol[DIK_ESCAPE] = PCK_ESCAPE; /* First row */
-  kbddrv_DIK_to_symbol[DIK_F1] = PCK_F1;
-  kbddrv_DIK_to_symbol[DIK_F2] = PCK_F2;
-  kbddrv_DIK_to_symbol[DIK_F3] = PCK_F3;
-  kbddrv_DIK_to_symbol[DIK_F4] = PCK_F4;
-  kbddrv_DIK_to_symbol[DIK_F5] = PCK_F5;
-  kbddrv_DIK_to_symbol[DIK_F6] = PCK_F6;
-  kbddrv_DIK_to_symbol[DIK_F7] = PCK_F7;
-  kbddrv_DIK_to_symbol[DIK_F8] = PCK_F8;
-  kbddrv_DIK_to_symbol[DIK_F9] = PCK_F9;
-  kbddrv_DIK_to_symbol[DIK_F10] = PCK_F10;
-  kbddrv_DIK_to_symbol[DIK_F11] = PCK_F11;
-  kbddrv_DIK_to_symbol[DIK_F12] = PCK_F12;
-  kbddrv_DIK_to_symbol[DIK_SYSRQ] = PCK_PRINT_SCREEN;
-  kbddrv_DIK_to_symbol[DIK_SCROLL] = PCK_SCROLL_LOCK;
-  /*kbddrv_DIK_to_symbol[ DIK_PAUSE           ] = PCK_PAUSE; */
-  kbddrv_DIK_to_symbol[DIK_GRAVE] = PCK_GRAVE; /* Second row */
-  kbddrv_DIK_to_symbol[DIK_1] = PCK_1;
-  kbddrv_DIK_to_symbol[DIK_2] = PCK_2;
-  kbddrv_DIK_to_symbol[DIK_3] = PCK_3;
-  kbddrv_DIK_to_symbol[DIK_4] = PCK_4;
-  kbddrv_DIK_to_symbol[DIK_5] = PCK_5;
-  kbddrv_DIK_to_symbol[DIK_6] = PCK_6;
-  kbddrv_DIK_to_symbol[DIK_7] = PCK_7;
-  kbddrv_DIK_to_symbol[DIK_8] = PCK_8;
-  kbddrv_DIK_to_symbol[DIK_9] = PCK_9;
-  kbddrv_DIK_to_symbol[DIK_0] = PCK_0;
-  kbddrv_DIK_to_symbol[DIK_MINUS] = PCK_MINUS;
-  kbddrv_DIK_to_symbol[DIK_EQUALS] = PCK_EQUALS;
-  kbddrv_DIK_to_symbol[DIK_BACK] = PCK_BACKSPACE;
-  kbddrv_DIK_to_symbol[DIK_INSERT] = PCK_INSERT;
-  kbddrv_DIK_to_symbol[DIK_HOME] = PCK_HOME;
-  kbddrv_DIK_to_symbol[DIK_PRIOR] = PCK_PAGE_UP;
-  kbddrv_DIK_to_symbol[DIK_NUMLOCK] = PCK_NUM_LOCK;
-  kbddrv_DIK_to_symbol[DIK_DIVIDE] = PCK_NUMPAD_DIVIDE;
-  kbddrv_DIK_to_symbol[DIK_MULTIPLY] = PCK_NUMPAD_MULTIPLY;
-  kbddrv_DIK_to_symbol[DIK_SUBTRACT] = PCK_NUMPAD_MINUS;
-  kbddrv_DIK_to_symbol[DIK_TAB] = PCK_TAB; /* Third row */
-  kbddrv_DIK_to_symbol[DIK_Q] = PCK_Q;
-  kbddrv_DIK_to_symbol[DIK_W] = PCK_W;
-  kbddrv_DIK_to_symbol[DIK_E] = PCK_E;
-  kbddrv_DIK_to_symbol[DIK_R] = PCK_R;
-  kbddrv_DIK_to_symbol[DIK_T] = PCK_T;
-  kbddrv_DIK_to_symbol[DIK_Y] = PCK_Y;
-  kbddrv_DIK_to_symbol[DIK_U] = PCK_U;
-  kbddrv_DIK_to_symbol[DIK_I] = PCK_I;
-  kbddrv_DIK_to_symbol[DIK_O] = PCK_O;
-  kbddrv_DIK_to_symbol[DIK_P] = PCK_P;
-  kbddrv_DIK_to_symbol[DIK_LBRACKET] = PCK_LBRACKET;
-  kbddrv_DIK_to_symbol[DIK_RBRACKET] = PCK_RBRACKET;
-  kbddrv_DIK_to_symbol[DIK_RETURN] = PCK_RETURN;
-  kbddrv_DIK_to_symbol[DIK_DELETE] = PCK_DELETE;
-  kbddrv_DIK_to_symbol[DIK_END] = PCK_END;
-  kbddrv_DIK_to_symbol[DIK_NEXT] = PCK_PAGE_DOWN;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD7] = PCK_NUMPAD_7;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD8] = PCK_NUMPAD_8;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD9] = PCK_NUMPAD_9;
-  kbddrv_DIK_to_symbol[DIK_ADD] = PCK_NUMPAD_PLUS;
+  _dik_to_symbol[DIK_ESCAPE] = PCK_ESCAPE; /* First row */
+  _dik_to_symbol[DIK_F1] = PCK_F1;
+  _dik_to_symbol[DIK_F2] = PCK_F2;
+  _dik_to_symbol[DIK_F3] = PCK_F3;
+  _dik_to_symbol[DIK_F4] = PCK_F4;
+  _dik_to_symbol[DIK_F5] = PCK_F5;
+  _dik_to_symbol[DIK_F6] = PCK_F6;
+  _dik_to_symbol[DIK_F7] = PCK_F7;
+  _dik_to_symbol[DIK_F8] = PCK_F8;
+  _dik_to_symbol[DIK_F9] = PCK_F9;
+  _dik_to_symbol[DIK_F10] = PCK_F10;
+  _dik_to_symbol[DIK_F11] = PCK_F11;
+  _dik_to_symbol[DIK_F12] = PCK_F12;
+  _dik_to_symbol[DIK_SYSRQ] = PCK_PRINT_SCREEN;
+  _dik_to_symbol[DIK_SCROLL] = PCK_SCROLL_LOCK;
+  /*_dik_to_symbol[ DIK_PAUSE           ] = PCK_PAUSE; */
+  _dik_to_symbol[DIK_GRAVE] = PCK_GRAVE; /* Second row */
+  _dik_to_symbol[DIK_1] = PCK_1;
+  _dik_to_symbol[DIK_2] = PCK_2;
+  _dik_to_symbol[DIK_3] = PCK_3;
+  _dik_to_symbol[DIK_4] = PCK_4;
+  _dik_to_symbol[DIK_5] = PCK_5;
+  _dik_to_symbol[DIK_6] = PCK_6;
+  _dik_to_symbol[DIK_7] = PCK_7;
+  _dik_to_symbol[DIK_8] = PCK_8;
+  _dik_to_symbol[DIK_9] = PCK_9;
+  _dik_to_symbol[DIK_0] = PCK_0;
+  _dik_to_symbol[DIK_MINUS] = PCK_MINUS;
+  _dik_to_symbol[DIK_EQUALS] = PCK_EQUALS;
+  _dik_to_symbol[DIK_BACK] = PCK_BACKSPACE;
+  _dik_to_symbol[DIK_INSERT] = PCK_INSERT;
+  _dik_to_symbol[DIK_HOME] = PCK_HOME;
+  _dik_to_symbol[DIK_PRIOR] = PCK_PAGE_UP;
+  _dik_to_symbol[DIK_NUMLOCK] = PCK_NUM_LOCK;
+  _dik_to_symbol[DIK_DIVIDE] = PCK_NUMPAD_DIVIDE;
+  _dik_to_symbol[DIK_MULTIPLY] = PCK_NUMPAD_MULTIPLY;
+  _dik_to_symbol[DIK_SUBTRACT] = PCK_NUMPAD_MINUS;
+  _dik_to_symbol[DIK_TAB] = PCK_TAB; /* Third row */
+  _dik_to_symbol[DIK_Q] = PCK_Q;
+  _dik_to_symbol[DIK_W] = PCK_W;
+  _dik_to_symbol[DIK_E] = PCK_E;
+  _dik_to_symbol[DIK_R] = PCK_R;
+  _dik_to_symbol[DIK_T] = PCK_T;
+  _dik_to_symbol[DIK_Y] = PCK_Y;
+  _dik_to_symbol[DIK_U] = PCK_U;
+  _dik_to_symbol[DIK_I] = PCK_I;
+  _dik_to_symbol[DIK_O] = PCK_O;
+  _dik_to_symbol[DIK_P] = PCK_P;
+  _dik_to_symbol[DIK_LBRACKET] = PCK_LBRACKET;
+  _dik_to_symbol[DIK_RBRACKET] = PCK_RBRACKET;
+  _dik_to_symbol[DIK_RETURN] = PCK_RETURN;
+  _dik_to_symbol[DIK_DELETE] = PCK_DELETE;
+  _dik_to_symbol[DIK_END] = PCK_END;
+  _dik_to_symbol[DIK_NEXT] = PCK_PAGE_DOWN;
+  _dik_to_symbol[DIK_NUMPAD7] = PCK_NUMPAD_7;
+  _dik_to_symbol[DIK_NUMPAD8] = PCK_NUMPAD_8;
+  _dik_to_symbol[DIK_NUMPAD9] = PCK_NUMPAD_9;
+  _dik_to_symbol[DIK_ADD] = PCK_NUMPAD_PLUS;
 
-  kbddrv_DIK_to_symbol[DIK_CAPITAL] = PCK_CAPS_LOCK; /* Fourth row */
-  kbddrv_DIK_to_symbol[DIK_A] = PCK_A;
-  kbddrv_DIK_to_symbol[DIK_S] = PCK_S;
-  kbddrv_DIK_to_symbol[DIK_D] = PCK_D;
-  kbddrv_DIK_to_symbol[DIK_F] = PCK_F;
-  kbddrv_DIK_to_symbol[DIK_G] = PCK_G;
-  kbddrv_DIK_to_symbol[DIK_H] = PCK_H;
-  kbddrv_DIK_to_symbol[DIK_J] = PCK_J;
-  kbddrv_DIK_to_symbol[DIK_K] = PCK_K;
-  kbddrv_DIK_to_symbol[DIK_L] = PCK_L;
-  kbddrv_DIK_to_symbol[DIK_SEMICOLON] = PCK_SEMICOLON;
-  kbddrv_DIK_to_symbol[DIK_APOSTROPHE] = PCK_APOSTROPHE;
-  kbddrv_DIK_to_symbol[DIK_BACKSLASH] = PCK_BACKSLASH;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD4] = PCK_NUMPAD_4;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD5] = PCK_NUMPAD_5;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD6] = PCK_NUMPAD_6;
+  _dik_to_symbol[DIK_CAPITAL] = PCK_CAPS_LOCK; /* Fourth row */
+  _dik_to_symbol[DIK_A] = PCK_A;
+  _dik_to_symbol[DIK_S] = PCK_S;
+  _dik_to_symbol[DIK_D] = PCK_D;
+  _dik_to_symbol[DIK_F] = PCK_F;
+  _dik_to_symbol[DIK_G] = PCK_G;
+  _dik_to_symbol[DIK_H] = PCK_H;
+  _dik_to_symbol[DIK_J] = PCK_J;
+  _dik_to_symbol[DIK_K] = PCK_K;
+  _dik_to_symbol[DIK_L] = PCK_L;
+  _dik_to_symbol[DIK_SEMICOLON] = PCK_SEMICOLON;
+  _dik_to_symbol[DIK_APOSTROPHE] = PCK_APOSTROPHE;
+  _dik_to_symbol[DIK_BACKSLASH] = PCK_BACKSLASH;
+  _dik_to_symbol[DIK_NUMPAD4] = PCK_NUMPAD_4;
+  _dik_to_symbol[DIK_NUMPAD5] = PCK_NUMPAD_5;
+  _dik_to_symbol[DIK_NUMPAD6] = PCK_NUMPAD_6;
 
-  kbddrv_DIK_to_symbol[DIK_LSHIFT] = PCK_LEFT_SHIFT; /* Fifth row */
-  kbddrv_DIK_to_symbol[0x56] = PCK_NONAME1;
-  kbddrv_DIK_to_symbol[DIK_Z] = PCK_Z;
-  kbddrv_DIK_to_symbol[DIK_X] = PCK_X;
-  kbddrv_DIK_to_symbol[DIK_C] = PCK_C;
-  kbddrv_DIK_to_symbol[DIK_V] = PCK_V;
-  kbddrv_DIK_to_symbol[DIK_B] = PCK_B;
-  kbddrv_DIK_to_symbol[DIK_N] = PCK_N;
-  kbddrv_DIK_to_symbol[DIK_M] = PCK_M;
-  kbddrv_DIK_to_symbol[DIK_COMMA] = PCK_COMMA;
-  kbddrv_DIK_to_symbol[DIK_PERIOD] = PCK_PERIOD;
-  kbddrv_DIK_to_symbol[DIK_SLASH] = PCK_SLASH;
-  kbddrv_DIK_to_symbol[DIK_RSHIFT] = PCK_RIGHT_SHIFT;
-  kbddrv_DIK_to_symbol[DIK_UP] = PCK_UP;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD1] = PCK_NUMPAD_1;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD2] = PCK_NUMPAD_2;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD3] = PCK_NUMPAD_3;
-  kbddrv_DIK_to_symbol[DIK_NUMPADENTER] = PCK_NUMPAD_ENTER;
+  _dik_to_symbol[DIK_LSHIFT] = PCK_LEFT_SHIFT; /* Fifth row */
+  _dik_to_symbol[0x56] = PCK_NONAME1;
+  _dik_to_symbol[DIK_Z] = PCK_Z;
+  _dik_to_symbol[DIK_X] = PCK_X;
+  _dik_to_symbol[DIK_C] = PCK_C;
+  _dik_to_symbol[DIK_V] = PCK_V;
+  _dik_to_symbol[DIK_B] = PCK_B;
+  _dik_to_symbol[DIK_N] = PCK_N;
+  _dik_to_symbol[DIK_M] = PCK_M;
+  _dik_to_symbol[DIK_COMMA] = PCK_COMMA;
+  _dik_to_symbol[DIK_PERIOD] = PCK_PERIOD;
+  _dik_to_symbol[DIK_SLASH] = PCK_SLASH;
+  _dik_to_symbol[DIK_RSHIFT] = PCK_RIGHT_SHIFT;
+  _dik_to_symbol[DIK_UP] = PCK_UP;
+  _dik_to_symbol[DIK_NUMPAD1] = PCK_NUMPAD_1;
+  _dik_to_symbol[DIK_NUMPAD2] = PCK_NUMPAD_2;
+  _dik_to_symbol[DIK_NUMPAD3] = PCK_NUMPAD_3;
+  _dik_to_symbol[DIK_NUMPADENTER] = PCK_NUMPAD_ENTER;
 
-  kbddrv_DIK_to_symbol[DIK_LCONTROL] = PCK_LEFT_CTRL; /* Sixth row */
-  kbddrv_DIK_to_symbol[DIK_LWIN] = PCK_LEFT_WINDOWS;
-  kbddrv_DIK_to_symbol[DIK_LMENU] = PCK_LEFT_ALT;
-  kbddrv_DIK_to_symbol[DIK_SPACE] = PCK_SPACE;
-  kbddrv_DIK_to_symbol[DIK_RMENU] = PCK_RIGHT_ALT;
-  kbddrv_DIK_to_symbol[DIK_RWIN] = PCK_RIGHT_WINDOWS;
-  kbddrv_DIK_to_symbol[DIK_APPS] = PCK_START_MENU;
-  kbddrv_DIK_to_symbol[DIK_RCONTROL] = PCK_RIGHT_CTRL;
-  kbddrv_DIK_to_symbol[DIK_LEFT] = PCK_LEFT;
-  kbddrv_DIK_to_symbol[DIK_DOWN] = PCK_DOWN;
-  kbddrv_DIK_to_symbol[DIK_RIGHT] = PCK_RIGHT;
-  kbddrv_DIK_to_symbol[DIK_NUMPAD0] = PCK_NUMPAD_0;
-  kbddrv_DIK_to_symbol[DIK_DECIMAL] = PCK_NUMPAD_DOT;
+  _dik_to_symbol[DIK_LCONTROL] = PCK_LEFT_CTRL; /* Sixth row */
+  _dik_to_symbol[DIK_LWIN] = PCK_LEFT_WINDOWS;
+  _dik_to_symbol[DIK_LMENU] = PCK_LEFT_ALT;
+  _dik_to_symbol[DIK_SPACE] = PCK_SPACE;
+  _dik_to_symbol[DIK_RMENU] = PCK_RIGHT_ALT;
+  _dik_to_symbol[DIK_RWIN] = PCK_RIGHT_WINDOWS;
+  _dik_to_symbol[DIK_APPS] = PCK_START_MENU;
+  _dik_to_symbol[DIK_RCONTROL] = PCK_RIGHT_CTRL;
+  _dik_to_symbol[DIK_LEFT] = PCK_LEFT;
+  _dik_to_symbol[DIK_DOWN] = PCK_DOWN;
+  _dik_to_symbol[DIK_RIGHT] = PCK_RIGHT;
+  _dik_to_symbol[DIK_NUMPAD0] = PCK_NUMPAD_0;
+  _dik_to_symbol[DIK_DECIMAL] = PCK_NUMPAD_DOT;
 }
 
 void KeyboardDriver::SetJoyKeyEnabled(ULO lGameport, ULO lSetting, bool bEnabled)
 {
-  kbd_drv_joykey_enabled[lGameport][lSetting] = bEnabled;
+  _joykey_enabled[lGameport][lSetting] = bEnabled;
 }
 
-HANDLE KeyboardDriver::GetDirectInputEvent()
+HANDLE KeyboardDriver::GetDirectInputEvent() const
 {
-  return _DIevent;
+  return _di_event;
 }
 
 void KeyboardDriver::HardReset()
@@ -1335,8 +1444,8 @@ void KeyboardDriver::EmulationStart()
 {
   for (unsigned int port = 0; port < 2; port++)
   {
-    kbd_drv_joykey_enabled[port][0] = (gameport_input[port] == gameport_inputs::GP_JOYKEY0);
-    kbd_drv_joykey_enabled[port][1] = (gameport_input[port] == gameport_inputs::GP_JOYKEY1);
+    _joykey_enabled[port][0] = (gameport_input[port] == gameport_inputs::GP_JOYKEY0);
+    _joykey_enabled[port][1] = (gameport_input[port] == gameport_inputs::GP_JOYKEY1);
   }
 
   ClearPressedKeys();
@@ -1349,85 +1458,97 @@ void KeyboardDriver::EmulationStop()
   DInputRelease();
 }
 
-KeyboardDriver::KeyboardDriver()
-  : IKeyboardDriver()
+bool KeyboardDriver::GetInitializationFailed()
 {
-  kbd_drv_joykey_event[0][0][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_UP] = kbd_event::EVENT_JOY1_UP_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_UP] = kbd_event::EVENT_JOY1_UP_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_DOWN] = kbd_event::EVENT_JOY0_DOWN_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_DOWN] = kbd_event::EVENT_JOY0_DOWN_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_DOWN] = kbd_event::EVENT_JOY1_DOWN_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_DOWN] = kbd_event::EVENT_JOY1_DOWN_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_LEFT] = kbd_event::EVENT_JOY0_LEFT_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_LEFT] = kbd_event::EVENT_JOY0_LEFT_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_LEFT] = kbd_event::EVENT_JOY1_LEFT_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_LEFT] = kbd_event::EVENT_JOY1_LEFT_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_RIGHT] = kbd_event::EVENT_JOY0_RIGHT_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_RIGHT] = kbd_event::EVENT_JOY0_RIGHT_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_RIGHT] = kbd_event::EVENT_JOY1_RIGHT_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_RIGHT] = kbd_event::EVENT_JOY1_RIGHT_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_FIRE0] = kbd_event::EVENT_JOY0_FIRE0_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_FIRE0] = kbd_event::EVENT_JOY0_FIRE0_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_FIRE0] = kbd_event::EVENT_JOY1_FIRE0_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_FIRE0] = kbd_event::EVENT_JOY1_FIRE0_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_FIRE1] = kbd_event::EVENT_JOY0_FIRE1_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_FIRE1] = kbd_event::EVENT_JOY0_FIRE1_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_FIRE1] = kbd_event::EVENT_JOY1_FIRE1_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_FIRE1] = kbd_event::EVENT_JOY1_FIRE1_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY0_AUTOFIRE0_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY1_AUTOFIRE0_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY0_AUTOFIRE1_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY1_AUTOFIRE1_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE;
+  return false;
+}
 
-  kbd_drv_joykey[0][JOYKEY_UP] = PCK_UP;
-  kbd_drv_joykey[0][JOYKEY_DOWN] = PCK_DOWN;
-  kbd_drv_joykey[0][JOYKEY_LEFT] = PCK_LEFT;
-  kbd_drv_joykey[0][JOYKEY_RIGHT] = PCK_RIGHT;
-  kbd_drv_joykey[0][JOYKEY_FIRE0] = PCK_RIGHT_CTRL;
-  kbd_drv_joykey[0][JOYKEY_FIRE1] = PCK_RIGHT_ALT;
-  kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = PCK_O;
-  kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = PCK_P;
-  kbd_drv_joykey[1][JOYKEY_UP] = PCK_R;
-  kbd_drv_joykey[1][JOYKEY_DOWN] = PCK_F;
-  kbd_drv_joykey[1][JOYKEY_LEFT] = PCK_D;
-  kbd_drv_joykey[1][JOYKEY_RIGHT] = PCK_G;
-  kbd_drv_joykey[1][JOYKEY_FIRE0] = PCK_LEFT_CTRL;
-  kbd_drv_joykey[1][JOYKEY_FIRE1] = PCK_LEFT_ALT;
-  kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = PCK_A;
-  kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = PCK_S;
+void KeyboardDriver::Initialize(Keyboard *keyboard)
+{
+  _keyboard = keyboard;
+
+  _joykey_event[0][0][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_INACTIVE;
+  _joykey_event[0][1][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_ACTIVE;
+  _joykey_event[1][0][JOYKEY_UP] = kbd_event::EVENT_JOY1_UP_INACTIVE;
+  _joykey_event[1][1][JOYKEY_UP] = kbd_event::EVENT_JOY1_UP_ACTIVE;
+  _joykey_event[0][0][JOYKEY_DOWN] = kbd_event::EVENT_JOY0_DOWN_INACTIVE;
+  _joykey_event[0][1][JOYKEY_DOWN] = kbd_event::EVENT_JOY0_DOWN_ACTIVE;
+  _joykey_event[1][0][JOYKEY_DOWN] = kbd_event::EVENT_JOY1_DOWN_INACTIVE;
+  _joykey_event[1][1][JOYKEY_DOWN] = kbd_event::EVENT_JOY1_DOWN_ACTIVE;
+  _joykey_event[0][0][JOYKEY_LEFT] = kbd_event::EVENT_JOY0_LEFT_INACTIVE;
+  _joykey_event[0][1][JOYKEY_LEFT] = kbd_event::EVENT_JOY0_LEFT_ACTIVE;
+  _joykey_event[1][0][JOYKEY_LEFT] = kbd_event::EVENT_JOY1_LEFT_INACTIVE;
+  _joykey_event[1][1][JOYKEY_LEFT] = kbd_event::EVENT_JOY1_LEFT_ACTIVE;
+  _joykey_event[0][0][JOYKEY_RIGHT] = kbd_event::EVENT_JOY0_RIGHT_INACTIVE;
+  _joykey_event[0][1][JOYKEY_RIGHT] = kbd_event::EVENT_JOY0_RIGHT_ACTIVE;
+  _joykey_event[1][0][JOYKEY_RIGHT] = kbd_event::EVENT_JOY1_RIGHT_INACTIVE;
+  _joykey_event[1][1][JOYKEY_RIGHT] = kbd_event::EVENT_JOY1_RIGHT_ACTIVE;
+  _joykey_event[0][0][JOYKEY_FIRE0] = kbd_event::EVENT_JOY0_FIRE0_INACTIVE;
+  _joykey_event[0][1][JOYKEY_FIRE0] = kbd_event::EVENT_JOY0_FIRE0_ACTIVE;
+  _joykey_event[1][0][JOYKEY_FIRE0] = kbd_event::EVENT_JOY1_FIRE0_INACTIVE;
+  _joykey_event[1][1][JOYKEY_FIRE0] = kbd_event::EVENT_JOY1_FIRE0_ACTIVE;
+  _joykey_event[0][0][JOYKEY_FIRE1] = kbd_event::EVENT_JOY0_FIRE1_INACTIVE;
+  _joykey_event[0][1][JOYKEY_FIRE1] = kbd_event::EVENT_JOY0_FIRE1_ACTIVE;
+  _joykey_event[1][0][JOYKEY_FIRE1] = kbd_event::EVENT_JOY1_FIRE1_INACTIVE;
+  _joykey_event[1][1][JOYKEY_FIRE1] = kbd_event::EVENT_JOY1_FIRE1_ACTIVE;
+  _joykey_event[0][0][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY0_AUTOFIRE0_INACTIVE;
+  _joykey_event[0][1][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE;
+  _joykey_event[1][0][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY1_AUTOFIRE0_INACTIVE;
+  _joykey_event[1][1][JOYKEY_AUTOFIRE0] = kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE;
+  _joykey_event[0][0][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY0_AUTOFIRE1_INACTIVE;
+  _joykey_event[0][1][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE;
+  _joykey_event[1][0][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY1_AUTOFIRE1_INACTIVE;
+  _joykey_event[1][1][JOYKEY_AUTOFIRE1] = kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE;
+
+  _joykey[0][JOYKEY_UP] = PCK_UP;
+  _joykey[0][JOYKEY_DOWN] = PCK_DOWN;
+  _joykey[0][JOYKEY_LEFT] = PCK_LEFT;
+  _joykey[0][JOYKEY_RIGHT] = PCK_RIGHT;
+  _joykey[0][JOYKEY_FIRE0] = PCK_RIGHT_CTRL;
+  _joykey[0][JOYKEY_FIRE1] = PCK_RIGHT_ALT;
+  _joykey[0][JOYKEY_AUTOFIRE0] = PCK_O;
+  _joykey[0][JOYKEY_AUTOFIRE1] = PCK_P;
+  _joykey[1][JOYKEY_UP] = PCK_R;
+  _joykey[1][JOYKEY_DOWN] = PCK_F;
+  _joykey[1][JOYKEY_LEFT] = PCK_D;
+  _joykey[1][JOYKEY_RIGHT] = PCK_G;
+  _joykey[1][JOYKEY_FIRE0] = PCK_LEFT_CTRL;
+  _joykey[1][JOYKEY_FIRE1] = PCK_LEFT_ALT;
+  _joykey[1][JOYKEY_AUTOFIRE0] = PCK_A;
+  _joykey[1][JOYKEY_AUTOFIRE1] = PCK_S;
 
   for (unsigned int port = 0; port < 2; port++)
   {
     for (unsigned int setting = 0; setting < 2; setting++)
     {
-      kbd_drv_joykey_enabled[port][setting] = false;
+      _joykey_enabled[port][setting] = false;
     }
   }
 
-  kbd_drv_capture = false;
-  kbd_drv_captured_key = PCK_NONE;
+  _capture = false;
+  _captured_key = PCK_NONE;
 
   InitializeDIKToSymbolKeyTable();
 
   Service->Fileops.GetGenericFileName(_mapping_filename, "WinFellow", MAPPING_FILENAME);
 
-  _prs_rewrite_mapping_file = prsReadFile(_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey);
+  _prs_rewrite_mapping_file = prsReadFile(_mapping_filename, _pc_symbol_to_amiga_scancode, _joykey);
 
   _active = false;
   _lpDI = nullptr;
   _lpDID = nullptr;
 }
 
-KeyboardDriver::~KeyboardDriver()
+void KeyboardDriver::Release()
 {
   if (_prs_rewrite_mapping_file)
   {
-    prsWriteFile(_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey);
+    prsWriteFile(_mapping_filename, _pc_symbol_to_amiga_scancode, _joykey);
   }
 }
+
+KeyboardDriver::KeyboardDriver() : IKeyboardDriver()
+{
+}
+
+KeyboardDriver::~KeyboardDriver() = default;

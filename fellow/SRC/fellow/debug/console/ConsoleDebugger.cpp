@@ -8,14 +8,16 @@
 #include "fellow/debug/console/MemoryMapHandler.h"
 #include "fellow/debug/console/ChipsetRegisterHandler.h"
 #include "fellow/debug/console/HelpHandler.h"
+#include "fellow/api/VM.h"
 
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 
 using namespace std;
+using namespace fellow::api;
 
-string ConsoleDebugger::UnknownCommand(const vector<string> &tokens)
+string ConsoleDebugger::UnknownCommand(const vector<string> &tokens) const
 {
   ostringstream os;
   os << "Unknown command " << tokens[0] << " - type h for command summary" << endl;
@@ -70,9 +72,9 @@ void ConsoleDebugger::CreateCommandHandlers()
 {
   _commandHandlers.push_back(new CPURegisterHandler());
   _commandHandlers.push_back(new CPUStepHandler());
-  _commandHandlers.push_back(new DisassembleHandler());
-  _commandHandlers.push_back(new MemoryHandler());
-  _commandHandlers.push_back(new MemoryMapHandler());
+  _commandHandlers.push_back(new DisassembleHandler(_vm->CPU));
+  _commandHandlers.push_back(new MemoryHandler(_vm->Memory));
+  _commandHandlers.push_back(new MemoryMapHandler(_vm->Memory));
   _commandHandlers.push_back(new ChipsetRegisterHandler());
   _commandHandlers.push_back(new HelpHandler(_commandHandlers));
 }
@@ -86,7 +88,7 @@ void ConsoleDebugger::DeleteCommandHandlers()
   _commandHandlers.clear();
 }
 
-ConsoleDebugger::ConsoleDebugger()
+ConsoleDebugger::ConsoleDebugger(VirtualMachine *vm) : _vm(vm)
 {
   CreateCommandHandlers();
 }

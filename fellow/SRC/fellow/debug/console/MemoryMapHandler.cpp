@@ -2,6 +2,7 @@
 #include "fellow/debug/console/DebugWriter.h"
 
 using namespace std;
+using namespace fellow::api::vm;
 
 string MemoryMapHandler::ToString(const MemoryMapResult &result) const
 {
@@ -40,7 +41,7 @@ ConsoleCommandHandlerResult MemoryMapHandler::Handle(const std::vector<std::stri
     return result;
   }
 
-  auto commandResult = MemoryMapCommand().Execute(parametersResult.Parameters);
+  auto commandResult = MemoryMapCommand(_vmMemory).Execute(parametersResult.Parameters);
 
   result.ExecuteResult = ToString(commandResult);
   result.Success = true;
@@ -48,6 +49,6 @@ ConsoleCommandHandlerResult MemoryMapHandler::Handle(const std::vector<std::stri
   return result;
 }
 
-MemoryMapHandler::MemoryMapHandler() : ConsoleCommandHandler("mm")
+MemoryMapHandler::MemoryMapHandler(IMemorySystem *vmMemory) : ConsoleCommandHandler("mm"), _vmMemory(vmMemory)
 {
 }

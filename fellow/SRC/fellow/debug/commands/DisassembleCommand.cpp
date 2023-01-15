@@ -10,7 +10,7 @@ DisassembleResult DisassembleCommand::Execute(const DisassembleParameters &param
 
   for (unsigned i = 0; i < parameters.LineCount; i++)
   {
-    auto line = VM->CPU.GetDisassembly(address);
+    auto line = _m68k->GetDisassembly(address);
     result.Lines.push_back(line);
     address += line.Length;
   }
@@ -18,4 +18,8 @@ DisassembleResult DisassembleCommand::Execute(const DisassembleParameters &param
   result.EndAddress = address;
 
   return result;
+}
+
+DisassembleCommand::DisassembleCommand(fellow::api::vm::IM68K *m68k) : _m68k(m68k)
+{
 }

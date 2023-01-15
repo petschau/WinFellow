@@ -6,6 +6,7 @@
 #include <vector>
 
 using namespace fellow::api::vm;
+using namespace fellow::api;
 using namespace std;
 
 namespace fellow::vm
@@ -93,16 +94,21 @@ namespace fellow::vm
 
   void M68K::StepOne()
   {
-    fellowStepOne();
+    _runtimeEnvironment->StepOne();
   }
 
   void M68K::StepOver()
   {
-    fellowStepOver();
+    _runtimeEnvironment->StepOver();
   }
 
   void M68K::StepUntilBreakpoint(uint32_t breakpointAddress)
   {
-    fellowRunDebug(breakpointAddress);
+    _runtimeEnvironment->RunDebug(breakpointAddress);
+  }
+
+  M68K::M68K(IRuntimeEnvironment *runtimeEnvironment) 
+    : _runtimeEnvironment(runtimeEnvironment)
+  {
   }
 }

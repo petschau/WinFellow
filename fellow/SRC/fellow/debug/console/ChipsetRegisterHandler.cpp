@@ -170,7 +170,7 @@ ConsoleCommandHandlerResult ChipsetRegisterHandler::Handle(const vector<string> 
     return result;
   }
 
-  auto commandResult = ChipsetRegisterCommand().Execute(parseParametersResult.Parameters);
+  auto commandResult = ChipsetRegisterCommand(_chipset).Execute(parseParametersResult.Parameters);
 
   result.ExecuteResult = ToString(commandResult);
   result.Success = true;
@@ -178,6 +178,6 @@ ConsoleCommandHandlerResult ChipsetRegisterHandler::Handle(const vector<string> 
   return result;
 }
 
-ChipsetRegisterHandler::ChipsetRegisterHandler() : ConsoleCommandHandler("c")
+ChipsetRegisterHandler::ChipsetRegisterHandler(IChipset *chipset) : ConsoleCommandHandler("c"), _chipset(chipset)
 {
 }

@@ -4,6 +4,8 @@
 #include "fellow/time/Timestamps.h"
 #include "fellow/scheduler/SchedulerQueue.h"
 
+class Modules;
+
 constexpr auto BUS_CYCLE_FROM_280NS_SHIFT = 3;
 constexpr auto BUS_CYCLE_FROM_140NS_SHIFT = 2;
 constexpr auto BUS_CYCLE_FROM_280NS_MULTIPLIER = 8;
@@ -28,16 +30,19 @@ class Scheduler
 private:
   typedef void (Scheduler::*ChipBusRunHandlerFunc)();
 
+  Modules *_modules{};
+
   SchedulerQueue _queue;
+  bool _stopEmulationRequested{};
 
-  ULL FrameNo;
-  ULO FrameCycle;
-  ULO FrameCycleInsertGuard;
+  ULL FrameNo{};
+  ULO FrameCycle{};
+  ULO FrameCycleInsertGuard{};
 
-  SHResTimestamp CurrentCycleSHResTimestamp;
+  SHResTimestamp CurrentCycleSHResTimestamp{};
   ChipBusTimestamp CurrentCycleChipBusTimestamp;
 
-  FrameParameters *FrameParameters;
+  FrameParameters *FrameParameters{};
 
   ULO GetHorisontalBlankEnd();
   ULO GetCylindersInLine(); // 140ns (LORES ref)
@@ -58,6 +63,8 @@ private:
   SchedulerEventHandler GetCpuInstructionEventHandler();
 
 public:
+  void RequestEmulationStop();
+
   void EndOfLine();
   void EndOfFrame();
 
@@ -95,17 +102,15 @@ public:
   void SetScreenLimits(bool is_long_frame);
 
   void Run();
-  void DebugStepOneInstruction();
+  bool DebugStepOneInstruction();
 
   void EmulationStart();
   void EmulationStop();
   void SoftReset();
   void HardReset();
-  void Startup();
+  void Startup(Modules *modules);
   void Shutdown();
 };
-
-extern Scheduler scheduler;
 
 extern SchedulerEvent cpuEvent;
 extern SchedulerEvent copperEvent;

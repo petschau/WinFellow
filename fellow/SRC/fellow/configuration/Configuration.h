@@ -7,8 +7,6 @@
 #include "fellow/application/ListTree.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 
-using namespace fellow::api::modules;
-
 /*============================================================================*/
 /* struct that holds a complete hardfile configuration                        */
 /*============================================================================*/
@@ -21,7 +19,7 @@ struct cfg_hardfile
   ULO sectorspertrack;
   ULO surfaces;
   ULO reservedblocks;
-  rdb_status rdbstatus;
+  fellow::api::modules::rdb_status rdbstatus;
 };
 
 /*============================================================================*/

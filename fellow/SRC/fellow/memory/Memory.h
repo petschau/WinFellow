@@ -1,9 +1,11 @@
 #pragma once
 
+#include <functional>
 #include <stdio.h>
 #include <vector>
 #include "fellow/api/defs.h"
 #include "fellow/api/vm/MemorySystemTypes.h"
+
 
 /* Access for chipset emulation that already have validated addresses */
 
@@ -34,12 +36,15 @@ extern bool memoryIsValidPointerAddress(ULO address, ULO size);
 
 /* IO Bank functions */
 
+extern void memorySetIoReadFunction(ULO index, std::function<uint16_t(uint32_t)> ioreadfunction);
+extern void memorySetIoWriteFunction(ULO index, std::function<void(uint16_t, uint32_t)> iowritefunction);
+
 extern void memorySetIoReadStub(ULO index, fellow::api::vm::IoReadFunc ioreadfunction);
 extern void memorySetIoWriteStub(ULO index, fellow::api::vm::IoWriteFunc iowritefunction);
 
-/* For the copper and testing */
-extern fellow::api::vm::IoReadFunc memory_iobank_read[257];
-extern fellow::api::vm::IoWriteFunc memory_iobank_write[257];
+/* Exported for the copper and testing */
+extern std::function<uint16_t(uint32_t)> memory_iobank_read[257];
+extern std::function<void(uint16_t, uint32_t)> memory_iobank_write[257];
 
 /* Expansion card functions */
 

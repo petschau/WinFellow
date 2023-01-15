@@ -8,9 +8,14 @@
 #include <vector>
 #include <string>
 
+#include "fellow/scheduler/Scheduler.h"
+
 class Script
 {
 private:
+  Keyboard *_keyboard;
+  Scheduler *_scheduler;
+
   const char *KeyCommand = "Key";
   const char *MouseCommand = "Mouse";
   const char *JoystickCommand = "Joystick";
@@ -42,5 +47,5 @@ public:
   void Load(const std::string &filename);
   void Save(const std::string &filename);
 
-  Script();
+  Script(Keyboard *keyboard, Scheduler *scheduler);
 };

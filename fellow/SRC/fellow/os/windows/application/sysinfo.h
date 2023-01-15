@@ -30,4 +30,6 @@
 
 #pragma once
 
-void sysinfoLogSysInfo();
+#include "fellow/api/IRuntimeEnvironment.h"
+
+void sysinfoLogSysInfo(fellow::api::IRuntimeEnvironment *runtimeEnvironment);

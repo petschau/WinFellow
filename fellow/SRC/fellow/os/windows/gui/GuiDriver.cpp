@@ -141,7 +141,8 @@ constexpr unsigned int DIDM_LED_MAIN = 3;
 const char *GuiDriver::_chipram_strings[NUMBER_OF_CHIPRAM_SIZES] = {"256 KB", "512 KB", "768 KB", "1024 KB", "1280 KB", "1536 KB", "1792 KB", "2048 KB"};
 const char *GuiDriver::_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = {"0 MB", "1 MB", "2 MB", "4 MB", "8 MB"};
 const char *GuiDriver::_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = {"0 KB", "256 KB", "512 KB", "768 KB", "1024 KB", "1280 KB", "1536 KB", "1792 KB"};
-const int GuiDriver::_sound_rates_cci[NUMBER_OF_SOUND_RATES] = {IDC_RADIO_SOUND_15650, IDC_RADIO_SOUND_22050, IDC_RADIO_SOUND_31300, IDC_RADIO_SOUND_44100};
+const int GuiDriver::_sound_rates_cci[NUMBER_OF_SOUND_RATES] = {
+    IDC_RADIO_SOUND_15650, IDC_RADIO_SOUND_22050, IDC_RADIO_SOUND_31300, IDC_RADIO_SOUND_44100};
 const int GuiDriver::_sound_filters_cci[NUMBER_OF_SOUND_FILTERS] = {
     IDC_RADIO_SOUND_FILTER_ORIGINAL, IDC_RADIO_SOUND_FILTER_ALWAYS, IDC_RADIO_SOUND_FILTER_NEVER};
 
@@ -177,7 +178,7 @@ const UINT GuiDriver::_propsheetICON[PROP_SHEETS] = {
     0,
     IDI_ICON_CPU,
     IDI_ICON_FLOPPY,
-    0,// Was IDI_ICON_MEMORY
+    0, // Was IDI_ICON_MEMORY
     IDI_ICON_DISPLAY,
     IDI_ICON_SOUND,
     IDI_ICON_FILESYSTEM,
@@ -754,7 +755,7 @@ void GuiDriver::PutCfgInHistoryOnTop(ULO cfgtotop)
   InstallHistoryIntoMenu();
 }
 
-void GuiDriver::InsertCfgIntoHistory(const string& cfgfilenametoinsert)
+void GuiDriver::InsertCfgIntoHistory(const string &cfgfilenametoinsert)
 {
   // first we need to check if the file is already in the history
   bool exists = false;
@@ -1269,7 +1270,7 @@ void GuiDriver::ExtractVariousConfig(HWND hwndDlg, cfg *conf)
 void GuiDriver::InstallMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniValues *ini)
 {
   ccwMenuCheckedSetConditionalBool(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, ini->GetPauseEmulationWhenWindowLosesFocus());
-  ((GraphicsDriver*) Driver->Graphics)->SetPauseEmulationWhenWindowLosesFocus(ini->GetPauseEmulationWhenWindowLosesFocus());
+  ((GraphicsDriver *)Driver->Graphics)->SetPauseEmulationWhenWindowLosesFocus(ini->GetPauseEmulationWhenWindowLosesFocus());
 }
 
 void GuiDriver::ToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniValues *ini)
@@ -1554,7 +1555,9 @@ void GuiDriver::ExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
 
   if (strlen(strFilesystemDeviceNamePrefix) > 16)
   {
-    ShowMessageForEmulator("The length of the device name prefix is limited to 16 characters. Your change was ignored because it exceeded that length.",MB_OK | MB_ICONEXCLAMATION);
+    ShowMessageForEmulator(
+        "The length of the device name prefix is limited to 16 characters. Your change was ignored because it exceeded that length.",
+        MB_OK | MB_ICONEXCLAMATION);
     return;
   }
 
@@ -1802,7 +1805,9 @@ void GuiDriver::InstallFullScreenResolutionConfigInGUI(HWND hwndDlg, cfg *conf)
     case 32: ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (_wgui_dm.numberof32bit - 1)); break;
   }
   ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, _pwgui_dm_match->id);
-  SetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, [this](LONG index, char *buffer) -> void {this->GetResolutionStrWithIndex(index, buffer);});
+  SetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, [this](LONG index, char *buffer) -> void {
+    this->GetResolutionStrWithIndex(index, buffer);
+  });
   ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, !cfgGetScreenWindowed(conf));
 }
 
@@ -1826,10 +1831,9 @@ void GuiDriver::InstallFrameSkipConfigInGUI(HWND hwndDlg, cfg *conf)
 {
   ccwSliderSetRange(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, 0, 24);
   ccwSliderSetPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, cfgGetFrameskipRatio(conf));
-  SetSliderTextAccordingToPosition(
-      hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, [this](LONG index, char *buffer) -> void {
-        this->GetFrameSkippingStrWithIndex(index, buffer);
-      });
+  SetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, [this](LONG index, char *buffer) -> void {
+    this->GetFrameSkippingStrWithIndex(index, buffer);
+  });
 }
 
 void GuiDriver::InstallDisplayConfig(HWND hwndDlg, cfg *conf)
@@ -2467,7 +2471,9 @@ INT_PTR GuiDriver::DisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, (_pwgui_dm_match != nullptr) ? _pwgui_dm_match->id : 0);
                 ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (GetNumberOfScreenAreas(selectedColorBits) - 1));
 
-                SetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, [this](LONG index, char *buffer) -> void {this->GetResolutionStrWithIndex(index, buffer);});
+                SetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, [this](LONG index, char *buffer) -> void {
+                  this->GetResolutionStrWithIndex(index, buffer);
+                });
                 ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
                 ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, TRUE);
                 ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_DISPLAYSCALE), 0);
@@ -2501,13 +2507,13 @@ INT_PTR GuiDriver::DisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
               {
                 ExtractDisplayConfig(hwndDlg, _wgui_cfg);
                 FreeGuiDrawModesLists();
-                
+
                 // Trying to remove this because, it is checked on startup and UI will not add direct 3d 11 option if it did not meet requirements
-                // 
-                // Also when loading a config file or taking in command line options, this should be checked and changed before going to the UI or starting up
-                // actual emulation
-                // 
-                //if (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
+                //
+                // Also when loading a config file or taking in command line options, this should be checked and changed before going to the UI or starting
+                // up actual emulation
+                //
+                // if (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
                 //{
                 //  if (!Driver->Graphics->ValidateRequirements())
                 //  {
@@ -2520,7 +2526,7 @@ INT_PTR GuiDriver::DisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 //  }
                 //}
 
-                bool result = ((GraphicsDriver*)Driver->Graphics)->SwitchDisplayDriver(displaydriver);
+                bool result = ((GraphicsDriver *)Driver->Graphics)->SwitchDisplayDriver(displaydriver);
                 if (!result)
                 {
                   Service->Log.AddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
@@ -3138,8 +3144,8 @@ INT_PTR GuiDriver::ConfigurationDialog()
     propertysheets[i].hInstance = win_drv_hInstance;
     propertysheets[i].pszTemplate = MAKEINTRESOURCE(_propsheetRID[i]);
     propertysheets[i].pszTitle = nullptr;
-    propertysheets[i].pfnDlgProc = (DLGPROC) _propsheetDialogProc[i];
-    propertysheets[i].lParam = (LPARAM) this;
+    propertysheets[i].pfnDlgProc = (DLGPROC)_propsheetDialogProc[i];
+    propertysheets[i].lParam = (LPARAM)this;
     propertysheets[i].pfnCallback = nullptr;
     propertysheets[i].pcRefParent = nullptr;
   }
@@ -3170,7 +3176,7 @@ INT_PTR GuiDriver::AboutDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: ccwStaticSetTextString(hwndDlg, IDC_STATIC_ABOUT_VERSION, fellowGetVersionString()); return TRUE;
+    case WM_INITDIALOG: ccwStaticSetTextString(hwndDlg, IDC_STATIC_ABOUT_VERSION, _runtimeEnvironment->GetVersionString()); return TRUE;
     case WM_COMMAND:
       switch (LOWORD(wParam))
       {
@@ -3202,7 +3208,7 @@ INT_PTR GuiDriver::MainDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
   {
     case WM_INITDIALOG:
       SendMessage(hwndDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW)));
-      SetWindowText(hwndDlg, fellowGetVersionString().c_str());
+      SetWindowText(hwndDlg, _runtimeEnvironment->GetVersionString().c_str());
       return TRUE;
 
     case WM_COMMAND:
@@ -3250,7 +3256,7 @@ INT_PTR GuiDriver::MainDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
             break;
           }
           case IDC_HARD_RESET:
-            fellowSetPerformResetBeforeStartingEmulation(true);
+            _runtimeEnvironment->RequestResetBeforeStartingEmulation();
             LoadBitmaps();
             SendMessage(GetDlgItem(_hMainDialog, IDC_IMAGE_POWER_LED_MAIN), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)_power_led_off_bitmap);
             _wgui_emulation_state = false;
@@ -3373,7 +3379,7 @@ BOOLE GuiDriver::Enter()
 
     _wgui_action = (cfgGetUseGUI(_wgui_cfg)) ? wguiActions::WGUI_NO_ACTION : wguiActions::WGUI_START_EMULATION;
 
-    _hMainDialog = CreateDialogBox<&GuiDriver::MainDialogProc>(win_drv_hInstance, MAKEINTRESOURCE(IDD_MAIN), (HWND)nullptr);
+    _hMainDialog = CreateDialogBox<&GuiDriver::MainDialogProc>(win_drv_hInstance, MAKEINTRESOURCE(IDD_MAIN), (HWND) nullptr);
 
     SetWindowPos(_hMainDialog, HWND_TOP, _wgui_ini->GetMainWindowXPos(), _wgui_ini->GetMainWindowYPos(), 0, 0, SWP_NOSIZE | SWP_ASYNCWINDOWPOS);
     UpdatePowerLedButtonImage();
@@ -3406,7 +3412,10 @@ BOOLE GuiDriver::Enter()
             ExtractFloppyMain(_hMainDialog, _wgui_cfg);
             cfgManagerSetCurrentConfig(&cfg_manager, _wgui_cfg);
             bool needResetAfterConfigurationActivation = cfgManagerConfigurationActivate(&cfg_manager);
-            fellowSetPerformResetBeforeStartingEmulation(fellowGetPerformResetBeforeStartingEmulation() || needResetAfterConfigurationActivation);
+            if (needResetAfterConfigurationActivation)
+            {
+              _runtimeEnvironment->RequestResetBeforeStartingEmulation();
+            }
             break;
           }
           ShowMessageForMainDialog("Specified KickImage does not exist", "Configuration Error");
@@ -3525,7 +3534,10 @@ BOOLE GuiDriver::Enter()
           ExtractFloppyMain(_hMainDialog, _wgui_cfg);
           cfgManagerSetCurrentConfig(&cfg_manager, _wgui_cfg);
           bool needResetAfterConfigurationActivation = cfgManagerConfigurationActivate(&cfg_manager);
-          fellowSetPerformResetBeforeStartingEmulation(needResetAfterConfigurationActivation || fellowGetPerformResetBeforeStartingEmulation());
+          if (needResetAfterConfigurationActivation)
+          {
+            _runtimeEnvironment->RequestResetBeforeStartingEmulation();
+          }
           debugger_start = true;
         }
         break;
@@ -3567,8 +3579,8 @@ BOOLE GuiDriver::Enter()
       }
       else
       {
-        ConsoleDebugger debugger;
-        ConsoleDebuggerHost debuggerHost(debugger);
+        ConsoleDebugger debugger(_runtimeEnvironment->GetVM());
+        ConsoleDebuggerHost debuggerHost(debugger, _runtimeEnvironment);
 
         bool debugResult = debuggerHost.RunInDebugger();
         if (!debugResult)
@@ -3583,7 +3595,7 @@ BOOLE GuiDriver::Enter()
       do
       {
         winDrvEmulationStart();
-      } while (((GraphicsDriver*) Driver->Graphics)->GetDisplayChange());
+      } while (((GraphicsDriver *)Driver->Graphics)->GetDisplayChange());
 
       if (!cfgGetUseGUI(_wgui_cfg))
       {
@@ -3733,8 +3745,9 @@ void GuiDriver::BeforeEnter()
   ConvertDrawModeListToGuiDrawModes();
 }
 
-void GuiDriver::Initialize()
+void GuiDriver::Initialize(IRuntimeEnvironment *runtimeEnvironment)
 {
+  _runtimeEnvironment = runtimeEnvironment;
   _propsheetDialogProc[0] = PropertySheetCallbackWrapper<&GuiDriver::PresetDialogProc>();
   _propsheetDialogProc[1] = PropertySheetCallbackWrapper<&GuiDriver::CPUDialogProc>();
   _propsheetDialogProc[2] = PropertySheetCallbackWrapper<&GuiDriver::FloppyDialogProc>();
@@ -3752,7 +3765,6 @@ void GuiDriver::Initialize()
     InitializePresets(&_presets, &_num_presets);
   }
 }
-
 
 void GuiDriver::Release()
 {

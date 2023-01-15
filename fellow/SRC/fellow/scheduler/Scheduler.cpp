@@ -140,6 +140,11 @@ void Scheduler::LogPop(SchedulerEvent *ev)
   }
 }
 
+void Scheduler::RequestEmulationStop()
+{
+  _stopEmulationRequested = true;
+}
+
 /*==============================================================================*/
 /* Global end of line handler                                                   */
 /*==============================================================================*/
@@ -459,94 +464,91 @@ SchedulerEvent *Scheduler::PeekNextEvent()
 
 void Scheduler::Run68000Fast()
 {
-  while (!fellow_request_emulation_stop)
+  _stopEmulationRequested = false;
+
+  if (setjmp(cpu_integration_exception_buffer) == 0)
   {
-    if (setjmp(cpu_integration_exception_buffer) == 0)
+    while (!_stopEmulationRequested)
     {
-      while (!fellow_request_emulation_stop)
+      while (_queue.GetNextEventCycle() >= cpuEvent.cycle)
       {
-        while (_queue.GetNextEventCycle() >= cpuEvent.cycle)
-        {
-          SetFrameCycle(cpuEvent.cycle);
-          cpuIntegrationExecuteInstructionEventHandler68000Fast();
-        }
-        do
-        {
-          HandleNextEvent();
-        } while (_queue.GetNextEventCycle() < cpuEvent.cycle && !fellow_request_emulation_stop);
+        SetFrameCycle(cpuEvent.cycle);
+        cpuIntegrationExecuteInstructionEventHandler68000Fast();
       }
+      do
+      {
+        HandleNextEvent();
+      } while (_queue.GetNextEventCycle() < cpuEvent.cycle && !_stopEmulationRequested);
     }
-    else
-    {
-      // Came out of an CPU exception. Keep on working.
-      // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
-      cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
-      cpuIntegrationSetChipCycles(0);
-    }
+  }
+  else
+  {
+    // Came out of an CPU exception. Keep on working.
+    // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
+    cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+    cpuIntegrationSetChipCycles(0);
   }
 }
 
 void Scheduler::Run68000FastExperimental()
 {
-  while (!fellow_request_emulation_stop)
-  {
-    if (setjmp(cpu_integration_exception_buffer) == 0)
-    {
-      while (!fellow_request_emulation_stop)
-      {
-        while (chipBusAccessEvent.IsEnabled() && _queue.GetNextEventCycle() >= chipBusAccessEvent.cycle && cpuEvent.cycle >= chipBusAccessEvent.cycle)
-        {
-          SetFrameCycle(chipBusAccessEvent.cycle);
-          dma_controller.Handler();
-        }
+  _stopEmulationRequested = false;
 
-        if (_queue.GetNextEventCycle() >= cpuEvent.cycle)
-        {
-          SetFrameCycle(cpuEvent.cycle);
-          cpuIntegrationExecuteInstructionEventHandler68000Fast();
-        }
-        else
-        {
-          HandleNextEvent();
-        }
+  if (setjmp(cpu_integration_exception_buffer) == 0)
+  {
+    while (!_stopEmulationRequested)
+    {
+      while (chipBusAccessEvent.IsEnabled() && _queue.GetNextEventCycle() >= chipBusAccessEvent.cycle && cpuEvent.cycle >= chipBusAccessEvent.cycle)
+      {
+        SetFrameCycle(chipBusAccessEvent.cycle);
+        dma_controller.Handler();
+      }
+
+      if (_queue.GetNextEventCycle() >= cpuEvent.cycle)
+      {
+        SetFrameCycle(cpuEvent.cycle);
+        cpuIntegrationExecuteInstructionEventHandler68000Fast();
+      }
+      else
+      {
+        HandleNextEvent();
       }
     }
-    else
-    {
-      // Came out of an CPU exception. Keep on working.
-      // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
-      cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
-      cpuIntegrationSetChipCycles(0);
-    }
+  }
+  else
+  {
+    // Came out of an CPU exception. Keep on working.
+    // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
+    cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+    cpuIntegrationSetChipCycles(0);
   }
 }
 
 void Scheduler::RunGeneric()
 {
-  while (!fellow_request_emulation_stop)
+  _stopEmulationRequested = false;
+
+  if (setjmp(cpu_integration_exception_buffer) == 0)
   {
-    if (setjmp(cpu_integration_exception_buffer) == 0)
+    while (!_stopEmulationRequested)
     {
-      while (!fellow_request_emulation_stop)
+      while (_queue.GetNextEventCycle() >= cpuEvent.cycle)
       {
-        while (_queue.GetNextEventCycle() >= cpuEvent.cycle)
-        {
-          SetFrameCycle(cpuEvent.cycle);
-          cpuEvent.handler();
-        }
-        do
-        {
-          HandleNextEvent();
-        } while (_queue.GetNextEventCycle() < cpuEvent.cycle && !fellow_request_emulation_stop);
+        SetFrameCycle(cpuEvent.cycle);
+        cpuEvent.handler();
       }
+      do
+      {
+        HandleNextEvent();
+      } while (_queue.GetNextEventCycle() < cpuEvent.cycle && !_stopEmulationRequested);
     }
-    else
-    {
-      // Came out of an CPU exception. Keep on working.
-      // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
-      cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
-      cpuIntegrationSetChipCycles(0);
-    }
+  }
+  else
+  {
+    // Came out of an CPU exception. Keep on working.
+    // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
+    cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+    cpuIntegrationSetChipCycles(0);
   }
 }
 
@@ -579,35 +581,36 @@ void Scheduler::Run()
   (this->*GetRunHandler())();
 }
 
-/* Steps one instruction forward */
-void Scheduler::DebugStepOneInstruction()
+// Steps one instruction forward, returns true if stepping was ended by request to stop emulation
+bool Scheduler::DebugStepOneInstruction()
 {
-  while (!fellow_request_emulation_stop)
+  _stopEmulationRequested = false;
+
+  if (setjmp(cpu_integration_exception_buffer) == 0)
   {
-    if (setjmp(cpu_integration_exception_buffer) == 0)
+    while (!_stopEmulationRequested)
     {
-      while (!fellow_request_emulation_stop)
+      if (_queue.GetNextEventCycle() >= cpuEvent.cycle)
       {
-        if (_queue.GetNextEventCycle() >= cpuEvent.cycle)
-        {
-          SetFrameCycle(cpuEvent.cycle);
-          cpuEvent.handler();
-          return;
-        }
-        do
-        {
-          HandleNextEvent();
-        } while (_queue.GetNextEventCycle() < cpuEvent.cycle && !fellow_request_emulation_stop);
+        SetFrameCycle(cpuEvent.cycle);
+        cpuEvent.handler();
+        return _stopEmulationRequested;
       }
-    }
-    else
-    {
-      // Came out of an CPU exception. Return to debugger after setting the cycle count
-      cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
-      cpuIntegrationSetChipCycles(0);
-      return;
+      do
+      {
+        HandleNextEvent();
+      } while (_queue.GetNextEventCycle() < cpuEvent.cycle && !_stopEmulationRequested);
     }
   }
+  else
+  {
+    // Came out of an CPU exception. Return to debugger after setting the cycle count
+    cpuEvent.cycle = FrameCycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+    cpuIntegrationSetChipCycles(0);
+    return _stopEmulationRequested;
+  }
+
+  return _stopEmulationRequested;
 }
 
 SchedulerEventHandler Scheduler::GetCpuInstructionEventHandler()
@@ -714,12 +717,9 @@ void Scheduler::SetScreenLimits(bool is_long_frame)
   }
 }
 
-/*===========================================================================*/
-/* Called on emulation start / stop and reset                                */
-/*===========================================================================*/
-
 void Scheduler::EmulationStart()
 {
+  _stopEmulationRequested = false;
 }
 
 void Scheduler::EmulationStop()
@@ -740,12 +740,10 @@ void Scheduler::HardReset()
   SetScreenLimits(drawGetFrameIsLong());
 }
 
-/*===========================================================================*/
-/* Called on emulator startup / shutdown                                     */
-/*===========================================================================*/
-
-void Scheduler::Startup()
+void Scheduler::Startup(Modules* modules)
 {
+  _modules = modules;
+
   FrameNo = 0;
   FrameCycle = 0;
   FrameParameters = &pal_long_frame;

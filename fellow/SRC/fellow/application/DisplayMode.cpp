@@ -8,7 +8,8 @@ DisplayMode::DisplayMode(int id, unsigned int width, unsigned int height, unsign
 {
 }
 
-DisplayMode::DisplayMode(int id, unsigned int width, unsigned int height, const std::string &name) noexcept : Id(id), Width(width), Height(height), Bits(0), Refresh(0), Name(name), IsWindowed(true)
+DisplayMode::DisplayMode(int id, unsigned int width, unsigned int height, const std::string &name) noexcept
+  : Id(id), Width(width), Height(height), Bits(0), Refresh(0), Name(name), IsWindowed(true)
 {
 }
 

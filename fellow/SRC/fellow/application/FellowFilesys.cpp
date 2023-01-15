@@ -83,7 +83,8 @@ BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index)
   size_t len = strlen(filesys.rootpath) - 1;
   if (filesys.rootpath[len] == '\\') filesys.rootpath[len] = '\0';
 
-  return (ffilesys_devs[index].readonly == filesys.readonly) && (strncmp(ffilesys_devs[index].volumename, filesys.volumename, FFILESYS_MAX_VOLUMENAME) == 0) &&
+  return (ffilesys_devs[index].readonly == filesys.readonly) &&
+         (strncmp(ffilesys_devs[index].volumename, filesys.volumename, FFILESYS_MAX_VOLUMENAME) == 0) &&
          (strncmp(ffilesys_devs[index].rootpath, filesys.rootpath, CFG_FILENAME_LENGTH) == 0);
 }
 

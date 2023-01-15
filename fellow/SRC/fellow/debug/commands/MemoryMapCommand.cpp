@@ -1,5 +1,4 @@
 #include "fellow/debug/commands/MemoryMapCommand.h"
-#include "fellow/api/VM.h"
 
 using namespace std;
 using namespace fellow::api;
@@ -7,7 +6,7 @@ using namespace fellow::api::vm;
 
 MemoryMapResult MemoryMapCommand::Execute(const MemoryMapParameters &parameters)
 {
-  return MemoryMapResult{.Bits = VM->Memory.GetAddressSpace32Bits() ? 32U : 24U, .Entries = GetMemoryMapEntries()};
+  return MemoryMapResult{.Bits = _vmMemory->GetAddressSpace32Bits() ? 32U : 24U, .Entries = GetMemoryMapEntries()};
 }
 
 string MemoryMapCommand::GetMemoryKindDescription(MemoryKind kind) const
@@ -38,7 +37,7 @@ string MemoryMapCommand::GetMemoryKindDescription(MemoryKind kind) const
 vector<MemoryMapEntry> MemoryMapCommand::GetMemoryMapEntries()
 {
   vector<MemoryMapEntry> entries;
-  const auto &descriptors = VM->Memory.GetMemoryMapDescriptors();
+  const auto &descriptors = _vmMemory->GetMemoryMapDescriptors();
 
   for (const auto &descriptor : descriptors)
   {
@@ -46,4 +45,8 @@ vector<MemoryMapEntry> MemoryMapCommand::GetMemoryMapEntries()
   }
 
   return entries;
+}
+
+MemoryMapCommand::MemoryMapCommand(fellow::api::vm::IMemorySystem *vmMemory) : _vmMemory(vmMemory)
+{
 }
