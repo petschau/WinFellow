@@ -13,7 +13,7 @@ public:
   ULO Cycle;
 
   void AddAndMakeEven(ULO offset);
-  void Initialize(ULO line, ULO cycle);
+  void Initialize(ULO line, ULO cycle, ULO maxCycleInLines);
 
   CopperBeamPosition();
 };
@@ -62,9 +62,17 @@ enum CopperStep
   CopperStep_Load_Cycle2 = 8
 };
 
+class Scheduler;
+class Blitter;
+class BitplaneRegisters;
+
 class CycleExactCopper
 {
 private:
+  Scheduler *_scheduler;
+  Blitter *_blitter;
+  BitplaneRegisters *_bitplaneRegisters;
+
   UWO _ir1;
   UWO _ir2;
   bool _skip;
@@ -104,6 +112,7 @@ public:
   void NotifyCop1lcChanged();
 
   void Load(ULO line, ULO cycle, int lcNumber);
+  void LoadNow(int lcNumber);
 
   void EndOfFrame();
   void HardReset();
@@ -112,7 +121,7 @@ public:
   void Startup();
   void Shutdown();
 
-  CycleExactCopper();
+  CycleExactCopper(Scheduler *scheduler, Blitter *blitter, BitplaneRegisters *bitplaneRegisters);
   ~CycleExactCopper() = default;
 };
 

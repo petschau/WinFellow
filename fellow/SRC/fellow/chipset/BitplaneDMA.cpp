@@ -7,32 +7,28 @@
 #include "fellow/chipset/DDFStateMachine.h"
 #include "fellow/scheduler/Scheduler.h"
 
-BitplaneFetchPrograms BitplaneDMA::FetchPrograms;
-BitplaneFetchProgramRunner BitplaneDMA::FetchProgramRunner;
-bool BitplaneDMA::IsLastFetch;
-
 ULO BitplaneDMA::GetModuloForBitplane(unsigned int bitplaneIndex)
 {
-  return (ULO)(LON)(WOR)((bitplaneIndex & 1) ? bitplane_registers.bpl2mod : bitplane_registers.bpl1mod);
+  return (ULO)(LON)(WOR)((bitplaneIndex & 1) ? _bitplaneRegisters->bpl2mod : _bitplaneRegisters->bpl1mod);
 }
 
 void BitplaneDMA::DMAReadCallback(const ChipBusTimestamp &currentTime, UWO value)
 {
   unsigned int bitplaneIndex = FetchProgramRunner.GetBitplaneIndex();
 
-  bitplane_registers.SetBplDat(bitplaneIndex, value);
-  bitplane_registers.AddBplPt(bitplaneIndex, 2);
+  _bitplaneRegisters->SetBplDat(bitplaneIndex, value);
+  _bitplaneRegisters->AddBplPt(bitplaneIndex, 2);
 
   if (IsLastFetch && FetchProgramRunner.GetCanAddModulo())
   {
-    bitplane_registers.AddBplPt(bitplaneIndex, GetModuloForBitplane(bitplaneIndex));
+    _bitplaneRegisters->AddBplPt(bitplaneIndex, GetModuloForBitplane(bitplaneIndex));
   }
 
   FetchProgramRunner.NextStep();
 
   if (FetchProgramRunner.IsEnded())
   {
-    if (!IsLastFetch && ddf_state_machine.IsFetchEnabled())
+    if (!IsLastFetch && _ddfStateMachine->IsFetchEnabled())
     {
       ChipBusTimestamp startTime(currentTime);
       startTime.Add(1);
@@ -56,14 +52,14 @@ void BitplaneDMA::InhibitedReadCallback(const ChipBusTimestamp &currentTime)
 
   if (IsLastFetch && FetchProgramRunner.GetCanAddModulo())
   {
-    bitplane_registers.AddBplPt(bitplaneIndex, GetModuloForBitplane(bitplaneIndex));
+    _bitplaneRegisters->AddBplPt(bitplaneIndex, GetModuloForBitplane(bitplaneIndex));
   }
 
   FetchProgramRunner.NextStep();
 
   if (FetchProgramRunner.IsEnded())
   {
-    if (!IsLastFetch && ddf_state_machine.IsFetchEnabled())
+    if (!IsLastFetch && _ddfStateMachine->IsFetchEnabled())
     {
       ChipBusTimestamp startTime(currentTime);
       startTime.Add(1);
@@ -84,7 +80,7 @@ void BitplaneDMA::InhibitedReadCallback(const ChipBusTimestamp &currentTime)
 void BitplaneDMA::ScheduleInhibitedFetch(const ChipBusTimestamp &fetchTime)
 {
   bitplaneDMAEvent.cycle = fetchTime.ToBaseClockTimestamp();
-  scheduler.InsertEvent(&bitplaneDMAEvent);
+  _scheduler->InsertEvent(&bitplaneDMAEvent);
 }
 
 void BitplaneDMA::ScheduleFetch(const ChipBusTimestamp &currentTime)
@@ -99,20 +95,20 @@ void BitplaneDMA::ScheduleFetch(const ChipBusTimestamp &currentTime)
   else
   {
     const unsigned int bitplaneIndex = FetchProgramRunner.GetBitplaneIndex();
-    dma_controller.ScheduleBitplaneDMA(fetchTime, bitplane_registers.bplpt[bitplaneIndex], bitplaneIndex);
+    dma_controller.ScheduleBitplaneDMA(fetchTime, _bitplaneRegisters->bplpt[bitplaneIndex], bitplaneIndex);
   }
 }
 
 bool BitplaneDMA::CanFetch()
 {
-  return BitplaneUtility::IsBitplaneDMAEnabled() && BitplaneUtility::GetEnabledBitplaneCount() > 0 && diwy_state_machine.IsVisible() &&
-         ddf_state_machine.IsFetchEnabled();
+  return _bitplaneRegisters->IsBitplaneDMAEnabled() && _bitplaneRegisters->EnabledBitplaneCount > 0 && diwy_state_machine.IsVisible() &&
+         _ddfStateMachine->IsFetchEnabled();
 }
 
 bool BitplaneDMA::CalculateIsLastFetch(ULO atCycle)
 {
   // Either ddf says this is the last one because stop has been seen
-  if (ddf_state_machine.IsNextFetchLast(atCycle))
+  if (_ddfStateMachine->IsNextFetchLast(atCycle))
   {
     return true;
   }
@@ -124,7 +120,7 @@ bool BitplaneDMA::CalculateIsLastFetch(ULO atCycle)
 void BitplaneDMA::HandleEvent()
 {
   bitplaneDMAEvent.Disable();
-  InhibitedReadCallback(scheduler.GetChipBusTimestamp());
+  InhibitedReadCallback(_scheduler->GetChipBusTimestamp());
 }
 
 void BitplaneDMA::StartFetchProgram(const ChipBusTimestamp &startTime)
@@ -132,7 +128,7 @@ void BitplaneDMA::StartFetchProgram(const ChipBusTimestamp &startTime)
   if (CanFetch())
   {
     IsLastFetch = CalculateIsLastFetch(startTime.GetCycle());
-    FetchProgramRunner.StartProgram(FetchPrograms.GetFetchProgram(BitplaneUtility::IsLores(), BitplaneUtility::GetEnabledBitplaneCount()));
+    FetchProgramRunner.StartProgram(FetchPrograms.GetFetchProgram(_bitplaneRegisters->IsLores, _bitplaneRegisters->EnabledBitplaneCount));
 
     if (!FetchProgramRunner.IsEnded())
     {
@@ -144,5 +140,10 @@ void BitplaneDMA::StartFetchProgram(const ChipBusTimestamp &startTime)
 /* Fellow events */
 
 void BitplaneDMA::EndOfFrame()
+{
+}
+
+BitplaneDMA::BitplaneDMA(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters, DDFStateMachine *ddfStateMachine)
+  : _scheduler(scheduler), _bitplaneRegisters(bitplaneRegisters), _ddfStateMachine(ddfStateMachine)
 {
 }

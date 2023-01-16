@@ -3,27 +3,37 @@
 #include "fellow/api/defs.h"
 #include "fellow/chipset/BitplaneDMAFetchPrograms.h"
 #include "fellow/time/Timestamps.h"
+#include "fellow/scheduler/Scheduler.h"
+#include "fellow/chipset/BitplaneRegisters.h"
+
+class DDFStateMachine;
 
 class BitplaneDMA
 {
 private:
-  static BitplaneFetchPrograms FetchPrograms;
-  static BitplaneFetchProgramRunner FetchProgramRunner;
-  static bool IsLastFetch;
+  Scheduler *_scheduler{};
+  BitplaneRegisters *_bitplaneRegisters{};
+  DDFStateMachine *_ddfStateMachine{};
 
-  static ULO GetModuloForBitplane(unsigned int bitplaneIndex);
+  BitplaneFetchPrograms FetchPrograms;
+  BitplaneFetchProgramRunner FetchProgramRunner;
+  bool IsLastFetch{};
 
-  static bool CanFetch();
-  static bool CalculateIsLastFetch(ULO atCycle);
+  ULO GetModuloForBitplane(unsigned int bitplaneIndex);
 
-  static void ScheduleFetch(const ChipBusTimestamp &currentTime);
-  static void ScheduleInhibitedFetch(const ChipBusTimestamp &fetchTime);
-  static void InhibitedReadCallback(const ChipBusTimestamp &currentTime);
+  bool CanFetch();
+  bool CalculateIsLastFetch(ULO atCycle);
+
+  void ScheduleFetch(const ChipBusTimestamp &currentTime);
+  void ScheduleInhibitedFetch(const ChipBusTimestamp &fetchTime);
+  void InhibitedReadCallback(const ChipBusTimestamp &currentTime);
 
 public:
-  static void HandleEvent();
+  void HandleEvent();
 
-  static void DMAReadCallback(const ChipBusTimestamp &currentTime, UWO value);
-  static void StartFetchProgram(const ChipBusTimestamp &startTime);
-  static void EndOfFrame();
+  void DMAReadCallback(const ChipBusTimestamp &currentTime, UWO value);
+  void StartFetchProgram(const ChipBusTimestamp &startTime);
+  void EndOfFrame();
+
+  BitplaneDMA(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters, DDFStateMachine *ddfStateMachine);
 };

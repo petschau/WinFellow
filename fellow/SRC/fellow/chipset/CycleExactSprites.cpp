@@ -31,6 +31,7 @@
 #include "fellow/chipset/BitplaneShifter.h"
 #include "fellow/chipset/Planar2ChunkyDecoder.h"
 #include "fellow/chipset/SpriteDMA.h"
+#include "fellow/chipset/BitplaneRegisters.h"
 
 bool CycleExactSprites::Is16Color(const unsigned int spriteNo) const
 {
@@ -135,13 +136,13 @@ void CycleExactSprites::OutputPartialSprite(unsigned int spriteNo, Sprite &state
     outputSpritePixelCount = spritePixelsLeftToSerialize;
   }
 
-  if (BitplaneUtility::IsLores())
+  if (_bitplaneRegisters->IsLores)
   {
-    if (BitplaneUtility::IsDualPlayfield())
+    if (_bitplaneRegisters->IsDualPlayfield)
     {
       MergeDualLores(spriteNo, state.pixels_output >> 2, pixelIndex, outputSpritePixelCount);
     }
-    else if (BitplaneUtility::IsHam())
+    else if (_bitplaneRegisters->IsHam)
     {
       MergeHam(spriteNo, state.pixels_output >> 2, pixelIndex, outputSpritePixelCount);
     }
@@ -152,7 +153,7 @@ void CycleExactSprites::OutputPartialSprite(unsigned int spriteNo, Sprite &state
   }
   else // Hires
   {
-    if (BitplaneUtility::IsDualPlayfield())
+    if (_bitplaneRegisters->IsDualPlayfield)
     {
       MergeDualHires(spriteNo, state.pixels_output >> 2, pixelIndex, outputSpritePixelCount);
     }
@@ -198,7 +199,7 @@ void CycleExactSprites::OutputSprite(const unsigned int spriteNo, ULO batchStart
 // Parameters are shres pixel units in a line
 void CycleExactSprites::OutputSprites(ULO startX, ULO pixelCount)
 {
-  if (BitplaneUtility::IsLores() && BitplaneUtility::IsHam())
+  if (_bitplaneRegisters->IsLores && _bitplaneRegisters->IsHam)
   {
     Planar2ChunkyDecoder::ClearHAMSpritesPlayfield();
   }
@@ -311,7 +312,7 @@ void CycleExactSprites::EmulationStop()
 {
 }
 
-CycleExactSprites::CycleExactSprites() : Sprites()
+CycleExactSprites::CycleExactSprites(BitplaneRegisters *bitplaneRegisters) : Sprites(), _bitplaneRegisters(bitplaneRegisters)
 {
 }
 

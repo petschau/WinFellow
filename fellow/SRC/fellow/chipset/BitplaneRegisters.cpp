@@ -11,6 +11,7 @@
 #include "fellow/memory/ChipsetBankHandler.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/memory/Memory.h"
+#include "fellow/chipset/Graphics.h"
 
 // VPOSR - $dff004
 // Bit 15 14 13 12 11 10 09 08  07 06 05 04 03 02  01 00
@@ -35,7 +36,7 @@
 
 UWO BitplaneRegisters::GetVPosR() const
 {
-  UWO value = lof;
+  UWO value = lof ? 0x8000 : 0x0;
   if (chipsetGetECS())
   {
     value |= GetAgnusId() << 8;
@@ -62,7 +63,7 @@ UWO BitplaneRegisters::GetVHPosR()
 // VPOSW - $dff02a, see VPOSR for bits
 void BitplaneRegisters::SetVPos(UWO data)
 {
-  lof = (UWO)(data & 0x8000);
+  lof = (data & 0x8000) == 0x8000;
   // TODO: Add changing of raster position counters
 }
 
@@ -75,6 +76,11 @@ void BitplaneRegisters::SetVHPos(UWO data)
 UWO BitplaneRegisters::GetAgnusId()
 {
   return chipsetGetECS() ? AgnusId::Agnus_8372_ECS_PAL_until_Rev4 : AgnusId::Agnus_8371_Fat_PAL;
+}
+
+void BitplaneRegisters::ToggleLof()
+{
+  lof = !lof;
 }
 
 // DENISEID - $dff006 (sometimes called LISAID)
@@ -337,6 +343,7 @@ void BitplaneRegisters::SetBplCon0(UWO data)
     IsHires = !IsLores;
     IsDualPlayfield = (bplcon0 & 0x0400) == 0x0400;
     IsHam = (bplcon0 & 0x0800) == 0x0800;
+    IsInterlaced = (bplcon0 & 4) == 4;
     EnabledBitplaneCount = (bplcon0 >> 12) & 7;
 
     if (!chipset_info.IsCycleExact)
@@ -640,7 +647,7 @@ void BitplaneRegisters::AddModulo()
   const ULO mod1 = (ULO)(LON)(WOR)bpl1mod; // Sign extend
   const ULO mod2 = (ULO)(LON)(WOR)bpl2mod;
 
-  switch (BitplaneUtility::GetEnabledBitplaneCount())
+  switch (EnabledBitplaneCount)
   {
     case 6: AddBplPt(5, mod2);
     case 5: AddBplPt(4, mod1);
@@ -655,6 +662,38 @@ void BitplaneRegisters::AddModulo()
 void BitplaneRegisters::AddBplPt(unsigned int bitplaneIndex, ULO add)
 {
   bplpt[bitplaneIndex] = chipsetMaskPtr(bplpt[bitplaneIndex] + add);
+}
+
+// TODO: Precalculate these, bplcon0 isn't written that often
+bool BitplaneRegisters::IsPlayfield1Pri()
+{
+  return (bplcon2 & 0x0040) == 0;
+}
+
+ULO BitplaneRegisters::GetEvenScrollMask()
+{
+  return bplcon1 & 0xf;
+}
+
+ULO BitplaneRegisters::GetOddScrollMask()
+{
+  return (bplcon1 >> 4) & 0xf;
+}
+
+// TODO: Do not really belong here
+bool BitplaneRegisters::IsBitplaneDMAEnabled()
+{
+  return (dmaconr & 0x0300) == 0x0300;
+}
+
+bool BitplaneRegisters::IsSpriteDMAEnabled()
+{
+  return (dmaconr & 0x0220) == 0x0220;
+}
+
+bool BitplaneRegisters::IsCopperDMAEnabled()
+{
+  return (dmaconr & 0x0280) == 0x0280;
 }
 
 void BitplaneRegisters::PublishColorChanged(const unsigned int colorIndex, const UWO color12Bit, const UWO halfbriteColor12Bit)
@@ -744,7 +783,7 @@ void BitplaneRegisters::FlushShifter() const
 
 void BitplaneRegisters::ClearState()
 {
-  lof = 0x8000; /* Long frame is default */
+  lof = true; // Long frame is default
   diwstrt = 0;
   diwstop = 0;
   ddfstrt = 0;
@@ -794,6 +833,7 @@ void BitplaneRegisters::ClearState()
   IsHires = false;
   IsDualPlayfield = false;
   IsHam = false;
+  IsInterlaced = false;
   EnabledBitplaneCount = 0;
 }
 

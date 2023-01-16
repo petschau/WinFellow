@@ -19,7 +19,7 @@ private:
 
 public:
   // Unmodified register values
-  UWO lof;
+  bool lof;
   UWO diwstrt;
   UWO diwstop;
   UWO ddfstrt;
@@ -53,6 +53,7 @@ public:
   bool IsHires;
   bool IsDualPlayfield;
   bool IsHam;
+  bool IsInterlaced;
   ULO EnabledBitplaneCount;
 
   // Decoded from OCS DIW and possibly DIWHIGH if using ECS and DIWHIGH was written
@@ -82,6 +83,8 @@ public:
   static UWO GetAgnusId();
   UWO GetVerticalPosition();
   UWO GetHorisontalPosition();
+
+  void ToggleLof();
 
   void PublishColorChanged(const unsigned int colorIndex, const UWO color12Bit, const UWO halfbriteColor12Bit);
 
@@ -121,6 +124,13 @@ public:
   void AddBplPt(unsigned int index, ULO add);
   void LinearAddModulo(unsigned int enabledBitplaneCount, ULO bplLengthInBytes);
   void AddModulo();
+
+  bool IsPlayfield1Pri();
+  ULO GetEvenScrollMask();
+  ULO GetOddScrollMask();
+  bool IsBitplaneDMAEnabled();
+  bool IsSpriteDMAEnabled();
+  bool IsCopperDMAEnabled();
 
   void SetAddDataCallback(IBitplaneShifter_AddDataCallback *bitplaneShifter_AddData);
   void SetFlushCallback(IBitplaneShifter_FlushCallback *bitplaneShifter_Flush);

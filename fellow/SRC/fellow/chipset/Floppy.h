@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 
-#define FLOPPY_TRACKS 180
+constexpr auto FLOPPY_TRACKS = 180;
 
 /* Status symbols */
 

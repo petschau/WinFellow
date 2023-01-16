@@ -40,12 +40,18 @@ struct DIWXState
   SHResTimestamp ChangeTime;
   bool OutOfBounds;
 
-  void Set(DIWXStates state, const SHResTimestamp &changeTime);
+  void Set(DIWXStates state, const SHResTimestamp &changeTime, ULO maxLinesInFrame);
 };
+
+class Scheduler;
+class BitplaneRegisters;
 
 class DIWXStateMachine
 {
 private:
+  Scheduler *_scheduler;
+  BitplaneRegisters *_bitplaneRegisters;
+
   DIWXState _currentState;
   DIWXState _nextState;
 
@@ -76,8 +82,6 @@ public:
   void Startup();
   void Shutdown();
 
-  DIWXStateMachine() = default;
+  DIWXStateMachine(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters);
   ~DIWXStateMachine() = default;
 };
-
-extern DIWXStateMachine diwx_state_machine;

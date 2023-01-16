@@ -9,10 +9,17 @@ enum class DDFStates
   DDF_WAIT_FOR_STOP = 1
 };
 
+class Scheduler;
+class BitplaneRegisters;
+class BitplaneDMA;
+
 class DDFStateMachine
 {
 private:
   static const STR *DDFStateNames[2];
+  Scheduler *_scheduler;
+  BitplaneRegisters *_bitplaneRegisters;
+  BitplaneDMA *_bitplaneDMA;
 
   bool _startFetchOncePerLine = true;
   ULO _previousFetchLine = 0;
@@ -51,8 +58,6 @@ public:
   void Startup();
   void Shutdown();
 
-  DDFStateMachine() = default;
+  DDFStateMachine(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters, BitplaneDMA *bitplaneDMA);
   ~DDFStateMachine() = default;
 };
-
-extern DDFStateMachine ddf_state_machine;

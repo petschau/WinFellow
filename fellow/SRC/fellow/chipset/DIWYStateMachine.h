@@ -42,9 +42,13 @@ struct DIWYState
   DIWYState(DIWYStates state, const SHResTimestamp &timestamp);
 };
 
+class Scheduler;
+
 class DIWYStateMachine
 {
 private:
+  Scheduler *_scheduler;
+
   DIWYState _currentState;
   DIWYState _nextState;
 
@@ -60,7 +64,7 @@ private:
   void FindNextStateChange(const SHResTimestamp &startPosition);
   void SetupEvent() const;
 
-  static void MaybeWrapToNextLine(ULO &nextLine, ULO &nextCycle);
+  void MaybeWrapToNextLine(ULO &nextLine, ULO &nextCycle);
 
   void Reset();
 
@@ -87,7 +91,7 @@ public:
   void Startup();
   void Shutdown();
 
-  DIWYStateMachine();
+  DIWYStateMachine(Scheduler *scheduler);
   ~DIWYStateMachine() = default;
 };
 

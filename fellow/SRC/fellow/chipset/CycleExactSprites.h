@@ -28,6 +28,8 @@
 #include "fellow/chipset/Sprite.h"
 #include "BitplaneUtility.h"
 
+class BitplaneRegisters;
+
 typedef union SpriteDecodedUnion_ {
   UBY barray[16];
   ByteLongUnion blu[4];
@@ -47,6 +49,7 @@ struct Sprite
 class CycleExactSprites : public Sprites
 {
 private:
+  BitplaneRegisters *_bitplaneRegisters;
   Sprite SpriteState[8];
 
   void Arm(const unsigned int spriteNo);
@@ -67,21 +70,21 @@ private:
   void OutputSprite(const unsigned int spriteNo, ULO startX, ULO pixelCount);
 
 public:
-  virtual void NotifySprpthChanged(UWO data, const unsigned int spriteNumber);
-  virtual void NotifySprptlChanged(UWO data, const unsigned int spriteNumber);
-  virtual void NotifySprposChanged(UWO data, const unsigned int spriteNumber);
-  virtual void NotifySprctlChanged(UWO data, const unsigned int spriteNumber);
-  virtual void NotifySprdataChanged(UWO data, const unsigned int spriteNumber);
-  virtual void NotifySprdatbChanged(UWO data, const unsigned int spriteNumber);
+  void NotifySprpthChanged(UWO data, const unsigned int spriteNumber) override;
+  void NotifySprptlChanged(UWO data, const unsigned int spriteNumber) override;
+  void NotifySprposChanged(UWO data, const unsigned int spriteNumber) override;
+  void NotifySprctlChanged(UWO data, const unsigned int spriteNumber) override;
+  void NotifySprdataChanged(UWO data, const unsigned int spriteNumber) override;
+  void NotifySprdatbChanged(UWO data, const unsigned int spriteNumber) override;
 
   void OutputSprites(ULO startX, ULO pixelCount);
 
-  virtual void HardReset();
-  virtual void EndOfLine(ULO line);
-  virtual void EndOfFrame();
-  virtual void EmulationStart();
-  virtual void EmulationStop();
+  void HardReset() override;
+  void EndOfLine(ULO line) override;
+  void EndOfFrame() override;
+  void EmulationStart() override;
+  void EmulationStop() override;
 
-  CycleExactSprites();
+  CycleExactSprites(BitplaneRegisters *bitplaneRegisters);
   virtual ~CycleExactSprites();
 };

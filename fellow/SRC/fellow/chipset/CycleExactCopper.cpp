@@ -3,13 +3,11 @@
 #include "fellow/chipset/CopperUtility.h"
 #include "fellow/chipset/CopperRegisters.h"
 #include "fellow/chipset/CycleExactCopper.h"
-#include "fellow/chipset/BitplaneUtility.h"
 #include "fellow/chipset/DMAController.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/Blitter.h"
-
-CycleExactCopper cycle_exact_copper;
+#include "fellow/chipset/BitplaneRegisters.h"
 
 void CopperBeamPosition::AddAndMakeEven(ULO offset)
 {
@@ -30,11 +28,11 @@ void CopperBeamPosition::AddAndMakeEven(ULO offset)
   F_ASSERT(Cycle < MaxCycle);
 }
 
-void CopperBeamPosition::Initialize(ULO line, ULO cycle)
+void CopperBeamPosition::Initialize(ULO line, ULO cycle, ULO maxCycleInLines)
 {
   Line = line;
   Cycle = cycle;
-  MaxCycle = scheduler.Get280nsCyclesInLine();
+  MaxCycle = maxCycleInLines;
 }
 
 CopperBeamPosition::CopperBeamPosition() : MaxCycle(0), Line(0), Cycle(0)
@@ -165,7 +163,7 @@ CopperWaitParameters::CopperWaitParameters()
 
 void CycleExactCopper::ScheduleDMARead(ULO offset)
 {
-  if (BitplaneUtility::IsCopperDMAEnabled())
+  if (_bitplaneRegisters->IsCopperDMAEnabled())
   {
     _currentBeamPosition.AddAndMakeEven(offset);
     dma_controller.ScheduleCopperDMARead(ChipBusTimestamp(_currentBeamPosition.Line, _currentBeamPosition.Cycle), copper_registers.PC);
@@ -174,7 +172,7 @@ void CycleExactCopper::ScheduleDMARead(ULO offset)
 
 void CycleExactCopper::ScheduleDMANull(ULO offset)
 {
-  if (BitplaneUtility::IsCopperDMAEnabled())
+  if (_bitplaneRegisters->IsCopperDMAEnabled())
   {
     _currentBeamPosition.AddAndMakeEven(offset);
     dma_controller.ScheduleCopperDMANull(ChipBusTimestamp(_currentBeamPosition.Line, _currentBeamPosition.Cycle));
@@ -187,18 +185,18 @@ void CycleExactCopper::ScheduleEvent(ULO line, ULO cycle)
   {
     // Why would this ever happen?
     F_ASSERT(false);
-    scheduler.RemoveEvent(&copperEvent);
+    _scheduler->RemoveEvent(&copperEvent);
   }
 
-  copperEvent.cycle = scheduler.GetCycleFromCycle280ns(line * scheduler.Get280nsCyclesInLine() + cycle);
-  scheduler.InsertEvent(&copperEvent);
+  copperEvent.cycle = _scheduler->GetCycleFromCycle280ns(line * _scheduler->Get280nsCyclesInLine() + cycle);
+  _scheduler->InsertEvent(&copperEvent);
 }
 
 void CycleExactCopper::ExecuteStep(const ChipBusTimestamp &currentTime, UWO value)
 {
   F_ASSERT((currentTime.GetCycle() & 1) == 0);
 
-  _currentBeamPosition.Initialize(currentTime.GetLine(), currentTime.GetCycle());
+  _currentBeamPosition.Initialize(currentTime.GetLine(), currentTime.GetCycle(), _scheduler->Get280nsCyclesInLine());
 
   switch (_nextStep)
   {
@@ -267,10 +265,10 @@ void CycleExactCopper::StepMoveIR2(UWO value)
 
 void CycleExactCopper::StepWaitSetup()
 {
-  ULO maxCycle = scheduler.Get280nsCyclesInLine();
+  ULO maxCycle = _scheduler->Get280nsCyclesInLine();
   CopperBeamPosition wakeupPosition(_currentBeamPosition);
   wakeupPosition.AddAndMakeEven(2);
-  _waitParameters.Initialize(_ir1, _ir2, scheduler.GetLinesInFrame(), maxCycle);
+  _waitParameters.Initialize(_ir1, _ir2, _scheduler->GetLinesInFrame(), maxCycle);
 
   _nextStep = CopperStep_Wait_End;
   bool hasLegalBeamMatch = _waitParameters.TryGetNextBeamMatch(wakeupPosition);
@@ -303,7 +301,7 @@ void CycleExactCopper::StepWaitSetup()
 
 void CycleExactCopper::StepWaitEnd()
 {
-  if (!_waitParameters.BlitterFinishedDisable && blitterIsStarted())
+  if (!_waitParameters.BlitterFinishedDisable && _blitter->IsStarted())
   {
     _waitParameters.IsWaitingForBlitter = true;
   }
@@ -315,9 +313,9 @@ void CycleExactCopper::StepWaitEnd()
 
 void CycleExactCopper::StepSkip()
 {
-  ULO maxCycle = scheduler.Get280nsCyclesInLine();
-  _waitParameters.Initialize(_ir1, _ir2, scheduler.GetLinesInFrame(), maxCycle);
-  _skip = _waitParameters.Compare(_currentBeamPosition) && (_waitParameters.BlitterFinishedDisable || !blitterIsStarted());
+  ULO maxCycle = _scheduler->Get280nsCyclesInLine();
+  _waitParameters.Initialize(_ir1, _ir2, _scheduler->GetLinesInFrame(), maxCycle);
+  _skip = _waitParameters.Compare(_currentBeamPosition) && (_waitParameters.BlitterFinishedDisable || !_blitter->IsStarted());
   SetupStepReadIR1();
 }
 
@@ -358,17 +356,22 @@ void CycleExactCopper::DMANullCallback(const ChipBusTimestamp &currentTime)
 void CycleExactCopper::EventHandler()
 {
   copperEvent.Disable();
-  ExecuteStep(scheduler.GetChipBusTimestamp(), 0);
+  ExecuteStep(_scheduler->GetChipBusTimestamp(), 0);
+}
+
+void CycleExactCopper::LoadNow(int lcNumber)
+{
+  Load(_scheduler->GetRasterY(), _scheduler->GetLineCycle280ns(), lcNumber);
 }
 
 void CycleExactCopper::Load(ULO line, ULO cycle, int lcNumber)
 {
-  _currentBeamPosition.Initialize(line, cycle & 0xfffffffe);
+  _currentBeamPosition.Initialize(line, cycle & 0xfffffffe, _scheduler->Get280nsCyclesInLine());
 
   if (copperEvent.IsEnabled())
   {
     // Copper is waiting or evaluating skip
-    scheduler.RemoveEvent(&copperEvent);
+    _scheduler->RemoveEvent(&copperEvent);
     copperEvent.Disable();
   }
 
@@ -382,7 +385,7 @@ void CycleExactCopper::NotifyDMAEnableChanged(bool enabled)
 {
   if (enabled)
   {
-    _currentBeamPosition.Initialize(scheduler.GetRasterY(), scheduler.GetLineCycle280ns() & 0xfffffffe);
+    _currentBeamPosition.Initialize(_scheduler->GetRasterY(), _scheduler->GetLineCycle280ns() & 0xfffffffe, _scheduler->Get280nsCyclesInLine());
     switch (_nextStep)
     {
       case CopperStep::CopperStep_Read_IR1:
@@ -409,7 +412,7 @@ void CycleExactCopper::NotifyBlitterFinished()
   if (_nextStep == CopperStep::CopperStep_Wait_End && _waitParameters.IsWaitingForBlitter)
   {
     // If odd cycle, both this and previous even cycle match
-    _currentBeamPosition.Initialize(scheduler.GetRasterY(), scheduler.GetLineCycle280ns() & 0xfffffffe);
+    _currentBeamPosition.Initialize(_scheduler->GetRasterY(), _scheduler->GetLineCycle280ns() & 0xfffffffe, _scheduler->Get280nsCyclesInLine());
 
     if (_waitParameters.Compare(_currentBeamPosition))
     {
@@ -449,6 +452,7 @@ void CycleExactCopper::Shutdown()
 {
 }
 
-CycleExactCopper::CycleExactCopper() : _skip(false), _nextStep(CopperStep_Halt)
+CycleExactCopper::CycleExactCopper(Scheduler *scheduler, Blitter *blitter, BitplaneRegisters *bitplaneRegisters)
+  : _scheduler(scheduler), _blitter(blitter), _bitplaneRegisters(bitplaneRegisters), _skip(false), _nextStep(CopperStep_Halt)
 {
 }

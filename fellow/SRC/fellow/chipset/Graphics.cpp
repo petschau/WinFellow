@@ -264,7 +264,7 @@ void wdmacon(UWO data, ULO address)
     {
       if ((dmacon & 0x0040) != 0x0)
       {
-        blitterCopy();
+        InitiateBlit();
       }
     }
   }
@@ -309,7 +309,7 @@ void wdmacon(UWO data, ULO address)
     {
       if ((dmacon & 0x0040) != 0x0)
       {
-        blitterCopy();
+        InitiateBlit();
       }
     }
   }
@@ -1403,12 +1403,14 @@ void graphComposeLineOutputSmart(graph_line *current_graph_line)
     graph_decode_line_ptr();
 
     // compare line data to old data
-    line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON)(current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
+    line_desc_changed |=
+        graphCompareCopy(current_graph_line->DIW_first_draw, (LON)(current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
 
     // if the line is dual playfield, compare second playfield too
     if ((bitplane_registers.bplcon0 & 0x0400) != 0x0)
     {
-      line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON)(current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
+      line_desc_changed |=
+          graphCompareCopy(current_graph_line->DIW_first_draw, (LON)(current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
     }
 
     if (current_graph_line->has_ham_sprites_online)

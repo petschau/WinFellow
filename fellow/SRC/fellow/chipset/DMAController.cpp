@@ -5,8 +5,6 @@
 #include "fellow/memory/Memory.h"
 #include "fellow/scheduler/Scheduler.h"
 
-DMAController dma_controller;
-
 DMAChannel::DMAChannel() : ReadCallback(nullptr), WriteCallback(nullptr), NullCallback(nullptr), IsRequested(false), Mode(DMAChannelMode::ReadMode), Pt(0), Value(0)
 {
 }
@@ -37,8 +35,8 @@ void DMAController::AddLogEntry(const DMAChannel *operation, UWO value)
   {
     DebugLog.AddChipBusLogEntry(
         MapDMAChannelTypeToDebugLogSource(operation->Source),
-        scheduler.GetRasterFrameCount(),
-        scheduler.GetSHResTimestamp(),
+        _scheduler->GetRasterFrameCount(),
+        _scheduler->GetSHResTimestamp(),
         MapDMAChannelModeToDebugLogChipBusMode(operation->Mode),
         operation->Pt,
         value,
@@ -117,7 +115,7 @@ void DMAController::SetEventTime() const
 {
   if (UseEventQueue && chipBusAccessEvent.IsEnabled())
   {
-    scheduler.RemoveEvent(&chipBusAccessEvent);
+    _scheduler->RemoveEvent(&chipBusAccessEvent);
   }
 
   chipBusAccessEvent.cycle = _nextTime.ToBaseClockTimestamp();
@@ -126,7 +124,7 @@ void DMAController::SetEventTime() const
 
   if (UseEventQueue && chipBusAccessEvent.IsEnabled())
   {
-    scheduler.InsertEvent(&chipBusAccessEvent);
+    _scheduler->InsertEvent(&chipBusAccessEvent);
   }
 }
 
@@ -266,7 +264,7 @@ void DMAController::EndOfFrame()
 {
   if (UseEventQueue)
   {
-    scheduler.RebaseForNewFrame(&chipBusAccessEvent);
+    _scheduler->RebaseForNewFrame(&chipBusAccessEvent);
   }
 }
 
@@ -295,11 +293,11 @@ void DMAController::Shutdown()
 {
 }
 
-DMAController::DMAController()
+DMAController::DMAController(Scheduler *scheduler, BitplaneDMA *bitplaneDMA) : _scheduler(scheduler), _bitplaneDMA(bitplaneDMA)
 {
   UseEventQueue = true;
 
-  _bitplane.ReadCallback = BitplaneDMA::DMAReadCallback;
+  _bitplane.ReadCallback = [bitplaneDMA](const ChipBusTimestamp &currentTime, uint16_t value) -> void { bitplaneDMA->DMAReadCallback(currentTime, value); };
   _bitplane.Mode = DMAChannelMode::ReadMode;
   _bitplane.Source = DMAChannelType::BitplaneChannel;
 

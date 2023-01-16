@@ -40,7 +40,7 @@ namespace test::fellow::chipset::BitplaneRegistersTests
 
   TEST_CASE_METHOD(BitplaneRegistersTests, "BitplaneRegisters should be set to default values after class instance initialization", "[bitplaneregisters]")
   {
-    REQUIRE(_bitplaneRegisters.lof == 0x8000);
+    REQUIRE(_bitplaneRegisters.lof == true);
     REQUIRE(_bitplaneRegisters.diwstrt == 0);
     REQUIRE(_bitplaneRegisters.diwstop == 0);
     REQUIRE(_bitplaneRegisters.ddfstrt == 0);
@@ -68,6 +68,7 @@ namespace test::fellow::chipset::BitplaneRegistersTests
     REQUIRE(_bitplaneRegisters.IsHires == false);
     REQUIRE(_bitplaneRegisters.IsDualPlayfield == false);
     REQUIRE(_bitplaneRegisters.IsHam == false);
+    REQUIRE(_bitplaneRegisters.IsInterlaced == false);
     REQUIRE(_bitplaneRegisters.EnabledBitplaneCount == 0);
   }
 

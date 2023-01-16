@@ -42,6 +42,9 @@ struct BitplaneArmList
   BitplaneArmEntry &AllocateNext();
 };
 
+class Scheduler;
+class BitplaneRegisters;
+
 class BitplaneShifter
 {
 private:
@@ -70,7 +73,7 @@ private:
   void ShiftPixelsDual(ULO pixelCount, bool isVisible);
 
   void ShiftSubBatch(ULO pixelCount, bool isVisible);
-  static void ShiftBackgroundBatch(ULO pixelCount);
+  void ShiftBackgroundBatch(ULO pixelCount);
   void ShiftBitplaneBatch(ULO pixelCount);
 
   void InitializeNewLine(const SHResTimestamp &currentSHResPosition);

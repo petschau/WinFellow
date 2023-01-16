@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "fellow/time/Timestamps.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 
@@ -7,14 +9,14 @@ typedef void (*ChipBusReadCallback)(const ChipBusTimestamp &timestamp, UWO value
 typedef void (*ChipBusWriteCallback)();
 typedef void (*ChipBusNullCallback)(const ChipBusTimestamp &timestamp);
 
-enum DMAChannelMode
+enum class DMAChannelMode
 {
   ReadMode = 0,
   WriteMode = 1,
   NullMode = 2
 };
 
-enum DMAChannelType
+enum class DMAChannelType
 {
   BitplaneChannel = 0,
   CopperChannel = 1,
@@ -26,7 +28,7 @@ struct DMAChannel
   DMAChannelType Source;
   ChipBusTimestamp Timestamp;
   ChipBusTimestamp OriginalTimestamp;
-  ChipBusReadCallback ReadCallback;
+  std::function<void(const ChipBusTimestamp &timestamp, uint16_t value)> ReadCallback;
   ChipBusWriteCallback WriteCallback;
   ChipBusNullCallback NullCallback;
   bool IsRequested;
@@ -38,9 +40,15 @@ struct DMAChannel
   DMAChannel();
 };
 
+class Scheduler;
+class BitplaneDMA;
+
 class DMAController
 {
 private:
+  Scheduler *_scheduler;
+  BitplaneDMA *_bitplaneDMA;
+
   bool _refreshCycle[227];
 
   DMAChannel _bitplane;
@@ -84,7 +92,7 @@ public:
   void Startup();
   void Shutdown();
 
-  DMAController();
+  DMAController(Scheduler *scheduler, BitplaneDMA *bitplaneDMA);
   ~DMAController() = default;
 };
 

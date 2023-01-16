@@ -68,7 +68,7 @@ void wcopjmp1(UWO data, ULO address)
 {
   if (chipset_info.IsCycleExact)
   {
-    cycle_exact_copper.Load(scheduler.GetRasterY(), scheduler.GetLineCycle280ns(), 0);
+    cycle_exact_copper.LoadNow(0);
   }
   else
   {
@@ -82,7 +82,7 @@ UWO rcopjmp1(ULO address)
 {
   if (chipset_info.IsCycleExact)
   {
-    cycle_exact_copper.Load(scheduler.GetRasterY(), scheduler.GetLineCycle280ns(), 0);
+    cycle_exact_copper.LoadNow(0);
   }
   else
   {
@@ -97,7 +97,7 @@ void wcopjmp2(UWO data, ULO address)
 {
   if (chipset_info.IsCycleExact)
   {
-    cycle_exact_copper.Load(scheduler.GetRasterY(), scheduler.GetLineCycle280ns(), 1);
+    cycle_exact_copper.LoadNow(1);
   }
   else
   {
@@ -111,7 +111,7 @@ UWO rcopjmp2(ULO address)
 {
   if (chipset_info.IsCycleExact)
   {
-    cycle_exact_copper.Load(scheduler.GetRasterY(), scheduler.GetLineCycle280ns(), 1);
+    cycle_exact_copper.LoadNow(1);
   }
   else
   {

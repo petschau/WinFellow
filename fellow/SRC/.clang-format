@@ -1,6 +1,6 @@
 BasedOnStyle: Microsoft
 Standard: Latest
-ColumnLimit: 155
+ColumnLimit: 175
 IndentWidth: 2
 IndentCaseLabels: true
 UseTab: Never

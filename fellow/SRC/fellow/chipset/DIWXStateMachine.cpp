@@ -24,27 +24,30 @@
 
 #include "fellow/chipset/DIWXStateMachine.h"
 #include "fellow/chipset/BitplaneRegisters.h"
-#include "fellow/chipset/BitplaneUtility.h"
 #include "fellow/chipset/BitplaneShifter.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 #include "fellow/scheduler/Scheduler.h"
 
-DIWXStateMachine diwx_state_machine;
-
 static const STR *DIWXStateNames[2] = {"WAITING_FOR_START_POSITION", "WAITING_FOR_STOP_POSITION"};
 
-void DIWXState::Set(DIWXStates state, const SHResTimestamp &changeTime)
+void DIWXState::Set(DIWXStates state, const SHResTimestamp &changeTime, ULO maxLinesInFrame)
 {
   State = state;
   ChangeTime = changeTime;
-  OutOfBounds = changeTime.Line >= scheduler.GetLinesInFrame();
+  OutOfBounds = changeTime.Line >= maxLinesInFrame;
 }
 
 void DIWXStateMachine::AddLogEntry(DIWXLogReasons reason, const SHResTimestamp &timestamp) const
 {
   if (DebugLog.Enabled)
   {
-    DebugLog.AddDIWXLogEntry(DebugLogSource::DIWX_ACTION, scheduler.GetRasterFrameCount(), timestamp, reason, BitplaneUtility::GetDIWXStart(), BitplaneUtility::GetDIWXStop());
+    DebugLog.AddDIWXLogEntry(
+        DebugLogSource::DIWX_ACTION,
+        _scheduler->GetRasterFrameCount(),
+        timestamp,
+        reason,
+        _bitplaneRegisters->DiwXStart,
+        _bitplaneRegisters->DiwXStop);
   }
 }
 
@@ -79,7 +82,7 @@ SHResTimestamp DIWXStateMachine::GetEventChangeTimestamp(ULO line, ULO pixel)
   else if (line != 0)
   {
     changeLine -= 1;
-    changePixel = scheduler.GetCyclesInLine() - 1;
+    changePixel = _scheduler->GetCyclesInLine() - 1;
   }
 
   return {changeLine, changePixel};
@@ -107,10 +110,10 @@ SHResTimestamp DIWXStateMachine::FindNextStopPositionMatch(const SHResTimestamp 
 {
   ULO matchLine;
 
-  if (stopPosition >= scheduler.GetCyclesInLine())
+  if (stopPosition >= _scheduler->GetCyclesInLine())
   {
     // Stop position will never be seen, set wait value beyond end of frame
-    matchLine = scheduler.GetLinesInFrame();
+    matchLine = _scheduler->GetLinesInFrame();
   }
   else if (stopPosition > searchFromPosition.Pixel)
   {
@@ -130,11 +133,17 @@ void DIWXStateMachine::FindNextStateChange(const SHResTimestamp &searchFromPosit
 {
   if (_currentState.State == DIWXStates::DIWX_STATE_WAITING_FOR_START_POSITION)
   {
-    _nextState.Set(DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POSITION, FindNextStartPositionMatch(searchFromPosition, BitplaneUtility::GetDIWXStart()));
+    _nextState.Set(
+        DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POSITION,
+        FindNextStartPositionMatch(searchFromPosition, _bitplaneRegisters->DiwXStart),
+        _scheduler->GetLinesInFrame());
   }
   else
   {
-    _nextState.Set(DIWXStates::DIWX_STATE_WAITING_FOR_START_POSITION, FindNextStopPositionMatch(searchFromPosition, BitplaneUtility::GetDIWXStop()));
+    _nextState.Set(
+        DIWXStates::DIWX_STATE_WAITING_FOR_START_POSITION,
+        FindNextStopPositionMatch(searchFromPosition, _bitplaneRegisters->DiwXStop),
+        _scheduler->GetLinesInFrame());
   }
 }
 
@@ -143,46 +152,41 @@ void DIWXStateMachine::ScheduleEvent() const
   if (diwxEvent.IsEnabled())
   {
     // Might be responding to a change originating from outside the handler
-    scheduler.RemoveEvent(&diwxEvent);
+    _scheduler->RemoveEvent(&diwxEvent);
     diwxEvent.Disable();
   }
 
   if (!_nextState.OutOfBounds)
   {
     diwxEvent.cycle = _nextState.ChangeTime.ToBaseClockTimestamp();
-    scheduler.InsertEvent(&diwxEvent);
+    _scheduler->InsertEvent(&diwxEvent);
   }
 }
 
 void DIWXStateMachine::NotifyDIWChanged()
 {
-  const SHResTimestamp &currentPosition = scheduler.GetSHResTimestamp();
+  const SHResTimestamp &currentPosition = _scheduler->GetSHResTimestamp();
   FindNextStateChange(currentPosition);
   ScheduleEvent();
 
   AddLogEntry(DIWXLogReasons::DIWX_changed, currentPosition);
 }
 
-void DIWXStateMachine::HandleEvent()
-{
-  diwx_state_machine.Handle();
-}
-
 void DIWXStateMachine::Handle()
 {
   // All DIWX events are 1 shres pixel too early to simplify graphics pipeline flushes
   MakeNextStateCurrent();
-  FindNextStateChange(SHResTimestamp(scheduler.GetSHResTimestamp(), 1));
+  FindNextStateChange(SHResTimestamp(_scheduler->GetSHResTimestamp(), 1));
   ScheduleEvent();
 
-  AddLogEntry((_currentState.State == DIWXStates::DIWX_STATE_WAITING_FOR_START_POSITION) ? DIWXLogReasons::DIWX_stop_found : DIWXLogReasons::DIWX_start_found, scheduler.GetSHResTimestamp());
+  AddLogEntry((_currentState.State == DIWXStates::DIWX_STATE_WAITING_FOR_START_POSITION) ? DIWXLogReasons::DIWX_stop_found : DIWXLogReasons::DIWX_start_found, _scheduler->GetSHResTimestamp());
 }
 
 void DIWXStateMachine::InitializeNewFrame()
 {
   SHResTimestamp currentPosition(0, 0);
-  _currentState.Set(DIWXStates::DIWX_STATE_WAITING_FOR_START_POSITION, currentPosition);
-  FindNextStateChange(SHResTimestamp(currentPosition, scheduler.GetCycleFromCycle280ns(1)));
+  _currentState.Set(DIWXStates::DIWX_STATE_WAITING_FOR_START_POSITION, currentPosition, _scheduler->GetLinesInFrame());
+  FindNextStateChange(SHResTimestamp(currentPosition, _scheduler->GetCycleFromCycle280ns(1)));
   ScheduleEvent();
 
   AddLogEntry(DIWXLogReasons::DIWX_new_frame, currentPosition);
@@ -218,5 +222,10 @@ void DIWXStateMachine::Startup()
 }
 
 void DIWXStateMachine::Shutdown()
+{
+}
+
+DIWXStateMachine::DIWXStateMachine(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters)
+  : _scheduler(scheduler), _bitplaneRegisters(bitplaneRegisters)
 {
 }

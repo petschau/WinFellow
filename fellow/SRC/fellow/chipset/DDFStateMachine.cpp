@@ -5,16 +5,7 @@
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/scheduler/Scheduler.h"
 
-// External dependencies are base clock for chip bus / Agnus, chipset version, vertical blank end and DDF start/stop registers
-//
-// DDF limits are kept as a copy internally to take control of state changes
-// Limts are copied from other state whenever ChangedValue() is being called from DDF write handlers
-//
-// Assumption: DDF flips continuously independently DMA enable or number of bitplaned enabled, but is blocked during vertical blank
-
-DDFStateMachine ddf_state_machine;
-
-const STR *DDFStateMachine::DDFStateNames[2] = {"WAIT_FOR_START", "WAIT_FOR_STOP"};
+const char *DDFStateMachine::DDFStateNames[2] = {"WAIT_FOR_START", "WAIT_FOR_STOP"};
 
 bool DDFStateMachine::IsNextFetchLast(ULO cycle280ns) const
 {
@@ -30,12 +21,12 @@ void DDFStateMachine::SetState(DDFStates newState, ULO baseClockTimestamp)
 {
   if (ddfEvent.IsEnabled())
   {
-    scheduler.RemoveEvent(&ddfEvent);
+    _scheduler->RemoveEvent(&ddfEvent);
   }
 
   ddfEvent.cycle = baseClockTimestamp;
   _state = newState;
-  scheduler.InsertEvent(&ddfEvent);
+  _scheduler->InsertEvent(&ddfEvent);
 }
 
 void DDFStateMachine::EvaluateStateWaitForStart(const ChipBusTimestamp &currentTime)
@@ -57,7 +48,7 @@ void DDFStateMachine::EvaluateStateWaitForStart(const ChipBusTimestamp &currentT
       _fetchEnabled = true;
       _previousFetchLine = currentTime.GetLine();
 
-      BitplaneDMA::StartFetchProgram(currentTime);
+      _bitplaneDMA->StartFetchProgram(currentTime);
     }
   }
   else
@@ -100,7 +91,7 @@ void DDFStateMachine::EvaluateStateWaitForStop(const ChipBusTimestamp &currentTi
 
 void DDFStateMachine::ChangedValue()
 {
-  const ChipBusTimestamp &currentTime = scheduler.GetChipBusTimestamp();
+  const ChipBusTimestamp &currentTime = _scheduler->GetChipBusTimestamp();
 
   if (currentTime.GetCycle() == _lastFetchStart && _state == DDFStates::DDF_WAIT_FOR_STOP && ddfEvent.IsEnabled())
   {
@@ -111,8 +102,8 @@ void DDFStateMachine::ChangedValue()
     F_ASSERT(false);
   }
 
-  _firstFetchStart = bitplane_registers.ddfstrt;
-  _lastFetchStart = bitplane_registers.ddfstop;
+  _firstFetchStart = _bitplaneRegisters->ddfstrt;
+  _lastFetchStart = _bitplaneRegisters->ddfstop;
 
   EvaluateState(currentTime);
 }
@@ -126,20 +117,15 @@ void DDFStateMachine::EvaluateState(const ChipBusTimestamp &currentTime)
   }
 }
 
-void DDFStateMachine::HandleEvent()
-{
-  ddf_state_machine.Handler();
-}
-
 void DDFStateMachine::Handler()
 {
   ddfEvent.Disable();
-  EvaluateState(scheduler.GetChipBusTimestamp());
+  EvaluateState(_scheduler->GetChipBusTimestamp());
 }
 
 void DDFStateMachine::InitializeForNewFrame()
 {
-  SetState(DDFStates::DDF_WAIT_FOR_START, ChipBusTimestamp::ToBaseClockTimestamp(scheduler.GetVerticalBlankEnd(), _firstFetchStart));
+  SetState(DDFStates::DDF_WAIT_FOR_START, ChipBusTimestamp::ToBaseClockTimestamp(_scheduler->GetVerticalBlankEnd(), _firstFetchStart));
   _fetchEnabled = false;
   _endSeen = false;
   _previousFetchLine = 0;
@@ -183,5 +169,10 @@ void DDFStateMachine::Startup()
 }
 
 void DDFStateMachine::Shutdown()
+{
+}
+
+DDFStateMachine::DDFStateMachine(Scheduler *scheduler, BitplaneRegisters *bitplaneRegisters, BitplaneDMA *bitplaneDMA)
+  : _scheduler(scheduler), _bitplaneRegisters(bitplaneRegisters), _bitplaneDMA(bitplaneDMA)
 {
 }

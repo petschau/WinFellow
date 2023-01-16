@@ -29,37 +29,52 @@
 #include "fellow/chipset/draw_interlace_control.h"
 #include "fellow/chipset/LineExactSprites.h"
 #include "fellow/chipset/DualPlayfieldMapper.h"
+#include "fellow/chipset/draw_pixelrenderers.h"
 
-//==============================
-// HAM color modify helper table
-//==============================
+const uint8_t *PixelRenderers::GetDualTranslatePtr(const graph_line *linedescription)
+{
+  return DualPlayfieldMapper::GetMappingPtr((linedescription->bplcon2 & 0x0040) == 0);
+}
 
-uint32_t draw_HAM_modify_table[4][2];
+uint32_t PixelRenderers::Make32BitColorFrom16Bit(uint16_t color)
+{
+  return ((uint32_t)color) | ((uint32_t)color) << 16;
+}
 
-// Indexes into the HAM drawing table
-constexpr unsigned int draw_HAM_modify_table_bitindex = 0;
-constexpr unsigned int draw_HAM_modify_table_holdmask = 4;
+uint64_t PixelRenderers::Make64BitColorFrom16Bit(uint16_t color)
+{
+  return ((uint64_t)color) | ((uint64_t)color) << 16 | ((uint64_t)color) << 32 | ((uint64_t)color) << 48;
+}
 
-//=======================================================================
-// Pointers to drawing routines that handle the drawing of Amiga graphics
-// on the current host screen mode
-//=======================================================================
+uint64_t PixelRenderers::Make64BitColorFrom32Bit(uint32_t color)
+{
+  return ((uint64_t)color) | ((uint64_t)color) << 32;
+}
 
-draw_line_func draw_line_routine;
-draw_line_func draw_line_BG_routine;
-draw_line_func draw_line_BPL_manage_routine;
-draw_line_BPL_segment_func draw_line_BPL_res_routine;
-draw_line_BPL_segment_func draw_line_lores_routine;
-draw_line_BPL_segment_func draw_line_hires_routine;
-draw_line_BPL_segment_func draw_line_dual_lores_routine;
-draw_line_BPL_segment_func draw_line_dual_hires_routine;
-draw_line_BPL_segment_func draw_line_HAM_lores_routine;
+uint8_t PixelRenderers::GetDualColorIndex(const uint8_t *dualTranslatePtr, uint8_t playfield1Value, uint8_t playfield2Value)
+{
+  return *(dualTranslatePtr + ((playfield1Value << 8) + playfield2Value));
+}
 
-//=================================
-// Calulate data needed to draw HAM
-//=================================
+uint16_t PixelRenderers::GetDual16BitColor(const uint64_t *colors, const uint8_t *dualTranslatePtr, uint8_t playfield1Value, uint8_t playfield2Value)
+{
+  uint8_t colorIndex = GetDualColorIndex(dualTranslatePtr, playfield1Value, playfield2Value);
+  return (uint16_t)colors[colorIndex];
+}
 
-uint32_t drawMakeHoldMask(const unsigned int pos, const unsigned int size, const bool longdestination)
+uint32_t PixelRenderers::GetDual32BitColor(const uint64_t *colors, const uint8_t *dualTranslatePtr, uint8_t playfield1Value, uint8_t playfield2Value)
+{
+  uint8_t colorIndex = GetDualColorIndex(dualTranslatePtr, playfield1Value, playfield2Value);
+  return (uint32_t)colors[colorIndex];
+}
+
+uint64_t PixelRenderers::GetDual64BitColor(const uint64_t *colors, const uint8_t *dualTranslatePtr, uint8_t playfield1Value, uint8_t playfield2Value)
+{
+  uint8_t colorIndex = GetDualColorIndex(dualTranslatePtr, playfield1Value, playfield2Value);
+  return colors[colorIndex];
+}
+
+uint32_t PixelRenderers::MakeHoldMask(unsigned int pos, unsigned int size, bool longdestination)
 {
   uint32_t holdmask = 0;
   for (unsigned int i = pos; i < (pos + size); i++)
@@ -70,140 +85,97 @@ uint32_t drawMakeHoldMask(const unsigned int pos, const unsigned int size, const
   return longdestination ? (~holdmask) : ((~holdmask) & 0xffff) | ((~holdmask) << 16);
 }
 
-void drawHAMTableInit(const GfxDrvColorBitsInformation &colorBitsInformation)
+void PixelRenderers::HAMTableInit(const GfxDrvColorBitsInformation &colorBitsInformation)
 {
-  const bool has24Or32BitPixels = colorBitsInformation.ColorBits > 16;
+  bool has24Or32BitPixels = colorBitsInformation.ColorBits > 16;
 
   draw_HAM_modify_table[0][0] = 0;
   draw_HAM_modify_table[0][1] = 0;
   draw_HAM_modify_table[1][0] = (uint32_t)(colorBitsInformation.BluePosition + colorBitsInformation.BlueSize - 4);
-  draw_HAM_modify_table[1][1] = drawMakeHoldMask(colorBitsInformation.BluePosition, colorBitsInformation.BlueSize, has24Or32BitPixels);
+  draw_HAM_modify_table[1][1] = MakeHoldMask(colorBitsInformation.BluePosition, colorBitsInformation.BlueSize, has24Or32BitPixels);
   draw_HAM_modify_table[2][0] = (uint32_t)(colorBitsInformation.RedPosition + colorBitsInformation.RedSize - 4);
-  draw_HAM_modify_table[2][1] = drawMakeHoldMask(colorBitsInformation.RedPosition, colorBitsInformation.RedSize, has24Or32BitPixels);
+  draw_HAM_modify_table[2][1] = MakeHoldMask(colorBitsInformation.RedPosition, colorBitsInformation.RedSize, has24Or32BitPixels);
   draw_HAM_modify_table[3][0] = (uint32_t)(colorBitsInformation.GreenPosition + colorBitsInformation.GreenSize - 4);
-  draw_HAM_modify_table[3][1] = drawMakeHoldMask(colorBitsInformation.GreenPosition, colorBitsInformation.GreenSize, has24Or32BitPixels);
+  draw_HAM_modify_table[3][1] = MakeHoldMask(colorBitsInformation.GreenPosition, colorBitsInformation.GreenSize, has24Or32BitPixels);
 }
 
-const uint8_t *const drawGetDualTranslatePtr(const graph_line *const linedescription)
+uint32_t PixelRenderers::UpdateHAMPixel(uint32_t hampixel, uint8_t pixelValue)
 {
-  return DualPlayfieldMapper::GetMappingPtr((linedescription->bplcon2 & 0x0040) == 0);
+  const uint8_t *holdmask = (uint8_t *)draw_HAM_modify_table + ((pixelValue & 0x30) >> 1);
+  const uint32_t bitindex = *((const uint32_t *)(holdmask + draw_HAM_modify_table_bitindex));
+  hampixel &= *((const uint32_t *)(holdmask + draw_HAM_modify_table_holdmask));
+  return hampixel | ((pixelValue & 0xf) << (bitindex & 0xff));
 }
 
-static uint32_t drawMake32BitColorFrom16Bit(const uint16_t color)
+uint32_t PixelRenderers::MakeHAMPixel(const uint64_t *colors, uint32_t hampixel, uint8_t pixelValue)
 {
-  return ((uint32_t)color) | ((uint32_t)color) << 16;
+  return ((pixelValue & 0x30) == 0) ? (uint32_t)colors[pixelValue] : UpdateHAMPixel(hampixel, pixelValue);
 }
 
-static uint64_t drawMake64BitColorFrom16Bit(const uint16_t color)
+uint32_t PixelRenderers::ProcessNonVisibleHAMPixels(const graph_line *linedescription, int32_t pixelCount)
 {
-  return ((uint64_t)color) | ((uint64_t)color) << 16 | ((uint64_t)color) << 32 | ((uint64_t)color) << 48;
-}
-
-uint64_t drawMake64BitColorFrom32Bit(const uint32_t color)
-{
-  return ((uint64_t)color) | ((uint64_t)color) << 32;
-}
-
-static uint8_t drawGetDualColorIndex(const uint8_t *const dual_translate_ptr, const uint8_t playfield1_value, const uint8_t playfield2_value)
-{
-  return *(dual_translate_ptr + ((playfield1_value << 8) + playfield2_value));
-}
-
-static uint16_t drawGetDual16BitColor(const uint64_t *const colors, const uint8_t *const dual_translate_ptr, const uint8_t playfield1_value, const uint8_t playfield2_value)
-{
-  const uint8_t color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
-  return (uint16_t)colors[color_index];
-}
-
-static uint32_t drawGetDual32BitColor(const uint64_t *const colors, const uint8_t *const dual_translate_ptr, const uint8_t playfield1_value, const uint8_t playfield2_value)
-{
-  const uint8_t color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
-  return (uint32_t)colors[color_index];
-}
-
-static uint64_t drawGetDual64BitColor(const uint64_t *const colors, const uint8_t *const dual_translate_ptr, const uint8_t playfield1_value, const uint8_t playfield2_value)
-{
-  const uint8_t color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
-  return colors[color_index];
-}
-
-static uint32_t drawUpdateHAMPixel(uint32_t hampixel, const uint8_t pixel_value)
-{
-  const uint8_t *const holdmask = ((uint8_t *)draw_HAM_modify_table + ((pixel_value & 0x30) >> 1));
-  const uint32_t bitindex = *((uint32_t *)(holdmask + draw_HAM_modify_table_bitindex));
-  hampixel &= *((uint32_t *)(holdmask + draw_HAM_modify_table_holdmask));
-  return hampixel | ((pixel_value & 0xf) << (bitindex & 0xff));
-}
-
-static uint32_t drawMakeHAMPixel(const uint64_t *const colors, const uint32_t hampixel, const uint8_t pixel_value)
-{
-  return ((pixel_value & 0x30) == 0) ? (uint32_t)colors[pixel_value] : drawUpdateHAMPixel(hampixel, pixel_value);
-}
-
-static uint32_t drawProcessNonVisibleHAMPixels(const graph_line *const linedescription, int32_t pixel_count)
-{
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DDF_start;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DDF_start;
   uint32_t hampixel = 0;
-  while (pixel_count-- > 0)
+  while (pixelCount-- > 0)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
   }
   return hampixel;
 }
 
-uint32_t GetFirstHamPixelFromInitialInvisibleHAMPixels(const graph_line *const linedescription)
+uint32_t PixelRenderers::GetFirstHamPixelFromInitialInvisibleHAMPixels(const graph_line *linedescription)
 {
-  const int32_t non_visible_pixel_count = (int32_t)(linedescription->DIW_first_draw - linedescription->DDF_start);
-  if (non_visible_pixel_count > 0)
+  const int32_t nonVisiblePixelCount = (int32_t)(linedescription->DIW_first_draw - linedescription->DDF_start);
+  if (nonVisiblePixelCount > 0)
   {
-    return drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
+    return ProcessNonVisibleHAMPixels(linedescription, nonVisiblePixelCount);
   }
 
   return 0;
 }
 
-static void drawSetPixel1x1_16Bit(uint16_t *const framebuffer, const uint16_t pixel_color)
+void PixelRenderers::SetPixel1x1_16Bit(uint16_t *framebuffer, uint16_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
+  framebuffer[0] = pixelColor;
 }
 
-static void drawSetPixel1x2_16Bit(uint16_t *const framebuffer, const ptrdiff_t nextlineoffset, const uint16_t pixel_color)
+void PixelRenderers::SetPixel1x2_16Bit(uint16_t *framebuffer, ptrdiff_t nextlineoffset, uint16_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset] = pixelColor;
 }
 
-static void drawSetPixel2x1_16Bit(uint32_t *const framebuffer, const uint32_t pixel_color)
+void PixelRenderers::SetPixel2x1_16Bit(uint32_t *framebuffer, uint32_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
+  framebuffer[0] = pixelColor;
 }
 
-static void drawSetPixel2x2_16Bit(uint32_t *const framebuffer, const ptrdiff_t nextlineoffset, const uint32_t pixel_color)
+void PixelRenderers::SetPixel2x2_16Bit(uint32_t *framebuffer, ptrdiff_t nextlineoffset, uint32_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset] = pixelColor;
 }
 
-static void drawSetPixel2x4_16Bit(uint32_t *const framebuffer, const ptrdiff_t nextlineoffset1, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3, const uint32_t pixel_color)
+void PixelRenderers::SetPixel2x4_16Bit(uint32_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint32_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset1] = pixel_color;
-  framebuffer[nextlineoffset2] = pixel_color;
-  framebuffer[nextlineoffset3] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset1] = pixelColor;
+  framebuffer[nextlineoffset2] = pixelColor;
+  framebuffer[nextlineoffset3] = pixelColor;
 }
 
-static void drawSetPixel4x2_16Bit(uint64_t *const framebuffer, const ptrdiff_t nextlineoffset, const uint64_t pixel_color)
+void PixelRenderers::SetPixel4x2_16Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset, uint64_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset] = pixelColor;
 }
 
-static void drawSetPixel4x4_16Bit(uint64_t *const framebuffer, const ptrdiff_t nextlineoffset1, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3, const uint64_t pixel_color)
+void PixelRenderers::SetPixel4x4_16Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint64_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset1] = pixel_color;
-  framebuffer[nextlineoffset2] = pixel_color;
-  framebuffer[nextlineoffset3] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset1] = pixelColor;
+  framebuffer[nextlineoffset2] = pixelColor;
+  framebuffer[nextlineoffset3] = pixelColor;
 }
 
 //==========================================================
@@ -214,371 +186,371 @@ static void drawSetPixel4x4_16Bit(uint64_t *const framebuffer, const ptrdiff_t n
 // pixel format: 15/16 bit RGB
 //==========================================================
 
-static uint8_t *drawLineNormal1x1_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal1x1_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint16_t *framebuffer = (uint16_t *)framebufferLinePtr;
-  const uint16_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint16_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint16_t pixel_color = (uint16_t)linedescription->colors[*source_ptr++];
-    drawSetPixel1x1_16Bit(framebuffer++, pixel_color);
+    uint16_t pixelColor = (uint16_t)linedescription->colors[*sourcePtr++];
+    SetPixel1x1_16Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* general function for drawing one line using normal pixels                    */
-/* single pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* pixel format: 15/16 bit RGB                                                  */
-/*==============================================================================*/
+//==========================================================
+// general function for drawing one line using normal pixels
+// single pixels
+// double lines
+//
+// pixel format: 15/16 bit RGB
+//==========================================================
 
-static uint8_t *drawLineNormal1x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal1x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint16_t *framebuffer = (uint16_t *)framebufferLinePtr;
-  const uint16_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 2;
+  const uint16_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 2;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint16_t pixel_color = (uint16_t)linedescription->colors[*source_ptr++];
-    drawSetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint16_t pixelColor = (uint16_t)linedescription->colors[*sourcePtr++];
+    SetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* general function for drawing one line using normal pixels                    */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* pixel format: 15/16 bit RGB                                                  */
-/*==============================================================================*/
+//==========================================================
+// general function for drawing one line using normal pixels
+// double pixels
+// single lines
+//
+// pixel format: 15/16 bit RGB
+//==========================================================
 
-static uint8_t *drawLineNormal2x1_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal2x1_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel2x1_16Bit(framebuffer++, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel2x1_16Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* general function for drawing one line using normal pixels                    */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* pixel format: 15/16 bit RGB                                                  */
-/*==============================================================================*/
+//==========================================================
+// general function for drawing one line using normal pixels
+// double pixels
+// double lines
+//
+// pixel format: 15/16 bit RGB
+//==========================================================
 
-static uint8_t *drawLineNormal2x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal2x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel2x2_16Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* general function for drawing one line using normal pixels                    */
-/* double pixels                                                                */
-/* quad lines                                                                   */
-/*                                                                              */
-/* pixel format: 15/16 bit RGB                                                  */
-/*==============================================================================*/
+//==========================================================
+// general function for drawing one line using normal pixels
+// double pixels
+// quad lines
+//
+// pixel format: 15/16 bit RGB
+//==========================================================
 
-static uint8_t *drawLineNormal2x4_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal2x4_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel2x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel2x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* general function for drawing one line using normal pixels                    */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* pixel format: 15/16 bit RGB                                                  */
-/*==============================================================================*/
+//==========================================================
+// general function for drawing one line using normal pixels
+// quad pixels
+// double lines
+//
+// pixel format: 15/16 bit RGB
+//==========================================================
 
-static uint8_t *drawLineNormal4x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal4x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = linedescription->colors[*source_ptr++];
-    drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint64_t pixelColor = linedescription->colors[*sourcePtr++];
+    SetPixel4x2_16Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* general function for drawing one line using normal pixels                    */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* pixel format: 15/16 bit RGB                                                  */
-/*==============================================================================*/
+//==========================================================
+// general function for drawing one line using normal pixels
+// quad pixels
+// quad lines
+//
+// pixel format: 15/16 bit RGB
+//==========================================================
 
-static uint8_t *drawLineNormal4x4_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal4x4_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = linedescription->colors[*source_ptr++];
-    drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint64_t pixelColor = linedescription->colors[*sourcePtr++];
+    SetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* single pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// single pixels
+// single lines
+//
+// Pixel format: 15/16 bit RGB
+//====================================
 
-static uint8_t *drawLineDual1x1_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual1x1_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint16_t *framebuffer = (uint16_t *)framebufferLinePtr;
-  const uint16_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  const uint16_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint16_t pixel_color = drawGetDual16BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel1x1_16Bit(framebuffer++, pixel_color);
+    const uint16_t pixelColor = GetDual16BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel1x1_16Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* single pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// single pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//====================================
 
-static uint8_t *drawLineDual1x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual1x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint16_t *framebuffer = (uint16_t *)framebufferLinePtr;
-  const uint16_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 2;
+  const uint16_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 2;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint16_t pixel_color = drawGetDual16BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
+    const uint16_t pixelColor = GetDual16BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// double pixels
+// single lines
+//
+// Pixel format: 15/16 bit RGB
+//====================================
 
-static uint8_t *drawLineDual2x1_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual2x1_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x1_16Bit(framebuffer++, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x1_16Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// double pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//====================================
 
-static uint8_t *drawLineDual2x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual2x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x2_16Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// double pixels
+// quad lines
+//
+// Pixel format: 15/16 bit RGB
+//====================================
 
-static uint8_t *drawLineDual2x4_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual2x4_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// double pixels
+// quad lines
+//
+// Pixel format: 15/16 bit RGB
+//====================================
 
-static uint8_t *drawLineDual4x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual4x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = drawGetDual64BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint64_t pixelColor = GetDual64BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel4x2_16Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// quad pixels
+// quad lines
+//
+// Pixel format: 15/16 bit RGB
+//====================================
 
-static uint8_t *drawLineDual4x4_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual4x4_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = drawGetDual64BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint64_t pixelColor = GetDual64BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//============================
+// Draw one line of HAM data
+// double pixels
+// single lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-static uint8_t *drawLineHAM2x1_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM2x1_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel2x1_16Bit(framebuffer++, drawMake32BitColorFrom16Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel2x1_16Bit(framebuffer++, Make32BitColorFrom16Bit(hampixel));
   }
 
   line_exact_sprites->MergeHAM2x1x16((uint32_t *)framebufferLinePtr, linedescription);
@@ -586,26 +558,26 @@ static uint8_t *drawLineHAM2x1_16Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//============================
+// Draw one line of HAM data
+// double pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-static uint8_t *drawLineHAM2x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM2x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, drawMake32BitColorFrom16Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel2x2_16Bit(framebuffer++, nextlineoffset1, Make32BitColorFrom16Bit(hampixel));
   }
 
   line_exact_sprites->MergeHAM2x2x16((uint32_t *)framebufferLinePtr, linedescription, nextlineoffset1);
@@ -613,26 +585,26 @@ static uint8_t *drawLineHAM2x2_16Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//============================
+// Draw one line of HAM data
+// quad pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-static uint8_t *drawLineHAM4x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM4x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, drawMake64BitColorFrom16Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel4x2_16Bit(framebuffer++, nextlineoffset1, Make64BitColorFrom16Bit(hampixel));
   }
 
   line_exact_sprites->MergeHAM4x2x16((uint64_t *)framebufferLinePtr, linedescription, nextlineoffset1);
@@ -640,28 +612,28 @@ static uint8_t *drawLineHAM4x2_16Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     15/16 bit RGB                                              */
-/*==============================================================================*/
+//============================
+// Draw one line of HAM data
+// quad pixels
+// quad lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-static uint8_t *drawLineHAM4x4_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM4x4_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, drawMake64BitColorFrom16Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, Make64BitColorFrom16Bit(hampixel));
   }
 
   line_exact_sprites->MergeHAM4x4x16((uint64_t *)framebufferLinePtr, linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
@@ -669,656 +641,656 @@ static uint8_t *drawLineHAM4x4_16Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// double pixels
+// single lines
+//
+// Pixel format: 15/16 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG2x1_16Bit(const uint32_t pixelcount, const uint32_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG2x1_16Bit(uint32_t pixelcount, uint32_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + pixelcount;
+  const uint32_t *framebufferEnd = framebuffer + pixelcount;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel2x1_16Bit(framebuffer++, bgcolor);
+    SetPixel2x1_16Bit(framebuffer++, bgcolor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// double pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG2x2_16Bit(const uint32_t pixelcount, const uint32_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG2x2_16Bit(uint32_t pixelcount, uint32_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + pixelcount;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  const uint32_t *framebufferEnd = framebuffer + pixelcount;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, bgcolor);
+    SetPixel2x2_16Bit(framebuffer++, nextlineoffset1, bgcolor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// quad pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG4x2_16Bit(const uint32_t pixelcount, const uint64_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG4x2_16Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + pixelcount;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + pixelcount;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, bgcolor);
+    SetPixel4x2_16Bit(framebuffer++, nextlineoffset1, bgcolor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// quad pixels
+// quad lines
+//
+// Pixel format: 15/16 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG4x4_16Bit(const uint32_t pixelcount, const uint64_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG4x4_16Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + pixelcount;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + pixelcount;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, bgcolor);
+    SetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, bgcolor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one bitplane line
+// double pixels
+// single lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBPL2x1_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL2x1_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG2x1_16Bit(linedescription->BG_pad_front, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG2x1_16Bit(linedescription->BG_pad_front, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  // TODO: This must change probably unless we use std::function with lambdas linked to this instance.... ?
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG2x1_16Bit(linedescription->BG_pad_back, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x1_16Bit(linedescription->BG_pad_back, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one bitplane line
+// double pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBPL2x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL2x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG2x2_16Bit(linedescription->BG_pad_front, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG2x2_16Bit(linedescription->BG_pad_front, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG2x2_16Bit(linedescription->BG_pad_back, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x2_16Bit(linedescription->BG_pad_back, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one bitplane line
+// quad pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBPL4x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL4x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG4x2_16Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG4x2_16Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG4x2_16Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x2_16Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one bitplane line
+// quad pixels
+// quad lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBPL4x4_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL4x4_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG4x4_16Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG4x4_16Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG4x4_16Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x4_16Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one background line
+// double pixels
+// single lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBG2x1_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG2x1_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG2x1_16Bit(linedescription->MaxClipWidth / 4, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x1_16Bit(linedescription->MaxClipWidth / 4, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one background line
+// double pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBG2x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG2x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG2x2_16Bit(linedescription->MaxClipWidth / 4, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x2_16Bit(linedescription->MaxClipWidth / 4, (uint32_t)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one background line
+// quad pixels
+// double lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBG4x2_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG4x2_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG4x2_16Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x2_16Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    16 bit RGB                                                  */
-/*==============================================================================*/
+//============================
+// Draw one background line
+// quad pixels
+// quad lines
+//
+// Pixel format: 15/16 bit RGB
+//============================
 
-void drawLineBG4x4_16Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG4x4_16Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG4x4_16Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x4_16Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/* 24 Bit */
+// 24 Bit
 
-static void drawSetPixel1x1_24Bit(uint8_t *framebuffer, const uint32_t pixel_color)
+void PixelRenderers::SetPixel1x1_24Bit(uint8_t *framebuffer, uint32_t pixelColor)
 {
-  *((uint32_t *)framebuffer) = pixel_color;
+  *((uint32_t *)framebuffer) = pixelColor;
 }
 
-static void drawSetPixel1x2_24Bit(uint8_t *framebuffer, const ptrdiff_t nextlineoffset, const uint32_t pixel_color)
+void PixelRenderers::SetPixel1x2_24Bit(uint8_t *framebuffer, ptrdiff_t nextlineoffset, uint32_t pixelColor)
 {
-  *((uint32_t *)framebuffer) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset)) = pixel_color;
+  *((uint32_t *)framebuffer) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset)) = pixelColor;
 }
 
-static void drawSetPixel2x1_24Bit(uint8_t *framebuffer, const uint32_t pixel_color)
+void PixelRenderers::SetPixel2x1_24Bit(uint8_t *framebuffer, uint32_t pixelColor)
 {
-  *((uint32_t *)framebuffer) = pixel_color;
-  *((uint32_t *)(framebuffer + 3)) = pixel_color;
+  *((uint32_t *)framebuffer) = pixelColor;
+  *((uint32_t *)(framebuffer + 3)) = pixelColor;
 }
 
-static void drawSetPixel2x2_24Bit(uint8_t *framebuffer, const ptrdiff_t nextlineoffset, const uint32_t pixel_color)
+void PixelRenderers::SetPixel2x2_24Bit(uint8_t *framebuffer, ptrdiff_t nextlineoffset, uint32_t pixelColor)
 {
-  *((uint32_t *)framebuffer) = pixel_color;
-  *((uint32_t *)(framebuffer + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset + 3)) = pixel_color;
+  *((uint32_t *)framebuffer) = pixelColor;
+  *((uint32_t *)(framebuffer + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset + 3)) = pixelColor;
 }
 
-static void drawSetPixel2x4_24Bit(uint8_t *framebuffer, const ptrdiff_t nextlineoffset1, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3, const uint32_t pixel_color)
+void PixelRenderers::SetPixel2x4_24Bit(uint8_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint32_t pixelColor)
 {
-  *((uint32_t *)framebuffer) = pixel_color;
-  *((uint32_t *)(framebuffer + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset1)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset1 + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset2)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset2 + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset3 + 3)) = pixel_color;
+  *((uint32_t *)framebuffer) = pixelColor;
+  *((uint32_t *)(framebuffer + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset1)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset1 + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset2)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset2 + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset3 + 3)) = pixelColor;
 }
 
-static void drawSetPixel4x2_24Bit(uint8_t *framebuffer, const ptrdiff_t nextlineoffset, const uint32_t pixel_color)
+void PixelRenderers::SetPixel4x2_24Bit(uint8_t *framebuffer, ptrdiff_t nextlineoffset, uint32_t pixelColor)
 {
-  *((uint32_t *)framebuffer) = pixel_color;
-  *((uint32_t *)(framebuffer + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + 6)) = pixel_color;
-  *((uint32_t *)(framebuffer + 9)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset + 6)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset + 9)) = pixel_color;
+  *((uint32_t *)framebuffer) = pixelColor;
+  *((uint32_t *)(framebuffer + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + 6)) = pixelColor;
+  *((uint32_t *)(framebuffer + 9)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset + 6)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset + 9)) = pixelColor;
 }
 
-static void drawSetPixel4x4_24Bit(uint8_t *framebuffer, const ptrdiff_t nextlineoffset1, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3, const uint32_t pixel_color)
+void PixelRenderers::SetPixel4x4_24Bit(uint8_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint32_t pixelColor)
 {
-  *((uint32_t *)framebuffer) = pixel_color;
-  *((uint32_t *)(framebuffer + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + 6)) = pixel_color;
-  *((uint32_t *)(framebuffer + 9)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset1)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset1 + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset1 + 6)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset1 + 9)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset2)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset2 + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset2 + 6)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset2 + 9)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset3 + 3)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset3 + 6)) = pixel_color;
-  *((uint32_t *)(framebuffer + nextlineoffset3 + 9)) = pixel_color;
+  *((uint32_t *)framebuffer) = pixelColor;
+  *((uint32_t *)(framebuffer + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + 6)) = pixelColor;
+  *((uint32_t *)(framebuffer + 9)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset1)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset1 + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset1 + 6)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset1 + 9)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset2)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset2 + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset2 + 6)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset2 + 9)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset3 + 3)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset3 + 6)) = pixelColor;
+  *((uint32_t *)(framebuffer + nextlineoffset3 + 9)) = pixelColor;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* single pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==================================
+// Draw one line using normal pixels
+// single pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//==================================
 
-static uint8_t *drawLineNormal1x1_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal1x1_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 3;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 3;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel1x1_24Bit(framebuffer, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel1x1_24Bit(framebuffer, pixelColor);
     framebuffer += 3;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* single pixels                                                                */
-/* double lines
- */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==================================
+// Draw one line using normal pixels
+// single pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//==================================
 
-static uint8_t *drawLineNormal1x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal1x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 3;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 3;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel1x2_24Bit(framebuffer, nextlineoffset, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel1x2_24Bit(framebuffer, nextlineoffset, pixelColor);
     framebuffer += 3;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==================================
+// Draw one line using normal pixels
+// double pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//==================================
 
-static uint8_t *drawLineNormal2x1_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal2x1_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel2x1_24Bit(framebuffer, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel2x1_24Bit(framebuffer, pixelColor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==================================
+// Draw one line using normal pixels
+// double pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//==================================
 
-static uint8_t *drawLineNormal2x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal2x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel2x2_24Bit(framebuffer, nextlineoffset, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel2x2_24Bit(framebuffer, nextlineoffset, pixelColor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* double pixels                                                                */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==================================
+// Draw one line using normal pixels
+// double pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//==================================
 
-static uint8_t *drawLineNormal2x4_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal2x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel2x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel2x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixelColor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==================================
+// Draw one line using normal pixels
+// quad pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//==================================
 
-static uint8_t *drawLineNormal4x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal4x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 12;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 12;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel4x2_24Bit(framebuffer, nextlineoffset, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel4x2_24Bit(framebuffer, nextlineoffset, pixelColor);
     framebuffer += 12;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==================================
+// Draw one line using normal pixels
+// quad pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//==================================
 
-static uint8_t *drawLineNormal4x4_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineNormal4x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 12;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 12;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixelColor);
     framebuffer += 12;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* single pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// single pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//====================================
 
-static uint8_t *drawLineDual1x1_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual1x1_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 3;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 3;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel1x1_24Bit(framebuffer, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel1x1_24Bit(framebuffer, pixelColor);
     framebuffer += 3;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* single pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// single pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//====================================
 
-static uint8_t *drawLineDual1x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual1x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 3;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 3;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel1x2_24Bit(framebuffer, nextlineoffset, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel1x2_24Bit(framebuffer, nextlineoffset, pixelColor);
     framebuffer += 3;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// double pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//====================================
 
-static uint8_t *drawLineDual2x1_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual2x1_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x1_24Bit(framebuffer, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x1_24Bit(framebuffer, pixelColor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// double pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//====================================
 
-static uint8_t *drawLineDual2x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual2x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x2_24Bit(framebuffer, nextlineoffset, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x2_24Bit(framebuffer, nextlineoffset, pixelColor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// double pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//====================================
 
-static uint8_t *drawLineDual2x4_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual2x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixelColor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// quad pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//====================================
 
-static uint8_t *drawLineDual4x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual4x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 12;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 12;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel4x2_24Bit(framebuffer, nextlineoffset, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel4x2_24Bit(framebuffer, nextlineoffset, pixelColor);
     framebuffer += 12;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//====================================
+// Draw one line mixing two playfields
+// quad pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//====================================
 
-static uint8_t *drawLineDual4x4_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineDual4x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 12;
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 12;
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint32_t pixelColor = GetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, pixelColor);
     framebuffer += 12;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==========================
+// Draw one line of HAM data
+// double pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//==========================
 
-static uint8_t *drawLineHAM2x1_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM2x1_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel2x1_24Bit(framebuffer, hampixel);
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel2x1_24Bit(framebuffer, hampixel);
     framebuffer += 6;
   }
 
@@ -1327,25 +1299,25 @@ static uint8_t *drawLineHAM2x1_24Bit(const graph_line *const linedescription, ui
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==========================
+// Draw one line of HAM data
+// double pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//==========================
 
-static uint8_t *drawLineHAM2x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM2x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 6;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 6;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel2x2_24Bit(framebuffer, nextlineoffset, hampixel);
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel2x2_24Bit(framebuffer, nextlineoffset, hampixel);
     framebuffer += 6;
   }
 
@@ -1354,25 +1326,25 @@ static uint8_t *drawLineHAM2x2_24Bit(const graph_line *const linedescription, ui
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==========================
+// Draw one line of HAM data
+// quad pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//==========================
 
-static uint8_t *drawLineHAM4x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM4x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 12;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 12;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel4x2_24Bit(framebuffer, nextlineoffset, hampixel);
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel4x2_24Bit(framebuffer, nextlineoffset, hampixel);
     framebuffer += 12;
   }
 
@@ -1381,27 +1353,27 @@ static uint8_t *drawLineHAM4x2_24Bit(const graph_line *const linedescription, ui
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     24 bit RGB                                                 */
-/*==============================================================================*/
+//==========================
+// Draw one line of HAM data
+// quad pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//==========================
 
-static uint8_t *drawLineHAM4x4_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineHAM4x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 12;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
+  const uint8_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 12;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, hampixel);
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, hampixel);
     framebuffer += 12;
   }
 
@@ -1410,637 +1382,637 @@ static uint8_t *drawLineHAM4x4_24Bit(const graph_line *const linedescription, ui
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// double pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG2x1_24Bit(const uint32_t pixelcount, const uint32_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG2x1_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + pixelcount * 6;
+  const uint8_t *framebufferEnd = framebuffer + pixelcount * 6;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel2x1_24Bit(framebuffer, bgcolor);
+    SetPixel2x1_24Bit(framebuffer, bgcolor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// double pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG2x2_24Bit(const uint32_t pixelcount, const uint32_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG2x2_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + pixelcount * 6;
+  const uint8_t *framebufferEnd = framebuffer + pixelcount * 6;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel2x2_24Bit(framebuffer, nextlineoffset, bgcolor);
+    SetPixel2x2_24Bit(framebuffer, nextlineoffset, bgcolor);
     framebuffer += 6;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// quad pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG4x2_24Bit(const uint32_t pixelcount, const uint32_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG4x2_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + pixelcount * 12;
+  const uint8_t *framebufferEnd = framebuffer + pixelcount * 12;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel4x2_24Bit(framebuffer, nextlineoffset, bgcolor);
+    SetPixel4x2_24Bit(framebuffer, nextlineoffset, bgcolor);
     framebuffer += 12;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=============================================
+// Draw one line segment using background color
+// quad pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//=============================================
 
-static uint8_t *drawLineSegmentBG4x4_24Bit(const uint32_t pixelcount, const uint32_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+uint8_t *PixelRenderers::DrawLineSegmentBG4x4_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint8_t *framebuffer = framebufferLinePtr;
-  const uint8_t *const framebuffer_end = framebuffer + pixelcount * 12;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
+  const uint8_t *framebufferEnd = framebuffer + pixelcount * 12;
+  ptrdiff_t nextlineoffset2 = nextlineoffset * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, bgcolor);
+    SetPixel4x4_24Bit(framebuffer, nextlineoffset, nextlineoffset2, nextlineoffset3, bgcolor);
     framebuffer += 12;
   }
 
   return framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one bitplane line
+// double pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBPL2x1_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL2x1_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG2x1_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG2x1_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG2x1_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x1_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one bitplane line
+// double pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBPL2x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL2x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG2x2_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG2x2_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG2x2_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x2_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one bitplane line
+// quad pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBPL4x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL4x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG4x2_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG4x2_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG4x2_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x2_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one bitplane line
+// quad pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBPL4x4_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBPL4x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG4x4_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG4x4_24Bit(linedescription->BG_pad_front, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG4x4_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x4_24Bit(linedescription->BG_pad_back, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one background line
+// double pixels
+// single lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBG2x1_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG2x1_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG2x1_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x1_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one background line
+// double pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBG2x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG2x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG2x2_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x2_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one background line
+// quad pixels
+// double lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBG4x2_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG4x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG4x2_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x2_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    24 bit RGB                                                  */
-/*==============================================================================*/
+//=========================
+// Draw one background line
+// quad pixels
+// quad lines
+//
+// Pixel format: 24 bit RGB
+//=========================
 
-void drawLineBG4x4_24Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void PixelRenderers::DrawLineBG4x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG4x4_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x4_24Bit(linedescription->MaxClipWidth / 4, (ULO)linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/* 32-Bit */
+// 32-Bit
 
-static void drawSetPixel1x1_32Bit(uint32_t *framebuffer, const uint32_t pixel_color)
+static void SetPixel1x1_32Bit(uint32_t *framebuffer, uint32_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
+  framebuffer[0] = pixelColor;
 }
 
-static void drawSetPixel1x2_32Bit(uint32_t *framebuffer, const ptrdiff_t nextlineoffset1, const uint32_t pixel_color)
+static void SetPixel1x2_32Bit(uint32_t *framebuffer, ptrdiff_t nextlineoffset1, uint32_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset1] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset1] = pixelColor;
 }
 
-static void drawSetPixel2x1_32Bit(uint64_t *framebuffer, const uint64_t pixel_color)
+static void SetPixel2x1_32Bit(uint64_t *framebuffer, uint64_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
+  framebuffer[0] = pixelColor;
 }
 
-static void drawSetPixel2x2_32Bit(uint64_t *framebuffer, const ptrdiff_t nextlineoffset1, const uint64_t pixel_color)
+static void SetPixel2x2_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, uint64_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset1] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset1] = pixelColor;
 }
 
-static void drawSetPixel2x4_32Bit(uint64_t *framebuffer, const ptrdiff_t nextlineoffset1, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3, const uint64_t pixel_color)
+static void SetPixel2x4_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint64_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[nextlineoffset1] = pixel_color;
-  framebuffer[nextlineoffset2] = pixel_color;
-  framebuffer[nextlineoffset3] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[nextlineoffset1] = pixelColor;
+  framebuffer[nextlineoffset2] = pixelColor;
+  framebuffer[nextlineoffset3] = pixelColor;
 }
 
-static void drawSetPixel4x2_32Bit(uint64_t *framebuffer, const ptrdiff_t nextlineoffset1, const uint64_t pixel_color)
+static void SetPixel4x2_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, uint64_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[1] = pixel_color;
-  framebuffer[nextlineoffset1] = pixel_color;
-  framebuffer[nextlineoffset1 + 1] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[1] = pixelColor;
+  framebuffer[nextlineoffset1] = pixelColor;
+  framebuffer[nextlineoffset1 + 1] = pixelColor;
 }
 
-static void drawSetPixel4x4_32Bit(uint64_t *framebuffer, const ptrdiff_t nextlineoffset1, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3, const uint64_t pixel_color)
+static void SetPixel4x4_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint64_t pixelColor)
 {
-  framebuffer[0] = pixel_color;
-  framebuffer[1] = pixel_color;
-  framebuffer[nextlineoffset1] = pixel_color;
-  framebuffer[nextlineoffset1 + 1] = pixel_color;
-  framebuffer[nextlineoffset2] = pixel_color;
-  framebuffer[nextlineoffset2 + 1] = pixel_color;
-  framebuffer[nextlineoffset3] = pixel_color;
-  framebuffer[nextlineoffset3 + 1] = pixel_color;
+  framebuffer[0] = pixelColor;
+  framebuffer[1] = pixelColor;
+  framebuffer[nextlineoffset1] = pixelColor;
+  framebuffer[nextlineoffset1 + 1] = pixelColor;
+  framebuffer[nextlineoffset2] = pixelColor;
+  framebuffer[nextlineoffset2 + 1] = pixelColor;
+  framebuffer[nextlineoffset3] = pixelColor;
+  framebuffer[nextlineoffset3 + 1] = pixelColor;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* single pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line using normal pixels
+// single pixels
+// single lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineNormal1x1_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineNormal1x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel1x1_32Bit(framebuffer++, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel1x1_32Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* single pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line using normal pixels
+// single pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineNormal1x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineNormal1x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = (uint32_t)linedescription->colors[*source_ptr++];
-    drawSetPixel1x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint32_t pixelColor = (uint32_t)linedescription->colors[*sourcePtr++];
+    SetPixel1x2_32Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line using normal pixels
+// double pixels
+// single lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineNormal2x1_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineNormal2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = linedescription->colors[*source_ptr++];
-    drawSetPixel2x1_32Bit(framebuffer++, pixel_color);
+    uint64_t pixelColor = linedescription->colors[*sourcePtr++];
+    SetPixel2x1_32Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line using normal pixels
+// double pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineNormal2x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineNormal2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = linedescription->colors[*source_ptr++];
-    drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint64_t pixelColor = linedescription->colors[*sourcePtr++];
+    SetPixel2x2_32Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* double pixels                                                                */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line using normal pixels
+// double pixels
+// quad lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineNormal2x4_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineNormal2x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = linedescription->colors[*source_ptr++];
-    drawSetPixel2x4_32Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint64_t pixelColor = linedescription->colors[*sourcePtr++];
+    SetPixel2x4_32Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line using normal pixels
+// quad pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineNormal4x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineNormal4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 2;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 2;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = linedescription->colors[*source_ptr++];
-    drawSetPixel4x2_32Bit(framebuffer, nextlineoffset1, pixel_color);
+    uint64_t pixelColor = linedescription->colors[*sourcePtr++];
+    SetPixel4x2_32Bit(framebuffer, nextlineoffset1, pixelColor);
     framebuffer += 2;
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line using normal pixels                                            */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line using normal pixels
+// quad pixels
+// quad lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineNormal4x4_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineNormal4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 2;
-  const uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 2;
+  const uint8_t *sourcePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = linedescription->colors[*source_ptr++];
-    drawSetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint64_t pixelColor = linedescription->colors[*sourcePtr++];
+    SetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
     framebuffer += 2;
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* single pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line mixing two playfields
+// single pixels
+// single lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineDual1x1_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineDual1x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel1x1_32Bit(framebuffer++, pixel_color);
+    uint32_t pixelColor = drawGetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel1x1_32Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* single pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line mixing two playfields
+// single pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineDual1x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineDual1x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t *framebuffer = (uint32_t *)framebufferLinePtr;
-  const uint32_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
+  const uint32_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 4;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint32_t pixel_color = drawGetDual32BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel1x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint32_t pixelColor = drawGetDual32BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel1x2_32Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line mixing two playfields
+// double pixels
+// single lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineDual2x1_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineDual2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = drawGetDual64BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x1_32Bit(framebuffer++, pixel_color);
+    uint64_t pixelColor = drawGetDual64BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x1_32Bit(framebuffer++, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line mixing two playfields
+// double pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineDual2x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineDual2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = drawGetDual64BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
+    uint64_t pixelColor = drawGetDual64BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x2_32Bit(framebuffer++, nextlineoffset1, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* double pixels                                                                */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line mixing two playfields
+// double pixels
+// quad lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineDual2x4_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineDual2x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = drawGetDual64BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel2x4_32Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint64_t pixelColor = drawGetDual64BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel2x4_32Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line mixing two playfields
+// quad pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineDual4x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineDual4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 2;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 2;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = drawGetDual64BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel4x2_32Bit(framebuffer, nextlineoffset1, pixel_color);
+    uint64_t pixelColor = drawGetDual64BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel4x2_32Bit(framebuffer, nextlineoffset1, pixelColor);
     framebuffer += 2;
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line mixing two playfields                                          */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line mixing two playfields
+// quad pixels
+// quad lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineDual4x4_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineDual4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 2;
-  const uint8_t *const dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  const uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 2;
+  const uint8_t *dualTranslatePtr = GetDualTranslatePtr(linedescription);
+  const uint8_t *sourceLine1Ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint8_t *sourceLine2Ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    const uint64_t pixel_color = drawGetDual64BitColor(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
-    drawSetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
+    uint64_t pixelColor = drawGetDual64BitColor(linedescription->colors, dualTranslatePtr, *sourceLine1Ptr++, *sourceLine2Ptr++);
+    SetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixelColor);
     framebuffer += 2;
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* double pixels                                                                */
-/* single lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line of HAM data
+// double pixels
+// single lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineHAM2x1_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineHAM2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel2x1_32Bit(framebuffer++, drawMake64BitColorFrom32Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel2x1_32Bit(framebuffer++, drawMake64BitColorFrom32Bit(hampixel));
   }
 
   line_exact_sprites->MergeHAM2x1x32((uint64_t *)framebufferLinePtr, linedescription);
@@ -2048,26 +2020,26 @@ static uint8_t *drawLineHAM2x1_32Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* double pixels                                                                */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line of HAM data
+// double pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineHAM2x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineHAM2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, drawMake64BitColorFrom32Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel2x2_32Bit(framebuffer++, nextlineoffset1, drawMake64BitColorFrom32Bit(hampixel));
   }
 
   line_exact_sprites->MergeHAM2x2x32((uint64_t *)framebufferLinePtr, linedescription, nextlineoffset1);
@@ -2075,26 +2047,26 @@ static uint8_t *drawLineHAM2x2_32Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* quad pixels                                                                  */
-/* double lines                                                                 */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line of HAM data
+// quad pixels
+// double lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineHAM4x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineHAM4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 2;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 2;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel4x2_32Bit(framebuffer, nextlineoffset1, drawMake64BitColorFrom32Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel4x2_32Bit(framebuffer, nextlineoffset1, drawMake64BitColorFrom32Bit(hampixel));
     framebuffer += 2;
   }
 
@@ -2103,28 +2075,28 @@ static uint8_t *drawLineHAM4x2_32Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line of HAM data                                                    */
-/* quad pixels                                                                  */
-/* quad lines                                                                   */
-/*                                                                              */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line of HAM data
+// quad pixels
+// quad lines
+//
+// Pixel format:     32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineHAM4x4_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *drawLineHAM4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint32_t hampixel = GetFirstHamPixelFromInitialInvisibleHAMPixels(linedescription);
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + linedescription->DIW_pixel_count * 2;
-  const uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + linedescription->DIW_pixel_count * 2;
+  const uint8_t *sourceLinePtr = linedescription->line1 + linedescription->DIW_first_draw;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    hampixel = drawMakeHAMPixel(linedescription->colors, hampixel, *source_line_ptr++);
-    drawSetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, drawMake64BitColorFrom32Bit(hampixel));
+    hampixel = MakeHAMPixel(linedescription->colors, hampixel, *sourceLinePtr++);
+    SetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, drawMake64BitColorFrom32Bit(hampixel));
     framebuffer += 2;
   }
 
@@ -2132,213 +2104,213 @@ static uint8_t *drawLineHAM4x4_32Bit(const graph_line *const linedescription, ui
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line segment using background color
+//
+// Display size:    2x
+// Vertical Scale:  1x (scanlines or in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineSegmentBG2x1_32Bit(const uint32_t pixelcount, const uint64_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *DrawLineSegmentBG2x1_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + pixelcount;
+  const uint64_t *framebufferEnd = framebuffer + pixelcount;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel2x1_32Bit(framebuffer++, bgcolor);
+    SetPixel2x1_32Bit(framebuffer++, bgcolor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line segment using background color
+//
+// Display size:    2x
+// Vertical Scale:  2x (solid and not in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineSegmentBG2x2_32Bit(const uint32_t pixelcount, const uint64_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *DrawLineSegmentBG2x2_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + pixelcount;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + pixelcount;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, bgcolor);
+    SetPixel2x2_32Bit(framebuffer++, nextlineoffset1, bgcolor);
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line segment using background color
+//
+// Display size:    4x
+// Vertical Scale:  2x (scanlines or in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineSegmentBG4x2_32Bit(const uint32_t pixelcount, const uint64_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *DrawLineSegmentBG4x2_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + pixelcount * 2;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  const uint64_t *framebufferEnd = framebuffer + pixelcount * 2;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel4x2_32Bit(framebuffer, nextlineoffset1, bgcolor);
+    SetPixel4x2_32Bit(framebuffer, nextlineoffset1, bgcolor);
     framebuffer += 2;
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one line segment using background color                                 */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one line segment using background color
+//
+// Display size:    4x
+// Vertical Scale:  4x (solid and not in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-static uint8_t *drawLineSegmentBG4x4_32Bit(const uint32_t pixelcount, const uint64_t bgcolor, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+static uint8_t *DrawLineSegmentBG4x4_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
   uint64_t *framebuffer = (uint64_t *)framebufferLinePtr;
-  const uint64_t *const framebuffer_end = framebuffer + pixelcount * 2;
-  const ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
-  const ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
-  const ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
+  const uint64_t *framebufferEnd = framebuffer + pixelcount * 2;
+  ptrdiff_t nextlineoffset1 = nextlineoffset / 8;
+  ptrdiff_t nextlineoffset2 = nextlineoffset1 * 2;
+  ptrdiff_t nextlineoffset3 = nextlineoffset1 * 3;
 
-  while (framebuffer != framebuffer_end)
+  while (framebuffer != framebufferEnd)
   {
-    drawSetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, bgcolor);
+    SetPixel4x4_32Bit(framebuffer, nextlineoffset1, nextlineoffset2, nextlineoffset3, bgcolor);
     framebuffer += 2;
   }
 
   return (uint8_t *)framebuffer;
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one bitplane line
+//
+// Display size:    2x
+// Vertical Scale:  1x (scanlines or in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBPL2x1_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBPL2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG2x1_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG2x1_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG2x1_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x1_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one bitplane line
+//
+// Display size:    2x
+// Vertical Scale:  2x (solid and not in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBPL2x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBPL2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG2x2_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG2x2_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG2x2_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x2_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one bitplane line
+//
+// Display size:    4x
+// Vertical Scale:  2x (scanlines or in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBPL4x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBPL4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG4x2_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG4x2_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG4x2_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x2_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one bitplane line                                                       */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one bitplane line
+//
+// Display size:    4x
+// Vertical Scale:  4x (solid and not in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBPL4x4_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBPL4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  framebufferLinePtr = drawLineSegmentBG4x4_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  framebufferLinePtr = DrawLineSegmentBG4x4_32Bit(linedescription->BG_pad_front, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
   framebufferLinePtr = linedescription->draw_line_BPL_res_routine(linedescription, framebufferLinePtr, nextlineoffset);
-  drawLineSegmentBG4x4_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x4_32Bit(linedescription->BG_pad_back, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  1x (scanlines or in interlace)                              */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one background line
+//
+// Display size:    2x
+// Vertical Scale:  1x (scanlines or in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBG2x1_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBG2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG2x1_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x1_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    2x                                                          */
-/* Vertical Scale:  2x (solid and not in interlace)                             */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one background line
+//
+// Display size:    2x
+// Vertical Scale:  2x (solid and not in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBG2x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBG2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG2x2_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG2x2_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  2x (scanlines or in interlace)                              */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one background line
+//
+// Display size:    4x
+// Vertical Scale:  2x (scanlines or in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBG4x2_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBG4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG4x2_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x2_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*==============================================================================*/
-/* Draw one background line                                                     */
-/*                                                                              */
-/* Display size:    4x                                                          */
-/* Vertical Scale:  4x (solid and not in interlace)                             */
-/* Pixel format:    32 bit RGB                                                  */
-/*==============================================================================*/
+//==============================================================================
+// Draw one background line
+//
+// Display size:    4x
+// Vertical Scale:  4x (solid and not in interlace)
+// Pixel format:    32 bit RGB
+//==============================================================================
 
-void drawLineBG4x4_32Bit(const graph_line *const linedescription, uint8_t *framebufferLinePtr, const ptrdiff_t nextlineoffset)
+void drawLineBG4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset)
 {
-  drawLineSegmentBG4x4_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
+  DrawLineSegmentBG4x4_32Bit(linedescription->MaxClipWidth / 4, linedescription->colors[0], framebufferLinePtr, nextlineoffset);
 }
 
-/*============================================================================*/
-/* Lookup tables that holds all the drawing routines for various Amiga and    */
-/* host screen modes [color depth (3)][sizes (4)]                             */
-/*============================================================================*/
+//============================================================================
+// Lookup tables that holds all the drawing routines for various Amiga and
+// host screen modes [color depth (3)][sizes (4)]
+//============================================================================
 
 draw_line_func draw_line_BPL_manage_funcs[3][4] = {
     {drawLineBPL2x1_16Bit, drawLineBPL2x2_16Bit, drawLineBPL4x2_16Bit, drawLineBPL4x4_16Bit},
@@ -2375,7 +2347,7 @@ draw_line_BPL_segment_func draw_line_HAM_lores_funcs[3][4] = {
     {drawLineHAM2x1_24Bit, drawLineHAM2x2_24Bit, drawLineHAM4x2_24Bit, drawLineHAM4x4_24Bit},
     {drawLineHAM2x1_32Bit, drawLineHAM2x2_32Bit, drawLineHAM4x2_32Bit, drawLineHAM4x4_32Bit}};
 
-unsigned int ColorBitsToFunctionLookupIndex(const unsigned int colorBits)
+unsigned int ColorBitsToFunctionLookupIndex(unsigned int colorBits)
 {
   if (colorBits == 15 || colorBits == 16)
   {
@@ -2389,7 +2361,7 @@ unsigned int ColorBitsToFunctionLookupIndex(const unsigned int colorBits)
   return 2;
 }
 
-unsigned int ScaleFactorToFunctionLookupIndex(const ULO coreBufferScaleFactor, const bool useInterlacedRendering, const DisplayScaleStrategy displayScaleStrategy)
+unsigned int ScaleFactorToFunctionLookupIndex(ULO coreBufferScaleFactor, bool useInterlacedRendering, DisplayScaleStrategy displayScaleStrategy)
 {
   if (useInterlacedRendering)
   {
@@ -2422,10 +2394,10 @@ unsigned int ScaleFactorToFunctionLookupIndex(const ULO coreBufferScaleFactor, c
   }
 }
 
-void drawModeFunctionsInitialize(const unsigned int activeBufferColorBits, const unsigned int chipsetBufferScaleFactor, DisplayScaleStrategy displayScaleStrategy)
+void drawModeFunctionsInitialize(unsigned int activeBufferColorBits, unsigned int chipsetBufferScaleFactor, DisplayScaleStrategy displayScaleStrategy)
 {
-  const unsigned int colordepthIndex = ColorBitsToFunctionLookupIndex(activeBufferColorBits);
-  const unsigned int scaleIndex = ScaleFactorToFunctionLookupIndex(chipsetBufferScaleFactor, drawGetUseInterlacedRendering(), displayScaleStrategy);
+  unsigned int colordepthIndex = ColorBitsToFunctionLookupIndex(activeBufferColorBits);
+  unsigned int scaleIndex = ScaleFactorToFunctionLookupIndex(chipsetBufferScaleFactor, drawGetUseInterlacedRendering(), displayScaleStrategy);
 
   // Main entry points that draws the entire line (BG padding - BPL segment - BG padding)
   draw_line_BPL_manage_routine = draw_line_BPL_manage_funcs[colordepthIndex][scaleIndex];

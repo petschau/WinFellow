@@ -24,82 +24,72 @@
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/BitplaneRegisters.h"
 
-struct draw_interlace_status
+bool InterlaceStatus::GetUseInterlacedRendering()
 {
-  bool frame_is_interlaced;
-  bool frame_is_long;
-  bool enable_deinterlace;
-  bool use_interlaced_rendering;
-  DisplayScaleStrategy display_scale_strategy;
-};
-
-draw_interlace_status interlace_status;
-
-bool drawGetUseInterlacedRendering()
-{
-  return interlace_status.use_interlaced_rendering;
+  return use_interlaced_rendering;
 }
 
-bool drawGetFrameIsLong()
+bool InterlaceStatus::GetFrameIsLong()
 {
-  return interlace_status.frame_is_long;
+  return frame_is_long;
 }
 
-bool drawDecideUseInterlacedRendering()
+bool InterlaceStatus::DecideUseInterlacedRendering()
 {
-  return interlace_status.enable_deinterlace && interlace_status.frame_is_interlaced;
+  return enable_deinterlace && frame_is_interlaced;
 }
 
-bool drawGetFrameIsInterlaced()
+bool InterlaceStatus::GetFrameIsInterlaced()
 {
-  return interlace_status.frame_is_interlaced;
+  return frame_is_interlaced;
 }
 
-void drawDecideInterlaceStatusForNextFrame()
+void InterlaceStatus::DecideInterlaceStatusForNextFrame()
 {
-  bool lace_bit = ((bitplane_registers.bplcon0 & 4) == 4);
-
-  interlace_status.frame_is_interlaced = lace_bit;
-  if (interlace_status.frame_is_interlaced)
+  frame_is_interlaced = _bitplaneRegisters->IsInterlaced;
+  if (frame_is_interlaced)
   {
     // Automatic long / short frame toggeling
-    bitplane_registers.lof = bitplane_registers.lof ^ 0x8000;
+    _bitplaneRegisters->ToggleLof();
   }
 
-  interlace_status.frame_is_long = ((bitplane_registers.lof & 0x8000) == 0x8000);
-  scheduler.SetScreenLimits(interlace_status.frame_is_long);
+  frame_is_long = _bitplaneRegisters->lof;
+  _scheduler->SetScreenLimits(frame_is_long);
 
-  bool use_interlaced_rendering = drawDecideUseInterlacedRendering();
-  if (use_interlaced_rendering != interlace_status.use_interlaced_rendering)
+  bool new_use_interlaced_rendering = DecideUseInterlacedRendering();
+  if (new_use_interlaced_rendering != use_interlaced_rendering)
   {
-
-    if ((interlace_status.display_scale_strategy == DisplayScaleStrategy::Scanlines) && interlace_status.use_interlaced_rendering)
+    if ((display_scale_strategy == DisplayScaleStrategy::Scanlines) && use_interlaced_rendering)
     {
       // Clear buffers when switching back to scanlines from interlaced rendering
       // to avoid a ghost image remaining in the scanlines.
       Draw.SetClearAllBuffersFlag();
     }
 
-    interlace_status.use_interlaced_rendering = use_interlaced_rendering;
+    use_interlaced_rendering = new_use_interlaced_rendering;
     Draw.ReinitializeRendering();
   }
 }
 
-void drawInterlaceStartup()
+void InterlaceStatus::InterlaceStartup()
 {
-  interlace_status.frame_is_interlaced = false;
-  interlace_status.frame_is_long = true;
-  interlace_status.enable_deinterlace = true;
-  interlace_status.use_interlaced_rendering = false;
+  frame_is_interlaced = false;
+  frame_is_long = true;
+  enable_deinterlace = true;
+  use_interlaced_rendering = false;
 }
 
-void drawInterlaceEndOfFrame()
+void InterlaceStatus::InterlaceEndOfFrame()
 {
-  drawDecideInterlaceStatusForNextFrame();
+  DecideInterlaceStatusForNextFrame();
 }
 
-void drawInterlaceConfigure(bool deinterlace, DisplayScaleStrategy displayScaleStrategy)
+void InterlaceStatus::InterlaceConfigure(bool deinterlace, DisplayScaleStrategy displayScaleStrategy)
 {
-  interlace_status.enable_deinterlace = deinterlace;
-  interlace_status.display_scale_strategy = displayScaleStrategy;
+  enable_deinterlace = deinterlace;
+  display_scale_strategy = displayScaleStrategy;
+}
+
+InterlaceStatus::InterlaceStatus(Scheduler *scheduler, BitplaneRegisters *bitplaceRegisters) : _scheduler(scheduler), _bitplaneRegisters(bitplaceRegisters)
+{
 }

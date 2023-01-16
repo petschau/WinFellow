@@ -28,8 +28,6 @@
 #include "fellow/debug/log/DebugLogHandler.h"
 #include "fellow/scheduler/Scheduler.h"
 
-DIWYStateMachine diwy_state_machine;
-
 void DIWYState::Set(DIWYStates state, const SHResTimestamp &timestamp)
 {
   State = state;
@@ -44,7 +42,7 @@ void DIWYStateMachine::AddLogEntry(DIWYLogReasons reason, const SHResTimestamp &
 {
   if (DebugLog.Enabled)
   {
-    DebugLog.AddDIWYLogEntry(DebugLogSource::DIWY_ACTION, scheduler.GetRasterFrameCount(), timestamp, reason, _startLine, _stopLine);
+    DebugLog.AddDIWYLogEntry(DebugLogSource::DIWY_ACTION, _scheduler->GetRasterFrameCount(), timestamp, reason, _startLine, _stopLine);
   }
 }
 
@@ -85,7 +83,7 @@ void DIWYStateMachine::MakeNextStateCurrent()
 
 void DIWYStateMachine::MaybeWrapToNextLine(ULO &nextLine, ULO &nextCycle)
 {
-  const ULO cyclesInLine = scheduler.GetCyclesInLine();
+  const ULO cyclesInLine = _scheduler->GetCyclesInLine();
 
   if (nextCycle >= cyclesInLine)
   {
@@ -146,17 +144,17 @@ void DIWYStateMachine::MakeNextStateCurrentIfPositionMatch(const SHResTimestamp 
 
 bool DIWYStateMachine::IsVisible() const
 {
-  return (_currentState.State == DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE) && (scheduler.GetRasterY() >= scheduler.GetVerticalBlankEnd());
+  return (_currentState.State == DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE) && (_scheduler->GetRasterY() >= _scheduler->GetVerticalBlankEnd());
 }
 
 void DIWYStateMachine::NotifyDIWStrtChanged(ULO newStartLine)
 {
-  const SHResTimestamp &currentPosition = scheduler.GetSHResTimestamp();
+  const SHResTimestamp &currentPosition = _scheduler->GetSHResTimestamp();
   MakeNextStateCurrentIfPositionMatch(currentPosition);
 
   _startLine = newStartLine;
 
-  FindNextStateChange(SHResTimestamp(currentPosition, scheduler.GetCycleFromCycle280ns(1)));
+  FindNextStateChange(SHResTimestamp(currentPosition, _scheduler->GetCycleFromCycle280ns(1)));
   SetupEvent();
 
   AddLogEntry(DIWYLogReasons::DIWY_start_changed, currentPosition);
@@ -164,12 +162,12 @@ void DIWYStateMachine::NotifyDIWStrtChanged(ULO newStartLine)
 
 void DIWYStateMachine::NotifyDIWStopChanged(ULO stopLine)
 {
-  const SHResTimestamp &currentPosition = scheduler.GetSHResTimestamp();
+  const SHResTimestamp &currentPosition = _scheduler->GetSHResTimestamp();
   MakeNextStateCurrentIfPositionMatch(currentPosition);
 
   _stopLine = stopLine;
 
-  FindNextStateChange(SHResTimestamp(currentPosition, scheduler.GetCycleFromCycle280ns(1)));
+  FindNextStateChange(SHResTimestamp(currentPosition, _scheduler->GetCycleFromCycle280ns(1)));
   SetupEvent();
 
   AddLogEntry(DIWYLogReasons::DIWY_stop_changed, currentPosition);
@@ -178,7 +176,7 @@ void DIWYStateMachine::NotifyDIWStopChanged(ULO stopLine)
 void DIWYStateMachine::InitializeStateForStartOfFrame()
 {
   _currentState.Set(DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE, SHResTimestamp(0, 0));
-  FindNextStateChange(SHResTimestamp(0, scheduler.GetCycleFromCycle280ns(1)));
+  FindNextStateChange(SHResTimestamp(0, _scheduler->GetCycleFromCycle280ns(1)));
   SetupEvent();
 
   AddLogEntry(DIWYLogReasons::DIWY_new_frame, SHResTimestamp(0, 0));
@@ -189,14 +187,14 @@ void DIWYStateMachine::SetupEvent() const
   if (diwyEvent.IsEnabled())
   {
     // Event may be rescheduled from outside the handler
-    scheduler.RemoveEvent(&diwyEvent);
+    _scheduler->RemoveEvent(&diwyEvent);
     diwyEvent.Disable();
   }
 
   if (_nextState.ChangeTime.Line != WaitForever)
   {
     diwyEvent.cycle = _nextState.ChangeTime.ToBaseClockTimestamp();
-    scheduler.InsertEvent(&diwyEvent);
+    _scheduler->InsertEvent(&diwyEvent);
   }
 }
 
@@ -209,13 +207,13 @@ void DIWYStateMachine::Handler()
 {
   diwyEvent.Disable();
 
-  const SHResTimestamp &currentPosition = scheduler.GetSHResTimestamp();
+  const SHResTimestamp &currentPosition = _scheduler->GetSHResTimestamp();
 
   F_ASSERT(currentPosition == _nextState.ChangeTime);
   AddLogEntry((_currentState.State == DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE) ? DIWYLogReasons::DIWY_start_found : DIWYLogReasons::DIWY_stop_found, _nextState.ChangeTime);
 
   MakeNextStateCurrent();
-  FindNextStateChange(SHResTimestamp(currentPosition, scheduler.GetCycleFromCycle280ns(1)));
+  FindNextStateChange(SHResTimestamp(currentPosition, _scheduler->GetCycleFromCycle280ns(1)));
   SetupEvent();
 }
 
@@ -260,9 +258,10 @@ void DIWYStateMachine::Shutdown()
 {
 }
 
-DIWYStateMachine::DIWYStateMachine()
-  : _currentState(DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE, SHResTimestamp(0, 0)),
-    _nextState(DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE, SHResTimestamp(0, scheduler.GetCycleFromCycle280ns(2))),
+DIWYStateMachine::DIWYStateMachine(Scheduler *scheduler)
+  : _scheduler(scheduler),
+  _currentState(DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE, SHResTimestamp(0, 0)),
+    _nextState(DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE, SHResTimestamp(0, scheduler->GetCycleFromCycle280ns(2))),
     _startLine(0),
     _stopLine(0)
 {

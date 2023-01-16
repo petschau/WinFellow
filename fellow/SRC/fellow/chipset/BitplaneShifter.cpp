@@ -184,10 +184,10 @@ void BitplaneShifter::AddData(const UWO *dat)
     _activated = true;
   }
 
-  bool isLores = BitplaneUtility::IsLores();
+  bool isLores = _bitplaneRegisters->IsLores;
   ULO baseX = (addedAtPosition.Pixel + 8) & 0xfffffff8; // In the next cylinder
-  ULO armEvenX = CalculateArmX(baseX, BitplaneUtility::GetEvenScrollMask(), isLores);
-  ULO armOddX = CalculateArmX(baseX, BitplaneUtility::GetOddScrollMask(), isLores);
+  ULO armEvenX = CalculateArmX(baseX, _bitplaneRegisters->GetEvenScrollMask(), isLores);
+  ULO armOddX = CalculateArmX(baseX, _bitplaneRegisters->GetOddScrollMask(), isLores);
 
   if (armEvenX == armOddX)
   {
@@ -338,9 +338,9 @@ void BitplaneShifter::ShiftPixelsDual(ULO pixelCount, bool isVisible)
 
 void BitplaneShifter::ShiftSubBatch(ULO pixelCount, bool isVisible)
 {
-  ULO pixelDivider = BitplaneUtility::IsLores() ? 4 : 2;
+  ULO pixelDivider = _bitplaneRegisters->IsLores ? 4 : 2;
 
-  if (BitplaneUtility::IsDualPlayfield())
+  if (_bitplaneRegisters->IsDualPlayfield)
   {
     ShiftPixelsDual(pixelCount / pixelDivider, isVisible);
   }
@@ -352,9 +352,9 @@ void BitplaneShifter::ShiftSubBatch(ULO pixelCount, bool isVisible)
 
 void BitplaneShifter::ShiftBackgroundBatch(ULO pixelCount)
 {
-  ULO pixelDivider = BitplaneUtility::IsLores() ? 4 : 2;
+  ULO pixelDivider = _bitplaneRegisters->IsLores ? 4 : 2;
 
-  if (BitplaneUtility::IsDualPlayfield())
+  if (_bitplaneRegisters->IsDualPlayfield)
   {
     Planar2ChunkyDecoder::P2CNextBackgroundPixelsDual(pixelCount / pixelDivider);
   }
@@ -389,7 +389,7 @@ void BitplaneShifter::ActivateArmedBitplaneData(ULO x)
     return;
   }
 
-  ULO enabledBitplaneCount = BitplaneUtility::GetEnabledBitplaneCount();
+  ULO enabledBitplaneCount = _bitplaneRegisters->EnabledBitplaneCount;
 
   for (ULO i = 0; i < armEntry.Count; i++)
   {
