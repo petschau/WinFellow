@@ -2,26 +2,22 @@
 
 #include "fellow/application/HostRenderConfiguration.h"
 
-void drawHAMTableInit(const GfxDrvColorBitsInformation &colorBitsInformation);
-void drawModeFunctionsInitialize(const unsigned int activeBufferColorBits, const unsigned int chipsetBufferScaleFactor, DisplayScaleStrategy displayScaleStrategy);
-void drawSetLineRoutine(draw_line_func drawLineFunction);
-
-extern draw_line_func draw_line_routine;
-extern draw_line_func draw_line_BG_routine;
-extern draw_line_func draw_line_BPL_manage_routine;
-extern draw_line_BPL_segment_func draw_line_BPL_res_routine;
-extern draw_line_BPL_segment_func draw_line_lores_routine;
-extern draw_line_BPL_segment_func draw_line_hires_routine;
-extern draw_line_BPL_segment_func draw_line_dual_hires_routine;
-extern draw_line_BPL_segment_func draw_line_dual_lores_routine;
-extern draw_line_BPL_segment_func draw_line_HAM_lores_routine;
-
 class PixelRenderers
 {
 private:
-  constexpr unsigned int draw_HAM_modify_table_bitindex = 0;
-  constexpr unsigned int draw_HAM_modify_table_holdmask = 4;
+  static constexpr unsigned int draw_HAM_modify_table_bitindex = 0;
+  static constexpr unsigned int draw_HAM_modify_table_holdmask = 4;
+
   uint32_t draw_HAM_modify_table[4][2]{};
+
+  static draw_line_func draw_line_BPL_manage_funcs[3][4];
+  static draw_line_func draw_line_BG_funcs[3][4];
+
+  static draw_line_BPL_segment_func draw_line_lores_funcs[3][4];
+  static draw_line_BPL_segment_func draw_line_hires_funcs[3][4];
+  static draw_line_BPL_segment_func draw_line_dual_lores_funcs[3][4];
+  static draw_line_BPL_segment_func draw_line_dual_hires_funcs[3][4];
+  static draw_line_BPL_segment_func draw_line_HAM_lores_funcs[3][4];
 
   //=======================================================================
   // Pointers to drawing routines that handle the drawing of Amiga graphics
@@ -142,4 +138,52 @@ private:
   void DrawLineBG2x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
   void DrawLineBG4x2_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
   void DrawLineBG4x4_24Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+
+  static void SetPixel1x1_32Bit(uint32_t *framebuffer, uint32_t pixelColor);
+  static void SetPixel1x2_32Bit(uint32_t *framebuffer, ptrdiff_t nextlineoffset1, uint32_t pixelColor);
+  static void SetPixel2x1_32Bit(uint64_t *framebuffer, uint64_t pixelColor);
+  static void SetPixel2x2_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, uint64_t pixelColor);
+  static void SetPixel2x4_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint64_t pixelColor);
+  static void SetPixel4x2_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, uint64_t pixelColor);
+  static void SetPixel4x4_32Bit(uint64_t *framebuffer, ptrdiff_t nextlineoffset1, ptrdiff_t nextlineoffset2, ptrdiff_t nextlineoffset3, uint64_t pixelColor);
+
+  static uint8_t *DrawLineNormal1x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineNormal1x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineNormal2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineNormal2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineNormal2x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineNormal4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineNormal4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+
+  static uint8_t *DrawLineDual1x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineDual1x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineDual2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineDual2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineDual2x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineDual4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineDual4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+
+  static uint8_t *DrawLineHAM2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineHAM2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineHAM4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineHAM4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+
+  static uint8_t *DrawLineSegmentBG2x1_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineSegmentBG2x2_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineSegmentBG4x2_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  static uint8_t *DrawLineSegmentBG4x4_32Bit(uint32_t pixelcount, uint64_t bgcolor, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+
+  void DrawLineBPL2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  void DrawLineBPL2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  void DrawLineBPL4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  void DrawLineBPL4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  void DrawLineBG2x1_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  void DrawLineBG2x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  void DrawLineBG4x2_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+  void DrawLineBG4x4_32Bit(const graph_line *linedescription, uint8_t *framebufferLinePtr, ptrdiff_t nextlineoffset);
+
+  unsigned int ColorBitsToFunctionLookupIndex(unsigned int colorBits);
+  unsigned int ScaleFactorToFunctionLookupIndex(ULO coreBufferScaleFactor, bool useInterlacedRendering, DisplayScaleStrategy displayScaleStrategy);
+  void ModeFunctionsInitialize(unsigned int activeBufferColorBits, unsigned int chipsetBufferScaleFactor, DisplayScaleStrategy displayScaleStrategy);
+  void SetLineRoutine(draw_line_func drawLineFunction);
 };
