@@ -285,7 +285,14 @@ BOOLE mouseDrvDInputInitialize(void)
   }
 
   /* Set cooperative level */
-  res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+#ifdef RETRO_PLATFORM
+  if(RP.GetHeadlessMode()) {
+    res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetParentWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  }
+  else {
+    res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  }
+#endif
   if (res != DI_OK)
   {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetCooperativeLevel()", res );
