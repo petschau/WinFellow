@@ -9,7 +9,7 @@
          : Software Foundation.
  Authors : os, m
  Created : 2007-08-27 13:55:49
- Updated : 2023-05-11 10:31:21
+ Updated : 2023-05-21 13:40:12
  Comment : RetroPlatform Player interprocess communication include file
  *****************************************************************************/
 
@@ -18,9 +18,9 @@
 
 #include <windows.h>
 
-#define RETROPLATFORM_API_VER       "10.2"
+#define RETROPLATFORM_API_VER       "10.3"
 #define RETROPLATFORM_API_VER_MAJOR  10
-#define RETROPLATFORM_API_VER_MINOR  2
+#define RETROPLATFORM_API_VER_MINOR  3
 
 #define RPIPC_HostWndClass   "RetroPlatformHost%s"
 #define RPIPC_GuestWndClass  "RetroPlatformGuest%d"
@@ -79,6 +79,9 @@
 #define RP_IPC_TO_HOST_PRIVATE_CANTYPECLIPB (WM_APP + 49) // introduced in RetroPlatform API 10.0
 #define RP_IPC_TO_HOST_DEVICEWRITEBYTES     (WM_APP + 50) // introduced in RetroPlatform API 10.1
 #define RP_IPC_TO_HOST_DEVICESETSIGNALS     (WM_APP + 51) // introduced in RetroPlatform API 10.1
+#define	RP_IPC_TO_HOST_PRIVATE_GUESTDLLSTARTUP (WM_APP + 52) // introduced in RetroPlatform API 10.3
+#define	RP_IPC_TO_HOST_PRIVATE_FRAMEWINDOW  (WM_APP + 53) // introduced in RetroPlatform API 10.3
+#define	RP_IPC_TO_HOST_TOPWINDOW			(WM_APP + 54) // introduced in RetroPlatform API 10.3
 
 // ****************************************************************************
 //  Host-to-Guest Messages
@@ -131,6 +134,7 @@
 #define RP_IPC_TO_GUEST_EXECUTE              (WM_APP + 248) // introduced in RetroPlatform API 10.0
 #define RP_IPC_TO_GUEST_DEVICEWRITEBYTE      (WM_APP + 249) // introduced in RetroPlatform API 10.1
 #define RP_IPC_TO_GUEST_DEVICESETSIGNALS     (WM_APP + 250) // introduced in RetroPlatform API 10.1
+#define	RP_IPC_TO_GUEST_PRIVATE_FRAMEWINDOW  (WM_APP + 251) // introduced in RetroPlatform API 10.3
 
 // ****************************************************************************
 //  Message Data Structures and Defines
