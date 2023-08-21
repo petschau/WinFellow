@@ -935,7 +935,7 @@ ULO RetroPlatform::GetDisplayScale(void)
  */
 bool RetroPlatform::GetHostVersion(ULO *lpMainVersion, ULO *lpRevision, ULO *lpBuild)
 {
-  ULO lResult = 0;
+  LRESULT lResult = 0;
 
   if(!RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &GuestInfo, (LRESULT*) &lResult))
     return false;
