@@ -1925,7 +1925,7 @@ HWND RetroPlatform::GetTopWindowHandle(void)
 
 void RetroPlatform::Startup(void)
 {
-  ULO lResult;
+  LRESULT lResult;
 
   pConfig = cfgManagerGetCurrentConfig(&cfg_manager);
 
