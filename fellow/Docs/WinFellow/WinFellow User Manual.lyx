@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.9 (2019/07/01)
+v0.5.9 (2023/08/21)
 \end_layout
 
 \begin_layout Author
@@ -355,6 +355,14 @@ Bug fixes:
 \begin_layout Itemize
 when using alt-tab to switch to different windows, the tab keypress is no
  longer passed on to the emulation session
+\end_layout
+
+\begin_layout Itemize
+mouse events via RetroPlatform are being received again
+\end_layout
+
+\begin_layout Itemize
+fixed minor heap corruption in RetroPlatform initialization code
 \end_layout
 
 \end_deeper
