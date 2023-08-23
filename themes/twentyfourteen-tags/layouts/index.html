@@ -5,7 +5,7 @@
 	<div id="primary" class="content-area">
 		<div id="content" class="site-content" role="main">
 
-			{{ range first 10 (where .Data.Pages "Section" "post") }}
+			{{ range first 10 (where .Site.RegularPages "Section" "post") }}
 				{{ partial "content.html" . }}
 			{{ end }}
 		
