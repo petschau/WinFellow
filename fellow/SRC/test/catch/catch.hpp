@@ -10417,13 +10417,17 @@ namespace Catch {
         // Register as first handler in current chain
         exceptionHandlerHandle = AddVectoredExceptionHandler(1, handleVectoredException);
         // Pass in guarantee size to be filled
-        SetThreadStackGuarantee(&guaranteeSize);
+#ifdef _DEBUG
+        SetThreadStackGuarantee(&guaranteeSize); // call removed from release builds, as not available on Windows XP and only used during testing
+#endif
     }
 
     void FatalConditionHandler::reset() {
         if (isSet) {
             RemoveVectoredExceptionHandler(exceptionHandlerHandle);
-            SetThreadStackGuarantee(&guaranteeSize);
+#ifdef _DEBUG
+            SetThreadStackGuarantee(&guaranteeSize); // call removed from release builds, as not available on Windows XP and only used during testing
+#endif
             exceptionHandlerHandle = nullptr;
             isSet = false;
         }
