@@ -13,7 +13,7 @@ Introduction
 WinFellow is a high performance Amiga Emulator primarily targeted for Windows.
 Its distinguished API and core do however allow a fairly easy port to other operating systems.
 
-WinFellow is targeted for Windows XP/Vista/7/8/10/11.
+WinFellow is targeted for Windows Vista/7/8/10/11.
 
 Obtaining these sources
 -----------------------
@@ -68,8 +68,7 @@ This directory contains a MS Visual Studio workspace for the entire Fellow sourc
 What you need to compile the sources
 ------------------------------------
 
-Microsoft Visual Studio 2022 with the Windows XP toolkit. 
-The community edition of Visual Studio can be used to compile WinFellow.
+Microsoft Visual Studio 2022; the community edition of Visual Studio is sufficient to compile WinFellow.
 
 The build process currently also requires git to be located in the search path, as well as posh-git to be installed. The execution policy must allow execution of PowerShell scripts for both 32 as well as 64 bit PowerShell processes.
 
