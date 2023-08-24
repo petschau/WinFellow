@@ -158,6 +158,12 @@ void mouseDrvDInputAcquire(void)
   {
     if (mouse_drv_lpDID != NULL)
     {
+#ifdef RETRO_PLATFORM
+      // call moved here to ensure future compatibility with fullscreen/windowed RP modes
+      if(RP.GetHeadlessMode()) {
+        res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+      }
+#endif
       if ((res = IDirectInputDevice_Acquire(mouse_drv_lpDID)) != DI_OK)
       {
         mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire():", res);
@@ -285,7 +291,11 @@ BOOLE mouseDrvDInputInitialize(void)
   }
 
   /* Set cooperative level */
-  res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+#ifdef RETRO_PLATFORM
+  if(!RP.GetHeadlessMode()) {
+    res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  }
+#endif
   if (res != DI_OK)
   {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetCooperativeLevel()", res );

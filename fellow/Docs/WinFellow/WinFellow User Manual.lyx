@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.9 (2019/07/01)
+v0.5.9 (2023/08/24)
 \end_layout
 
 \begin_layout Author
@@ -332,6 +332,19 @@ Thank you for your interest in WinFellow.
 \end_layout
 
 \begin_layout Itemize
+System requirement changes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+support for Windows XP has been removed; version 0.5.8 will be the last WinFellow
+ release to support Windows XP.
+ This enables us to take advantage of enhancements in the toolset used during
+ development and testing.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
 New features:
 \end_layout
 
@@ -355,6 +368,14 @@ Bug fixes:
 \begin_layout Itemize
 when using alt-tab to switch to different windows, the tab keypress is no
  longer passed on to the emulation session
+\end_layout
+
+\begin_layout Itemize
+mouse events via RetroPlatform are being received again
+\end_layout
+
+\begin_layout Itemize
+fixed minor heap corruption in RetroPlatform initialization code
 \end_layout
 
 \end_deeper
@@ -396,10 +417,6 @@ System Requirements
 \begin_layout Standard
 WinFellow is highly optimized for execution on low-end systems.
  It can be executed on any of the following operating systems:
-\end_layout
-
-\begin_layout Itemize
-Windows XP
 \end_layout
 
 \begin_layout Itemize

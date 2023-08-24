@@ -935,7 +935,7 @@ ULO RetroPlatform::GetDisplayScale(void)
  */
 bool RetroPlatform::GetHostVersion(ULO *lpMainVersion, ULO *lpRevision, ULO *lpBuild)
 {
-  ULO lResult = 0;
+  LRESULT lResult = 0;
 
   if(!RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &GuestInfo, (LRESULT*) &lResult))
     return false;
@@ -1905,9 +1905,27 @@ HWND RetroPlatform::GetParentWindowHandle(void)
     return NULL;
 }
 
+HWND RetroPlatform::GetTopWindowHandle(void)
+{
+  LRESULT lResult;
+  bool bResult;
+
+  if(!bInitialized)
+    return NULL;
+
+  bResult = RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_TOPWINDOW, 0, 0, NULL, 0, &GuestInfo, &lResult);
+
+  if(bResult) {
+    fellowAddLog("RetroPlatform::GetTopWindowHandle(): top window handle returned was %u.\n", lResult);
+    return (HWND)lResult;
+  } 
+  else
+    return NULL;
+}
+
 void RetroPlatform::Startup(void)
 {
-  ULO lResult;
+  LRESULT lResult;
 
   pConfig = cfgManagerGetCurrentConfig(&cfg_manager);
 

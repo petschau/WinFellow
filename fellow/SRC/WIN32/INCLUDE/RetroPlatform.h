@@ -67,6 +67,7 @@ public:
   ULONGLONG  GetEscapeKeySimulatedTargetTime(void);
   bool       GetHeadlessMode(void);
   HWND       GetParentWindowHandle(void);
+  HWND       GetTopWindowHandle(void);
   bool       GetScanlines(void);
   
   ULO        GetScreenHeightAdjusted(void);
