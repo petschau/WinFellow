@@ -10827,8 +10827,6 @@ namespace Catch {
     // memory overflow structured exception.
     FatalConditionHandler::FatalConditionHandler() {
         ULONG guaranteeSize = static_cast<ULONG>(minStackSizeForErrors);
-#ifdef _DEBUG
-        // remove this on release builds for WinXP compatibility
         if (!SetThreadStackGuarantee(&guaranteeSize)) {
             // We do not want to fully error out, because needing
             // the stack reserve should be rare enough anyway.
@@ -10836,7 +10834,6 @@ namespace Catch {
                 << "Failed to reserve piece of stack."
                 << " Stack overflows will not be reported successfully.";
         }
-#endif
     }
 
     // We do not attempt to unset the stack guarantee, because
