@@ -203,10 +203,6 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
 {
   RECT emulationRect;
 
-#ifdef RETRO_PLATFORM
-  static BOOLE bIgnoreLeftMouseButton = FALSE;
-#endif
-
 #ifdef GFXDRV_DEBUG_WINDOW_MESSAGES
   switch (message)
   {

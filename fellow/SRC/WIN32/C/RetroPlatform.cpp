@@ -1553,7 +1553,7 @@ bool RetroPlatform::SendActivated(const bool bActive, const LPARAM lParam)
   bResult = RetroPlatform::SendMessageToHost(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 
     0, lParam, NULL, 0, &GuestInfo, NULL);
 
-  fellowAddLog("RetroPlatform::SendActive(): %s.\n", bResult ? "successful" : "failed");
+  fellowAddLog("RetroPlatform::SendActivated(): %s.\n", bResult ? "successful" : "failed");
 
   return bResult;
 }
