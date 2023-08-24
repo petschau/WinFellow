@@ -295,6 +295,9 @@ BOOLE mouseDrvDInputInitialize(void)
   if(!RP.GetHeadlessMode()) {
     res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   }
+  else {
+    res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  }
 #endif
   if (res != DI_OK)
   {
