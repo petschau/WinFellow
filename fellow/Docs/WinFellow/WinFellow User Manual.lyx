@@ -337,8 +337,8 @@ System requirement changes:
 
 \begin_deeper
 \begin_layout Itemize
-support for Windows XP has been removed; version 0.5.8 will be the last WinFellow
- release to support Windows XP.
+support for Windows XP and Vista has been removed; version 0.5.8 will be the
+ last WinFellow release to support Windows XP or Windows Vista.
  This enables us to take advantage of enhancements in the toolset used during
  development and testing.
 \end_layout
@@ -1347,6 +1347,36 @@ start the emulation by clicking start emulation
 \begin_layout Standard
 That's it, you should see the emulation window booting the KickROM (switching
  from dark gray, light gray to white) and then loading from the disk.
+\end_layout
+
+\begin_layout Section
+Performance
+\end_layout
+
+\begin_layout Subsection
+Sound playback is choppy when the emulation window is in the background
+\end_layout
+
+\begin_layout Standard
+Many people like to run the emulator in the background to be able to listen
+ to music.
+ Should you encounter stuttering playback in Direct3D graphics mode, check
+ your graphics card's driver settings and ensure that there is no frame
+ limit configured for background applications.
+\end_layout
+
+\begin_layout Standard
+For nVidia GPUs: the nVidia Control Panel contains a setting called 
+\begin_inset Quotes eld
+\end_inset
+
+Background Application Max Frame Rate
+\begin_inset Quotes erd
+\end_inset
+
+, which defaults to 30 frames per second.
+ Increase the value to 50, or disable the limit to have proper background
+ audio playback.
 \end_layout
 
 \begin_layout Section

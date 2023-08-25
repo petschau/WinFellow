@@ -154,16 +154,23 @@ void mouseDrvDInputAcquire(void)
 {
   HRESULT res;
 
+#ifdef _DEBUG
+  fellowAddLog("mouseDrvDInputAcquire(mouse_drv_in_use=%d, mouse_drv_lpDID=%d, mouse_drv_unacquired=%d)\n", 
+    mouse_drv_in_use, mouse_drv_lpDID, mouse_drv_unacquired);
+#endif
+
   if (mouse_drv_in_use)
   {
     if (mouse_drv_lpDID != NULL)
     {
 #ifdef RETRO_PLATFORM
       // call moved here to ensure future compatibility with fullscreen/windowed RP modes
-      if(RP.GetHeadlessMode()) {
-        res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+      if (RP.GetHeadlessMode()) {
+        if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND)) != DI_OK)
+          mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire() - set cooperative level:", res);
       }
 #endif
+
       if ((res = IDirectInputDevice_Acquire(mouse_drv_lpDID)) != DI_OK)
       {
         mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire():", res);
@@ -295,6 +302,9 @@ BOOLE mouseDrvDInputInitialize(void)
   if(!RP.GetHeadlessMode()) {
     res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   }
+  else {
+    res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  }
 #endif
   if (res != DI_OK)
   {
@@ -387,7 +397,9 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
 {
   if (bNewFocus != mouse_drv_focus)
   {
-    fellowAddLog("mouseDrvSetFocus(%s)\n", bNewFocus ? "true" : "false");
+    fellowAddLog("mouseDrvSetFocus(bNewFocus=%s, bRequestedByRPHost=%s)\n", 
+      bNewFocus ? "true" : "false",
+      bRequestedByRPHost ? "true" : "false");
     
     mouse_drv_focus = bNewFocus;
     mouseDrvStateHasChanged(mouse_drv_active);

@@ -355,6 +355,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
 #endif
     case RP_IPC_TO_GUEST_MOUSECAPTURE:
       fellowAddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
+      mouseDrvStateHasChanged(true);
       mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
       return true;
     case RP_IPC_TO_GUEST_DEVICEACTIVITY:
@@ -1553,7 +1554,7 @@ bool RetroPlatform::SendActivated(const bool bActive, const LPARAM lParam)
   bResult = RetroPlatform::SendMessageToHost(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 
     0, lParam, NULL, 0, &GuestInfo, NULL);
 
-  fellowAddLog("RetroPlatform::SendActive(): %s.\n", bResult ? "successful" : "failed");
+  fellowAddLog("RetroPlatform::SendActivated(): %s.\n", bResult ? "successful" : "failed");
 
   return bResult;
 }
