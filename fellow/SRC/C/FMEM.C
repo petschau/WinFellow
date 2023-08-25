@@ -1547,7 +1547,7 @@ const STR *memory_kickimage_versionstrings[14] = {
   /* Returns size of decoded kickstart                                          */
   /*============================================================================*/
 
-  int memoryKickDecodeAF(STR *filename, STR *keyfile, UBY *memory_kick)
+  int memoryKickDecodeAF(STR *filename, STR *keyfile, UBY *memory_kick, const bool suppressgui)
   {
     STR *keybuffer = NULL;
     ULO keysize, filesize = 0, keypos = 0, c;
@@ -1612,7 +1612,8 @@ const STR *memory_kickimage_versionstrings[14] = {
                 // key successfully retrieved
 	      }
               else {
-                memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
+                if (!suppressgui)
+                  memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
                 return -1;
               }
             }
@@ -1623,7 +1624,8 @@ const STR *memory_kickimage_versionstrings[14] = {
       }
 
       if (!keybuffer) {
-        memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
+        if (!suppressgui)
+          memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
         return -1;
       }
     }
@@ -1685,7 +1687,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 	fclose(F);
 
 	size = memoryKickDecodeAF(filename,
-	  memory_key, memory_kick);
+	  memory_key, memory_kick, suppressgui);
 	if (size == -1)
 	{
           if(!suppressgui)
@@ -1942,7 +1944,7 @@ const STR *memory_kickimage_versionstrings[14] = {
           else
           { /* Seems to be a file we can handle */
             memory_kick_ext = (UBY *) malloc(size - 11);
-            size = memoryKickDecodeAF(memory_kickimage_ext, memory_key, memory_kick_ext);
+            size = memoryKickDecodeAF(memory_kickimage_ext, memory_key, memory_kick_ext, false);
             memory_kickimage_ext_size = size;
           }
         }
