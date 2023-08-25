@@ -388,6 +388,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       }
       else
       {
+        mouseDrvStateHasChanged(TRUE);
         mouseDrvSetFocus(TRUE, FALSE);
       }
       return 0;
