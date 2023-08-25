@@ -154,6 +154,11 @@ void mouseDrvDInputAcquire(void)
 {
   HRESULT res;
 
+#ifdef _DEBUG
+  fellowAddLog("mouseDrvDInputAcquire(mouse_drv_in_use=%d, mouse_drv_lpDID=%d, mouse_drv_unacquired=%d)\n", 
+    mouse_drv_in_use, mouse_drv_lpDID, mouse_drv_unacquired);
+#endif
+
   if (mouse_drv_in_use)
   {
     if (mouse_drv_lpDID != NULL)
