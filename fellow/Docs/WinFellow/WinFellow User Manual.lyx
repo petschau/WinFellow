@@ -337,8 +337,8 @@ System requirement changes:
 
 \begin_deeper
 \begin_layout Itemize
-support for Windows XP has been removed; version 0.5.8 will be the last WinFellow
- release to support Windows XP.
+support for Windows XP and Vista has been removed; version 0.5.8 will be the
+ last WinFellow release to support Windows XP or Windows Vista.
  This enables us to take advantage of enhancements in the toolset used during
  development and testing.
 \end_layout
@@ -1363,7 +1363,6 @@ Many people like to run the emulator in the background to be able to listen
  Should you encounter stuttering playback in Direct3D graphics mode, check
  your graphics card's driver settings and ensure that there is no frame
  limit configured for background applications.
-
 \end_layout
 
 \begin_layout Standard
