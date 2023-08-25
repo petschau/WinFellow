@@ -165,11 +165,12 @@ void mouseDrvDInputAcquire(void)
     {
 #ifdef RETRO_PLATFORM
       // call moved here to ensure future compatibility with fullscreen/windowed RP modes
-      if(RP.GetHeadlessMode()) {
+      if (RP.GetHeadlessMode()) {
         if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND)) != DI_OK)
           mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire() - set cooperative level:", res);
       }
 #endif
+
       if ((res = IDirectInputDevice_Acquire(mouse_drv_lpDID)) != DI_OK)
       {
         mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire():", res);
@@ -396,7 +397,9 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
 {
   if (bNewFocus != mouse_drv_focus)
   {
-    fellowAddLog("mouseDrvSetFocus(%s)\n", bNewFocus ? "true" : "false");
+    fellowAddLog("mouseDrvSetFocus(bNewFocus=%s, bRequestedByRPHost=%s)\n", 
+      bNewFocus ? "true" : "false",
+      bRequestedByRPHost ? "true" : "false");
     
     mouse_drv_focus = bNewFocus;
     mouseDrvStateHasChanged(mouse_drv_active);

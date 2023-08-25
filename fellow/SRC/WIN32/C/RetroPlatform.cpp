@@ -355,6 +355,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
 #endif
     case RP_IPC_TO_GUEST_MOUSECAPTURE:
       fellowAddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
+      mouseDrvStateHasChanged(true);
       mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
       return true;
     case RP_IPC_TO_GUEST_DEVICEACTIVITY:
