@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.9 (2023/08/24)
+v0.5.9 (2023/08/25)
 \end_layout
 
 \begin_layout Author
@@ -376,6 +376,11 @@ mouse events via RetroPlatform are being received again
 
 \begin_layout Itemize
 fixed minor heap corruption in RetroPlatform initialization code
+\end_layout
+
+\begin_layout Itemize
+fix a repeated error message during loading of presets when encrypted ROMs
+ are searched and no keyfile is present
 \end_layout
 
 \end_deeper
