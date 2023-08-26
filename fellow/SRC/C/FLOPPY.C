@@ -69,6 +69,8 @@
 #include "zlibwrap.h"
 #include "fileops.h"
 
+#include "CoreHost.h"
+
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps.h"
 #endif
@@ -76,6 +78,8 @@
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
 #endif
+
+using namespace CustomChipset;
 
 #define MFM_FILLB 0xaa
 #define MFM_FILLL 0xaaaaaaaa
@@ -1547,7 +1551,7 @@ BOOLE floppyDMAWriteStarted(void)
 
 BOOLE floppyDMAChannelOn(void)
 {
-  return (dmaconr & 0x0010) && (dsklen & 0x8000);
+  return _core.RegisterUtility.IsDiskDMAEnabled() && (dsklen & 0x8000);
 }
 
 BOOLE floppyHasIndex(ULO sel_drv)

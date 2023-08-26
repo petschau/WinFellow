@@ -62,8 +62,12 @@
 #include "fellow/api/Services.h"
 #include "fellow/api/VM.h"
 
+#include "CoreHost.h"
+
 using namespace fellow::api::module;
 using namespace fellow::api;
+
+Core _core = Core();
 
 BOOLE fellow_request_emulation_stop;
 

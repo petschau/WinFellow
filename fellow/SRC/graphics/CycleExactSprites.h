@@ -27,7 +27,7 @@
 
 #include "DEFS.H"
 #include "SPRITE.H"
-#include "BitplaneUtility.h"
+#include "CoreHost.h"
 
 typedef enum SpriteDMAStates_
 {

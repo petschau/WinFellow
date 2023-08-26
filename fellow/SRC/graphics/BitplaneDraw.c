@@ -29,8 +29,9 @@
 #include "draw.h"
 #include "fmem.h"
 #include "fileops.h"
-
 #include "Graphics.h"
+
+using namespace CustomChipset;
 
 extern UBY draw_dual_translate[2][256][256];
 extern ULO draw_HAM_modify_table[4][2];
@@ -58,7 +59,7 @@ void BitplaneDraw::TempLoresDual(ULO rasterY, ULO pixel_index, ULO pixel_count)
   UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
   ULO *tmpline = _tmpframe[rasterY] + pixel_index;
 
-  if (BitplaneUtility::IsPlayfield1Pri())
+  if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
   {
     draw_dual_translate_ptr += 0x10000;
   }
@@ -118,7 +119,7 @@ void BitplaneDraw::TempHiresDual(ULO rasterY, ULO pixel_index, ULO pixel_count)
   UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
   ULO *tmpline = _tmpframe[rasterY] + pixel_index;
 
-  if (BitplaneUtility::IsPlayfield1Pri())
+  if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
   {
     draw_dual_translate_ptr += 0x10000;
   }
@@ -156,9 +157,9 @@ void BitplaneDraw::DrawBatch(ULO rasterY, ULO start_cylinder)
     return;
   }
 
-  if (BitplaneUtility::IsHires())
+  if (_core.RegisterUtility.IsHiresEnabled())
   {
-    if (BitplaneUtility::IsDualPlayfield())
+    if (_core.RegisterUtility.IsDualPlayfieldEnabled())
     {
       TempHiresDual(rasterY, pixel_index, pixel_count);
     }
@@ -169,13 +170,13 @@ void BitplaneDraw::DrawBatch(ULO rasterY, ULO start_cylinder)
   }
   else
   {
-    if (BitplaneUtility::IsDualPlayfield())
+    if (_core.RegisterUtility.IsDualPlayfieldEnabled())
     {
       TempLoresDual(rasterY, pixel_index, pixel_count);
     }
     else
     {
-      if (BitplaneUtility::IsHam())
+      if (_core.RegisterUtility.IsHAMEnabled())
       {
 	TempLoresHam(rasterY, pixel_index, pixel_count);
       }

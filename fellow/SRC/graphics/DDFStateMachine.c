@@ -23,11 +23,11 @@
 /*=========================================================================*/
 
 #include "defs.h"
-
 #include "bus.h"
 #include "graph.h"
-
 #include "Graphics.h"
+
+using namespace CustomChipset;
 
 static STR *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH",
 				"WAITING_FOR_NEXT_FETCH"};
@@ -54,7 +54,7 @@ ULO DDFStateMachine::GetStopPosition(void)
 
 ULO DDFStateMachine::GetFetchSize(void)
 {
-  return (bplcon0 & 0x8000) ? 4 : 8;
+  return (_core.RegisterUtility.IsHiresEnabled()) ? 4 : 8;
 }
 
 void DDFStateMachine::SetState(DDFStates newState, ULO arriveTime)
@@ -122,7 +122,7 @@ void DDFStateMachine::DoStateWaitingForNextFetch(ULO rasterY, ULO cylinder)
 bool DDFStateMachine::CanRead(void)
 {
   return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH) 
-    && BitplaneUtility::GetEnabledBitplaneCount() > 0 
+    && _core.RegisterUtility.GetEnabledBitplaneCount() > 0 
     && GraphicsContext.DIWYStateMachine.IsVisible();
 }
 

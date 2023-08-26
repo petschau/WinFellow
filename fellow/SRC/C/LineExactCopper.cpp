@@ -5,7 +5,7 @@
 #include "chipset.h"
 #include "FMEM.H"
 #include "BLIT.H"
-
+#include "CoreHost.h"
 
 ULO LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
 
@@ -162,7 +162,7 @@ void LineExactCopper::EventHandler()
       if ((bswapRegC >= 0x80) || ((bswapRegC >= 0x40) && ((copper_registers.copcon & 0xffff) != 0x0)))
       {
         // move data to Blitter register
-        InsertEvent(cycletable[(bplcon0 >> 12) & 0xf] + bus.cycle);
+        InsertEvent(cycletable[(_core.Registers.BplCon0 >> 12) & 0xf] + bus.cycle);
         memory_iobank_write[bswapRegC >> 1]((UWO)bswapRegD, bswapRegC);
       }
     }

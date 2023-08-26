@@ -20,7 +20,6 @@
 /*=========================================================================*/
 
 #include <windows.h>
-#include "test/catch/CustomCatchMain.h"
 
 #include "gui_general.h"
 #include "defs.h"
@@ -517,48 +516,7 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   argv = winDrvCmdLineMakeArgv(cmdline, &argc);
   winDrvSetRegistryKeys(argv);
 
-  bool runUnitTests = false;
-  for (int i = 1; i < argc; i++)
-  {
-    if (strcmp(argv[i], "-ut") == 0)
-    {
-      runUnitTests = true;
-      for (int j = i; j < argc - 1; j++)
-      {
-        argv[j] = argv[j + 1];
-      }
-      argv[argc - 1] = nullptr;
-      argc--;
-      break;
-    }
-  }
-  if (runUnitTests)
-  {
-    if (AttachConsole(ATTACH_PARENT_PROCESS))
-    {
-      // Redirect unbuffered STDOUT to the console
-      HANDLE consoleHandleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-      if (consoleHandleOut != INVALID_HANDLE_VALUE)
-      {
-        freopen("CONOUT$", "w", stdout);
-        setvbuf(stdout, NULL, _IONBF, 0);
-      }
-
-      // Redirect unbuffered STDERR to the console
-      HANDLE consoleHandleError = GetStdHandle(STD_ERROR_HANDLE);
-      if (consoleHandleError != INVALID_HANDLE_VALUE)
-      {
-        freopen("CONOUT$", "w", stderr);
-        setvbuf(stderr, NULL, _IONBF, 0);
-      }
-    }
-
-    result = CatchMain(argc, argv);
-  }
-  else
-  {
-    result = main(argc, argv);
-  }
+  result = main(argc, argv);
 
   free(cmdline);
   free(argv);

@@ -23,10 +23,10 @@
 /*=========================================================================*/
 
 #include "defs.h"
-
 #include "graph.h"
-
 #include "Graphics.h"
+
+using namespace CustomChipset;
 
 extern ULO graph_deco1[256][2];
 extern ULO graph_deco2[256][2];
@@ -154,7 +154,7 @@ void Planar2ChunkyDecoder::P2CNext8PixelsDual(ULO dat1, ULO dat2, ULO dat3, ULO 
 
 void Planar2ChunkyDecoder::P2CNextPixels(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6)
 {
-  if (BitplaneUtility::IsDualPlayfield())
+  if (_core.RegisterUtility.IsDualPlayfieldEnabled())
   {
     P2CNextPixelsDual(pixelCount, dat1, dat2, dat3, dat4, dat5, dat6);
   }
@@ -166,7 +166,7 @@ void Planar2ChunkyDecoder::P2CNextPixels(ULO pixelCount, ULO dat1, ULO dat2, ULO
 
 void Planar2ChunkyDecoder::P2CNext4Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6)
 {
-  if (BitplaneUtility::IsDualPlayfield())
+  if (_core.RegisterUtility.IsDualPlayfieldEnabled())
   {
     P2CNext4PixelsDual(dat1, dat2, dat3, dat4, dat5, dat6);
   }
@@ -178,7 +178,7 @@ void Planar2ChunkyDecoder::P2CNext4Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4
 
 void Planar2ChunkyDecoder::P2CNext8Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6)
 {
-  if (BitplaneUtility::IsDualPlayfield())
+  if (_core.RegisterUtility.IsDualPlayfieldEnabled())
   {
     P2CNext8PixelsDual(dat1, dat2, dat3, dat4, dat5, dat6);
   }

@@ -26,7 +26,9 @@
 #define PLANAR2CHUNKYDECODER_H
 
 #include "DEFS.H"
-#include "BitplaneUtility.h"
+#include "CoreHost.h"
+
+using namespace CustomChipset;
 
 typedef union ByteLongArrayUnion_
 {

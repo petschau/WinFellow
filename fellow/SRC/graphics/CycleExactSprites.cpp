@@ -34,9 +34,10 @@
 #include "SpriteP2CDecoder.h"
 #include "SpriteMerger.h"
 #include "CycleExactSprites.h"
-
-#include "BitplaneUtility.h"
+#include "CoreHost.h"
 #include "Graphics.h"
+
+using namespace CustomChipset;
 
 bool CycleExactSprites::Is16Color(ULO spriteNo)
 {
@@ -97,7 +98,7 @@ void CycleExactSprites::MergeHam(ULO spriteNo, ULO source_pixel_index, ULO pixel
 
 void CycleExactSprites::Merge(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
 {
-  if (BitplaneUtility::IsLores())
+  if (_core.RegisterUtility.IsLoresEnabled())
   {
     MergeLores(spriteNo, source_pixel_index, pixel_index, pixel_count);
   }
@@ -138,7 +139,7 @@ void CycleExactSprites::OutputSprite(ULO spriteNo, ULO startCylinder, ULO cylind
         pixel_count = pixelsLeft;
       }
 
-      if (BitplaneUtility::IsHires())
+      if (_core.RegisterUtility.IsHiresEnabled())
       {
         pixel_index = pixel_index*2;  // Hires coordinates
       }
