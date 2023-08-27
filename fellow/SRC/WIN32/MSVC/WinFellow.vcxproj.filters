@@ -85,18 +85,6 @@
     <Filter Include="IPF Access API">
       <UniqueIdentifier>{8a43c7b9-d400-45fc-8ff4-a80b9c0718be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="test">
-      <UniqueIdentifier>{b998d08b-26fd-4475-bd87-eb41177f7a69}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="test\catch">
-      <UniqueIdentifier>{469076a3-14d4-4289-a1ca-6e9fad435fa0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="test\fellow">
-      <UniqueIdentifier>{8651ddaf-7754-41fd-8440-4ec9a52bb902}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="test\fellow\chipset">
-      <UniqueIdentifier>{07e02b47-0046-4ab6-a04f-eb9ba6835663}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\C\BLIT.C">
@@ -501,9 +489,6 @@
     <ClCompile Include="..\..\C\ListTree.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\fellow\chipset\BitplaneUtilityTest.cpp">
-      <Filter>test\fellow\chipset</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -809,9 +794,6 @@
     <ClInclude Include="..\..\graphics\PixelSerializer.h">
       <Filter>graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\graphics\BitplaneUtility.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\graphics\Logger.h">
       <Filter>graphics</Filter>
     </ClInclude>
@@ -956,11 +938,8 @@
     <ClInclude Include="..\..\INCLUDE\ListTree.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\test\catch\catch.hpp">
-      <Filter>test\catch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\test\catch\CustomCatchMain.h">
-      <Filter>test\catch</Filter>
+    <ClInclude Include="..\..\INCLUDE\CoreHost.h">
+      <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

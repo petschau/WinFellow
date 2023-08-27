@@ -95,11 +95,11 @@ BOOLE graph_playfield_on;
 /*===========================================================================*/
 
 ULO bpl1pt, bpl2pt, bpl3pt, bpl4pt, bpl5pt, bpl6pt;
-ULO lof, ddfstrt, ddfstop, bplcon0, bplcon1, bplcon2, bpl1mod, bpl2mod;
+ULO lof, ddfstrt, ddfstop, bplcon1, bpl1mod, bpl2mod;
 ULO evenscroll, evenhiscroll, oddscroll, oddhiscroll;
 ULO diwstrt, diwstop; 
 ULO diwxleft, diwxright, diwytop, diwybottom;
-ULO dmaconr, dmacon;
+ULO dmacon;
 
 /*===========================================================================*/
 /* Framebuffer data about each line, max triple buffering                    */
@@ -176,9 +176,9 @@ static void graphIORegistersClear(void) {
   bpl4pt = 0;
   bpl5pt = 0;
   bpl6pt = 0;
-  bplcon0 = 0;
+  _core.Registers.BplCon0 = 0;
   bplcon1 = 0;
-  bplcon2 = 0;
+  _core.Registers.BplCon2 = 0;
   ddfstrt = 0;
   ddfstop = 0;
   graph_DDF_start = 0;
@@ -195,7 +195,7 @@ static void graphIORegistersClear(void) {
   evenhiscroll = 0;
   oddscroll = 0;
   oddhiscroll = 0;
-  dmaconr = 0;
+  _core.Registers.DmaConR = 0;
   dmacon = 0;
 }
 
@@ -205,17 +205,15 @@ static void graphIORegistersClear(void) {
 
 /*===========================================================================*/
 /* DMACONR - $dff002 Read                                                    */
-/*                                                                           */
-/* return dmaconr | ((!((WOR)bltzero))<<13);                                 */
 /*===========================================================================*/
 
 UWO rdmaconr(ULO address)
 {
   if (blitterGetZeroFlag())
   {
-    return (UWO) (dmaconr | 0x00002000);
+    return (UWO) (_core.Registers.DmaConR | 0x00002000);
   }
-  return (UWO) dmaconr;
+  return (UWO)_core.Registers.DmaConR;
 }
 
 /*===========================================================================*/
@@ -431,7 +429,6 @@ void wdmacon(UWO data, ULO address)
 {
   ULO local_data;
   ULO prev_dmacon;
-  ULO i;
 
   // check SET/CLR bit is 1 or 0
   if ((data & 0x8000) != 0x0)
@@ -441,8 +438,8 @@ void wdmacon(UWO data, ULO address)
     // test if BLTPRI got turned on (blitter DMA priority)
     if ((local_data & 0x0400) != 0x0) 
     {
-      // BLTPRI bit is on now
-      if ((dmaconr & 0x0400) == 0x0)
+      // BLTPRI bit is on now, was it turned off before?
+      if (!_core.RegisterUtility.IsBlitterPriorityEnabled())
       {
 	// BLTPRI was turned off before and therefor
 	// BLTPRI got turned on, stop CPU until a blit is 
@@ -458,19 +455,19 @@ void wdmacon(UWO data, ULO address)
       }
     }
 
-    dmaconr |= local_data;
+    _core.Registers.DmaConR |= local_data;
     prev_dmacon = dmacon; // stored in edx
-    if ((dmaconr & 0x0200) == 0x0)
+    if (_core.RegisterUtility.IsMasterDMAEnabled())
     {
-      dmacon = 0;
+      dmacon = _core.Registers.DmaConR;
     }
     else
     {
-      dmacon = dmaconr;
+      dmacon = 0;
     }
 
     // enable audio channel X ?
-    for (i = 0; i < 4; i++) 
+    for (unsigned int i = 0; i < 4; i++) 
     {
       if (((dmacon & (1 << i))) != 0x0)
       {
@@ -498,16 +495,15 @@ void wdmacon(UWO data, ULO address)
   else
   {
     // SET/CLR bit is 0 (bits set to 1 will clear bits)
-    // in Norwegian this translates to 'slett' bits
-    dmaconr = (~(data & 0x07ff)) & dmaconr;
+    _core.Registers.DmaConR = (~(data & 0x07ff)) & _core.Registers.DmaConR;
     prev_dmacon = dmacon;
-    if ((dmaconr & 0x0200) == 0x0)
+    if (_core.RegisterUtility.IsMasterDMAEnabled())
     {
-      dmacon = 0;
+      dmacon = _core.Registers.DmaConR;
     }
     else
     {
-      dmacon = dmaconr;
+      dmacon = 0;
     }
 
     // if a blitter DMA is turned off in the middle of the blit action
@@ -521,7 +517,7 @@ void wdmacon(UWO data, ULO address)
     }
 
     // disable audio channel X ?
-    for (i = 0; i < 4; i++) 
+    for (unsigned int i = 0; i < 4; i++) 
     {
       if ((dmacon & (1 << i)) == 0x0)
       {
@@ -708,19 +704,13 @@ void wbpl6ptl(UWO data, ULO address)
 
 /*===========================================================================*/
 /* BPLCON0 - $dff100 Write                                                   */
-/*                                                                           */
 /*===========================================================================*/
 
 void wbplcon0(UWO data, ULO address)
 {
-  //if ((data & 0x4) != (bplcon0 & 0x4))
-  //{
-  //  fellowAddLog("Interlace toggle is %s, frame no %I64d, Y %d X %d\n", (data & 0x4) ? "on" : "off", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
-  //}
-
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    if (bplcon0 != data)
+    if (_core.Registers.BplCon0 != data)
     {
       GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
     }
@@ -728,11 +718,11 @@ void wbplcon0(UWO data, ULO address)
 
   ULO local_data;
 
-  bplcon0 = data;
+  _core.Registers.BplCon0 = data;
   local_data = (data >> 12) & 0x0f;
 
   // check if DBLPF bit is set 
-  if ((bplcon0 & 0x0400) != 0)
+  if (_core.RegisterUtility.IsDualPlayfieldEnabled())
   {
     // double playfield, select a decoding function 
     // depending on hires and playfield priority
@@ -744,7 +734,7 @@ void wbplcon0(UWO data, ULO address)
   }
 
   // check if HOMOD bit is set 
-  if ((bplcon0 & 0x0800) != 0)
+  if (_core.RegisterUtility.IsHAMEnabled())
   {
     // hold-and-modify mode
     draw_line_BPL_res_routine = draw_line_HAM_lores_routine;
@@ -752,10 +742,10 @@ void wbplcon0(UWO data, ULO address)
   else
   {
     // check if DBLPF bit is set
-    if ((bplcon0 & 0x0400) != 0)
+    if (_core.RegisterUtility.IsDualPlayfieldEnabled())
     {
       // check if HIRES is set
-      if ((bplcon0 & 0x8000) != 0)
+      if (_core.RegisterUtility.IsHiresEnabled())
       {
 	draw_line_BPL_res_routine = draw_line_dual_hires_routine;
       }
@@ -767,7 +757,7 @@ void wbplcon0(UWO data, ULO address)
     else
     {
       // check if HIRES is set
-      if ((bplcon0 & 0x8000) != 0)
+      if (_core.RegisterUtility.IsHiresEnabled())
       {
 	draw_line_BPL_res_routine = draw_line_hires_routine;
       }
@@ -851,12 +841,11 @@ void wbplcon1(UWO data, ULO address)
 
 /*===========================================================================*/
 /* BPLCON2 - $dff104 Write                                                   */
-/*                                                                           */
 /*===========================================================================*/
 
 void wbplcon2(UWO data, ULO address)
 {
-  bplcon2 = data;
+  _core.Registers.BplCon2 = data;
 }
 
 /*===========================================================================*/
@@ -1127,7 +1116,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
 
     graphSetLinePointers(&line1, &line2);
 
-    if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+    if (_core.RegisterUtility.IsHiresEnabled()) // check if hires bit is set (bit 15 of register BPLCON0)
     {
       // high resolution
       dest_odd = (ULO*) (line1 + graph_DDF_start + oddhiscroll);		
@@ -1159,7 +1148,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
 
     if (bitplanes > 1)
     {
-      if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+      if (_core.RegisterUtility.IsHiresEnabled()) // check if hires bit is set (bit 15 of register BPLCON0)
       {
 	// high resolution
 	dest_even = (ULO*) (line1 + graph_DDF_start + evenhiscroll);
@@ -1429,7 +1418,7 @@ void graphCalculateWindow(void)
 {
   ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
 
-  if ((bplcon0 & 0x8000) == 0x8000) // check if Hires bit is set (bit 15 of BPLCON0)
+  if (_core.RegisterUtility.IsHiresEnabled()) // check if Hires bit is set (bit 15 of BPLCON0)
   {
     graphCalculateWindowHires();
   } 
@@ -1632,7 +1621,7 @@ void graphPlayfieldOnOff(void)
 
 void graphDecodeNOP(void)
 {
-  switch ((bplcon0 >> 12) & 0x07) {
+  switch (_core.RegisterUtility.GetEnabledBitplaneCount()) {
     case 0:
       break;
     case 6:
@@ -1709,7 +1698,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   /* Calculate first and last visible DIW and DIW pixel count  */
   /*===========================================================*/
 
-  if ((bplcon0 & 0x8000) != 0)
+  if (_core.RegisterUtility.IsHiresEnabled())
   {
     // bit 15, HIRES is set
     local_graph_DIW_first_visible >>= 1;
@@ -1752,7 +1741,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   /* Need to remember playfield priorities to sort dual pf    */
   /*==========================================================*/
 
-  current_graph_line->bplcon2 = bplcon2;
+  current_graph_line->bplcon2 = _core.Registers.BplCon2;
 }
 
 /*-------------------------------------------------------------------------------
@@ -1808,7 +1797,7 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   /* Calculate first and last visible DIW and DIW pixel count  */
   /*===========================================================*/
 
-  if ((bplcon0 & 0x8000) != 0)
+  if (_core.RegisterUtility.IsHiresEnabled())
   {
     // bit 15, HIRES is set
     local_graph_DIW_first_visible >>= 1;
@@ -1872,11 +1861,11 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   /* Need to remember playfield priorities to sort dual pf    */
   /*==========================================================*/
 
-  if (current_graph_line->bplcon2 != bplcon2)
+  if (current_graph_line->bplcon2 != _core.Registers.BplCon2)
   {
     line_desc_changed = TRUE;
   }
-  current_graph_line->bplcon2 = bplcon2;
+  current_graph_line->bplcon2 = _core.Registers.BplCon2;
   return line_desc_changed;
 }
 
@@ -2108,7 +2097,7 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
     line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
 
     // if the line is dual playfield, compare second playfield too
-    if ((bplcon0 & 0x0400) != 0x0)
+    if (_core.RegisterUtility.IsDualPlayfieldEnabled())
     {
       line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
     }

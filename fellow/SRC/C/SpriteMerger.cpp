@@ -1,11 +1,12 @@
 #include "SpriteMerger.h"
 #include "GRAPH.H"
+#include "CoreHost.h"
 
 UBY SpriteMerger::sprite_translate[2][256][256];
 
 void SpriteMerger::MergeLores(ULO sprite_number, UBY *playfield, UBY *sprite, ULO pixel_count)
 {
-  ULO in_front = ((bplcon2 & 0x38) > (4 * sprite_number)) ? 1 : 0;
+  ULO in_front = ((_core.Registers.BplCon2 & 0x38) > (4 * sprite_number)) ? 1 : 0;
 
   for (ULO i = 0; i < pixel_count; ++i)
   {
@@ -16,7 +17,7 @@ void SpriteMerger::MergeLores(ULO sprite_number, UBY *playfield, UBY *sprite, UL
 
 void SpriteMerger::MergeHires(ULO sprite_number, UBY *playfield, UBY *sprite, ULO pixel_count)
 {
-  ULO in_front = ((bplcon2 & 0x38) >(4 * sprite_number)) ? 1 : 0;
+  ULO in_front = ((_core.Registers.BplCon2 & 0x38) >(4 * sprite_number)) ? 1 : 0;
 
   for (ULO i = 0; i < pixel_count; ++i)
   {
@@ -27,7 +28,7 @@ void SpriteMerger::MergeHires(ULO sprite_number, UBY *playfield, UBY *sprite, UL
 
 void SpriteMerger::MergeHam(ULO sprite_number, UBY *playfield, UBY *ham_sprites_playfield, UBY *sprite, ULO pixel_count)
 {
-  ULO in_front = ((bplcon2 & 0x38) >(4 * sprite_number)) ? 1 : 0;
+  ULO in_front = ((_core.Registers.BplCon2 & 0x38) >(4 * sprite_number)) ? 1 : 0;
 
   for (ULO i = 0; i < pixel_count; ++i)
   {

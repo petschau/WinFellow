@@ -1,0 +1,3 @@
+These files belong to catch2, a C++ unit test framework
+
+Origin: https://github.com/catchorg/Catch2

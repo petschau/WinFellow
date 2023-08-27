@@ -957,7 +957,7 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "BPLCON0 - %.4X BPLCON1 - %.4X BPLCON2 - %.4X BPL1MOD - %.4X BPL2MOD - %.4X",
-	    bplcon0, bplcon1, bplcon2, bpl1mod, bpl2mod);
+	    _core.Registers.BplCon0, bplcon1, _core.Registers.BplCon2, bpl1mod, bpl2mod);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "BPL1PT -%.6X BPL2PT -%.6X BPL3PT -%.6X BPL4PT -%.6X BPL5PT -%.6X",

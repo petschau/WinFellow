@@ -23,13 +23,13 @@
 /*=========================================================================*/
 
 #include "DEFS.H"
-
 #include "bus.h"
 #include "graph.h"
 #include "draw.h"
 #include "fmem.h"
-
 #include "Graphics.h"
+
+using namespace CustomChipset;
 
 extern UBY draw_dual_translate[2][256][256];
 
@@ -76,7 +76,7 @@ void PixelSerializer::Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, U
 
   _activated = true;
 
-  if (BitplaneUtility::IsLores())
+  if (_core.RegisterUtility.IsLoresEnabled())
   {
     scrollodd = 16 - 1 - oddscroll;
     scrolleven = 16 - 1 - evenscroll;
@@ -140,7 +140,7 @@ void PixelSerializer::SerializePixels(ULO pixelCount)
 
 void PixelSerializer::SerializeBatch(ULO cylinderCount)
 {
-  if (BitplaneUtility::IsLores())
+  if (_core.RegisterUtility.IsLoresEnabled())
   {
     SerializePixels(cylinderCount);
   }

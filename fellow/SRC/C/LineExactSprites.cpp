@@ -7,6 +7,7 @@
 #include "FMEM.H"
 #include "DRAW.H"
 #include "chipset.h"
+#include "CoreHost.h"
 
 spr_register_func LineExactSprites::sprxptl_functions[8] =
 {
@@ -1071,7 +1072,7 @@ void LineExactSprites::BuildItem(spr_action_list_item ** item)
   if (currentX >= 18)
   {
     // Petter has put an delay in the Copper calls of 16 cycles, we need to compensate for that
-    if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+    if (_core.RegisterUtility.IsHiresEnabled()) // check if hires bit is set (bit 15 of register BPLCON0)
     {
       // hires (x position is cycle position times four)
       (*item)->raster_x = (currentX - 16) * 4;
@@ -1084,7 +1085,7 @@ void LineExactSprites::BuildItem(spr_action_list_item ** item)
   }
   else
   {
-    if ((bplcon0 & 0x8000) == 0x8000)
+    if (_core.RegisterUtility.IsHiresEnabled())
     {
       // hires
       (*item)->raster_x = 8;
@@ -2008,10 +2009,10 @@ void LineExactSprites::MergeDualLoresPlayfield(graph_line* current_graph_line)
     if (sprite_online[sprnr] == TRUE)
     {
       // determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
-      if ((bplcon2 & 0x40) == 0x40)
+      if (_core.RegisterUtility.IsPlayfield2PriorityEnabled())
       {
         // playfield 2 is in front of playfield 1
-        if ((bplcon2 & 0x38) > sprnr * 4)
+        if ((_core.Registers.BplCon2 & 0x38) > sprnr * 4)
         {
           // current sprite is in front of playfield 2, and thus also in front of playfield 1
           MergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
@@ -2019,7 +2020,7 @@ void LineExactSprites::MergeDualLoresPlayfield(graph_line* current_graph_line)
         else
         {
           // current sprite is behind of playfield 2
-          if (((bplcon2 & 0x7) << 1) > sprnr)
+          if (((_core.Registers.BplCon2 & 0x7) << 1) > sprnr)
           {
             // current sprite is behind of playfield 2, but in front of playfield 1
             MergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
@@ -2034,14 +2035,14 @@ void LineExactSprites::MergeDualLoresPlayfield(graph_line* current_graph_line)
       else
       {
         // playfield 1 is in front of playfield 2
-        if (((bplcon2 & 0x7) << 1) > sprnr)
+        if (((_core.Registers.BplCon2 & 0x7) << 1) > sprnr)
         {
           // current sprite is in front of playfield 1, and thus also in front of playfield 2
           MergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
         }
         else
         {
-          if ((bplcon2 & 0x38) > sprnr * 4)
+          if ((_core.Registers.BplCon2 & 0x38) > sprnr * 4)
           {
             // current sprite is in front of playfield 2, but behind playfield 1 (in between)
             MergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
@@ -2294,10 +2295,10 @@ void LineExactSprites::MergeDualHiresPlayfield(graph_line* current_graph_line)
     if (sprite_online[sprnr] == TRUE)
     {
       // determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
-      if ((bplcon2 & 0x40) == 0x40)
+      if (_core.RegisterUtility.IsPlayfield2PriorityEnabled())
       {
         // playfield 2 is in front of playfield 1
-        if ((bplcon2 & 0x38) > sprnr * 4)
+        if ((_core.Registers.BplCon2 & 0x38) > sprnr * 4)
         {
           // current sprite is in front of playfield 2, and thus also in front of playfield 1
           MergeDualHiresPF2loopinfront2(current_graph_line, sprnr);
@@ -2305,7 +2306,7 @@ void LineExactSprites::MergeDualHiresPlayfield(graph_line* current_graph_line)
         else
         {
           // current sprite is behind of playfield 2
-          if (((bplcon2 & 0x7) << 1) > sprnr)
+          if (((_core.Registers.BplCon2 & 0x7) << 1) > sprnr)
           {
             // current sprite is behind of playfield 2, but in front of playfield 1
             MergeDualHiresPF1loopinfront2(current_graph_line, sprnr);
@@ -2320,14 +2321,14 @@ void LineExactSprites::MergeDualHiresPlayfield(graph_line* current_graph_line)
       else
       {
         // playfield 1 is in front of playfield 2
-        if (((bplcon2 & 0x7) << 1) > sprnr)
+        if (((_core.Registers.BplCon2 & 0x7) << 1) > sprnr)
         {
           // current sprite is in front of playfield 1, and thus also in front of playfield 2
           MergeDualHiresPF1loopinfront2(current_graph_line, sprnr);
         }
         else
         {
-          if ((bplcon2 & 0x38) > sprnr * 4)
+          if ((_core.Registers.BplCon2 & 0x38) > sprnr * 4)
           {
             // current sprite is in front of playfield 2, but behind playfield 1 (in between)
             MergeDualHiresPF2loopinfront2(current_graph_line, sprnr);
@@ -2396,18 +2397,18 @@ void LineExactSprites::Merge(graph_line* current_graph_line)
 {
   sprites_online = false;
 
-  if ((bplcon0 & 0x800) == 0x800)
+  if (_core.RegisterUtility.IsHAMEnabled())
   {
     // HAM mode bit is set
     MergeHAM(current_graph_line);
     return;
   }
 
-  if ((bplcon0 & 0x400) == 0x400)
+  if (_core.RegisterUtility.IsDualPlayfieldEnabled())
   {
     // dual playfield bit is set
 
-    if ((bplcon0 & 0x8000) == 0x8000)
+    if (_core.RegisterUtility.IsHiresEnabled())
     {
       MergeDualHiresPlayfield(current_graph_line);
     }
@@ -2418,7 +2419,7 @@ void LineExactSprites::Merge(graph_line* current_graph_line)
     return;
   }
 
-  if ((bplcon0 & 0x8000) == 0x8000)
+  if (_core.RegisterUtility.IsHiresEnabled())
   {
     MergeHires(current_graph_line);
   }

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="catch">
+      <UniqueIdentifier>{f5886400-2a69-4b5b-b076-4018bf952409}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="catch\about_catch2.txt">
+      <Filter>catch</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="catch\catch_amalgamated.cpp">
+      <Filter>catch</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="catch\catch_amalgamated.hpp">
+      <Filter>catch</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

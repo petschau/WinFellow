@@ -53,7 +53,6 @@ extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
 extern planar2chunkyroutine graph_decode_line_dual_tab[16];
 
-extern ULO dmaconr;
 extern ULO graph_color_shadow[];
 
 extern ULO diwstrt;
@@ -66,9 +65,7 @@ extern ULO bpl3pt;
 extern ULO bpl4pt;
 extern ULO bpl5pt;
 extern ULO bpl6pt;
-extern ULO bplcon0;
 extern ULO bplcon1;
-extern ULO bplcon2;
 extern ULO bpl1mod;
 extern ULO bpl2mod;
 extern ULO dmacon;

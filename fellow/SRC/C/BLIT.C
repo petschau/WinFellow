@@ -19,6 +19,9 @@
 #include "CpuIntegration.h"
 #include "chipset.h"
 #include "interrupt.h"
+#include "CoreHost.h"
+
+using namespace CustomChipset;
 
 //#define BLIT_VERIFY_MINTERMS
 //#define BLIT_OPERATION_LOG
@@ -63,7 +66,7 @@ typedef struct blitter_state_
   // dma_pending is a flag showing that a blit has been activated (a write to BLTSIZE)
   // but at the time of activation the blit DMA was turned off
   BOOLE started;
-  BOOLE dma_pending; 
+  BOOLE dma_pending;
   ULO cycle_length; // Estimate for how many cycles the started blit will take
   ULO cycle_free;   // How many of these cycles are free to use by the CPU
 
@@ -76,19 +79,19 @@ blitter_state blitter;
 /* Unit is bus cycles (3.58MHz)						      */
 /*============================================================================*/
 
-ULO blit_cyclelength[16] = 
+ULO blit_cyclelength[16] =
 {
   2, 2, 2, 3, /* How long it takes for a blit to complete */
   3, 3, 3, 4,
-  2, 2, 2, 3, 
+  2, 2, 2, 3,
   3, 3, 3, 4
 };
 
-ULO blit_cyclefree[16] = 
+ULO blit_cyclefree[16] =
 {
   2, 1, 1, 1, /* Free cycles during blit */
-  2, 1, 1, 1, 
-  1, 0, 0, 0, 
+  2, 1, 1, 1,
+  1, 0, 0, 0,
   1, 0, 0, 0
 };
 
@@ -190,7 +193,7 @@ BOOLE blitterGetOperationLog(void)
 
 void blitterOperationLog(void) {
   if (blitter_operation_log) {
-    FILE *F;
+    FILE* F;
     char filename[MAX_PATH];
 
     fileopsGetGenericFileName(filename, "WinFellow", "blitterops.log");
@@ -1089,16 +1092,16 @@ void blitterLineMode(void)
   ULO bltbdat_local;
   ULO bltcdat_local = blitter.bltcdat;
   ULO bltddat_local;
-  UWO mask = (UWO) ((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
+  UWO mask = (UWO)((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
   BOOLE a_enabled = blitter.bltcon & 0x08000000;
   BOOLE c_enabled = blitter.bltcon & 0x02000000;
 
   BOOLE decision_is_signed = (((blitter.bltcon >> 6) & 1) == 1);
-  LON decision_variable = (LON) (WOR) blitter.bltapt;
+  LON decision_variable = (LON)(WOR)blitter.bltapt;
 
   // Quirk: Set decision increases to 0 if a is disabled, ensures bltapt remains unchanged
-  WOR decision_inc_signed = (a_enabled) ? ((WOR) blitter.bltbmod) : 0;
-  WOR decision_inc_unsigned = (a_enabled) ? ((WOR) blitter.bltamod) : 0;
+  WOR decision_inc_signed = (a_enabled) ? ((WOR)blitter.bltbmod) : 0;
+  WOR decision_inc_unsigned = (a_enabled) ? ((WOR)blitter.bltamod) : 0;
 
   ULO bltcpt_local = blitter.bltcpt;
   ULO bltdpt_local = blitter.bltdpt;
@@ -1111,7 +1114,7 @@ void blitterLineMode(void)
   BOOLE x_inc = ((!x_independent) && !(sulsudaul & 2)) || (x_independent && !(sulsudaul & 1));
   BOOLE y_inc = ((!x_independent) && !(sulsudaul & 1)) || (x_independent && !(sulsudaul & 2));
   BOOLE single_dot = FALSE;
-  UBY minterm = (UBY) (blitter.bltcon >> 16);
+  UBY minterm = (UBY)(blitter.bltcon >> 16);
 
   for (i = 0; i < blitter.height; ++i)
   {
@@ -1125,11 +1128,11 @@ void blitterLineMode(void)
     bltadat_local = (blitter.bltadat & blitter.bltafwm) >> blit_a_shift_local;
 
     // Check for single dot
-    if (x_independent) 
+    if (x_independent)
     {
       if (blitter.bltcon & 0x00000002)
       {
-	if (single_dot) 
+	if (single_dot)
 	{
 	  bltadat_local = 0;
 	}
@@ -1204,7 +1207,7 @@ void blitterLineMode(void)
     if (!x_independent)
     {
       // decrease/increase y
-      if (y_inc) 
+      if (y_inc)
       {
 	blitterLineIncreaseY(bltcpt_local, blitter.bltcmod);
       }
@@ -1215,7 +1218,7 @@ void blitterLineMode(void)
     }
     else
     {
-      if (x_inc) 
+      if (x_inc)
       {
 	blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
       }
@@ -1239,6 +1242,16 @@ void blitterLineMode(void)
   memoryWriteWord(0x8040, 0x00DFF09C);
 }
 
+void blitSetBlitterBusy()
+{
+  _core.Registers.DmaConR |= 0x4000;
+}
+
+void blitClearBlitterBusy()
+{
+  _core.Registers.DmaConR = _core.Registers.DmaConR & 0x0000bfff;
+}
+
 void blitInitiate(void)
 {
   ULO channels = (blitter.bltcon >> 24) & 0xf;
@@ -1260,13 +1273,13 @@ void blitInitiate(void)
     {
       cycle_free = 2;
       if (!(channels & 2)) cycle_free++;
-      cycle_length = 4*blitter.height;
+      cycle_length = 4 * blitter.height;
       cycle_free *= blitter.height;
     }
     else
     {
-      cycle_length = blit_cyclelength[channels]*blitter.width*blitter.height;
-      cycle_free = blit_cyclefree[channels]*blitter.width*blitter.height;
+      cycle_length = blit_cyclelength[channels] * blitter.width * blitter.height;
+      cycle_free = blit_cyclefree[channels] * blitter.width * blitter.height;
     }
   }
 
@@ -1282,7 +1295,7 @@ void blitInitiate(void)
 
   if (cycle_free == 0)
   {
-    if ((dmaconr & 0x400))
+    if (_core.RegisterUtility.IsBlitterPriorityEnabled())
     {
       cpuIntegrationSetChipCycles(cycle_length); // Delay CPU for the entire time during the blit.
     }
@@ -1306,7 +1319,7 @@ void blitInitiate(void)
   }
   blitter.dma_pending = FALSE;
   blitter.started = TRUE;
-  dmaconr |= 0x4000; /* Blitter busy bit */
+  blitSetBlitterBusy();
   wintreq_direct(0x0040, 0xdff09c, true);
   blitterInsertEvent(cycle_length + bus.cycle);
 }
@@ -1314,13 +1327,15 @@ void blitInitiate(void)
 // Handles a blitter event.
 // Can also be called by writes to certain registers. (Via. blitterForceFinish())
 // Event has already been popped.
-void blitFinishBlit(void) 
+void blitFinishBlit(void)
 {
   blitterEvent.cycle = BUS_CYCLE_DISABLE;
   blitter.dma_pending = FALSE;
   blitter.started = FALSE;
   cpuIntegrationSetChipSlowdown(1);
-  dmaconr = dmaconr & 0x0000bfff;
+
+  blitClearBlitterBusy();
+
   if ((blitter.bltcon & 0x00000001) == 0x00000001)
   {
     blitterLineMode();
@@ -1333,14 +1348,14 @@ void blitFinishBlit(void)
 
 void blitForceFinish(void)
 {
-  if (blitterIsStarted()) 
+  if (blitterIsStarted())
   {
     blitterRemoveEvent();
     blitFinishBlit();
   }
 }
 
-void blitterCopy(void) 
+void blitterCopy(void)
 {
   blitInitiate();
 }
@@ -1394,7 +1409,7 @@ void wbltcon1(UWO data, ULO address)
 void wbltafwm(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltafwm = data;  
+  blitter.bltafwm = data;
 }
 
 /*======================================================*/
@@ -1410,7 +1425,7 @@ void wbltafwm(UWO data, ULO address)
 void wbltalwm(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltalwm = data;  
+  blitter.bltalwm = data;
 }
 
 /*======================================================*/
@@ -1571,7 +1586,7 @@ void wbltsize(UWO data, ULO address)
     blitter.height = 1024;
   }
   // check if blitter DMA is on
-  if ((dmacon & 0x00000040) != 0) 
+  if ((dmacon & 0x00000040) != 0)
   {
     blitterCopy();
   }
@@ -1616,7 +1631,7 @@ void wbltsizv(UWO data, ULO address)
   }
   else
   {
-    blitter.height = 0x00008000; 
+    blitter.height = 0x00008000;
     // ECS increased possible blit height to 32768 lines
     // OCS is limited to a blit height of 1024 lines
   }
@@ -1641,12 +1656,12 @@ void wbltsizh(UWO data, ULO address)
   }
   else
   {
-    blitter.width = 0x00000800; 
+    blitter.width = 0x00000800;
     // ECS increased possible blit width to 2048
     // OCS is limited to a blit height of 1024
   }
 
-  if ((dmacon & 0x00000040) != 0) 
+  if ((dmacon & 0x00000040) != 0)
   {
     blitterCopy();
   }
@@ -1749,7 +1764,7 @@ void wbltcdat(UWO data, ULO address)
 void wbltbdat(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltbdat_original = (ULO) (data & 0x0000FFFF);
+  blitter.bltbdat_original = (ULO)(data & 0x0000FFFF);
   if (blitterIsDescending())
   {
     blitter.bltbdat = (blitter.bltbdat_original << blitter.b_shift_asc);
@@ -1792,12 +1807,12 @@ static void blitterFillTableInit(void)
 	data = i;
 	for (bit = 0; bit < 8; bit++)
 	{
-	  if (mode == 0) data |= fc_tmp<<bit;
-	  else data ^= fc_tmp<<bit;
-	  if ((i & (0x1<<bit))) fc_tmp = (fc_tmp == 1) ? 0 : 1;
+	  if (mode == 0) data |= fc_tmp << bit;
+	  else data ^= fc_tmp << bit;
+	  if ((i & (0x1 << bit))) fc_tmp = (fc_tmp == 1) ? 0 : 1;
 	}
-	blit_fill[mode][fc][i][0] = (UBY) fc_tmp;
-	blit_fill[mode][fc][i][1] = (UBY) data;
+	blit_fill[mode][fc][i][0] = (UBY)fc_tmp;
+	blit_fill[mode][fc][i][1] = (UBY)data;
       }
 }
 
@@ -1891,7 +1906,7 @@ void blitterEndOfFrame(void)
 /* Called on emulator start / stop                                           */
 /*===========================================================================*/
 
-void blitterSaveState(FILE *F)
+void blitterSaveState(FILE* F)
 {
   fwrite(&blitter.bltcon, sizeof(blitter.bltcon), 1, F);
   fwrite(&blitter.bltafwm, sizeof(blitter.bltafwm), 1, F);
@@ -1924,7 +1939,7 @@ void blitterSaveState(FILE *F)
   fwrite(&blitter.cycle_free, sizeof(blitter.cycle_free), 1, F);
 }
 
-void blitterLoadState(FILE *F)
+void blitterLoadState(FILE* F)
 {
   fread(&blitter.bltcon, sizeof(blitter.bltcon), 1, F);
   fread(&blitter.bltafwm, sizeof(blitter.bltafwm), 1, F);

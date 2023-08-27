@@ -911,7 +911,7 @@ static void drawModeTablesInitialize()
 
   drawModeFunctionsInitialize();
 
-  wbplcon0((UWO)bplcon0, 0xdff100);
+  wbplcon0((uint16_t)_core.Registers.BplCon0, 0xdff100);
   drawColorTranslationInitialize();
   graphInitializeShadowColors();
   draw_buffer_info.current_ptr = draw_buffer_info.top_ptr;
@@ -1213,7 +1213,7 @@ void drawUpdateDrawmode(void)
     // check if bit 8 of register dmacon is 1; check if bitplane DMA is enabled
     // check if bit 12, 13 and 14 of register bplcon0 is 1; 
     // check if atleast one bitplane is active
-    if (((dmacon & 0x0100) == 0x0100) && ((bplcon0 & 0x7000) > 0x0001))
+    if (((dmacon & 0x0100) == 0x0100) && _core.RegisterUtility.GetEnabledBitplaneCount() != 0)
     {
       draw_switch_bg_to_bpl = TRUE;
       draw_line_routine = draw_line_BPL_manage_routine;

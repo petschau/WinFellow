@@ -25,6 +25,7 @@
 #include "GRAPH.H"
 #include "DRAW.H"
 #include "draw_interlace_control.h"
+#include "CoreHost.h"
 
 typedef struct
 {
@@ -53,7 +54,7 @@ bool drawDecideUseInterlacedRendering(void)
 
 void drawDecideInterlaceStatusForNextFrame(void)
 {
-  bool lace_bit = ((bplcon0 & 4) == 4);
+  bool lace_bit = _core.RegisterUtility.IsInterlaceEnabled();
 
   interlace_status.frame_is_interlaced = lace_bit;
   if (interlace_status.frame_is_interlaced)

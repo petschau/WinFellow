@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="CustomChipset">
+      <UniqueIdentifier>{bea4e31d-3a86-4fb6-b238-4d405eb5d6a2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CustomChipset\RegistersUtilityTest.cpp">
+      <Filter>CustomChipset</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
