@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="hardfile">
+      <UniqueIdentifier>{756ba8f1-61b2-4e39-bdda-00bb4ae8dda0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardfile\hunks">
+      <UniqueIdentifier>{26237ddb-c5c8-46fb-af58-c40b4ba26e3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardfile\rdb">
+      <UniqueIdentifier>{58c24674-4d13-4520-9eae-714554b91716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="framework">
+      <UniqueIdentifier>{fc7fb797-2794-450a-8539-80ecdbe2d2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mock">
+      <UniqueIdentifier>{7bc6ab2c-abc9-4548-935f-35bd84cc4652}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mock\fellow">
+      <UniqueIdentifier>{c1eca638-fcbc-40d2-8e16-487ef81b4c99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mock\fellow\api">
+      <UniqueIdentifier>{49d737d6-83d6-4d73-874b-424f92f5eaf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mock\fellow\api\service">
+      <UniqueIdentifier>{87d7f521-4f6b-43b3-aaf8-d430257ee13e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="testdata">
+      <UniqueIdentifier>{9462dd8d-ef41-48c8-bbba-43bbd2a5454c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="testdata\hardfile">
+      <UniqueIdentifier>{65f48b9a-8b6b-4ae8-a4ee-864b016ee187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="testdata\hardfile\hunks">
+      <UniqueIdentifier>{1fe09973-62c1-462c-95b9-524ef2d241e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="testdata\hardfile\rdb">
+      <UniqueIdentifier>{c6a66d04-e749-4e28-9edf-ef2eade9e4d2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="hardfile\hunks\BSSHunkTest.cpp" />
+    <ClCompile Include="hardfile\hunks\CodeHunkTest.cpp" />
+    <ClCompile Include="hardfile\hunks\DataHunkTest.cpp" />
+    <ClCompile Include="hardfile\hunks\EndHunkTest.cpp" />
+    <ClCompile Include="hardfile\hunks\HeaderHunkTest.cpp" />
+    <ClCompile Include="hardfile\hunks\HunkFactoryTest.cpp" />
+    <ClCompile Include="hardfile\hunks\HunkParserTest.cpp" />
+    <ClCompile Include="hardfile\hunks\RawDataReaderTest.cpp" />
+    <ClCompile Include="hardfile\hunks\Reloc32HunkTest.cpp" />
+    <ClCompile Include="hardfile\rdb\RDBTest.cpp" />
+    <ClCompile Include="framework\TestBootstrap.cpp" />
+    <ClCompile Include="mock\fellow\api\service\FSWrapperMock.cpp" />
+    <ClCompile Include="mock\fellow\api\service\HUDMock.cpp" />
+    <ClCompile Include="mock\fellow\api\service\LogMock.cpp" />
+    <ClCompile Include="mock\fellow\api\service\RetroPlatformWrapperMock.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework\TestBootstrap.h" />
+    <ClInclude Include="mock\fellow\api\service\FSWrapperMock.h" />
+    <ClInclude Include="fellow\api\service\HUDMock.h" />
+    <ClInclude Include="fellow\api\service\RetroPlatformWrapperMock.h" />
+    <ClInclude Include="mock\fellow\api\service\LogMock.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="testdata\hardfile\hunks\FastFileSystem13" />
+    <None Include="testdata\hardfile\hunks\FastFileSystem31" />
+    <None Include="testdata\hardfile\hunks\ProfFileSystem_195" />
+    <None Include="testdata\hardfile\hunks\ProfFileSystem_195_68020+" />
+    <None Include="testdata\hardfile\hunks\SmartFilesystem" />
+    <None Include="testdata\hardfile\rdb\BlankWithoutRDB_OFS.hdf" />
+    <None Include="testdata\hardfile\rdb\BlankWithRDB_FFS13.hdf" />
+    <None Include="testdata\hardfile\rdb\BlankWithRDB_FFS31.hdf" />
+    <None Include="testdata\hardfile\rdb\BlankWithRDB_PFS.hdf" />
+    <None Include="testdata\hardfile\rdb\BlankWithRDB_SFS.hdf" />
+    <None Include="testdata\hardfile\rdb\ManyPartitionsWithRDB_ManyFS.hdf" />
+    <None Include="testdata\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf" />
+    <None Include="testdata\hardfile\rdb\WithRDBInvalidLSegBlockCheckSum.hdf" />
+    <None Include="testdata\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf" />
+    <None Include="testdata\hardfile\rdb\WithRDSKMarkerInvalidCheckSum.hdf" />
+  </ItemGroup>
+</Project>

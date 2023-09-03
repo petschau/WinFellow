@@ -13,8 +13,8 @@ env:
   BUILD_CONFIGURATION: Release
   BUILD_PLATFORM: x64
   # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: fellow\SRC\WIN32\MSVC\WinFellow.sln
-  WINFELLOW_TESTS_DIRECTORY: fellow\SRC\WIN32\MSVC\x64\Release\
+  SOLUTION_FILE_PATH: fellow\SRC\WinFellow.sln
+  WINFELLOW_TESTS_DIRECTORY: fellow\SRC\WinFellow.Core.Tests\x64\Release\
   WINFELLOW_CORE_TESTS_RESULT_FILENAME: WinFellowCoreTestsResult-junit.xml
 
 
