@@ -6,7 +6,7 @@
     <description>Recent content on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 03 Sep 2023 05:49:00 +0000</lastBuildDate><atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Sep 2023 05:49:00 +0000</lastBuildDate><atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>about</title>
       <link>http://petschau.github.io/WinFellow/about/</link>
@@ -16,7 +16,7 @@
       <description>Amiga Emulator for Windows Description WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core do however allow a fairly easy port to other operating systems.
 WinFellow is distributed under the terms of the GNU General Public License version 2.0 (GPLv2).
 This site is WinFellow&amp;rsquo;s development home on GitHub.
-The latest stable release can be found in WinFellow&amp;rsquo;s former home at SourceForge; the latest one published on SourceForge is v0.</description>
+Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section.</description>
     </item>
     
     <item>
@@ -52,10 +52,10 @@ You can also contact us directly by sending an email composed in English languag
     
     <item>
       <title>WinFellow v0.5.9 RC-1 released</title>
-      <link>http://petschau.github.io/WinFellow/post/2023-09-03-winfellow-v0.5.9-rc-1-released/</link>
-      <pubDate>Sun, 03 Sep 2023 05:49:00 +0000</pubDate>
+      <link>http://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-rc-1-released/</link>
+      <pubDate>Mon, 04 Sep 2023 05:49:00 +0000</pubDate>
       
-      <guid>http://petschau.github.io/WinFellow/post/2023-09-03-winfellow-v0.5.9-rc-1-released/</guid>
+      <guid>http://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-rc-1-released/</guid>
       <description>There is a new release candidate build of WinFellow hosted in the GitHub releases section. Compared to the earlier version 0.5.8, the following changes are included in this build:
 System requirement changes
 support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</description>

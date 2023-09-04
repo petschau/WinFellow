@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
-	<title>about &middot; WinFellow - Amiga Emulator for Windows</title>
+	<title>WinFellow v0.5.9 RC-1 released &middot; WinFellow - Amiga Emulator for Windows</title>
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<!--[if lt IE 9]>
 	<script src="http://petschau.github.io/WinFellow/js/html5.js"></script>
@@ -121,13 +121,13 @@
 			</span>
 		</div>
 
-		<h1 class="entry-title">about</h1>
+		<h1 class="entry-title">WinFellow v0.5.9 RC-1 released</h1>
 
 		<div class="entry-meta">
 			<span class="entry-date">
-				<a href="http://petschau.github.io/WinFellow/about//index.html" rel="bookmark">
-					<time class="entry-date" datetime="2016-01-12 06:43:18 &#43;0100 CET">
-						January 12, 2016
+				<a href="http://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-rc-1-released//index.html" rel="bookmark">
+					<time class="entry-date" datetime="2023-09-04 05:49:00 &#43;0000 &#43;0000">
+						September 4, 2023
 					</time>
 				</a>
 			</span>
@@ -136,19 +136,41 @@
 	</header>
 	
 	<div class="entry-content">
-		<p><img src="../winfellow_logo_large_transparent.png" alt="WinFellow"></p>
-<h1 id="amiga-emulator-for-windows">Amiga Emulator for Windows</h1>
-<h2 id="description">Description</h2>
-<p>WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core do however allow a fairly easy port to other operating systems.</p>
-<p>WinFellow is distributed under the terms of the <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GNU General Public License version 2.0 (GPLv2)</a>.</p>
-<p><a href="https://github.com/petschau/WinFellow">This site</a> is WinFellow&rsquo;s development home on GitHub.</p>
-<p>Future releases of WinFellow will be published in GitHub&rsquo;s <a href="https://github.com/petschau/WinFellow/releases">releases</a> section.</p>
+		<p>There is a new release candidate build of WinFellow hosted in the GitHub releases section. Compared to the earlier version 0.5.8, the following changes are included in this build:</p>
+<p><strong>System requirement changes</strong></p>
+<ul>
+<li>support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</li>
+</ul>
+<p><strong>New features</strong></p>
+<ul>
+<li>implemented a new menu option to allow configuration of the emulation pause behavior when the window focus is lost/emulation is running in the background</li>
+<li>the floppy read-only state can now be adjusted on the fly, without having to restart the emulator</li>
+</ul>
+<p><strong>Bug Fixes</strong></p>
+<ul>
+<li>when using alt-tab to switch to different windows, the tab keypress is no longer passed on to the emulation session</li>
+<li>mouse events via RetroPlatform are being received again</li>
+<li>fixed minor heap corruption in RetroPlatform initialization code</li>
+<li>fix a repeated error message during loading of presets when encrypted ROMs are searched and no keyfile is present</li>
+</ul>
+<p><strong>Maintenance updates</strong></p>
+<ul>
+<li>zlib was updated to version 1.2.11</li>
+<li>xDMS was updated to version 1.3.2</li>
+<li>Visual Studio 2022 and the Windows 11 SDK are used</li>
+<li>RetroPlatform include has been updated</li>
+</ul>
+<p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which may not be listed above.</p>
 
 	</div>
 
 	<footer class="entry-meta">
 		<span class="tag-links">		
 			
+                <a href="http://petschau.github.io/WinFellow/tags/news/index.html" rel="tag">News</a>
+            
+                <a href="http://petschau.github.io/WinFellow/tags/releases/index.html" rel="tag">Releases</a>
+            
 		</span>
 	</footer>
 </article> 
