@@ -16,16 +16,16 @@
       <description>Amiga Emulator for Windows Description WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core do however allow a fairly easy port to other operating systems.
 WinFellow is distributed under the terms of the GNU General Public License version 2.0 (GPLv2).
 This site is WinFellow&amp;rsquo;s development home on GitHub.
-Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section.</description>
+Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section, while older releases can still be found in the SourceForge release archive.</description>
     </item>
     
     <item>
       <title>the team</title>
       <link>http://petschau.github.io/WinFellow/team/</link>
-      <pubDate>Wed, 26 Jun 2019 05:43:18 +0100</pubDate>
+      <pubDate>Mon, 04 Sep 2023 05:43:18 +0100</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/team/</guid>
-      <description> team member Petter Schau Torsten Enderling Worfje occupation programmer from Norway virtual desktop engineer from Germany engineer from the Netherlands tasks various beta team managerGitHub Pages/hugo website administration cross platform development modules emulation core RetroPlatform integrationhardfile/file systemdebuggersystem information graphicssoundGUI email petschau@gmail.com torsten.enderling@gmail.com worfje@gmx.net </description>
+      <description> team member Petter Schau Torsten Enderling occupation programmer from Norway virtual desktop engineer from Germany tasks various testing; GitHub Pages/hugo website administration modules emulation core RetroPlatform integration; hardfile/file system; debugger; system information email petschau@gmail.com torsten.enderling@gmail.com </description>
     </item>
     
     <item>
