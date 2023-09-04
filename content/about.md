@@ -16,4 +16,4 @@ WinFellow is distributed under the terms of the [GNU General Public License vers
 
 [This site](https://github.com/petschau/WinFellow) is WinFellow's development home on GitHub.
 
-Future releases of WinFellow will be published in GitHub's [releases](https://github.com/petschau/WinFellow/releases) section.
+Future releases of WinFellow will be published in GitHub's [releases](https://github.com/petschau/WinFellow/releases) section, while older releases can still be found in the [SourceForge release archive](https://sourceforge.net/projects/fellow/files/WinFellow/).
