@@ -126,6 +126,73 @@
 			</span>
 		</div>
 
+		<h1 class="entry-title">WinFellow v0.5.9 RC-1 released</h1>
+
+		<div class="entry-meta">
+			<span class="entry-date">
+				<a href="http://petschau.github.io/WinFellow/post/2023-09-03-winfellow-v0.5.9-rc-1-released//index.html" rel="bookmark">
+					<time class="entry-date" datetime="2023-09-03 05:49:00 &#43;0000 &#43;0000">
+						September 3, 2023
+					</time>
+				</a>
+			</span>
+		</div>
+
+	</header>
+	
+	<div class="entry-content">
+		<p>There is a new release candidate build of WinFellow hosted in the GitHub releases section. Compared to the earlier version 0.5.8, the following changes are included in this build:</p>
+<p><strong>System requirement changes</strong></p>
+<ul>
+<li>support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</li>
+</ul>
+<p><strong>New features</strong></p>
+<ul>
+<li>implemented a new menu option to allow configuration of the emulation pause behavior when the window focus is lost/emulation is running in the background</li>
+<li>the floppy read-only state can now be adjusted on the fly, without having to restart the emulator</li>
+</ul>
+<p><strong>Bug Fixes</strong></p>
+<ul>
+<li>when using alt-tab to switch to different windows, the tab keypress is no longer passed on to the emulation session</li>
+<li>mouse events via RetroPlatform are being received again</li>
+<li>fixed minor heap corruption in RetroPlatform initialization code</li>
+<li>fix a repeated error message during loading of presets when encrypted ROMs are searched and no keyfile is present</li>
+</ul>
+<p><strong>Maintenance updates</strong></p>
+<ul>
+<li>zlib was updated to version 1.2.11</li>
+<li>xDMS was updated to version 1.3.2</li>
+<li>Visual Studio 2022 and the Windows 11 SDK are used</li>
+<li>RetroPlatform include has been updated</li>
+</ul>
+<p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which may not be listed above.</p>
+
+	</div>
+
+	<footer class="entry-meta">
+		<span class="tag-links">		
+			
+                <a href="http://petschau.github.io/WinFellow/tags/news/index.html" rel="tag">News</a>
+            
+                <a href="http://petschau.github.io/WinFellow/tags/releases/index.html" rel="tag">Releases</a>
+            
+		</span>
+	</footer>
+</article> 
+			
+				<article class="post type-post status-publish format-standard hentry">
+
+	
+	<header class="entry-header">
+
+	
+
+		<div class="entry-meta">
+			<span class="cat-links">
+                
+			</span>
+		</div>
+
 		<h1 class="entry-title">WinFellow v0.5.8 released</h1>
 
 		<div class="entry-meta">
@@ -142,19 +209,14 @@
 	
 	<div class="entry-content">
 		<p>There is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.</p>
-
 <p>Compared to the earlier version 0.5.7, the following changes are included in this build:</p>
-
 <p><strong>New features</strong></p>
-
 <ul>
 <li>support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &ldquo;plain&rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox</li>
 <li>the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles</li>
 <li>a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used</li>
 </ul>
-
 <p><strong>Bug fixes</strong></p>
-
 <ul>
 <li>improved handling of hardware interrupts and blitter delays; fixes freezes that could occur during installation of Workbench in earlier 0.5.x versions</li>
 <li>fix wrong selection of render function after return from menu when application did not write to bplcon0 every frame; fixes garbled graphics in a Legend cracktro when returning from menu</li>
@@ -165,15 +227,12 @@
 <li>fix an issue where screenshots would occasionally not be taken in Direct3D graphics mode; this may also have impacted the ability to use Amiga Forever&rsquo;s clipping editor</li>
 <li>fix an issue where applying a new model preset would leave multiple blitter radio buttons selected</li>
 </ul>
-
 <p><strong>Maintenance updates</strong></p>
-
 <ul>
 <li>project files were updated to Visual Studio 2019 using the toolset v141_xp</li>
 <li>the February 2010 DirectX SDK dependency was eliminated</li>
 <li>IPF Access API files were updated to the latest version, and support for it was enabled in 64 bit builds</li>
 </ul>
-
 <p>See the included file ChangeLog.txt for a full list of changes, including minor bug fixes which may not be listed above.</p>
 
 	</div>
@@ -218,22 +277,20 @@
 	
 	<div class="entry-content">
 		<p><strong>Bug fixes:</strong></p>
-
 <ul>
 <li>floppy code was updated to use a track limit &gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94</li>
 <li>fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization</li>
 <li>several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas</li>
 <li>fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported</li>
 <li>CPU instruction fixes:
-
 <ul>
 <li>fixed a signed bug in 64-bit division</li>
 <li>minor timing adjustment for btst</li>
-</ul></li>
+</ul>
+</li>
 <li>CIA event counter changes according to documentation</li>
 <li>the project files were updated to Visual Studio 2017</li>
 </ul>
-
 <p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</p>
 
 	</div>
@@ -278,17 +335,13 @@
 	
 	<div class="entry-content">
 		<p><strong>New features:</strong></p>
-
 <ul>
 <li>Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag</li>
 </ul>
-
 <p><strong>Bug Fixes:</strong></p>
-
 <ul>
 <li>improve support for IPF images (align disk words to sync if sync is found on an odd boundary)</li>
 </ul>
-
 <p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</p>
 
 	</div>
@@ -333,22 +386,19 @@
 	
 	<div class="entry-content">
 		<p><strong>New features:</strong></p>
-
 <ul>
 <li>re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes</li>
 <li>support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed
-
 <ul>
-<li>on Windows Vista, the platform update <a href="https://support.microsoft.com/en-us/help/971644" target="_blank">KB971644</a> should be installed, as it contains required updates to DirectX</li>
+<li>on Windows Vista, the platform update <a href="https://support.microsoft.com/en-us/help/971644">KB971644</a> should be installed, as it contains required updates to DirectX</li>
 <li>the graphics card has to provide hardware acceleration for Direct3D</li>
-</ul></li>
+</ul>
+</li>
 <li>ability to save screenshots to the pictures folder (hit &lt; Print Screen &gt; to trigger)</li>
 <li>support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic</li>
 <li>very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated</li>
 </ul>
-
 <p><strong>Bug Fixes:</strong></p>
-
 <ul>
 <li>improved frame timing to present frames in a more evenly paced manner</li>
 <li>improvements to CIA timer handling</li>
@@ -357,7 +407,6 @@
 <li>improved error handling for DMS floppy image extraction</li>
 <li>fixed minor memory leaks</li>
 </ul>
-
 <p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</p>
 
 	</div>
@@ -402,12 +451,9 @@
 	
 	<div class="entry-content">
 		<p>WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.</p>
-
-<p>Downloads for older releases are still available at <a href="http://sourceforge.net/projects/fellow/files/" target="_blank">SourceForge</a> for reference; for future news and updates, please visit us <a href="http://petschau.github.io/WinFellow" target="_blank">here</a>.</p>
-
-<p>The GitHub source code repository is available <a href="http://github.com/petschau/WinFellow" target="_blank">here</a>.</p>
-
-<p>Future releases of WinFellow will be published in GitHub&rsquo;s <a href="https://github.com/petschau/WinFellow/releases" target="_blank">releases</a> section.</p>
+<p>Downloads for older releases are still available at <a href="http://sourceforge.net/projects/fellow/files/">SourceForge</a> for reference; for future news and updates, please visit us <a href="http://petschau.github.io/WinFellow">here</a>.</p>
+<p>The GitHub source code repository is available <a href="http://github.com/petschau/WinFellow">here</a>.</p>
+<p>Future releases of WinFellow will be published in GitHub&rsquo;s <a href="https://github.com/petschau/WinFellow/releases">releases</a> section.</p>
 
 	</div>
 
@@ -496,7 +542,7 @@
 		<footer id="colophon" class="site-footer" role="contentinfo">
 
 			<div class="site-info">
-				&copy;1996-2018 by the WinFellow team; check out the WinFellow source code repository on <a href="http://github.com/petschau/WinFellow">GitHub</a><br>
+				&copy;1996-2023 by the WinFellow team; check out the WinFellow source code repository on <a href="http://github.com/petschau/WinFellow">GitHub</a><br>
                 <a href="http://gohugo.io">Proudly powered by Hugo</a>
 			</div>
 		</footer>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>GitHub on WinFellow - Amiga Emulator for Windows</title>
@@ -6,11 +6,7 @@
     <description>Recent content in GitHub on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate>
-    
-	<atom:link href="http://petschau.github.io/WinFellow/tags/github/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate><atom:link href="http://petschau.github.io/WinFellow/tags/github/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>WinFellow has a new home</title>
       <link>http://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</link>

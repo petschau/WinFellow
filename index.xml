@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>WinFellow - Amiga Emulator for Windows</title>
@@ -6,11 +6,7 @@
     <description>Recent content on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Jul 2019 05:49:00 +0000</lastBuildDate>
-    
-	<atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 03 Sep 2023 05:49:00 +0000</lastBuildDate><atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>about</title>
       <link>http://petschau.github.io/WinFellow/about/</link>
@@ -29,13 +25,7 @@ The latest stable release can be found in WinFellow&amp;rsquo;s former home at S
       <pubDate>Wed, 26 Jun 2019 05:43:18 +0100</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/team/</guid>
-      <description>   team member Petter Schau Torsten Enderling Worfje     occupation programmer from Norway virtual desktop engineer from Germany engineer from the Netherlands   tasks various beta team manager
-GitHub Pages/hugo website administration cross platform development   modules emulation core RetroPlatform integration
-hardfile/file system
-debugger
-system information graphics
-sound
-GUI   email petschau@gmail.com torsten.enderling@gmail.com worfje@gmx.net    </description>
+      <description> team member Petter Schau Torsten Enderling Worfje occupation programmer from Norway virtual desktop engineer from Germany engineer from the Netherlands tasks various beta team managerGitHub Pages/hugo website administration cross platform development modules emulation core RetroPlatform integrationhardfile/file systemdebuggersystem information graphicssoundGUI email petschau@gmail.com torsten.enderling@gmail.com worfje@gmx.net </description>
     </item>
     
     <item>
@@ -61,6 +51,17 @@ You can also contact us directly by sending an email composed in English languag
     </item>
     
     <item>
+      <title>WinFellow v0.5.9 RC-1 released</title>
+      <link>http://petschau.github.io/WinFellow/post/2023-09-03-winfellow-v0.5.9-rc-1-released/</link>
+      <pubDate>Sun, 03 Sep 2023 05:49:00 +0000</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/post/2023-09-03-winfellow-v0.5.9-rc-1-released/</guid>
+      <description>There is a new release candidate build of WinFellow hosted in the GitHub releases section. Compared to the earlier version 0.5.8, the following changes are included in this build:
+System requirement changes
+support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</description>
+    </item>
+    
+    <item>
       <title>WinFellow v0.5.8 released</title>
       <link>http://petschau.github.io/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</link>
       <pubDate>Fri, 12 Jul 2019 05:49:00 +0000</pubDate>
@@ -69,7 +70,7 @@ You can also contact us directly by sending an email composed in English languag
       <description>There is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.
 Compared to the earlier version 0.5.7, the following changes are included in this build:
 New features
- support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &amp;ldquo;plain&amp;rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used  Bug fixes</description>
+support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &amp;ldquo;plain&amp;rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used Bug fixes</description>
     </item>
     
     <item>
@@ -79,7 +80,7 @@ New features
       
       <guid>http://petschau.github.io/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</guid>
       <description>Bug fixes:
- floppy code was updated to use a track limit &amp;gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94 fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported CPU instruction fixes:  fixed a signed bug in 64-bit division minor timing adjustment for btst  CIA event counter changes according to documentation the project files were updated to Visual Studio 2017  Please see the included file ChangeLog.</description>
+floppy code was updated to use a track limit &amp;gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94 fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported CPU instruction fixes: fixed a signed bug in 64-bit division minor timing adjustment for btst CIA event counter changes according to documentation the project files were updated to Visual Studio 2017 Please see the included file ChangeLog.</description>
     </item>
     
     <item>
@@ -89,8 +90,8 @@ New features
       
       <guid>http://petschau.github.io/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</guid>
       <description>New features:
- Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag  Bug Fixes:
- improve support for IPF images (align disk words to sync if sync is found on an odd boundary)  Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</description>
+Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag Bug Fixes:
+improve support for IPF images (align disk words to sync if sync is found on an odd boundary) Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</description>
     </item>
     
     <item>
@@ -100,7 +101,7 @@ New features
       
       <guid>http://petschau.github.io/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</guid>
       <description>New features:
- re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed  on Windows Vista, the platform update KB971644 should be installed, as it contains required updates to DirectX the graphics card has to provide hardware acceleration for Direct3D  ability to save screenshots to the pictures folder (hit &amp;lt; Print Screen &amp;gt; to trigger) support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated  Bug Fixes:</description>
+re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed on Windows Vista, the platform update KB971644 should be installed, as it contains required updates to DirectX the graphics card has to provide hardware acceleration for Direct3D ability to save screenshots to the pictures folder (hit &amp;lt; Print Screen &amp;gt; to trigger) support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated Bug Fixes:</description>
     </item>
     
     <item>
