@@ -16,6 +16,4 @@ WinFellow is distributed under the terms of the [GNU General Public License vers
 
 [This site](https://github.com/petschau/WinFellow) is WinFellow's development home on GitHub.
 
-The latest stable release can be found in WinFellow's former home at [SourceForge](https://sourceforge.net/projects/fellow/files/); the latest one published on SourceForge is v0.5.3.1004.
-
 Future releases of WinFellow will be published in GitHub's [releases](https://github.com/petschau/WinFellow/releases) section.

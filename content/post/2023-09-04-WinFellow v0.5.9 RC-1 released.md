@@ -1,5 +1,5 @@
 +++
-date = "2023-09-03T05:49:00+00:00"
+date = "2023-09-04T05:49:00+00:00"
 draft = false
 title = "WinFellow v0.5.9 RC-1 released"
 tags = [ "News", "Releases" ]
