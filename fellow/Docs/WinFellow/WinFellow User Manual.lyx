@@ -210,7 +210,7 @@ Welcome to the WinFellow Amiga Emulator, a software emulation of the Commodore
  The emulator runs on an IBM compatible PC with a Windows operation system
  installed.
  Different Windows versions can be used, the emulator has been tested successful
-ly on operating systems ranging from Windows XP to Windows 10.
+ly on operating systems ranging from Windows 7 to Windows 10.
 \end_layout
 
 \begin_layout Standard
@@ -643,7 +643,7 @@ If your PC is still equipped with a serial port, you can utilize a null-modem
  cable to perform a Zmodem transfer between an Amiga and a PC.
  Simply plug the cable into a serial port on each machine, load up a terminal
  package such as Terminus, NComm or Term on the Amiga, or HyperTerminal
- (if you are still on Windows XP) or an alternative like 
+ or an alternative like 
 \begin_inset CommandInset href
 LatexCommand href
 name "RealTerm"
