@@ -18,6 +18,10 @@ cinst vscode
 cinst notepadplusplus
 cinst everything
 
+# website updates
+cinst hugo
+cinst go
+
 # add tools required for unattended builds to path variable
 $LyxPath  = Resolve-Path "${env:ProgramFiles(x86)}\LyX*\bin"
 If([string]::IsNullOrEmpty($LyXPath)) { $LyxPath = Resolve-Path "${env:ProgramFiles}\LyX*\bin" }
