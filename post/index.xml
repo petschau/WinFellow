@@ -8,12 +8,13 @@
     <language>en-us</language>
     <lastBuildDate>Mon, 04 Sep 2023 05:49:00 +0000</lastBuildDate><atom:link href="http://petschau.github.io/WinFellow/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>WinFellow v0.5.9 RC-1 released</title>
-      <link>http://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-rc-1-released/</link>
+      <title>WinFellow v0.5.9 released</title>
+      <link>http://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</link>
       <pubDate>Mon, 04 Sep 2023 05:49:00 +0000</pubDate>
       
-      <guid>http://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-rc-1-released/</guid>
-      <description>There is a new release candidate build of WinFellow hosted in the GitHub releases section. Compared to the earlier version 0.5.8, the following changes are included in this build:
+      <guid>http://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</guid>
+      <description>There is a new public release of WinFellow v0.5.9 in the GitHub releases section; it had been published earlier as release candidate 1.
+Compared to the earlier version 0.5.8, the following changes are included in this build:
 System requirement changes
 support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</description>
     </item>
