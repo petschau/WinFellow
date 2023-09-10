@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="hardfile">
+      <UniqueIdentifier>{4094ee60-9609-482c-8453-a98a85cf6310}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardfile\rdb">
+      <UniqueIdentifier>{e567e223-2691-454e-ab4e-b327ae2e184e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardfile\hunks">
+      <UniqueIdentifier>{a05ff857-fe33-4e60-a8d4-70a312beefb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="amiga">
+      <UniqueIdentifier>{17f1f3d0-79f5-4f1a-926f-f875c05cb32a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="hardfile\HardfileHandler.cpp">
+      <Filter>hardfile</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\HardfileStructs.cpp">
+      <Filter>hardfile</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\AdditionalHunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\BSSHunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\CodeHunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\DataHunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\EndHunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\FileImage.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\HeaderHunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\HunkFactory.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\HunkParser.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\HunkRelocator.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\HunkSize.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\InitialHunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\RawDataReader.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\Reloc32Hunk.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\hunks\Reloc32OffsetTable.cpp">
+      <Filter>hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\ChecksumCalculator.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\RDB.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\RDBFileReader.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\RDBFileSystemHandler.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\RDBFileSystemHeader.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\RDBHandler.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\RDBLSegBlock.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\rdb\RDBPartition.cpp">
+      <Filter>hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="amiga\fhtrans.c">
+      <Filter>amiga</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hardfile\HardfileHandler.h">
+      <Filter>hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\HardfileStructs.h">
+      <Filter>hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\AdditionalHunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\BSSHunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\CodeHunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\DataHunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\EndHunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\FileImage.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\HeaderHunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\HunkBase.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\HunkFactory.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\HunkID.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\HunkParser.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\HunkRelocator.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\HunkSize.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\InitialHunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\RawDataReader.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\Reloc32Hunk.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\hunks\Reloc32OffsetTable.h">
+      <Filter>hardfile\hunks</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\ChecksumCalculator.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\RDB.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\RDBFileReader.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\RDBFileSystemHandler.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\RDBFileSystemHeader.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\RDBHandler.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\RDBLSegBlock.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\rdb\RDBPartition.h">
+      <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="amiga\fhfile.s">
+      <Filter>amiga</Filter>
+    </None>
+  </ItemGroup>
+</Project>

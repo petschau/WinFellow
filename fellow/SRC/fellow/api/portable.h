@@ -1,6 +1,0 @@
-#ifndef FELLOW_API_PORTABLE_H
-#define FELLOW_API_PORTABLE_H
-
-#include "WIN32/INCLUDE/MSVC/PORTABLE.H"
-
-#endif
