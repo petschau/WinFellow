@@ -1,11 +1,13 @@
 +++
 date = "2023-09-04T05:49:00+00:00"
 draft = false
-title = "WinFellow v0.5.9 RC-1 released"
+title = "WinFellow v0.5.9 released"
 tags = [ "News", "Releases" ]
 +++
 
-There is a new release candidate build of WinFellow hosted in the GitHub releases section. Compared to the earlier version 0.5.8, the following changes are included in this build:
+There is a new public release of WinFellow v0.5.9 in the GitHub releases section; it had been published earlier as release candidate 1.
+
+Compared to the earlier version 0.5.8, the following changes are included in this build:
 
 **System requirement changes**
   - support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.
