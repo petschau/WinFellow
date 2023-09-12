@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.9 (2023/08/27)
+v0.5.10 (2023/09/12)
 \end_layout
 
 \begin_layout Author
@@ -322,7 +322,7 @@ Release Notes
 \end_layout
 
 \begin_layout Section*
-What's New in WinFellow 0.5.9?
+What's New in WinFellow 0.5.10?
 \end_layout
 
 \begin_layout Standard
@@ -337,10 +337,7 @@ System requirement changes:
 
 \begin_deeper
 \begin_layout Itemize
-support for Windows XP and Vista has been removed; version 0.5.8 will be the
- last WinFellow release to support Windows XP or Windows Vista.
- This enables us to take advantage of enhancements in the toolset used during
- development and testing.
+a
 \end_layout
 
 \end_deeper
@@ -350,13 +347,7 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-implemented a new menu option to allow configuration of the emulation pause
- behaviour when the window focus is lost/emulation is running in the background
-\end_layout
-
-\begin_layout Itemize
-the floppy read-only state can now be adjusted on the fly, without having
- to restart the emulator
+a
 \end_layout
 
 \end_deeper
@@ -366,21 +357,7 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-when using alt-tab to switch to different windows, the tab keypress is no
- longer passed on to the emulation session
-\end_layout
-
-\begin_layout Itemize
-mouse events via RetroPlatform are being received again
-\end_layout
-
-\begin_layout Itemize
-fixed minor heap corruption in RetroPlatform initialization code
-\end_layout
-
-\begin_layout Itemize
-fix a repeated error message during loading of presets when encrypted ROMs
- are searched and no keyfile is present
+a
 \end_layout
 
 \end_deeper
@@ -390,19 +367,7 @@ Maintenance updates:
 
 \begin_deeper
 \begin_layout Itemize
-zlib was updated to version 1.2.11
-\end_layout
-
-\begin_layout Itemize
-xDMS was updated to version 1.3.2
-\end_layout
-
-\begin_layout Itemize
-Visual Studio 2022 and the Windows 11 SDK are used
-\end_layout
-
-\begin_layout Itemize
-RetroPlatform include has been updated
+a
 \end_layout
 
 \end_deeper
@@ -2061,14 +2026,6 @@ with help from
 \begin_layout Standard
 
 \noun on
-Worfje
-\noun default
- (worfje@gmx.net)
-\end_layout
-
-\begin_layout Standard
-
-\noun on
 Torsten Enderling
 \noun default
  (torsten.enderling@gmail.com)
@@ -2253,6 +2210,30 @@ aka Emulator Chicken
 
 \begin_layout Section*
 Programming Contributions
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Worfje
+\noun default
+ (worfje@gmx.net)
+\end_layout
+
+\begin_layout Itemize
+cross-platform development
+\end_layout
+
+\begin_layout Itemize
+graphics module
+\end_layout
+
+\begin_layout Itemize
+sound module
+\end_layout
+
+\begin_layout Itemize
+GUI
 \end_layout
 
 \begin_layout Standard
