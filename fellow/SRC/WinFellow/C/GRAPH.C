@@ -218,28 +218,37 @@ UWO rdmaconr(ULO address)
 
 /*===========================================================================*/
 /* VPOSR - $dff004 Read vpos and chipset ID bits                             */
-/*                                                                           */
-/* return lof | (graph_raster_y>>8);                                         */
 /*===========================================================================*/
+
+ULO graphAdjustVPosY(ULO y, ULO x)
+{
+  if (x <= 1 && y > 0)
+  {
+    y--;
+  }
+  return y;
+}
 
 UWO rvposr(ULO address)
 {
+  ULO y = graphAdjustVPosY(busGetRasterY(), busGetRasterX());
+
   if (chipsetGetECS())
   {
-    return (UWO) ((lof | (busGetRasterY() >> 8)) | 0x2000);
+    return (UWO) ((lof | (y >> 8)) | 0x2000);
   }
-  return (UWO) (lof | (busGetRasterY() >> 8));  
+  return (UWO) (lof | (y >> 8));  
 }
 
 /*===========================================================================*/
 /* VHPOSR - $dff006 Read                                                     */
-/*                                                                           */
-/* return (graph_raster_x>>1) | ((graph_raster_y & 0xff)<<8);                */
 /*===========================================================================*/
 
 UWO rvhposr(ULO address)
 {
-  return (UWO) ((busGetRasterX() >> 1) | ((busGetRasterY() & 0x000000FF) << 8));
+  ULO x = busGetRasterX();
+  ULO y = graphAdjustVPosY(busGetRasterY(), x);
+  return (UWO)(x | ((y & 0xFF) << 8));
 }
 
 /*===========================================================================*/

@@ -1773,12 +1773,10 @@ static void ANDI_02B9(ULO*opc_data)
 static void ANDI_023C(ULO*opc_data)
 {
 	cpuAndCcrB();
-	cpuSetInstructionTime(20);
 }
 static void ANDI_027C(ULO*opc_data)
 {
 	cpuAndSrW();
-	cpuSetInstructionTime(20);
 }
 static void EOR_B100(ULO*opc_data)
 {
@@ -1795,7 +1793,7 @@ static void EOR_B110(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuEorB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(8);
+	cpuSetInstructionTime(12);
 }
 static void EOR_B118(ULO*opc_data)
 {
@@ -1804,7 +1802,7 @@ static void EOR_B118(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuEorB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(8);
+	cpuSetInstructionTime(12);
 }
 static void EOR_B120(ULO*opc_data)
 {
@@ -1813,7 +1811,7 @@ static void EOR_B120(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuEorB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(14);
 }
 static void EOR_B128(ULO*opc_data)
 {
@@ -1822,7 +1820,7 @@ static void EOR_B128(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuEorB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void EOR_B130(ULO*opc_data)
 {
@@ -1831,7 +1829,7 @@ static void EOR_B130(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuEorB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(18);
 }
 static void EOR_B138(ULO*opc_data)
 {
@@ -1840,7 +1838,7 @@ static void EOR_B138(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuEorB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void EOR_B139(ULO*opc_data)
 {
@@ -1849,7 +1847,7 @@ static void EOR_B139(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuEorB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void EOR_B140(ULO*opc_data)
 {
@@ -1866,7 +1864,7 @@ static void EOR_B150(ULO*opc_data)
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuEorW(dst, src);
 	memoryWriteWord(dst, dstea);
-	cpuSetInstructionTime(8);
+	cpuSetInstructionTime(12);
 }
 static void EOR_B158(ULO*opc_data)
 {
@@ -1875,7 +1873,7 @@ static void EOR_B158(ULO*opc_data)
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuEorW(dst, src);
 	memoryWriteWord(dst, dstea);
-	cpuSetInstructionTime(8);
+	cpuSetInstructionTime(12);
 }
 static void EOR_B160(ULO*opc_data)
 {
@@ -1884,7 +1882,7 @@ static void EOR_B160(ULO*opc_data)
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuEorW(dst, src);
 	memoryWriteWord(dst, dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(14);
 }
 static void EOR_B168(ULO*opc_data)
 {
@@ -1893,7 +1891,7 @@ static void EOR_B168(ULO*opc_data)
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuEorW(dst, src);
 	memoryWriteWord(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void EOR_B170(ULO*opc_data)
 {
@@ -1902,7 +1900,7 @@ static void EOR_B170(ULO*opc_data)
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuEorW(dst, src);
 	memoryWriteWord(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(18);
 }
 static void EOR_B178(ULO*opc_data)
 {
@@ -1911,7 +1909,7 @@ static void EOR_B178(ULO*opc_data)
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuEorW(dst, src);
 	memoryWriteWord(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void EOR_B179(ULO*opc_data)
 {
@@ -1920,7 +1918,7 @@ static void EOR_B179(ULO*opc_data)
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuEorW(dst, src);
 	memoryWriteWord(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void EOR_B180(ULO*opc_data)
 {
@@ -1937,7 +1935,7 @@ static void EOR_B190(ULO*opc_data)
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuEorL(dst, src);
 	memoryWriteLong(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void EOR_B198(ULO*opc_data)
 {
@@ -1946,7 +1944,7 @@ static void EOR_B198(ULO*opc_data)
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuEorL(dst, src);
 	memoryWriteLong(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void EOR_B1A0(ULO*opc_data)
 {
@@ -1955,7 +1953,7 @@ static void EOR_B1A0(ULO*opc_data)
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuEorL(dst, src);
 	memoryWriteLong(dst, dstea);
-	cpuSetInstructionTime(18);
+	cpuSetInstructionTime(22);
 }
 static void EOR_B1A8(ULO*opc_data)
 {
@@ -1964,7 +1962,7 @@ static void EOR_B1A8(ULO*opc_data)
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuEorL(dst, src);
 	memoryWriteLong(dst, dstea);
-	cpuSetInstructionTime(20);
+	cpuSetInstructionTime(24);
 }
 static void EOR_B1B0(ULO*opc_data)
 {
@@ -1973,7 +1971,7 @@ static void EOR_B1B0(ULO*opc_data)
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuEorL(dst, src);
 	memoryWriteLong(dst, dstea);
-	cpuSetInstructionTime(22);
+	cpuSetInstructionTime(26);
 }
 static void EOR_B1B8(ULO*opc_data)
 {
@@ -1982,7 +1980,7 @@ static void EOR_B1B8(ULO*opc_data)
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuEorL(dst, src);
 	memoryWriteLong(dst, dstea);
-	cpuSetInstructionTime(20);
+	cpuSetInstructionTime(24);
 }
 static void EOR_B1B9(ULO*opc_data)
 {
@@ -1991,7 +1989,7 @@ static void EOR_B1B9(ULO*opc_data)
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuEorL(dst, src);
 	memoryWriteLong(dst, dstea);
-	cpuSetInstructionTime(24);
+	cpuSetInstructionTime(28);
 }
 static void EORI_0A00(ULO*opc_data)
 {
@@ -2209,12 +2207,10 @@ static void EORI_0AB9(ULO*opc_data)
 static void EORI_0A3C(ULO*opc_data)
 {
 	cpuEorCcrB();
-	cpuSetInstructionTime(20);
 }
 static void EORI_0A7C(ULO*opc_data)
 {
 	cpuEorSrW();
-	cpuSetInstructionTime(20);
 }
 static void OR_8000(ULO*opc_data)
 {
@@ -2885,12 +2881,10 @@ static void ORI_00B9(ULO*opc_data)
 static void ORI_003C(ULO*opc_data)
 {
 	cpuOrCcrB();
-	cpuSetInstructionTime(20);
 }
 static void ORI_007C(ULO*opc_data)
 {
 	cpuOrSrW();
-	cpuSetInstructionTime(20);
 }
 static void SUB_9000(ULO*opc_data)
 {
@@ -3999,155 +3993,133 @@ static void CHK_4180(ULO*opc_data)
 {
 	UWO src = cpuGetDRegWord(opc_data[0]);
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(10);
+	cpuChkW(dst, src, 10);
 }
 static void CHK_4190(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA02(opc_data[0]));
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(14);
+	cpuChkW(dst, src, 14);
 }
 static void CHK_4198(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA03(opc_data[0],2));
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(14);
+	cpuChkW(dst, src, 14);
 }
 static void CHK_41A0(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA04(opc_data[0],2));
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(16);
+	cpuChkW(dst, src, 16);
 }
 static void CHK_41A8(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA05(opc_data[0]));
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(18);
+	cpuChkW(dst, src, 18);
 }
 static void CHK_41B0(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA06(opc_data[0]));
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(20);
+	cpuChkW(dst, src, 20);
 }
 static void CHK_41B8(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA70());
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(18);
+	cpuChkW(dst, src, 18);
 }
 static void CHK_41B9(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA71());
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(22);
+	cpuChkW(dst, src, 22);
 }
 static void CHK_41BA(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA72());
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(18);
+	cpuChkW(dst, src, 18);
 }
 static void CHK_41BB(ULO*opc_data)
 {
 	UWO src = memoryReadWord(cpuEA73());
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(20);
+	cpuChkW(dst, src, 20);
 }
 static void CHK_41BC(ULO*opc_data)
 {
 	UWO src = cpuGetNextWord();
 	UWO dst = cpuGetDRegWord(opc_data[1]);
-	cpuChkW(dst, src);
-	cpuSetInstructionTime(14);
+	cpuChkW(dst, src, 14);
 }
 static void CHK_4100(ULO*opc_data)
 {
 	ULO src = cpuGetDReg(opc_data[0]);
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(10);
+	cpuChkL(dst, src, 10);
 }
 static void CHK_4110(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA02(opc_data[0]));
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(18);
+	cpuChkL(dst, src, 18);
 }
 static void CHK_4118(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA03(opc_data[0],4));
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(18);
+	cpuChkL(dst, src, 18);
 }
 static void CHK_4120(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA04(opc_data[0],4));
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(20);
+	cpuChkL(dst, src, 20);
 }
 static void CHK_4128(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA05(opc_data[0]));
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(22);
+	cpuChkL(dst, src, 22);
 }
 static void CHK_4130(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA06(opc_data[0]));
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(24);
+	cpuChkL(dst, src, 24);
 }
 static void CHK_4138(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA70());
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(22);
+	cpuChkL(dst, src, 22);
 }
 static void CHK_4139(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA71());
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(26);
+	cpuChkL(dst, src, 26);
 }
 static void CHK_413A(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA72());
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(22);
+	cpuChkL(dst, src, 22);
 }
 static void CHK_413B(ULO*opc_data)
 {
 	ULO src = memoryReadLong(cpuEA73());
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(24);
+	cpuChkL(dst, src, 24);
 }
 static void CHK_413C(ULO*opc_data)
 {
 	ULO src = cpuGetNextLong();
 	ULO dst = cpuGetDReg(opc_data[1]);
-	cpuChkL(dst, src);
-	cpuSetInstructionTime(18);
+	cpuChkL(dst, src, 18);
 }
 static void CMP_B000(ULO*opc_data)
 {
@@ -4806,7 +4778,7 @@ static void BCHG_0150(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(12);
 }
 static void BCHG_0158(ULO*opc_data)
 {
@@ -4815,7 +4787,7 @@ static void BCHG_0158(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(12);
 }
 static void BCHG_0160(ULO*opc_data)
 {
@@ -4824,7 +4796,7 @@ static void BCHG_0160(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(14);
 }
 static void BCHG_0168(ULO*opc_data)
 {
@@ -4833,7 +4805,7 @@ static void BCHG_0168(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(16);
 }
 static void BCHG_0170(ULO*opc_data)
 {
@@ -4842,7 +4814,7 @@ static void BCHG_0170(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(18);
 }
 static void BCHG_0178(ULO*opc_data)
 {
@@ -4851,7 +4823,7 @@ static void BCHG_0178(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(16);
 }
 static void BCHG_0179(ULO*opc_data)
 {
@@ -4860,7 +4832,7 @@ static void BCHG_0179(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(18);
+	cpuSetInstructionTime(20);
 }
 static void BCHG_0140(ULO*opc_data)
 {
@@ -4868,7 +4840,7 @@ static void BCHG_0140(ULO*opc_data)
 	ULO dst = cpuGetDReg(opc_data[0]);
 	dst = cpuBchgL(dst, src);
 	cpuSetDReg(opc_data[0], dst);
-	cpuSetInstructionTime(10 + ((src >= 16) ? 2 : 0));
+	cpuSetInstructionTime(6 + ((src >= 16) ? 2 : 0));
 }
 static void BCHG_0850(ULO*opc_data)
 {
@@ -4877,7 +4849,7 @@ static void BCHG_0850(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void BCHG_0858(ULO*opc_data)
 {
@@ -4886,7 +4858,7 @@ static void BCHG_0858(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void BCHG_0860(ULO*opc_data)
 {
@@ -4895,7 +4867,7 @@ static void BCHG_0860(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(18);
 }
 static void BCHG_0868(ULO*opc_data)
 {
@@ -4904,7 +4876,7 @@ static void BCHG_0868(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void BCHG_0870(ULO*opc_data)
 {
@@ -4913,7 +4885,7 @@ static void BCHG_0870(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(18);
+	cpuSetInstructionTime(22);
 }
 static void BCHG_0878(ULO*opc_data)
 {
@@ -4922,7 +4894,7 @@ static void BCHG_0878(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void BCHG_0879(ULO*opc_data)
 {
@@ -4931,7 +4903,7 @@ static void BCHG_0879(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBchgB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(20);
+	cpuSetInstructionTime(24);
 }
 static void BCHG_0840(ULO*opc_data)
 {
@@ -4939,7 +4911,7 @@ static void BCHG_0840(ULO*opc_data)
 	ULO dst = cpuGetDReg(opc_data[0]);
 	dst = cpuBchgL(dst, src);
 	cpuSetDReg(opc_data[0], dst);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(10);
 }
 static void BCLR_0190(ULO*opc_data)
 {
@@ -5010,7 +4982,7 @@ static void BCLR_0180(ULO*opc_data)
 	ULO dst = cpuGetDReg(opc_data[0]);
 	dst = cpuBclrL(dst, src);
 	cpuSetDReg(opc_data[0], dst);
-	cpuSetInstructionTime(12 + ((src >= 16) ? 2 : 0));
+	cpuSetInstructionTime(8 + ((src >= 16) ? 2 : 0));
 }
 static void BCLR_0890(ULO*opc_data)
 {
@@ -5019,7 +4991,7 @@ static void BCLR_0890(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBclrB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void BCLR_0898(ULO*opc_data)
 {
@@ -5028,7 +5000,7 @@ static void BCLR_0898(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBclrB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void BCLR_08A0(ULO*opc_data)
 {
@@ -5037,7 +5009,7 @@ static void BCLR_08A0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBclrB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(18);
 }
 static void BCLR_08A8(ULO*opc_data)
 {
@@ -5046,7 +5018,7 @@ static void BCLR_08A8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBclrB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void BCLR_08B0(ULO*opc_data)
 {
@@ -5055,7 +5027,7 @@ static void BCLR_08B0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBclrB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(18);
+	cpuSetInstructionTime(22);
 }
 static void BCLR_08B8(ULO*opc_data)
 {
@@ -5064,7 +5036,7 @@ static void BCLR_08B8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBclrB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void BCLR_08B9(ULO*opc_data)
 {
@@ -5073,7 +5045,7 @@ static void BCLR_08B9(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBclrB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(20);
+	cpuSetInstructionTime(24);
 }
 static void BCLR_0880(ULO*opc_data)
 {
@@ -5090,7 +5062,7 @@ static void BSET_01D0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(12);
 }
 static void BSET_01D8(ULO*opc_data)
 {
@@ -5099,7 +5071,7 @@ static void BSET_01D8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(12);
 }
 static void BSET_01E0(ULO*opc_data)
 {
@@ -5108,7 +5080,7 @@ static void BSET_01E0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(14);
 }
 static void BSET_01E8(ULO*opc_data)
 {
@@ -5117,7 +5089,7 @@ static void BSET_01E8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(16);
 }
 static void BSET_01F0(ULO*opc_data)
 {
@@ -5126,7 +5098,7 @@ static void BSET_01F0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(18);
 }
 static void BSET_01F8(ULO*opc_data)
 {
@@ -5135,7 +5107,7 @@ static void BSET_01F8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(16);
 }
 static void BSET_01F9(ULO*opc_data)
 {
@@ -5144,7 +5116,7 @@ static void BSET_01F9(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(18);
+	cpuSetInstructionTime(20);
 }
 static void BSET_01C0(ULO*opc_data)
 {
@@ -5152,7 +5124,7 @@ static void BSET_01C0(ULO*opc_data)
 	ULO dst = cpuGetDReg(opc_data[0]);
 	dst = cpuBsetL(dst, src);
 	cpuSetDReg(opc_data[0], dst);
-	cpuSetInstructionTime(10 + ((src >= 16) ? 2 : 0));
+	cpuSetInstructionTime(6 + ((src >= 16) ? 2 : 0));
 }
 static void BSET_08D0(ULO*opc_data)
 {
@@ -5161,7 +5133,7 @@ static void BSET_08D0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void BSET_08D8(ULO*opc_data)
 {
@@ -5170,7 +5142,7 @@ static void BSET_08D8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(16);
 }
 static void BSET_08E0(ULO*opc_data)
 {
@@ -5179,7 +5151,7 @@ static void BSET_08E0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(18);
 }
 static void BSET_08E8(ULO*opc_data)
 {
@@ -5188,7 +5160,7 @@ static void BSET_08E8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void BSET_08F0(ULO*opc_data)
 {
@@ -5197,7 +5169,7 @@ static void BSET_08F0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(18);
+	cpuSetInstructionTime(22);
 }
 static void BSET_08F8(ULO*opc_data)
 {
@@ -5206,7 +5178,7 @@ static void BSET_08F8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(16);
+	cpuSetInstructionTime(20);
 }
 static void BSET_08F9(ULO*opc_data)
 {
@@ -5215,7 +5187,7 @@ static void BSET_08F9(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuBsetB(dst, src);
 	memoryWriteByte(dst, dstea);
-	cpuSetInstructionTime(20);
+	cpuSetInstructionTime(24);
 }
 static void BSET_08C0(ULO*opc_data)
 {
@@ -5223,7 +5195,7 @@ static void BSET_08C0(ULO*opc_data)
 	ULO dst = cpuGetDReg(opc_data[0]);
 	dst = cpuBsetL(dst, src);
 	cpuSetDReg(opc_data[0], dst);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(10);
 }
 static void BTST_0110(ULO*opc_data)
 {
@@ -7736,66 +7708,121 @@ static void JSR_4EBB(ULO*opc_data)
 }
 static void MOVETOSR_46C0(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = cpuGetDRegWord(opc_data[0]);
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(12);
 }
 static void MOVETOSR_46D0(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA02(opc_data[0]));
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(16);
 }
 static void MOVETOSR_46D8(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA03(opc_data[0],2));
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(16);
 }
 static void MOVETOSR_46E0(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA04(opc_data[0],2));
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(18);
 }
 static void MOVETOSR_46E8(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA05(opc_data[0]));
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(20);
 }
 static void MOVETOSR_46F0(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA06(opc_data[0]));
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(22);
 }
 static void MOVETOSR_46F8(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA70());
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(20);
 }
 static void MOVETOSR_46F9(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA71());
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(24);
 }
 static void MOVETOSR_46FA(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA72());
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(20);
 }
 static void MOVETOSR_46FB(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = memoryReadWord(cpuEA73());
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(22);
 }
 static void MOVETOSR_46FC(ULO*opc_data)
 {
+	if (!cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO src = cpuGetNextWord();
 	cpuMoveToSr(src);
 	cpuSetInstructionTime(16);
@@ -7985,12 +8012,22 @@ static void MOVEFROMCCR_42F9(ULO*opc_data)
 }
 static void MOVEFROMSR_40C0(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	UWO dst = cpuMoveFromSr();
 	cpuSetDRegWord(opc_data[0], dst);
 	cpuSetInstructionTime(6);
 }
 static void MOVEFROMSR_40D0(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	ULO dstea = cpuEA02(opc_data[0]);
 	UWO dst = cpuMoveFromSr();
 	memoryWriteWord(dst, dstea);
@@ -7998,6 +8035,11 @@ static void MOVEFROMSR_40D0(ULO*opc_data)
 }
 static void MOVEFROMSR_40D8(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	ULO dstea = cpuEA03(opc_data[0], 2);
 	UWO dst = cpuMoveFromSr();
 	memoryWriteWord(dst, dstea);
@@ -8005,6 +8047,11 @@ static void MOVEFROMSR_40D8(ULO*opc_data)
 }
 static void MOVEFROMSR_40E0(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	ULO dstea = cpuEA04(opc_data[0], 2);
 	UWO dst = cpuMoveFromSr();
 	memoryWriteWord(dst, dstea);
@@ -8012,6 +8059,11 @@ static void MOVEFROMSR_40E0(ULO*opc_data)
 }
 static void MOVEFROMSR_40E8(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	ULO dstea = cpuEA05(opc_data[0]);
 	UWO dst = cpuMoveFromSr();
 	memoryWriteWord(dst, dstea);
@@ -8019,6 +8071,11 @@ static void MOVEFROMSR_40E8(ULO*opc_data)
 }
 static void MOVEFROMSR_40F0(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	ULO dstea = cpuEA06(opc_data[0]);
 	UWO dst = cpuMoveFromSr();
 	memoryWriteWord(dst, dstea);
@@ -8026,6 +8083,11 @@ static void MOVEFROMSR_40F0(ULO*opc_data)
 }
 static void MOVEFROMSR_40F8(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	ULO dstea = cpuEA70();
 	UWO dst = cpuMoveFromSr();
 	memoryWriteWord(dst, dstea);
@@ -8033,6 +8095,11 @@ static void MOVEFROMSR_40F8(ULO*opc_data)
 }
 static void MOVEFROMSR_40F9(ULO*opc_data)
 {
+	if (cpuGetModelMajor() > 0 && !cpuGetFlagSupervisor())
+	{
+		cpuThrowPrivilegeViolationException();
+		return;
+	}
 	ULO dstea = cpuEA71();
 	UWO dst = cpuMoveFromSr();
 	memoryWriteWord(dst, dstea);
@@ -8375,13 +8442,6 @@ static void MOVE_1000(ULO*opc_data)
 	cpuSetDRegByte(opc_data[1], src);
 	cpuSetInstructionTime(4);
 }
-static void MOVE_1008(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
-	cpuMoveB(src);
-	cpuSetDRegByte(opc_data[1], src);
-	cpuSetInstructionTime(4);
-}
 static void MOVE_1010(ULO*opc_data)
 {
 	UBY src = memoryReadByte(cpuEA02(opc_data[0]));
@@ -8455,14 +8515,6 @@ static void MOVE_103C(ULO*opc_data)
 static void MOVE_1080(ULO*opc_data)
 {
 	UBY src = cpuGetDRegByte(opc_data[0]);
-	ULO dstea = cpuEA02(opc_data[1]);
-	cpuMoveB(src);
-	memoryWriteByte(src, dstea);
-	cpuSetInstructionTime(8);
-}
-static void MOVE_1088(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
 	ULO dstea = cpuEA02(opc_data[1]);
 	cpuMoveB(src);
 	memoryWriteByte(src, dstea);
@@ -8556,14 +8608,6 @@ static void MOVE_10C0(ULO*opc_data)
 	memoryWriteByte(src, dstea);
 	cpuSetInstructionTime(8);
 }
-static void MOVE_10C8(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
-	ULO dstea = cpuEA03(opc_data[1], 1);
-	cpuMoveB(src);
-	memoryWriteByte(src, dstea);
-	cpuSetInstructionTime(8);
-}
 static void MOVE_10D0(ULO*opc_data)
 {
 	UBY src = memoryReadByte(cpuEA02(opc_data[0]));
@@ -8647,14 +8691,6 @@ static void MOVE_10FC(ULO*opc_data)
 static void MOVE_1100(ULO*opc_data)
 {
 	UBY src = cpuGetDRegByte(opc_data[0]);
-	ULO dstea = cpuEA04(opc_data[1], 1);
-	cpuMoveB(src);
-	memoryWriteByte(src, dstea);
-	cpuSetInstructionTime(8);
-}
-static void MOVE_1108(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
 	ULO dstea = cpuEA04(opc_data[1], 1);
 	cpuMoveB(src);
 	memoryWriteByte(src, dstea);
@@ -8748,14 +8784,6 @@ static void MOVE_1140(ULO*opc_data)
 	memoryWriteByte(src, dstea);
 	cpuSetInstructionTime(12);
 }
-static void MOVE_1148(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
-	ULO dstea = cpuEA05(opc_data[1]);
-	cpuMoveB(src);
-	memoryWriteByte(src, dstea);
-	cpuSetInstructionTime(12);
-}
 static void MOVE_1150(ULO*opc_data)
 {
 	UBY src = memoryReadByte(cpuEA02(opc_data[0]));
@@ -8839,14 +8867,6 @@ static void MOVE_117C(ULO*opc_data)
 static void MOVE_1180(ULO*opc_data)
 {
 	UBY src = cpuGetDRegByte(opc_data[0]);
-	ULO dstea = cpuEA06(opc_data[1]);
-	cpuMoveB(src);
-	memoryWriteByte(src, dstea);
-	cpuSetInstructionTime(14);
-}
-static void MOVE_1188(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
 	ULO dstea = cpuEA06(opc_data[1]);
 	cpuMoveB(src);
 	memoryWriteByte(src, dstea);
@@ -8940,14 +8960,6 @@ static void MOVE_11C0(ULO*opc_data)
 	memoryWriteByte(src, dstea);
 	cpuSetInstructionTime(12);
 }
-static void MOVE_11C8(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
-	ULO dstea = cpuEA70();
-	cpuMoveB(src);
-	memoryWriteByte(src, dstea);
-	cpuSetInstructionTime(12);
-}
 static void MOVE_11D0(ULO*opc_data)
 {
 	UBY src = memoryReadByte(cpuEA02(opc_data[0]));
@@ -9031,14 +9043,6 @@ static void MOVE_11FC(ULO*opc_data)
 static void MOVE_13C0(ULO*opc_data)
 {
 	UBY src = cpuGetDRegByte(opc_data[0]);
-	ULO dstea = cpuEA71();
-	cpuMoveB(src);
-	memoryWriteByte(src, dstea);
-	cpuSetInstructionTime(16);
-}
-static void MOVE_13C8(ULO*opc_data)
-{
-	UBY src = cpuGetARegByte(opc_data[0]);
 	ULO dstea = cpuEA71();
 	cpuMoveB(src);
 	memoryWriteByte(src, dstea);

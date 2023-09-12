@@ -314,21 +314,24 @@ FELLOW OUT (END)-------------------------------------*/
 
 UWO rtarea_wget(ULO addr)
 {
-  return (UWO) (rtarea[addr - RTAREA_BASE]<<8) + rtarea[addr-RTAREA_BASE+1];
+  ULO maskedAddress = addr & 0xffffff;
+  return (UWO) (rtarea[maskedAddress - RTAREA_BASE]<<8) + rtarea[maskedAddress -RTAREA_BASE+1];
 }
 
 
 ULO rtarea_lget(ULO addr)
 {
-    return (ULO) (rtarea[(addr & 0xffffff) - RTAREA_BASE]<<24) |
-           (rtarea[(addr & 0xffffff) -RTAREA_BASE+1]<<16) |
-           (rtarea[(addr & 0xffffff) -RTAREA_BASE+2]<<8) |
-           rtarea[(addr & 0xffffff) -RTAREA_BASE+3];
+  ULO maskedAddress = addr & 0xffffff;
+  return (ULO) (rtarea[maskedAddress - RTAREA_BASE]<<24) |
+           (rtarea[maskedAddress -RTAREA_BASE+1]<<16) |
+           (rtarea[maskedAddress -RTAREA_BASE+2]<<8) |
+           rtarea[maskedAddress -RTAREA_BASE+3];
 }
 
 UBY rtarea_bget(ULO addr)
 {
-    return rtarea[addr-RTAREA_BASE];
+  ULO maskedAddress = addr & 0xffffff;
+  return rtarea[maskedAddress - RTAREA_BASE];
 }
 
 /* Swapped parameter order */
