@@ -1184,7 +1184,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	fprintf(codef, "\t{\n");
 	fprintf(codef, "\t\tcpuThrowPrivilegeViolationException();\n");
 	fprintf(codef, "\t\treturn;\n");
-	fprintf(codef, "\t}\n")
+	fprintf(codef, "\t}\n");
 
 	cgFetchDstEa(eano, eareg_cpu_data_index, size);
       }
