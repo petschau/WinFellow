@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.9 (2023/08/27)
+v0.5.10 (2023/09/13)
 \end_layout
 
 \begin_layout Author
@@ -210,7 +210,7 @@ Welcome to the WinFellow Amiga Emulator, a software emulation of the Commodore
  The emulator runs on an IBM compatible PC with a Windows operation system
  installed.
  Different Windows versions can be used, the emulator has been tested successful
-ly on operating systems ranging from Windows XP to Windows 10.
+ly on operating systems ranging from Windows 7 to Windows 10.
 \end_layout
 
 \begin_layout Standard
@@ -322,7 +322,7 @@ Release Notes
 \end_layout
 
 \begin_layout Section*
-What's New in WinFellow 0.5.9?
+What's New in WinFellow 0.5.10?
 \end_layout
 
 \begin_layout Standard
@@ -332,31 +332,12 @@ Thank you for your interest in WinFellow.
 \end_layout
 
 \begin_layout Itemize
-System requirement changes:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-support for Windows XP and Vista has been removed; version 0.5.8 will be the
- last WinFellow release to support Windows XP or Windows Vista.
- This enables us to take advantage of enhancements in the toolset used during
- development and testing.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
 New features:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-implemented a new menu option to allow configuration of the emulation pause
- behaviour when the window focus is lost/emulation is running in the background
-\end_layout
-
-\begin_layout Itemize
-the floppy read-only state can now be adjusted on the fly, without having
- to restart the emulator
+tbd
 \end_layout
 
 \end_deeper
@@ -366,23 +347,114 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-when using alt-tab to switch to different windows, the tab keypress is no
- longer passed on to the emulation session
+Addressed the following mostly CPU related issues:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Removed address register as byte source operand in move.
 \end_layout
 
 \begin_layout Itemize
-mouse events via RetroPlatform are being received again
+Various bit-field instruction fixes.
 \end_layout
 
 \begin_layout Itemize
-fixed minor heap corruption in RetroPlatform initialization code
+Incorrect pack/unpk behaviour.
 \end_layout
 
 \begin_layout Itemize
-fix a repeated error message during loading of presets when encrypted ROMs
- are searched and no keyfile is present
+Trapcc increase pc after condition check to get correct exception stack
+ frame.
 \end_layout
 
+\begin_layout Itemize
+Cas2 select the first compare result value when both compare registers are
+ the same register.
+ Set v flag.
+\end_layout
+
+\begin_layout Itemize
+Link/Unlk incorrect result on stack when link register was a7.
+\end_layout
+
+\begin_layout Itemize
+Split long reads in two word reads for correct values accross banks that
+ are not stored consecutively.
+\end_layout
+
+\begin_layout Itemize
+VPOS wraparound fix.
+\end_layout
+
+\begin_layout Itemize
+Exception cycle time changes.
+\end_layout
+
+\begin_layout Itemize
+Fixed various instructions that overwrote exception cycle times with regular
+ instruction time.
+ (when triggering privilege violations etc.)
+\end_layout
+
+\begin_layout Itemize
+Set div cycle times to values closer to the listed cycle times.
+ Still not dynamically calculated, but should be closer.
+\end_layout
+
+\begin_layout Itemize
+Don't trace when instruction was aborted by illegal, privilege or address
+ error.
+\end_layout
+
+\begin_layout Itemize
+CHK.w N flag fix.
+\end_layout
+
+\begin_layout Itemize
+EOR ea vs.
+ data register check for cycle calculation was inverted.
+\end_layout
+
+\begin_layout Itemize
+Changes to cycle calculation for BSET/BCGH.
+\end_layout
+
+\begin_layout Itemize
+Set undefined div flags according to behaviour on 68000
+\end_layout
+
+\begin_layout Itemize
+Move to SR, check supervisor level before evaluating ea
+\end_layout
+
+\begin_layout Itemize
+Include exception time in cycle time for chk.
+\end_layout
+
+\begin_layout Itemize
+Handle bkpt differenly from illegal
+\end_layout
+
+\begin_layout Itemize
+Broken overflow and other special cases for mull
+\end_layout
+
+\begin_layout Itemize
+Handle supervisor check differently for move from sr to avoid returning
+ result when throwing exception
+\end_layout
+
+\begin_layout Itemize
+Missing address mask in rtarea memory handling (for when upper address byte
+ contains data)
+\end_layout
+
+\begin_layout Itemize
+Trapcc had wrong pc in the stack frame
+\end_layout
+
+\end_deeper
 \end_deeper
 \begin_layout Itemize
 Maintenance updates:
@@ -390,19 +462,7 @@ Maintenance updates:
 
 \begin_deeper
 \begin_layout Itemize
-zlib was updated to version 1.2.11
-\end_layout
-
-\begin_layout Itemize
-xDMS was updated to version 1.3.2
-\end_layout
-
-\begin_layout Itemize
-Visual Studio 2022 and the Windows 11 SDK are used
-\end_layout
-
-\begin_layout Itemize
-RetroPlatform include has been updated
+tbd
 \end_layout
 
 \end_deeper
@@ -643,7 +703,7 @@ If your PC is still equipped with a serial port, you can utilize a null-modem
  cable to perform a Zmodem transfer between an Amiga and a PC.
  Simply plug the cable into a serial port on each machine, load up a terminal
  package such as Terminus, NComm or Term on the Amiga, or HyperTerminal
- (if you are still on Windows XP) or an alternative like 
+ or an alternative like 
 \begin_inset CommandInset href
 LatexCommand href
 name "RealTerm"
@@ -2061,14 +2121,6 @@ with help from
 \begin_layout Standard
 
 \noun on
-Worfje
-\noun default
- (worfje@gmx.net)
-\end_layout
-
-\begin_layout Standard
-
-\noun on
 Torsten Enderling
 \noun default
  (torsten.enderling@gmail.com)
@@ -2253,6 +2305,34 @@ aka Emulator Chicken
 
 \begin_layout Section*
 Programming Contributions
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Worfje
+\noun default
+ (worfje@gmx.net)
+\end_layout
+
+\begin_layout Itemize
+cross-platform development
+\end_layout
+
+\begin_layout Itemize
+graphics module
+\end_layout
+
+\begin_layout Itemize
+sound module
+\end_layout
+
+\begin_layout Itemize
+GUI
+\end_layout
+
+\begin_layout Itemize
+many changes over the years...
 \end_layout
 
 \begin_layout Standard
