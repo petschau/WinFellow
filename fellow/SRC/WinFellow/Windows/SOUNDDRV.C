@@ -919,7 +919,13 @@ bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
 void soundDrvPlay(WOR *left, WOR *right, ULO sample_count)
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
-  WaitForSingleObject(dsound_device->can_add_data, INFINITE);
+  DWORD wfso = WaitForSingleObject(dsound_device->can_add_data, 50);
+  if (wfso == WAIT_TIMEOUT) {
+      fellowAddLog("soundDrvPlay(): WaitForSingleObject ran into timeout. This might be caused by a device being disconnected during playback.\n");
+      // I'm sure there's a better way to deal with this
+      soundEmulationStop();
+      soundEmulationStart();
+  }
   dsound_device->pending_data_left = (UWO*)left;
   dsound_device->pending_data_right = (UWO*)right;
   dsound_device->pending_data_sample_count = sample_count;
