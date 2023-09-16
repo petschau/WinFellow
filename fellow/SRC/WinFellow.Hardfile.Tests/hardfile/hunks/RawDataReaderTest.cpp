@@ -1,147 +1,143 @@
 #include <memory>
 #include <stdexcept>
-#include "CppUnitTest.h"
-
 #include "hardfile/hunks/RawDataReader.h"
-#include "framework/TestBootstrap.h"
+#include "TestBootstrap.h"
+#include "catch/catch_amalgamated.hpp"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::hunks;
 
 namespace test::fellow::hardfile::hunks
 {
-  TEST_CLASS(RawDataReaderTest)
+  unique_ptr<uint8_t[]> CreateRawData()
   {
-    unique_ptr<UBY[]> _rawData;
-    unique_ptr<RawDataReader> _instance;
+    int index = 0;
+    unique_ptr<uint8_t[]> rawData(new uint8_t[12]);
+    rawData[index++] = 'A';
+    rawData[index++] = 'B';
+    rawData[index++] = 'C';
+    rawData[index++] = '\0';
 
-    void CreateRawData()
-    {
-      int index = 0;
-      _rawData.reset(new UBY[12]);
-      _rawData[index++] = 'A';
-      _rawData[index++] = 'B';
-      _rawData[index++] = 'C';
-      _rawData[index++] = '\0';
+    rawData[index++] = 'A';
+    rawData[index++] = 'B';
+    rawData[index++] = 'C';
+    rawData[index++] = 'D';
+    rawData[index++] = 'E';
+    rawData[index++] = 'F';
+    rawData[index++] = 'G';
+    rawData[index] = 'H';
+    return rawData;
+  }
 
-      _rawData[index++] = 'A';
-      _rawData[index++] = 'B';
-      _rawData[index++] = 'C';
-      _rawData[index++] = 'D';
-      _rawData[index++] = 'E';
-      _rawData[index++] = 'F';
-      _rawData[index++] = 'G';
-      _rawData[index] = 'H';
-    }
+  TEST_CASE("Hardfile::Hunks::RawDataReader.GetNextString() returns string")
+  {
+    InitializeTestframework();
+    auto _rawData = CreateRawData();
+    unique_ptr<RawDataReader> _instance(new RawDataReader(_rawData.get(), 12));
 
-    TEST_METHOD_INITIALIZE(TestInitialize)
-    {
-      InitializeTestframework();
-      CreateRawData();
-      _instance.reset(new RawDataReader(_rawData.get(), 12));
-    }
-
-    TEST_METHOD_CLEANUP(TestCleanup)
-    {
-      ShutdownTestframework();
-    }
-
-    TEST_METHOD(CanCreateInstance)
-    {
-      Assert::IsNotNull(_instance.get());
-    }
-
-    TEST_METHOD(GetNextString_ReadOneString_ReturnsCorrectString)
+    SECTION("Reads string")
     {
       string value = _instance->GetNextString(1);
-      Assert::AreEqual(value, string("ABC"));
+      REQUIRE(value == "ABC");
     }
 
-    TEST_METHOD(GetNextString_ReadTwoStrings_ReturnsCorrectStrings)
+    SECTION("Reads two strings")
     {
       _instance->GetNextString(1);
       string value = _instance->GetNextString(2);
-      Assert::AreEqual(value, string("ABCDEFGH"));
+      REQUIRE(value == "ABCDEFGH");
     }
 
-    TEST_METHOD(GetNextString_ReadEmptyString_ReturnsEmptyString)
+    SECTION("Reads empty string")
     {
       string value = _instance->GetNextString(0);
-      Assert::IsTrue(value.empty());
+      REQUIRE(value.empty() == true);
     }
 
-    TEST_METHOD(GetNextString_ReadStringTerminatedEarly_ReturnsShortStringAndNextIndexIsAfterFullBlock)
+    SECTION("Reads string that terminates early and next read index is after full block")
     {
       string value = _instance->GetNextString(3);
-      Assert::AreEqual(value, string("ABC"));
-      Assert::AreEqual<ULO>(12, _instance->GetIndex());
+      REQUIRE(value == "ABC");
+      REQUIRE(_instance->GetIndex() == 12);
     }
 
-    TEST_METHOD(GetNextString_ReadStringPastDataLength_ThrowsException)
+    SECTION("Throws out_of_range exception when reading past rawData length")
     {
-      RawDataReader *reader = _instance.get();
-      Assert::ExpectException<out_of_range>([reader] {reader->GetNextString(4); });
+      REQUIRE_THROWS_AS(_instance->GetNextString(4), out_of_range);
     }
 
-    TEST_METHOD(GetNextByteswappedLong_ReadOneLong_ReturnsCorrectLong)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::RawDataReader.GetNextByteswappedLong() returns long")
+  {
+    InitializeTestframework();
+    auto _rawData = CreateRawData();
+    unique_ptr<RawDataReader> _instance(new RawDataReader(_rawData.get(), 12));
+
+    SECTION("Reads long")
     {
-      ULO value = _instance->GetNextByteswappedLong();
-      Assert::AreEqual<ULO>(0x41424300, value);
+      uint32_t value = _instance->GetNextByteswappedLong();
+      REQUIRE(value == 0x41424300);
     }
 
-    TEST_METHOD(GetNextByteswappedLong_ReadTwoLongs_ReturnsCorrectLongs)
+    SECTION("Reads two longs")
     {
-      ULO value1 = _instance->GetNextByteswappedLong();
-      ULO value2 = _instance->GetNextByteswappedLong();
-      Assert::AreEqual<ULO>(0x41424300, value1);
-      Assert::AreEqual<ULO>(0x41424344, value2);
+      uint32_t value1 = _instance->GetNextByteswappedLong();
+      uint32_t value2 = _instance->GetNextByteswappedLong();
+      REQUIRE(value1 == 0x41424300);
+      REQUIRE(value2 == 0x41424344);
     }
 
-    TEST_METHOD(GetNextByteswappedLong_ReadLongwordsPastDataLength_ThrowsException)
+    SECTION("Throws out_of_range exception when reading past rawData length")
     {
-      RawDataReader *reader = _instance.get();
-      reader->GetNextByteswappedLong();
-      reader->GetNextByteswappedLong();
-      reader->GetNextByteswappedLong();
-      Assert::ExpectException<out_of_range>([reader] {reader->GetNextByteswappedLong(); });
+      _instance->GetNextByteswappedLong();
+      _instance->GetNextByteswappedLong();
+      _instance->GetNextByteswappedLong();
+      REQUIRE_THROWS_AS(_instance->GetNextByteswappedLong(), out_of_range);
     }
 
-    TEST_METHOD(GetNextBytes_ReadTwoLongwords_ReturnsPointerToBytes)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::RawDataReader.GetNextBytes() returns array of bytes")
+  {
+    InitializeTestframework();
+    auto _rawData = CreateRawData();
+    unique_ptr<RawDataReader> _instance(new RawDataReader(_rawData.get(), 12));
+
+    SECTION("Reads next two longwords as byte array")
     {
       unique_ptr<UBY> value(_instance->GetNextBytes(2));
-      Assert::AreEqual<UBY>(0x41, value.get()[0]);
-      Assert::AreEqual<UBY>(0x42, value.get()[1]);
-      Assert::AreEqual<UBY>(0x43, value.get()[2]);
-      Assert::AreEqual<UBY>(0x00, value.get()[3]);
-      Assert::AreEqual<UBY>(0x41, value.get()[4]);
-      Assert::AreEqual<UBY>(0x42, value.get()[5]);
-      Assert::AreEqual<UBY>(0x43, value.get()[6]);
-      Assert::AreEqual<UBY>(0x44, value.get()[7]);
+      REQUIRE(value.get()[0] == 0x41);
+      REQUIRE(value.get()[1] == 0x42);
+      REQUIRE(value.get()[2] == 0x43);
+      REQUIRE(value.get()[3] == 0x00);
+      REQUIRE(value.get()[4] == 0x41);
+      REQUIRE(value.get()[5] == 0x42);
+      REQUIRE(value.get()[6] == 0x43);
+      REQUIRE(value.get()[7] == 0x44);
     }
 
-    TEST_METHOD(GetNextBytes_ReadBytesPastDataLength_ThrowsException)
-    {
-      RawDataReader *reader = _instance.get();
-      Assert::ExpectException<out_of_range>([reader] {reader->GetNextBytes(4); });
-    }
-
-    TEST_METHOD(GetNextBytes_ReadLongwordTwoTimes_ReturnsPointersToCorrectBytes)
+    SECTION("Reads twice and second byte array contains data from the correct index")
     {
       unique_ptr<UBY> value1(_instance->GetNextBytes(1));
       unique_ptr<UBY> value2(_instance->GetNextBytes(2));
-      Assert::AreEqual<UBY>(0x41, value1.get()[0]);
-      Assert::AreEqual<UBY>(0x42, value1.get()[1]);
-      Assert::AreEqual<UBY>(0x43, value1.get()[2]);
-      Assert::AreEqual<UBY>(0x00, value1.get()[3]);
-      Assert::AreEqual<UBY>(0x41, value2.get()[0]);
-      Assert::AreEqual<UBY>(0x42, value2.get()[1]);
-      Assert::AreEqual<UBY>(0x43, value2.get()[2]);
-      Assert::AreEqual<UBY>(0x44, value2.get()[3]);
-      Assert::AreEqual<UBY>(0x45, value2.get()[4]);
-      Assert::AreEqual<UBY>(0x46, value2.get()[5]);
-      Assert::AreEqual<UBY>(0x47, value2.get()[6]);
-      Assert::AreEqual<UBY>(0x48, value2.get()[7]);
+      REQUIRE(value2.get()[0] == 0x41);
+      REQUIRE(value2.get()[1] == 0x42);
+      REQUIRE(value2.get()[2] == 0x43);
+      REQUIRE(value2.get()[3] == 0x44);
+      REQUIRE(value2.get()[4] == 0x45);
+      REQUIRE(value2.get()[5] == 0x46);
+      REQUIRE(value2.get()[6] == 0x47);
+      REQUIRE(value2.get()[7] == 0x48);
     }
-  };
+
+    SECTION("Throws out_of_range exception when reading past rawData length")
+    {
+      REQUIRE_THROWS_AS(_instance->GetNextBytes(4), out_of_range);
+    }
+
+    ShutdownTestframework();
+  }
 }

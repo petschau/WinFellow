@@ -1,220 +1,278 @@
 #include <memory>
-#include "CppUnitTest.h"
-
 #include "hardfile/hunks/HeaderHunk.h"
-#include "framework/TestBootstrap.h"
+#include "TestBootstrap.h"
+#include "catch/catch_amalgamated.hpp"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::hunks;
 
 namespace test::fellow::hardfile::hunks
 {
-  TEST_CLASS(HeaderHunkTest)
+  unsigned int CreateResidentLibraryList(uint8_t* hunkData, unsigned int residentLibraryCount, unsigned int index)
   {
-    unique_ptr<HeaderHunk> _instance;
-    unique_ptr<RawDataReader> _rawDataReader;
-    unique_ptr<UBY[]> _hunkData;
-    ULO _hunkDataSize = 0;
-
-    int CreateResidentLibraryList(int residentLibraryCount, ULO index)
+    for (unsigned int i = 0; i < residentLibraryCount; i++)
     {
-      for (int i = 0; i < residentLibraryCount; i++)
+      unsigned int sizeInLongWords = (i + 1);
+      hunkData[index++] = 0;
+      hunkData[index++] = 0;
+      hunkData[index++] = 0;
+      hunkData[index++] = static_cast<uint8_t>(sizeInLongWords);
+
+      for (unsigned int j = 0; j < sizeInLongWords; j++)
       {
-        int sizeInLongWords = (i + 1);
-        _hunkData[index++] = 0;
-        _hunkData[index++] = 0;
-        _hunkData[index++] = 0;
-        _hunkData[index++] = static_cast<UBY>(sizeInLongWords);
-
-        for (int j = 0; j < sizeInLongWords; j++)
-        {
-          _hunkData[index++] = 'A';
-          _hunkData[index++] = 'B';
-          _hunkData[index++] = 'C';
-          _hunkData[index++] = (j == (sizeInLongWords - 1)) ? '\0' : 'D';
-        }
+        hunkData[index++] = 'A';
+        hunkData[index++] = 'B';
+        hunkData[index++] = 'C';
+        hunkData[index++] = (j == (sizeInLongWords - 1)) ? '\0' : 'D';
       }
-
-      // Terminate list
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-
-      return index;
     }
 
-    ULO CreateHunkTable(ULO index)
+    // Terminate list
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+
+    return index;
+  }
+
+  unsigned int CreateHunkTable(uint8_t* hunkData, unsigned int index)
+  {
+    // Table size
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 2;
+
+    // First hunk
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 1;
+
+    // Last hunk
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 4;
+
+    // Hunk 1 size any memory flag
+    hunkData[index++] = 1;
+    hunkData[index++] = 2;
+    hunkData[index++] = 3;
+    hunkData[index++] = 4;
+
+    // Hunk 2 size chip memory flag
+    hunkData[index++] = 0x41;
+    hunkData[index++] = 2;
+    hunkData[index++] = 3;
+    hunkData[index++] = 5;
+
+    // Hunk 3 size additional flags
+    hunkData[index++] = 0xFF;
+    hunkData[index++] = 0x60;
+    hunkData[index++] = 0x70;
+    hunkData[index++] = 0x80;
+
+    hunkData[index++] = 0x11;
+    hunkData[index++] = 0x22;
+    hunkData[index++] = 0x33;
+    hunkData[index++] = 0x44;
+
+    // Hunk 4 size fast memory flag
+    hunkData[index++] = 0x81;
+    hunkData[index++] = 2;
+    hunkData[index++] = 3;
+    hunkData[index++] = 7;
+
+    return index;
+  }
+
+  unsigned int FillHeaderHunkData(uint8_t* hunkData, unsigned int residentLibraryCount)
+  {
+    unsigned int index = 0;
+    index = CreateResidentLibraryList(hunkData, residentLibraryCount, index);
+    return CreateHunkTable(hunkData, index);
+  }
+
+  unique_ptr<uint8_t[]> CreateHeaderHunkData(unsigned int allocateSize)
+  {
+    return unique_ptr<uint8_t[]>(new uint8_t[allocateSize]);
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.GetID() returns ID for HeaderHunk")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Returns ID for EndHunk")
     {
-      // Table size
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 2;
-
-      // First hunk
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 1;
-
-      // Last hunk
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 4;
-
-      // Hunk 1 size any memory flag
-      _hunkData[index++] = 1;
-      _hunkData[index++] = 2;
-      _hunkData[index++] = 3;
-      _hunkData[index++] = 4;
-
-      // Hunk 2 size chip memory flag
-      _hunkData[index++] = 0x41;
-      _hunkData[index++] = 2;
-      _hunkData[index++] = 3;
-      _hunkData[index++] = 5;
-
-      // Hunk 3 size additional flags
-      _hunkData[index++] = 0xFF;
-      _hunkData[index++] = 0x60;
-      _hunkData[index++] = 0x70;
-      _hunkData[index++] = 0x80;
-
-      _hunkData[index++] = 0x11;
-      _hunkData[index++] = 0x22;
-      _hunkData[index++] = 0x33;
-      _hunkData[index++] = 0x44;
-
-      // Hunk 4 size fast memory flag
-      _hunkData[index++] = 0x81;
-      _hunkData[index++] = 2;
-      _hunkData[index++] = 3;
-      _hunkData[index++] = 7;
-
-      return index;
+      uint32_t id = _instance->GetID();
+      REQUIRE(id == 0x3f3);
     }
 
-    void CreateHunkData(int residentLibraryCount)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() should find two resident library names")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Should find two resident library names")
     {
-      ULO index = 0;
-      _hunkData.reset(new UBY[128]);
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
 
-      index = CreateResidentLibraryList(residentLibraryCount, index);
-      _hunkDataSize = CreateHunkTable(index);
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetResidentLibraryCount() == 2);
+      REQUIRE(_instance-> GetResidentLibrary(0) == "ABC");
+      REQUIRE(_instance->GetResidentLibrary(1) == "ABCDABC");
     }
 
-    RawDataReader& GetNewRawDataReader()
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() should find four hunk size table entries")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Should find four hunk size table entries")
     {
-      _rawDataReader.reset(new RawDataReader(_hunkData.get(), _hunkDataSize));
-      return *_rawDataReader;
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetHunkSizeCount() == 4);
     }
 
-    TEST_METHOD_INITIALIZE(TestInitialize)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() first load hunk should be 1")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("First load hunk should be 1")
     {
-      InitializeTestframework();
-      _instance.reset(new HeaderHunk());
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetFirstLoadHunk() == 1);
     }
 
-    TEST_METHOD_CLEANUP(TestCleanup)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() last load hunk should be 4")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Last load hunk should be 4")
     {
-      ShutdownTestframework();
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetLastLoadHunk() == 4);
     }
 
-    TEST_METHOD(CanCreateInstance)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() should read first hunk size and flags correctly")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Should read first hunk size and flags correctly")
     {
-      Assert::IsNotNull(_instance.get());
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetHunkSize(0).SizeInLongwords == 0x01020304);
+      REQUIRE(_instance->GetHunkSize(0).MemoryFlags == 0);
+      REQUIRE(_instance->GetHunkSize(0).AdditionalFlags == 0);
     }
 
-    TEST_METHOD(GetID_ReturnsIDForHeaderHunk)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() should read second hunk size and flags correctly")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Should read second hunk size and flags correctly")
     {
-      ULO id = _instance->GetID();
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
 
-      Assert::AreEqual<ULO>(0x3f3, id);
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetHunkSize(1).SizeInLongwords == 0x01020305);
+      REQUIRE(_instance->GetHunkSize(1).MemoryFlags == 1);
+      REQUIRE(_instance->GetHunkSize(1).AdditionalFlags == 0);
     }
 
-    TEST_METHOD(Parse_TwoResidentLibraries_ResidentLibraryNamesFound)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() should read third hunk size and flags correctly")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Should read third hunk size and flags correctly")
     {
-      CreateHunkData(2);
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
 
-      _instance->Parse(GetNewRawDataReader());
+      _instance->Parse(*rawDataReader);
 
-      Assert::AreEqual<size_t>(2, _instance->GetResidentLibraryCount());
-      Assert::AreEqual<string>("ABC", _instance->GetResidentLibrary(0));
-      Assert::AreEqual<string>("ABCDABC", _instance->GetResidentLibrary(1));
+      REQUIRE(_instance->GetHunkSize(2).SizeInLongwords == 0x3F607080);
+      REQUIRE(_instance->GetHunkSize(2).MemoryFlags == 3);
+      REQUIRE(_instance->GetHunkSize(2).AdditionalFlags == 0x11223344);
     }
 
-    TEST_METHOD(Parse_HunkTableSize_HunkSizeTableHasFourEntries)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::HeaderHunk.Parse() should read fourth hunk size and flags correctly")
+  {
+    InitializeTestframework();
+    unique_ptr<HeaderHunk> _instance(new HeaderHunk());
+
+    SECTION("Should read fourth hunk size and flags correctly")
     {
-      CreateHunkData(2);
+      auto hunkData = CreateHeaderHunkData(128);
+      unsigned int actualHunkDataSize = FillHeaderHunkData(hunkData.get(), 2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), actualHunkDataSize));
 
-      _instance->Parse(GetNewRawDataReader());
+      _instance->Parse(*rawDataReader);
 
-      Assert::AreEqual<size_t>(4, _instance->GetHunkSizeCount());
+      REQUIRE(_instance->GetHunkSize(3).SizeInLongwords == 0x01020307);
+      REQUIRE(_instance->GetHunkSize(3).MemoryFlags == 2);
+      REQUIRE(_instance->GetHunkSize(3).AdditionalFlags == 0);
     }
 
-    TEST_METHOD(Parse_HunkTableFirstLoadHunk_FirstLoadHunkIs1)
-    {
-      CreateHunkData(2);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<ULO>(1, _instance->GetFirstLoadHunk());
-    }
-
-    TEST_METHOD(Parse_HunkTableLastLoadHunk_LastLoadHunkIs4)
-    {
-      CreateHunkData(2);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<ULO>(4, _instance->GetLastLoadHunk());
-    }
-
-    TEST_METHOD(Parse_HunkTableSizes_FirstHunkSizeAndAnyMemoryFlag)
-    {
-      CreateHunkData(2);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<ULO>(0x01020304, _instance->GetHunkSize(0).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _instance->GetHunkSize(0).MemoryFlags);
-      Assert::AreEqual<ULO>(0, _instance->GetHunkSize(0).AdditionalFlags);
-    }
-
-    TEST_METHOD(Parse_HunkTableSizes_SecondHunkSizeAndChipMemoryFlag)
-    {
-      CreateHunkData(2);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<ULO>(0x01020305, _instance->GetHunkSize(1).SizeInLongwords);
-      Assert::AreEqual<ULO>(1, _instance->GetHunkSize(1).MemoryFlags);
-      Assert::AreEqual<ULO>(0, _instance->GetHunkSize(1).AdditionalFlags);
-    }
-
-    TEST_METHOD(Parse_HunkTableSizes_ThirdHunkSizeAndAdditionalMemoryFlags)
-    {
-      CreateHunkData(2);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<ULO>(0x3F607080, _instance->GetHunkSize(2).SizeInLongwords);
-      Assert::AreEqual<ULO>(3, _instance->GetHunkSize(2).MemoryFlags);
-      Assert::AreEqual<ULO>(0x11223344, _instance->GetHunkSize(2).AdditionalFlags);
-    }
-
-    TEST_METHOD(Parse_HunkTableSizes_LastHunkSizeAndFastMemoryFlag)
-    {
-      CreateHunkData(2);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<ULO>(0x01020307, _instance->GetHunkSize(3).SizeInLongwords);
-      Assert::AreEqual<ULO>(2, _instance->GetHunkSize(3).MemoryFlags);
-      Assert::AreEqual<ULO>(0, _instance->GetHunkSize(3).AdditionalFlags);
-    }
-  };
+    ShutdownTestframework();
+  }
 }

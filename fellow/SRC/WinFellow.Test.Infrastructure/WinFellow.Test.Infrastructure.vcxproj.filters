@@ -4,6 +4,12 @@
     <Filter Include="catch">
       <UniqueIdentifier>{f5886400-2a69-4b5b-b076-4018bf952409}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mock">
+      <UniqueIdentifier>{da8d249b-1db3-4dbd-9f91-63b2f910f512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mock\service">
+      <UniqueIdentifier>{edd5486d-93ef-4cc1-91d5-78515195fd1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="catch\about_catch2.txt">
@@ -14,10 +20,36 @@
     <ClCompile Include="catch\catch_amalgamated.cpp">
       <Filter>catch</Filter>
     </ClCompile>
+    <ClCompile Include="mock\service\FSWrapperMock.cpp">
+      <Filter>mock\service</Filter>
+    </ClCompile>
+    <ClCompile Include="mock\service\HUDMock.cpp">
+      <Filter>mock\service</Filter>
+    </ClCompile>
+    <ClCompile Include="mock\service\LogMock.cpp">
+      <Filter>mock\service</Filter>
+    </ClCompile>
+    <ClCompile Include="mock\service\RetroPlatformWrapperMock.cpp">
+      <Filter>mock\service</Filter>
+    </ClCompile>
+    <ClCompile Include="TestBootstrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch\catch_amalgamated.hpp">
       <Filter>catch</Filter>
     </ClInclude>
+    <ClInclude Include="mock\service\FSWrapperMock.h">
+      <Filter>mock\service</Filter>
+    </ClInclude>
+    <ClInclude Include="mock\service\HUDMock.h">
+      <Filter>mock\service</Filter>
+    </ClInclude>
+    <ClInclude Include="mock\service\LogMock.h">
+      <Filter>mock\service</Filter>
+    </ClInclude>
+    <ClInclude Include="mock\service\RetroPlatformWrapperMock.h">
+      <Filter>mock\service</Filter>
+    </ClInclude>
+    <ClInclude Include="TestBootstrap.h" />
   </ItemGroup>
 </Project>

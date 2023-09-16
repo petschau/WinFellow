@@ -1,313 +1,344 @@
 #include <memory>
-#include "CppUnitTest.h"
-
 #include "hardfile/hunks/HunkParser.h"
 #include "hardfile/hunks/Reloc32Hunk.h"
-#include "framework/TestBootstrap.h"
+#include "TestBootstrap.h"
+#include "catch/catch_amalgamated.hpp"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::hunks;
 
 namespace test::fellow::hardfile::hunks
 {
-  TEST_CLASS(HunkParserTest)
+
+  long GetFilesystemFilesize(const char* filename)
   {
-    unique_ptr<HunkParser> _instance;
-    unique_ptr<UBY> _rawData;
-    FileImage _fileImage;
-
-    ULO LoadFile(const char* filename)
+    FILE* F = fopen(filename, "rb");
+    if (F == nullptr)
     {
-      FILE *F = nullptr;
-      fopen_s(&F, filename, "rb");
-      fseek(F, 0, SEEK_END);
-      long size = ftell(F);
-      _rawData.reset(new UBY[size]);
-      fseek(F, 0, SEEK_SET);
-      fread(_rawData.get(), 1, size, F);
-      fclose(F);
-      return size;
+      throw std::exception();
     }
 
-    void CreateInstanceWithFile(const char* filename)
+    fseek(F, 0, SEEK_END);
+    long size = ftell(F);
+    fclose(F);
+
+    return size;
+  }
+
+  unique_ptr<uint8_t[]> LoadFilesystemFile(const char* filename, long filesize)
+  {
+    FILE* F = fopen(filename, "rb");
+    if (F == nullptr)
     {
-      ULO size = LoadFile(filename);
-      _instance.reset(new HunkParser(_rawData.get(), size, _fileImage));
+      throw std::exception();
     }
 
-    TEST_METHOD_INITIALIZE(TestInitialize)
+    unique_ptr<uint8_t[]> rawData(new uint8_t[filesize]);
+    fseek(F, 0, SEEK_SET);
+    fread(rawData.get(), 1, filesize, F);
+    fclose(F);
+
+    return rawData;
+  }
+
+  unique_ptr<HunkParser> CreateInstanceWithFile(long filesize, uint8_t* rawData, FileImage& fileImage)
+  {
+    return std::make_unique<HunkParser>(rawData, filesize, fileImage);
+  }
+
+  TEST_CASE("Hardfile::Hunks::HunkParser.Parse() should parse filesystem binaries")
+  {
+    InitializeTestframework();
+
+    SECTION("Parses SmartFilesystem")
     {
-      InitializeTestframework();
+      const char* SmartFilesystemFilename = R"(testdata\hardfile\hunks\SmartFilesystem)";
+      long filesize = GetFilesystemFilesize(SmartFilesystemFilename);
+      unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(SmartFilesystemFilename, filesize);
+      FileImage fileImage;
+
+      unique_ptr<HunkParser> instance(CreateInstanceWithFile(filesize, rawData.get(), fileImage));
+
+      bool result = instance->Parse();
+
+      REQUIRE(result == true);
+      REQUIRE(fileImage.GetHeader()->GetFirstLoadHunk() == 0);
+      REQUIRE(fileImage.GetHeader()->GetLastLoadHunk() == 0);
+      REQUIRE(fileImage.GetHeader()->GetHunkSizeCount() == 1);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords == 0x5fbe);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).MemoryFlags == 0);
+
+      REQUIRE(fileImage.GetInitialHunkCount() == 1);
+      REQUIRE(fileImage.GetAdditionalHunkCount() == 1);
+
+      REQUIRE(fileImage.GetInitialHunk(0)->GetID() == CodeHunkID);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes() == 0x5fbe * 4);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetContentSizeInBytes() == 0x5fbe * 4);
+
+      uint8_t firstByte = fileImage.GetInitialHunk(0)->GetContent()[0];
+      uint8_t middleByte = fileImage.GetInitialHunk(0)->GetContent()[0xbf7d];
+      uint8_t lastByte = fileImage.GetInitialHunk(0)->GetContent()[0x5fbe * 4 - 1];
+      REQUIRE(firstByte == 0x60);
+      REQUIRE(middleByte == 0x0c);
+      REQUIRE(lastByte == 0);
+
+      REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
+      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
+
+      REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 0);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetOffsetCount() == 0x28);
+
+      uint32_t firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
+      uint32_t middleOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(14);
+      uint32_t lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(39);
+
+      REQUIRE(firstOffset == 0x86);
+      REQUIRE(middleOffset == 0x7d1e);
+      REQUIRE(lastOffset == 0x17db6);
     }
 
-    TEST_METHOD_CLEANUP(TestCleanup)
+    SECTION("Parses ProfFileSystem 195")
     {
-      ShutdownTestframework();
-    }
+      const char* ProfFileSystem195Filename = R"(testdata\hardfile\hunks\ProfFileSystem_195)";
+      long filesize = GetFilesystemFilesize(ProfFileSystem195Filename);
+      unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(ProfFileSystem195Filename, filesize);
+      FileImage fileImage;
 
-    TEST_METHOD(Parse_SmartFilesystem_FileReadsOK)
-    {
-      CreateInstanceWithFile(R"(testdata\hardfile\hunks\SmartFilesystem)");
+      unique_ptr<HunkParser> instance(CreateInstanceWithFile(filesize, rawData.get(), fileImage));
 
-      bool result = _instance->Parse();
+      bool result = instance->Parse();
 
-      Assert::IsTrue(result);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetFirstLoadHunk());
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetLastLoadHunk());
-      Assert::AreEqual<size_t>(1, _fileImage.GetHeader()->GetHunkSizeCount());
-      Assert::AreEqual<ULO>(0x5fbe, _fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(0).MemoryFlags);
+      REQUIRE(result == true);
+      REQUIRE(fileImage.GetHeader()->GetFirstLoadHunk() == 0);
+      REQUIRE(fileImage.GetHeader()->GetLastLoadHunk() == 1);
+      REQUIRE(fileImage.GetHeader()->GetHunkSizeCount() == 2);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords == 0x1b4f);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).MemoryFlags == 0);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(1).SizeInLongwords == 0x13d);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(1).MemoryFlags == 0);
 
-      Assert::AreEqual<size_t>(1, _fileImage.GetInitialHunkCount());
-      Assert::AreEqual<size_t>(1, _fileImage.GetAdditionalHunkCount());
-
-      Assert::AreEqual<ULO>(CodeHunkID, _fileImage.GetInitialHunk(0)->GetID());
-      Assert::AreEqual<ULO>(0x5fbe * 4, _fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0x5fbe * 4, _fileImage.GetInitialHunk(0)->GetContentSizeInBytes());
-
-      UBY firstByte = _fileImage.GetInitialHunk(0)->GetContent()[0];
-      UBY middleByte = _fileImage.GetInitialHunk(0)->GetContent()[0xbf7d];
-      UBY lastByte = _fileImage.GetInitialHunk(0)->GetContent()[0x5fbe * 4 - 1];
-      Assert::AreEqual<UBY>(0x60, firstByte);
-      Assert::AreEqual<UBY>(0x0c, middleByte);
-      Assert::AreEqual<UBY>(0, lastByte);
-
-      Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
-
-      Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
-      Assert::AreEqual<ULO>(0, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
-      Assert::AreEqual<size_t>(0x28, reloc32Hunk->GetOffsetTable(0)->GetOffsetCount());
-
-      ULO firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
-      ULO middleOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(14);
-      ULO lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(39);
-
-      Assert::AreEqual<ULO>(0x86, firstOffset);
-      Assert::AreEqual<ULO>(0x7d1e, middleOffset);
-      Assert::AreEqual<ULO>(0x17db6, lastOffset);
-    }
-
-    TEST_METHOD(Parse_ProfFileSystem195_FileReadsOK)
-    {
-      CreateInstanceWithFile(R"(testdata\hardfile\hunks\ProfFileSystem_195)");
-
-      bool result = _instance->Parse();
-
-      Assert::IsTrue(result);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetFirstLoadHunk());
-      Assert::AreEqual<ULO>(1, _fileImage.GetHeader()->GetLastLoadHunk());
-      Assert::AreEqual<size_t>(2, _fileImage.GetHeader()->GetHunkSizeCount());
-      Assert::AreEqual<ULO>(0x1b4f, _fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(0).MemoryFlags);
-      Assert::AreEqual<ULO>(0x13d, _fileImage.GetHeader()->GetHunkSize(1).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(1).MemoryFlags);
-
-      Assert::AreEqual<size_t>(2, _fileImage.GetInitialHunkCount());
-      Assert::AreEqual<size_t>(2, _fileImage.GetAdditionalHunkCount());
+      REQUIRE(fileImage.GetInitialHunkCount() == 2);
+      REQUIRE(fileImage.GetAdditionalHunkCount() == 2);
 
       // Code hunk
-      Assert::AreEqual<ULO>(CodeHunkID, _fileImage.GetInitialHunk(0)->GetID());
-      Assert::AreEqual<ULO>(0x1b4f * 4, _fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0x1b4f * 4, _fileImage.GetInitialHunk(0)->GetContentSizeInBytes());
+      REQUIRE(fileImage.GetInitialHunk(0)->GetID() == CodeHunkID);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes() == 0x1b4f * 4);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetContentSizeInBytes() == 0x1b4f * 4);
 
-      UBY firstByte = _fileImage.GetInitialHunk(0)->GetContent()[0];
-      UBY middleByte = _fileImage.GetInitialHunk(0)->GetContent()[0x2000];
-      UBY lastByte = _fileImage.GetInitialHunk(0)->GetContent()[0x1b4f * 4 - 1];
-      Assert::AreEqual<UBY>(0x9e, firstByte);
-      Assert::AreEqual<UBY>(0x01, middleByte);
-      Assert::AreEqual<UBY>(0x75, lastByte);
+      uint8_t firstByte = fileImage.GetInitialHunk(0)->GetContent()[0];
+      uint8_t middleByte = fileImage.GetInitialHunk(0)->GetContent()[0x2000];
+      uint8_t lastByte = fileImage.GetInitialHunk(0)->GetContent()[0x1b4f * 4 - 1];
+      REQUIRE(firstByte == 0x9e);
+      REQUIRE(middleByte == 0x01);
+      REQUIRE(lastByte == 0x75);
 
       // Data hunk
-      Assert::AreEqual<ULO>(DataHunkID, _fileImage.GetInitialHunk(1)->GetID());
-      Assert::AreEqual<ULO>(0x13d * 4, _fileImage.GetInitialHunk(1)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0x13d * 4, _fileImage.GetInitialHunk(1)->GetContentSizeInBytes());
+      REQUIRE(fileImage.GetInitialHunk(1)->GetID() == DataHunkID);
+      REQUIRE(fileImage.GetInitialHunk(1)->GetAllocateSizeInBytes() == 0x13d * 4);
+      REQUIRE(fileImage.GetInitialHunk(1)->GetContentSizeInBytes() == 0x13d * 4);
 
-      firstByte = _fileImage.GetInitialHunk(1)->GetContent()[0];
-      middleByte = _fileImage.GetInitialHunk(1)->GetContent()[0x200];
-      lastByte = _fileImage.GetInitialHunk(1)->GetContent()[0x13d * 4 - 1];
-      Assert::AreEqual<UBY>(0, firstByte);
-      Assert::AreEqual<UBY>(0x25, middleByte);
-      Assert::AreEqual<UBY>(0, lastByte);
+      firstByte = fileImage.GetInitialHunk(1)->GetContent()[0];
+      middleByte = fileImage.GetInitialHunk(1)->GetContent()[0x200];
+      lastByte = fileImage.GetInitialHunk(1)->GetContent()[0x13d * 4 - 1];
+      REQUIRE(firstByte == 0);
+      REQUIRE(middleByte == 0x25);
+      REQUIRE(lastByte == 0);
 
       // First reloc 32 hunk
-      Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
+      REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
+      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
 
-      Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
-      Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
-      Assert::AreEqual<size_t>(2, reloc32Hunk->GetOffsetTable(0)->GetOffsetCount());
+      REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetOffsetCount() == 2);
 
-      ULO firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
-      ULO lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(1);
+      uint32_t firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
+      uint32_t lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(1);
 
-      Assert::AreEqual<ULO>(0x1dae, firstOffset);
-      Assert::AreEqual<ULO>(0xa, lastOffset);
+      REQUIRE(firstOffset == 0x1dae);
+      REQUIRE(lastOffset == 0xa);
 
       // Second reloc 32 hunk
-      Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(1)->GetID());
-      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(1));
+      REQUIRE(fileImage.GetAdditionalHunk(1)->GetID() == Reloc32HunkID);
+      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(1));
 
-      Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
-      Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
-      Assert::AreEqual<size_t>(4, reloc32Hunk->GetOffsetTable(0)->GetOffsetCount());
+      REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetOffsetCount() == 4);
 
       firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
       lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(3);
 
-      Assert::AreEqual<ULO>(0x2fe, firstOffset);
-      Assert::AreEqual<ULO>(0x3a, lastOffset);
+      REQUIRE(firstOffset == 0x2fe);
+      REQUIRE(lastOffset == 0x3a);
     }
 
-    TEST_METHOD(Parse_ProfFileSystem195_68020_FileReadsOK)
+    SECTION("Parses ProfFileSystem 195 68020")
     {
-      CreateInstanceWithFile(R"(testdata\hardfile\hunks\ProfFileSystem_195_68020+)");
+      const char* ProfFileSystem195_68020Filename = R"(testdata\hardfile\hunks\ProfFileSystem_195_68020+)";
+      long filesize = GetFilesystemFilesize(ProfFileSystem195_68020Filename);
+      unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(ProfFileSystem195_68020Filename, filesize);
+      FileImage fileImage;
 
-      bool result = _instance->Parse();
+      unique_ptr<HunkParser> instance(CreateInstanceWithFile(filesize, rawData.get(), fileImage));
 
-      Assert::IsTrue(result);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetFirstLoadHunk());
-      Assert::AreEqual<ULO>(1, _fileImage.GetHeader()->GetLastLoadHunk());
-      Assert::AreEqual<size_t>(2, _fileImage.GetHeader()->GetHunkSizeCount());
-      Assert::AreEqual<ULO>(0x1abd, _fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(0).MemoryFlags);
-      Assert::AreEqual<ULO>(0x13d, _fileImage.GetHeader()->GetHunkSize(1).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(1).MemoryFlags);
+      bool result = instance->Parse();
 
-      Assert::AreEqual<size_t>(2, _fileImage.GetInitialHunkCount());
-      Assert::AreEqual<size_t>(2, _fileImage.GetAdditionalHunkCount());
+      REQUIRE(result == true);
+      REQUIRE(fileImage.GetHeader()->GetFirstLoadHunk() == 0);
+      REQUIRE(fileImage.GetHeader()->GetLastLoadHunk() == 1);
+      REQUIRE(fileImage.GetHeader()->GetHunkSizeCount() == 2);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords == 0x1abd);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).MemoryFlags == 0);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(1).SizeInLongwords == 0x13d);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(1).MemoryFlags == 0);
+
+      REQUIRE(fileImage.GetInitialHunkCount() == 2);
+      REQUIRE(fileImage.GetAdditionalHunkCount() == 2);
 
       // Code hunk
-      Assert::AreEqual<ULO>(CodeHunkID, _fileImage.GetInitialHunk(0)->GetID());
-      Assert::AreEqual<ULO>(0x1abd * 4, _fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0x1abd * 4, _fileImage.GetInitialHunk(0)->GetContentSizeInBytes());
+      REQUIRE(fileImage.GetInitialHunk(0)->GetID() == CodeHunkID);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes() == 0x1abd * 4);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetContentSizeInBytes() == 0x1abd * 4);
 
-      UBY firstByte = _fileImage.GetInitialHunk(0)->GetContent()[0];
-      UBY middleByte = _fileImage.GetInitialHunk(0)->GetContent()[0x2000];
-      UBY lastByte = _fileImage.GetInitialHunk(0)->GetContent()[0x1abd * 4 - 1];
-      Assert::AreEqual<UBY>(0x9e, firstByte);
-      Assert::AreEqual<UBY>(0x30, middleByte);
-      Assert::AreEqual<UBY>(0x75, lastByte);
+      uint8_t firstByte = fileImage.GetInitialHunk(0)->GetContent()[0];
+      uint8_t middleByte = fileImage.GetInitialHunk(0)->GetContent()[0x2000];
+      uint8_t lastByte = fileImage.GetInitialHunk(0)->GetContent()[0x1abd * 4 - 1];
+      REQUIRE(firstByte == 0x9e);
+      REQUIRE(middleByte == 0x30);
+      REQUIRE(lastByte == 0x75);
 
       // Data hunk
-      Assert::AreEqual<ULO>(DataHunkID, _fileImage.GetInitialHunk(1)->GetID());
-      Assert::AreEqual<ULO>(0x13d * 4, _fileImage.GetInitialHunk(1)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0x13d * 4, _fileImage.GetInitialHunk(1)->GetContentSizeInBytes());
+      REQUIRE(fileImage.GetInitialHunk(1)->GetID() == DataHunkID);
+      REQUIRE(fileImage.GetInitialHunk(1)->GetAllocateSizeInBytes() == 0x13d * 4);
+      REQUIRE(fileImage.GetInitialHunk(1)->GetContentSizeInBytes() == 0x13d * 4);
 
-      firstByte = _fileImage.GetInitialHunk(1)->GetContent()[0];
-      middleByte = _fileImage.GetInitialHunk(1)->GetContent()[0x200];
-      lastByte = _fileImage.GetInitialHunk(1)->GetContent()[0x13d * 4 - 1];
-      Assert::AreEqual<UBY>(0, firstByte);
-      Assert::AreEqual<UBY>(0x25, middleByte);
-      Assert::AreEqual<UBY>(0, lastByte);
+      firstByte = fileImage.GetInitialHunk(1)->GetContent()[0];
+      middleByte = fileImage.GetInitialHunk(1)->GetContent()[0x200];
+      lastByte = fileImage.GetInitialHunk(1)->GetContent()[0x13d * 4 - 1];
+      REQUIRE(firstByte == 0);
+      REQUIRE(middleByte == 0x25);
+      REQUIRE(lastByte == 0);
 
       // First reloc 32 hunk
-      Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
+      REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
+      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
 
-      Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
-      Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
-      Assert::AreEqual<size_t>(2, reloc32Hunk->GetOffsetTable(0)->GetOffsetCount());
+      REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetOffsetCount() == 2);
 
-      ULO firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
-      ULO lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(1);
+      uint32_t firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
+      uint32_t lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(1);
 
-      Assert::AreEqual<ULO>(0x1d7e, firstOffset);
-      Assert::AreEqual<ULO>(0xa, lastOffset);
+      REQUIRE(firstOffset == 0x1d7e);
+      REQUIRE(lastOffset == 0xa);
 
       // Second reloc 32 hunk
-      Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(1)->GetID());
-      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(1));
+      REQUIRE(fileImage.GetAdditionalHunk(1)->GetID() == Reloc32HunkID);
+      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(1));
 
-      Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
-      Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
-      Assert::AreEqual<size_t>(4, reloc32Hunk->GetOffsetTable(0)->GetOffsetCount());
+      REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetOffsetCount() == 4);
 
       firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
       lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(3);
 
-      Assert::AreEqual<ULO>(0x2fe, firstOffset);
-      Assert::AreEqual<ULO>(0x3a, lastOffset);
+      REQUIRE(firstOffset == 0x2fe);
+      REQUIRE(lastOffset == 0x3a);
     }
 
-    TEST_METHOD(Parse_FastFileSystem13_FileReadsOK)
+    SECTION("Parses Fast file system 13")
     {
-      CreateInstanceWithFile(R"(testdata\hardfile\hunks\FastFileSystem13)");
+      const char* FastFileSystem13Filename = R"(testdata\hardfile\hunks\FastFileSystem13)";
+      long filesize = GetFilesystemFilesize(FastFileSystem13Filename);
+      unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(FastFileSystem13Filename, filesize);
+      FileImage fileImage;
 
-      bool result = _instance->Parse();
+      unique_ptr<HunkParser> instance(CreateInstanceWithFile(filesize, rawData.get(), fileImage));
 
-      Assert::IsTrue(result);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetFirstLoadHunk());
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetLastLoadHunk());
-      Assert::AreEqual<size_t>(1, _fileImage.GetHeader()->GetHunkSizeCount());
-      Assert::AreEqual<ULO>(0xbed, _fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(0).MemoryFlags);
+      bool result = instance->Parse();
 
-      Assert::AreEqual<size_t>(1, _fileImage.GetInitialHunkCount());
-      Assert::AreEqual<size_t>(0, _fileImage.GetAdditionalHunkCount());
+      REQUIRE(result == true);
+      REQUIRE(fileImage.GetHeader()->GetFirstLoadHunk() == 0);
+      REQUIRE(fileImage.GetHeader()->GetLastLoadHunk() == 0);
+      REQUIRE(fileImage.GetHeader()->GetHunkSizeCount() == 1);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords == 0xbed);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).MemoryFlags == 0);
+
+      REQUIRE(fileImage.GetInitialHunkCount() == 1);
+      REQUIRE(fileImage.GetAdditionalHunkCount() == 0);
 
       // Code hunk
-      Assert::AreEqual<ULO>(CodeHunkID, _fileImage.GetInitialHunk(0)->GetID());
-      Assert::AreEqual<ULO>(0xbed * 4, _fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0xbed * 4, _fileImage.GetInitialHunk(0)->GetContentSizeInBytes());
+      REQUIRE(fileImage.GetInitialHunk(0)->GetID() == CodeHunkID);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes() == 0xbed * 4);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetContentSizeInBytes() == 0xbed * 4);
 
-      UBY firstByte = _fileImage.GetInitialHunk(0)->GetContent()[0];
-      UBY middleByte = _fileImage.GetInitialHunk(0)->GetContent()[0x2000];
-      UBY lastByte = _fileImage.GetInitialHunk(0)->GetContent()[0xbed * 4 - 1];
-      Assert::AreEqual<UBY>(0x60, firstByte);
-      Assert::AreEqual<UBY>(0x67, middleByte);
-      Assert::AreEqual<UBY>(0x00, lastByte);
+      uint8_t firstByte = fileImage.GetInitialHunk(0)->GetContent()[0];
+      uint8_t middleByte = fileImage.GetInitialHunk(0)->GetContent()[0x2000];
+      uint8_t lastByte = fileImage.GetInitialHunk(0)->GetContent()[0xbed * 4 - 1];
+      REQUIRE(firstByte == 0x60);
+      REQUIRE(middleByte == 0x67);
+      REQUIRE(lastByte == 0);
     }
 
-    TEST_METHOD(Parse_FastFileSystem31_FileReadsOK)
+    SECTION("Parses Fast filesystem 31")
     {
-      CreateInstanceWithFile(R"(testdata\hardfile\hunks\FastFileSystem31)");
+      const char* FastFileSystem31Filename = R"(testdata\hardfile\hunks\FastFileSystem31)";
+      long filesize = GetFilesystemFilesize(FastFileSystem31Filename);
+      unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(FastFileSystem31Filename, filesize);
+      FileImage fileImage;
 
-      bool result = _instance->Parse();
+      unique_ptr<HunkParser> instance(CreateInstanceWithFile(filesize, rawData.get(), fileImage));
 
-      Assert::IsTrue(result);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetFirstLoadHunk());
-      Assert::AreEqual<ULO>(1, _fileImage.GetHeader()->GetLastLoadHunk());
-      Assert::AreEqual<size_t>(2, _fileImage.GetHeader()->GetHunkSizeCount());
-      Assert::AreEqual<ULO>(0x17ed, _fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(0).MemoryFlags);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(1).SizeInLongwords);
-      Assert::AreEqual<ULO>(0, _fileImage.GetHeader()->GetHunkSize(1).MemoryFlags);
+      bool result = instance->Parse();
 
-      Assert::AreEqual<size_t>(2, _fileImage.GetInitialHunkCount());
-      Assert::AreEqual<size_t>(1, _fileImage.GetAdditionalHunkCount());
+      REQUIRE(result == true);
+      REQUIRE(fileImage.GetHeader()->GetFirstLoadHunk() == 0);
+      REQUIRE(fileImage.GetHeader()->GetLastLoadHunk() == 1);
+      REQUIRE(fileImage.GetHeader()->GetHunkSizeCount() == 2);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).SizeInLongwords == 0x17ed);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(0).MemoryFlags == 0);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(1).SizeInLongwords == 0);
+      REQUIRE(fileImage.GetHeader()->GetHunkSize(1).MemoryFlags == 0);
+
+      REQUIRE(fileImage.GetInitialHunkCount() == 2);
+      REQUIRE(fileImage.GetAdditionalHunkCount() == 1);
 
       // Code hunk
-      Assert::AreEqual<ULO>(CodeHunkID, _fileImage.GetInitialHunk(0)->GetID());
-      Assert::AreEqual<ULO>(0x17ed * 4, _fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0x17ed * 4, _fileImage.GetInitialHunk(0)->GetContentSizeInBytes());
+      REQUIRE(fileImage.GetInitialHunk(0)->GetID() == CodeHunkID);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetAllocateSizeInBytes() == 0x17ed * 4);
+      REQUIRE(fileImage.GetInitialHunk(0)->GetContentSizeInBytes() == 0x17ed * 4);
 
-      UBY firstByte = _fileImage.GetInitialHunk(0)->GetContent()[0];
-      UBY middleByte = _fileImage.GetInitialHunk(0)->GetContent()[0x2000];
-      UBY lastByte = _fileImage.GetInitialHunk(0)->GetContent()[0x17ed * 4 - 1];
-      Assert::AreEqual<UBY>(0x72, firstByte);
-      Assert::AreEqual<UBY>(0x4c, middleByte);
-      Assert::AreEqual<UBY>(0x75, lastByte);
+      uint8_t firstByte = fileImage.GetInitialHunk(0)->GetContent()[0];
+      uint8_t middleByte = fileImage.GetInitialHunk(0)->GetContent()[0x2000];
+      uint8_t lastByte = fileImage.GetInitialHunk(0)->GetContent()[0x17ed * 4 - 1];
+      REQUIRE(firstByte == 0x72);
+      REQUIRE(middleByte == 0x4c);
+      REQUIRE(lastByte == 0x75);
 
       // Data hunk
-      Assert::AreEqual<ULO>(DataHunkID, _fileImage.GetInitialHunk(1)->GetID());
-      Assert::AreEqual<ULO>(0, _fileImage.GetInitialHunk(1)->GetAllocateSizeInBytes());
-      Assert::AreEqual<ULO>(0, _fileImage.GetInitialHunk(1)->GetContentSizeInBytes());
+      REQUIRE(fileImage.GetInitialHunk(1)->GetID() == DataHunkID);
+      REQUIRE(fileImage.GetInitialHunk(1)->GetAllocateSizeInBytes() == 0);
+      REQUIRE(fileImage.GetInitialHunk(1)->GetContentSizeInBytes() == 0);
 
       // First reloc 32 hunk
-      Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
+      REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
+      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
 
-      Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
-      Assert::AreEqual<ULO>(0, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
-      Assert::AreEqual<size_t>(5, reloc32Hunk->GetOffsetTable(0)->GetOffsetCount());
+      REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 0);
+      REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetOffsetCount() == 5);
 
-      ULO firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
-      ULO lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(4);
+      uint32_t firstOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(0);
+      uint32_t lastOffset = reloc32Hunk->GetOffsetTable(0)->GetOffset(4);
 
-      Assert::AreEqual<ULO>(0x28, firstOffset);
-      Assert::AreEqual<ULO>(0x3c, lastOffset);
+      REQUIRE(firstOffset == 0x28);
+      REQUIRE(lastOffset == 0x3c);
     }
-  };
+
+    ShutdownTestframework();
+  }
 }
