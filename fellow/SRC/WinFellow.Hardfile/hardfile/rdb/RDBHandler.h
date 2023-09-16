@@ -5,7 +5,6 @@
 #include "hardfile/rdb/RDBFileReader.h"
 #include "hardfile/rdb/RDB.h"
 
-
 namespace fellow::hardfile::rdb
 {
   class RDBHandler

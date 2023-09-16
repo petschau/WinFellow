@@ -1,93 +1,111 @@
 #include <memory>
-#include "CppUnitTest.h"
-
 #include "hardfile/hunks/DataHunk.h"
-#include "framework/TestBootstrap.h"
+#include "TestBootstrap.h"
+#include "catch/catch_amalgamated.hpp"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::hunks;
 
 namespace test::fellow::hardfile::hunks
 {
-  TEST_CLASS(DataHunkTest)
+  unique_ptr<uint8_t[]> CreateDataHunkData()
   {
-    unique_ptr<DataHunk> _instance;
-    const ULO AllocateSizeInLongwords = 4567;
-    const ULO AllocateSizeInBytes = 18268;
-    unique_ptr<RawDataReader> _rawDataReader;
-    unique_ptr<UBY[]> _hunkData;
+    unique_ptr<uint8_t[]> hunkData(new uint8_t[12]);
+    hunkData[0] = 0;
+    hunkData[1] = 0;
+    hunkData[2] = 0;
+    hunkData[3] = 2;
+    hunkData[4] = 0;
+    hunkData[5] = 0;
+    hunkData[6] = 0;
+    hunkData[7] = 1;
+    hunkData[8] = 0;
+    hunkData[9] = 0;
+    hunkData[10] = 0;
+    hunkData[11] = 2;
 
-    void CreateHunkData()
+    return hunkData;
+  }
+
+  TEST_CASE("Hardfile::Hunks::DataHunk.GetAllocateSizeInLongwords() should return the initialized allocated size")
+  {
+    InitializeTestframework();
+    constexpr uint32_t AllocateSizeInLongwords = 4567;
+    unique_ptr<DataHunk> _instance(new DataHunk(AllocateSizeInLongwords));
+
+    SECTION("Returns allocated size as longword count")
     {
-      _hunkData.reset(new UBY[12]);
-      _hunkData[0] = 0;
-      _hunkData[1] = 0;
-      _hunkData[2] = 0;
-      _hunkData[3] = 2;
-      _hunkData[4] = 0;
-      _hunkData[5] = 0;
-      _hunkData[6] = 0;
-      _hunkData[7] = 1;
-      _hunkData[8] = 0;
-      _hunkData[9] = 0;
-      _hunkData[10] = 0;
-      _hunkData[11] = 2;
+      uint32_t allocateSizeInLongwords = _instance->GetAllocateSizeInLongwords();
+      REQUIRE(allocateSizeInLongwords == AllocateSizeInLongwords);
     }
 
-    RawDataReader& GetRawDataReaderWithHunkData()
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::DataHunk.GetAllocateSizeInBytes() should return the initialized allocated size")
+  {
+    InitializeTestframework();
+    constexpr uint32_t AllocateSizeInLongwords = 4567;
+    unique_ptr<DataHunk> _instance(new DataHunk(AllocateSizeInLongwords));
+
+    SECTION("'returns allocated size as byte count")
     {
-      CreateHunkData();
-      _rawDataReader.reset(new RawDataReader(_hunkData.get(), 12));
-      return *_rawDataReader;
+      uint32_t allocateSizeInBytes = _instance->GetAllocateSizeInBytes();
+      REQUIRE(allocateSizeInBytes == AllocateSizeInLongwords * 4);
     }
 
-    TEST_METHOD_INITIALIZE(TestInitialize)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::DataHunk.GetID() returns ID for DataHunk")
+  {
+    InitializeTestframework();
+    unique_ptr<DataHunk> _instance(new DataHunk(10));
+
+    SECTION("Returns ID for DataHunk")
     {
-      InitializeTestframework();
-      _instance.reset(new DataHunk(AllocateSizeInLongwords));
+      uint32_t id = _instance->GetID();
+      REQUIRE(id == 0x3ea);
     }
 
-    TEST_METHOD_CLEANUP(TestCleanup)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::DataHunk.Parse() should set content size")
+  {
+    InitializeTestframework();
+    unique_ptr<DataHunk> _instance(new DataHunk(10));
+
+    SECTION("Sets content size based on data read from raw hunk data")
     {
-      ShutdownTestframework();
+      auto hunkData = CreateDataHunkData();
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), 12));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetContentSizeInLongwords() == 2);
     }
 
-    TEST_METHOD(CanCreateInstance)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::DataHunk.Parse() should set hunk contents based on the input")
+  {
+    InitializeTestframework();
+    unique_ptr<DataHunk> _instance(new DataHunk(10));
+
+    SECTION("Sets hunk contents based on the input")
     {
-      Assert::IsNotNull(_instance.get());
+      auto hunkData = CreateDataHunkData();
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), 12));
+
+      _instance->Parse(*rawDataReader);
+      UBY* content = _instance->GetContent();
+
+      REQUIRE(content[3] == 1);
+      REQUIRE(content[7] == 2);
     }
 
-    TEST_METHOD(GetAllocateSizeInLongwords_AllocateSizeIsSetInConstructor_ReturnsCorrectAllocateSize)
-    {
-      ULO allocateSizeInLongwords = _instance->GetAllocateSizeInLongwords();
-      Assert::AreEqual(AllocateSizeInLongwords, allocateSizeInLongwords);
-    }
-
-    TEST_METHOD(GetAllocateSizeInBytes_AllocateSizeIsSetInConstructor_ReturnsCorrectAllocateSize)
-    {
-      ULO allocateSizeInBytes = _instance->GetAllocateSizeInBytes();
-      Assert::AreEqual(AllocateSizeInBytes, allocateSizeInBytes);
-    }
-
-    TEST_METHOD(GetID_ReturnsIDForDataHunk)
-    {
-      ULO id = _instance->GetID();
-      Assert::AreEqual<ULO>(0x3ea, id);
-    }
-
-    TEST_METHOD(Parse_SetsContentSize)
-    {
-      _instance->Parse(GetRawDataReaderWithHunkData());
-      Assert::AreEqual<ULO>(2, _instance->GetContentSizeInLongwords());
-    }
-
-    TEST_METHOD(Parse_SetsRawDataToContent)
-    {
-      _instance->Parse(GetRawDataReaderWithHunkData());
-      UBY *content = _instance->GetContent();
-      Assert::AreEqual<UBY>(1, content[3]);
-      Assert::AreEqual<UBY>(2, content[7]);
-    }
-  };
+    ShutdownTestframework();
+  }
 }

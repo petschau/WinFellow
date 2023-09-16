@@ -1,134 +1,135 @@
 #include <memory>
-#include "CppUnitTest.h"
-
 #include "hardfile/hunks/Reloc32Hunk.h"
-#include "framework/TestBootstrap.h"
+#include "TestBootstrap.h"
+#include "catch/catch_amalgamated.hpp"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::hunks;
 
 namespace test::fellow::hardfile::hunks
 {
-  TEST_CLASS(Reloc32HunkTest)
+
+  unsigned int CreateOffsetTable(uint8_t* hunkData, unsigned int entries, unsigned int index)
   {
-    unique_ptr<Reloc32Hunk> _instance;
-    const int SourceHunkIndex = 1234;
-    unique_ptr<RawDataReader> _rawDataReader;
-    unique_ptr<UBY[]> _hunkData;
+    // Entry count
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = static_cast<uint8_t>(entries);
 
-    ULO CreateOffsetTable(int entries, ULO index)
+    // Related hunk number
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = static_cast<uint8_t>(entries + 1);
+
+    for (unsigned int i = 0; i < entries; i++)
     {
-      // Entry count
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = static_cast<UBY>(entries);
-
-      // Related hunk number
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = static_cast<UBY>(entries + 1);
-
-      for (int i = 0; i < entries; i++)
-      {
-        _hunkData[index++] = 0;
-        _hunkData[index++] = 0;
-        _hunkData[index++] = 0;
-        _hunkData[index++] = static_cast<UBY>(i + 1);
-      }
-
-      return index;
+      hunkData[index++] = 0;
+      hunkData[index++] = 0;
+      hunkData[index++] = 0;
+      hunkData[index++] = static_cast<uint8_t>(i + 1);
     }
 
-    void CreateHunkData(int offsetTableCount)
+    return index;
+  }
+
+  unique_ptr<uint8_t[]> CreateReloc32HunkData(unsigned int offsetTableCount)
+  {
+    unsigned int index = 0;
+    unique_ptr<uint8_t[]> hunkData(new UBY[128]);
+
+    for (unsigned int i = 0; i < offsetTableCount; i++)
     {
-      ULO index = 0;
-      _hunkData.reset(new UBY[128]);
-
-      for (int i = 0; i < offsetTableCount; i++)
-      {
-        index = CreateOffsetTable(offsetTableCount + 2, index);
-      }
-
-      // Terminate offset list
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
-      _hunkData[index++] = 0;
+      index = CreateOffsetTable(hunkData.get(), offsetTableCount + 2, index);
     }
 
-    RawDataReader& GetNewRawDataReader()
+    // Terminate offset list
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+    hunkData[index++] = 0;
+
+    return hunkData;
+  }
+
+  TEST_CASE("Hardfile::Hunks::Reloc32Hunk.GetID() returns ID for Reloc32Hunk")
+  {
+    InitializeTestframework();
+    constexpr unsigned int _sourceHunkIndex = 1234;
+    unique_ptr<Reloc32Hunk> _instance(new Reloc32Hunk(_sourceHunkIndex));
+
+    SECTION("Returns ID for Reloc32Hunk")
     {
-      _rawDataReader.reset(new RawDataReader(_hunkData.get(), 128));
-      return *_rawDataReader;
+      uint32_t id = _instance->GetID();
+      REQUIRE(id == 0x3ec);
     }
 
-    TEST_METHOD_INITIALIZE(TestInitialize)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::Reloc32Hunk.GetSourceHunkIndex() returns source hunk index")
+  {
+    InitializeTestframework();
+    constexpr unsigned int _sourceHunkIndex = 1234;
+    unique_ptr<Reloc32Hunk> _instance(new Reloc32Hunk(_sourceHunkIndex));
+
+    SECTION("Returns source hunk index")
     {
-      InitializeTestframework();
-      _instance.reset(new Reloc32Hunk(SourceHunkIndex));
+      uint32_t id = _instance->GetSourceHunkIndex();
+      REQUIRE(id == _sourceHunkIndex);
     }
 
-    TEST_METHOD_CLEANUP(TestCleanup)
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::Reloc32Hunk.Parse() should parse input")
+  {
+    InitializeTestframework();
+    constexpr unsigned int _sourceHunkIndex = 1234;
+    unique_ptr<Reloc32Hunk> _instance(new Reloc32Hunk(_sourceHunkIndex));
+
+    SECTION("There should be no offset tables when no offset table was present in the input")
     {
-      ShutdownTestframework();
+      auto hunkData = CreateReloc32HunkData(0);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), 128));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetOffsetTableCount() == 0);
     }
 
-    TEST_METHOD(CanCreateInstance)
+    SECTION("Should have information about one offset table when one offset table was present in the input")
     {
-      Assert::IsNotNull(_instance.get());
+      auto hunkData = CreateReloc32HunkData(1);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), 128));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetOffsetTableCount() == 1);
+
+      REQUIRE(_instance->GetOffsetTable(0)->GetOffsetCount() == 3);
+      REQUIRE(_instance->GetOffsetTable(0)->GetRelatedHunkIndex() == 4);
+      REQUIRE(_instance->GetOffsetTable(0)->GetOffset(0) == 1);
+      REQUIRE(_instance->GetOffsetTable(0)->GetOffset(1) == 2);
+      REQUIRE(_instance->GetOffsetTable(0)->GetOffset(2) == 3);
     }
 
-    TEST_METHOD(GetID_ReturnsIDForReloc32Hunk)
+    SECTION("Should have information about two offset tables when two offset tables were present in the input")
     {
-      ULO id = _instance->GetID();
-      Assert::AreEqual<ULO>(0x3ec, id);
+      auto hunkData = CreateReloc32HunkData(2);
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), 128));
+
+      _instance->Parse(*rawDataReader);
+
+      REQUIRE(_instance->GetOffsetTableCount() == 2);
+      REQUIRE(_instance->GetOffsetTable(1)->GetOffsetCount() == 4);
+      REQUIRE(_instance->GetOffsetTable(1)->GetRelatedHunkIndex() == 5);
+      REQUIRE(_instance->GetOffsetTable(1)->GetOffset(0) == 1);
+      REQUIRE(_instance->GetOffsetTable(1)->GetOffset(1) == 2);
+      REQUIRE(_instance->GetOffsetTable(1)->GetOffset(2) == 3);
+      REQUIRE(_instance->GetOffsetTable(1)->GetOffset(3) == 4);
     }
-
-    TEST_METHOD(GetSourceHunkIndex_ReturnsSourceHunkIndexForReloc32Hunk)
-    {
-      ULO sourceHunkIndex = _instance->GetSourceHunkIndex();
-      Assert::AreEqual<ULO>(SourceHunkIndex, sourceHunkIndex);
-    }
-
-    TEST_METHOD(Parse_NoOffsetTables_OffsetTableCountIsZero)
-    {
-      CreateHunkData(0);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<size_t>(0, _instance->GetOffsetTableCount());
-    }
-
-    TEST_METHOD(Parse_OneOffsetTable_OffsetTableContentIsCorrect)
-    {
-      CreateHunkData(1);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<size_t>(1, _instance->GetOffsetTableCount());
-      Assert::AreEqual<size_t>(3, _instance->GetOffsetTable(0)->GetOffsetCount());
-      Assert::AreEqual<ULO>(4, _instance->GetOffsetTable(0)->GetRelatedHunkIndex());
-      Assert::AreEqual<ULO>(1, _instance->GetOffsetTable(0)->GetOffset(0));
-      Assert::AreEqual<ULO>(2, _instance->GetOffsetTable(0)->GetOffset(1));
-      Assert::AreEqual<ULO>(3, _instance->GetOffsetTable(0)->GetOffset(2));
-    }
-
-    TEST_METHOD(Parse_TwoOffsetTables_OffsetTableContentIsCorrect)
-    {
-      CreateHunkData(2);
-
-      _instance->Parse(GetNewRawDataReader());
-
-      Assert::AreEqual<size_t>(2, _instance->GetOffsetTableCount());
-      Assert::AreEqual<size_t>(4, _instance->GetOffsetTable(1)->GetOffsetCount());
-      Assert::AreEqual<ULO>(5, _instance->GetOffsetTable(1)->GetRelatedHunkIndex());
-      Assert::AreEqual<ULO>(1, _instance->GetOffsetTable(1)->GetOffset(0));
-      Assert::AreEqual<ULO>(2, _instance->GetOffsetTable(1)->GetOffset(1));
-      Assert::AreEqual<ULO>(3, _instance->GetOffsetTable(1)->GetOffset(2));
-      Assert::AreEqual<ULO>(4, _instance->GetOffsetTable(1)->GetOffset(3));
-    }
-  };
+    ShutdownTestframework();
+  }
 }

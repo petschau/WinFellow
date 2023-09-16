@@ -1,59 +1,45 @@
 #include <memory>
-#include "CppUnitTest.h"
-
 #include "hardfile/hunks/EndHunk.h"
-#include "framework/TestBootstrap.h"
+#include "TestBootstrap.h"
+#include "catch/catch_amalgamated.hpp"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::hunks;
 
 namespace test::fellow::hardfile::hunks
 {
-  TEST_CLASS(EndHunkTest)
+  unique_ptr<uint8_t[]> CreateEndHunkData()
   {
-    unique_ptr<EndHunk> _instance;
-    unique_ptr<RawDataReader> _rawDataReader;
-    unique_ptr<UBY[]> _hunkData;
+    return unique_ptr<uint8_t[]>(new uint8_t[0]);
+  }
 
-    void CreateHunkData()
+  TEST_CASE("Hardfile::Hunks::EndHunk.GetID() returns ID for EndHunk")
+  {
+    InitializeTestframework();
+    unique_ptr<EndHunk> _instance(new EndHunk());
+
+    SECTION("Returns ID for EndHunk")
     {
-      _hunkData.reset(new UBY[0]);
+      uint32_t id = _instance->GetID();
+      REQUIRE(id == 0x3f2);
     }
 
-    RawDataReader& GetRawDataReaderWithHunkData()
+    ShutdownTestframework();
+  }
+
+  TEST_CASE("Hardfile::Hunks::EndHunk.Parse() can be called and reads nothing")
+  {
+    InitializeTestframework();
+    unique_ptr<EndHunk> _instance(new EndHunk());
+
+    SECTION("Parse() reads nothing from input")
     {
-      CreateHunkData();
-      _rawDataReader.reset(new RawDataReader(_hunkData.get(), 0));
-      return *_rawDataReader;
+      auto hunkData = CreateEndHunkData();
+      unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), 0));
+
+      REQUIRE_NOTHROW(_instance->Parse(*rawDataReader)); // RawDataReader will throw exception if used
     }
 
-    TEST_METHOD_INITIALIZE(TestInitialize)
-    {
-      InitializeTestframework();
-      _instance.reset(new EndHunk());
-    }
-
-    TEST_METHOD_CLEANUP(TestCleanup)
-    {
-      ShutdownTestframework();
-    }
-
-    TEST_METHOD(CanCreateInstance)
-    {
-      Assert::IsNotNull(_instance.get());
-    }
-
-    TEST_METHOD(GetID_ReturnsIDForEndHunk)
-    {
-      ULO id = _instance->GetID();
-      Assert::AreEqual<ULO>(0x3f2, id);
-    }
-
-    TEST_METHOD(Parse_CanBeCalled_DoesNothingWithTheRawDataReader)
-    {
-      _instance->Parse(GetRawDataReaderWithHunkData()); // RawDataReader will throw exception if used
-      Assert::IsTrue(true);
-    }
-  };
+    ShutdownTestframework();
+  }
 }
