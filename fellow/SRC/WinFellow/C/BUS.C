@@ -346,7 +346,7 @@ uint32_t busGetRasterX(void)
   return bus.cycle % busGetCyclesInThisLine();
 }
 
-ULL busGetRasterFrameCount(void)
+uint64_t busGetRasterFrameCount(void)
 {
   return bus.frame_no;
 }

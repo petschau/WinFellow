@@ -12,12 +12,12 @@ using namespace std;
 
 struct ScriptLine
 {
-  ULL FrameNumber;
+  uint64_t FrameNumber;
   uint32_t LineNumber;
   string Command;
   string Parameters;
 
-  ScriptLine(ULL frameNumber, uint32_t lineNumber, const string& command, const string& parameters);
+  ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const string& command, const string& parameters);
 };
 
 class Script
@@ -48,7 +48,7 @@ public:
   void RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2);
   void RecordEmulatorAction(kbd_event action);
 
-  void ExecuteUntil(ULL frameNumber, uint32_t lineNumber);
+  void ExecuteUntil(uint64_t frameNumber, uint32_t lineNumber);
   void Load(const string& filename);
   void Save(const string& filename);
 

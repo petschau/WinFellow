@@ -84,7 +84,7 @@ extern uint32_t draw_clear_buffers;
 extern draw_buffer_information draw_buffer_info;
 extern draw_mode draw_mode_windowed;
 
-extern ULL drawMake64BitColorFrom32Bit(uint32_t color);
+extern uint64_t drawMake64BitColorFrom32Bit(uint32_t color);
 
 /*===========================================================================*/
 /* Module properties                                                         */

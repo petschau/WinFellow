@@ -154,18 +154,18 @@ public:
 
   void MergeHAM2x1x16(uint32_t *frameptr, graph_line *linedescription);
   void MergeHAM2x2x16(uint32_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
-  void MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
-  void MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
+  void MergeHAM4x2x16(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
+  void MergeHAM4x4x16(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
 
   void MergeHAM2x1x24(uint8_t *frameptr, graph_line *linedescription);
   void MergeHAM2x2x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
   void MergeHAM4x2x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
   void MergeHAM4x4x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
 
-  void MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription);
-  void MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
-  void MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
-  void MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
+  void MergeHAM2x1x32(uint64_t *frameptr, graph_line *linedescription);
+  void MergeHAM2x2x32(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
+  void MergeHAM4x2x32(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
+  void MergeHAM4x4x32(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
 
   virtual void NotifySprpthChanged(uint16_t data, unsigned int sprite_number);
   virtual void NotifySprptlChanged(uint16_t data, unsigned int sprite_number);

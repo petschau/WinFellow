@@ -392,7 +392,7 @@ void LineExactSprites::MergeHAM2x2x16(uint32_t *frameptr, graph_line *linedescri
 /* 16-bit pixels, 4x2 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
+void LineExactSprites::MergeHAM4x2x16(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -424,7 +424,7 @@ void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription
           }
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
+          uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -432,7 +432,7 @@ void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription
             uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              uint64_t color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
               frame_ptr[0] = color;
               frame_ptr[nextlineoffset] = color;
             }
@@ -449,7 +449,7 @@ void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription
 /* 16-bit pixels, 4x4 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3)
+void LineExactSprites::MergeHAM4x4x16(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -481,7 +481,7 @@ void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription
           }
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
+          uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -489,7 +489,7 @@ void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription
             uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              uint64_t color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
               frame_ptr[0] = color;
               frame_ptr[nextlineoffset] = color;
               frame_ptr[nextlineoffset2] = color;
@@ -832,7 +832,7 @@ void LineExactSprites::MergeHAM4x4x24(uint8_t *frameptr, graph_line *linedescrip
 /* 32-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x32(uint64_t *frameptr, graph_line *linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -864,7 +864,7 @@ void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription
           }
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
+          uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -872,7 +872,7 @@ void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription
             uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              uint64_t color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
               frame_ptr[0] = color;
             }
             frame_ptr++;
@@ -888,7 +888,7 @@ void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription
 /* 32-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
+void LineExactSprites::MergeHAM2x2x32(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -920,7 +920,7 @@ void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription
           }
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
+          uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -928,7 +928,7 @@ void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription
             uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              uint64_t color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
               frame_ptr[0] = color;
               frame_ptr[nextlineoffset] = color;
             }
@@ -945,7 +945,7 @@ void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription
 /* 32-bit pixels, 4x2 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
+void LineExactSprites::MergeHAM4x2x32(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -977,7 +977,7 @@ void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription
           }
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULL *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
+          uint64_t *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -985,7 +985,7 @@ void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription
             uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              uint64_t color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
               frame_ptr[0] = color;
               frame_ptr[1] = color;
               frame_ptr[nextlineoffset] = color;
@@ -1004,7 +1004,7 @@ void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription
 /* 32-bit pixels, 4x4 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3)
+void LineExactSprites::MergeHAM4x4x32(uint64_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -1036,7 +1036,7 @@ void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription
           }
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULL *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
+          uint64_t *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -1044,7 +1044,7 @@ void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription
             uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              uint64_t color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
               frame_ptr[0] = color;
               frame_ptr[1] = color;
               frame_ptr[nextlineoffset] = color;

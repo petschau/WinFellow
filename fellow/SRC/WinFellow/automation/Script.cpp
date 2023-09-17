@@ -4,7 +4,7 @@
 #include "KBD.H"
 #include "GAMEPORT.H"
 
-ScriptLine::ScriptLine(ULL frameNumber, uint32_t lineNumber, const string& command, const string& parameters)
+ScriptLine::ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const string& command, const string& parameters)
   : FrameNumber(frameNumber), LineNumber(lineNumber), Command(command), Parameters(parameters)
 {
 }
@@ -62,7 +62,7 @@ void Script::Execute(const ScriptLine& line)
   }
 }
 
-void Script::ExecuteUntil(ULL frameNumber, uint32_t lineNumber)
+void Script::ExecuteUntil(uint64_t frameNumber, uint32_t lineNumber)
 {
   if (_lines.size() == 0)
   {

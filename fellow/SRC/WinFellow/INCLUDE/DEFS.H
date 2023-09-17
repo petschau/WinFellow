@@ -20,7 +20,6 @@
 
 /* Fellow types to ensure correct sizes */
 
-typedef unsigned FELLOW_LONG_LONG ULL;
 typedef signed int LON;
 typedef signed FELLOW_LONG_LONG LLO;
 typedef int BOOLE;
@@ -34,8 +33,8 @@ typedef char STR;
 #define PTR_TO_INT_MASK_TYPE(i) ((uint32_t)i)
 #endif
 #ifdef X64
-#define PTR_TO_INT(i) ((ULL)i)
-#define PTR_TO_INT_MASK_TYPE(i) ((ULL)i)
+#define PTR_TO_INT(i) ((uint64_t)i)
+#define PTR_TO_INT_MASK_TYPE(i) ((uint64_t)i)
 #endif
 
 /* Filename length used throughout the code */

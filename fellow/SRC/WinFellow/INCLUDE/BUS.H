@@ -48,7 +48,7 @@ typedef struct bus_screen_limits_
 
 typedef struct bus_state_
 {
-  ULL frame_no;
+  uint64_t frame_no;
   uint32_t cycle;
   bus_screen_limits *screen_limits;
   bus_event *events;
@@ -62,7 +62,7 @@ extern void busDebugStepOneInstruction(void);
 extern uint32_t busGetCycle(void);
 extern uint32_t busGetRasterX(void);
 extern uint32_t busGetRasterY(void);
-extern ULL busGetRasterFrameCount(void);
+extern uint64_t busGetRasterFrameCount(void);
 
 extern uint32_t busGetCyclesInThisLine(void);
 extern uint32_t busGetLinesInThisFrame(void);

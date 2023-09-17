@@ -1040,7 +1040,7 @@ static void cpuMulL(uint32_t src1, uint16_t extension)
   }
   else // mulu.l
   {
-    ULL result = ((ULL) src1) * ((ULL) cpuGetDReg(dl));
+    uint64_t result = ((uint64_t) src1) * ((uint64_t) cpuGetDReg(dl));
     if (extension & 0x0400) // 32bx32b=64b
     {  
       uint32_t dh = extension & 7;
@@ -1191,35 +1191,35 @@ static void cpuDivL(uint32_t divisor, uint32_t ext, uint32_t instruction_time)
     BOOLE size64 = (ext>>10) & 1;
     BOOLE sign = (ext>>11) & 1;
     BOOLE resultsigned = FALSE, restsigned = FALSE;
-    ULL result, rest;
-    ULL x, y;
+    uint64_t result, rest;
+    uint64_t x, y;
     LLO x_signed, y_signed; 
 
     if (sign)
     { 
-      if (size64) x_signed = (LLO) ((ULL) cpuGetDReg(dq_reg)) | (((LLO) cpuGetDReg(dr_reg))<<32);
+      if (size64) x_signed = (LLO) ((uint64_t) cpuGetDReg(dq_reg)) | (((LLO) cpuGetDReg(dr_reg))<<32);
       else x_signed = (LLO) (LON) cpuGetDReg(dq_reg);
       y_signed = (LLO) (LON) divisor;
 
       if (y_signed < 0)
       {
-	y = (ULL) -y_signed;
+	y = (uint64_t) -y_signed;
 	resultsigned = !resultsigned;
       }
       else y = y_signed;
       if (x_signed < 0)
       {
-	x = (ULL) -x_signed;
+	x = (uint64_t) -x_signed;
 	resultsigned = !resultsigned;
 	restsigned = TRUE;
       }
-      else x = (ULL) x_signed;
+      else x = (uint64_t) x_signed;
     }
     else
     {
-      if (size64) x = ((ULL) cpuGetDReg(dq_reg)) | (((ULL) cpuGetDReg(dr_reg))<<32);
-      else x = (ULL) cpuGetDReg(dq_reg);
-      y = (ULL) divisor;
+      if (size64) x = ((uint64_t) cpuGetDReg(dq_reg)) | (((uint64_t) cpuGetDReg(dr_reg))<<32);
+      else x = (uint64_t) cpuGetDReg(dq_reg);
+      y = (uint64_t) divisor;
     }
 
     result = x / y;
@@ -2621,9 +2621,9 @@ struct cpuBfData
   uint32_t base_address_byte_count;
 
   uint32_t field;
-  ULL field_mask;
+  uint64_t field_mask;
   uint32_t dn;
-  ULL field_memory;
+  uint64_t field_memory;
 };
 
 static LON cpuGetBfOffset(uint16_t ext, bool offsetIsDataRegister)
@@ -2665,7 +2665,7 @@ static void cpuSetBfField(struct cpuBfData *bf_data, uint32_t ea_or_reg, bool ha
   if (has_ea)
   {
     uint32_t shift = bf_data->base_address_byte_count*8 - bf_data->normalized_offset - bf_data->width;
-    ULL field_value = (bf_data->field_memory & ~(bf_data->field_mask << shift)) | (((ULL)bf_data->field) << shift);
+    uint64_t field_value = (bf_data->field_memory & ~(bf_data->field_mask << shift)) | (((uint64_t)bf_data->field) << shift);
     uint32_t address = bf_data->base_address + bf_data->base_address_byte_offset;
 
     for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
@@ -2716,12 +2716,12 @@ void cpuBfDecodeExtWordAndGetField(struct cpuBfData *bf_data, uint32_t ea_or_reg
     bf_data->base_address_byte_count = (bf_data->normalized_offset + bf_data->width + 7) / 8;
 
     uint32_t field = 0;
-    ULL field_memory = 0;
+    uint64_t field_memory = 0;
     uint32_t address = bf_data->base_address + bf_data->base_address_byte_offset;
     uint32_t shift = (8 - bf_data->normalized_offset - bf_data->width) & 7;
     for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
     {
-      ULL value = ((ULL)memoryReadByte(address)) << (8 * i);
+      uint64_t value = ((uint64_t)memoryReadByte(address)) << (8 * i);
       field_memory |= value;
       field |= (value >> shift);
       ++address;
