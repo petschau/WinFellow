@@ -14,7 +14,7 @@ namespace test::mock::fellow::api::service
     // Stub
   }
 
-  void LogMock::AddLog2(STR *msg)
+  void LogMock::AddLog2(char *msg)
   {
     // Stub
   }

@@ -281,7 +281,7 @@ INT_PTR wdbgSessionMainDialog(void)
 /* helper functions                                                           */
 /*============================================================================*/
 
-STR *wdbgGetDataRegistersStr(STR * s)
+char *wdbgGetDataRegistersStr(char * s)
 {
   sprintf(s,
 	  "D0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :D7",
@@ -289,7 +289,7 @@ STR *wdbgGetDataRegistersStr(STR * s)
   return s;
 }
 
-STR *wdbgGetAddressRegistersStr(STR * s)
+char *wdbgGetAddressRegistersStr(char * s)
 {
   sprintf(s,
 	  "A0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :A7",
@@ -297,7 +297,7 @@ STR *wdbgGetAddressRegistersStr(STR * s)
   return s;
 }
 
-STR *wdbgGetSpecialRegistersStr(STR * s)
+char *wdbgGetSpecialRegistersStr(char * s)
 {
   sprintf(s,
 	  "USP:%.8X SSP:%.8X SR:%.4X FRAME: %u y: %u x: %u",
@@ -305,7 +305,7 @@ STR *wdbgGetSpecialRegistersStr(STR * s)
   return s;
 }
 
-void wdbgExtendStringTo80Columns(STR * s)
+void wdbgExtendStringTo80Columns(char * s)
 {
   uint32_t i;
   BOOLE zero_found = FALSE;
@@ -319,7 +319,7 @@ void wdbgExtendStringTo80Columns(STR * s)
   s[80] = '\0';
 }
 
-uint32_t wdbgLineOut(HDC hDC, STR * s, uint32_t x, uint32_t y)
+uint32_t wdbgLineOut(HDC hDC, char * s, uint32_t x, uint32_t y)
 {
   struct tagSIZE text_size;
   SetBkMode(hDC, OPAQUE);
@@ -329,12 +329,12 @@ uint32_t wdbgLineOut(HDC hDC, STR * s, uint32_t x, uint32_t y)
   return y + text_size.cy;
 }
 
-STR *wdbgGetDisassemblyLineStr(STR * s, uint32_t * disasm_pc)
+char *wdbgGetDisassemblyLineStr(char * s, uint32_t * disasm_pc)
 {
-  STR inst_address[256]  = "";
-  STR inst_data[256]     = "";
-  STR inst_name[256]     = "";
-  STR inst_operands[256] = "";
+  char inst_address[256]  = "";
+  char inst_data[256]     = "";
+  char inst_name[256]     = "";
+  char inst_operands[256] = "";
 
   *disasm_pc = cpuDisOpcode(*disasm_pc, inst_address, inst_data, inst_name, inst_operands);
   sprintf(s, "%-9s %-18s %-11s %s", inst_address, inst_data, inst_name, inst_operands);
@@ -347,7 +347,7 @@ STR *wdbgGetDisassemblyLineStr(STR * s, uint32_t * disasm_pc)
 
 void wdbgUpdateCPUState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -402,7 +402,7 @@ void wdbgUpdateCPUState(HWND hwndDlg)
 
 void wdbgUpdateMemoryState(HWND hwndDlg)
 {
-  STR st[WDBG_STRLEN];
+  char st[WDBG_STRLEN];
   unsigned char k;
   HDC hDC;
   PAINTSTRUCT paint_struct;
@@ -492,7 +492,7 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
 
 void wdbgUpdateCIAState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -595,7 +595,7 @@ void wdbgUpdateCIAState(HWND hwndDlg)
 
 void wdbgUpdateFloppyState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -693,7 +693,7 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 
 void wdbgUpdateBlitterState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -764,7 +764,7 @@ void wdbgUpdateBlitterState(HWND hwndDlg)
 
 void wdbgUpdateCopperState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -845,7 +845,7 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 
 void wdbgUpdateSpriteState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -913,7 +913,7 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
 
 void wdbgUpdateScreenState(HWND hwndDlg)
 {
-  STR s[128];
+  char s[128];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -1006,7 +1006,7 @@ void wdbgUpdateScreenState(HWND hwndDlg)
 
 void wdbgUpdateEventState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -1073,7 +1073,7 @@ void wdbgUpdateEventState(HWND hwndDlg)
 
 void wdbgUpdateSoundState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  char s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -1557,7 +1557,7 @@ void wdebInitInstructionColumns()
 
 }
 
-STR *wdbg_registernames[] = 
+char *wdbg_registernames[] = 
 {"D0","D1","D2","D3","D4","D5","D6","D7",
 "A0","A1","A2","A3","A4","A5","A6","A7",
 "PC","USP","SSP","MSP","ISP","VBR","SR"};
@@ -1621,10 +1621,10 @@ void wdebUpdateInstructionColumns()
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INSTRUCTIONS);
   uint32_t disasm_pc = cpuGetPC();
-  STR inst_address[256];
-  STR inst_data[256];
-  STR inst_name[256];
-  STR inst_operands[256];
+  char inst_address[256];
+  char inst_data[256];
+  char inst_name[256];
+  char inst_operands[256];
 
   memset(&lv_item, 0, sizeof(lv_item));
   lv_item.mask = LVIF_TEXT;
@@ -1660,7 +1660,7 @@ void wdebUpdateRegisterColumns()
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_REGISTERS);
   uint32_t disasm_pc = cpuGetPC();
-  STR tmp[16];
+  char tmp[16];
 
   memset(&lv_item, 0, sizeof(lv_item));
   lv_item.mask = LVIF_TEXT;

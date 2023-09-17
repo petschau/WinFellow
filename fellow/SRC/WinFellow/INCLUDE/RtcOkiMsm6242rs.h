@@ -82,7 +82,7 @@ private:
 public:
   uint16_t read(uint32_t address);
   void write(uint16_t data, uint32_t address);
-  void logRtcTime(STR *msg);
+  void logRtcTime(char *msg);
   RtcOkiMsm6242rs(void);
 };
 

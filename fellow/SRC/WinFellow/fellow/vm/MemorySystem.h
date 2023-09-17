@@ -19,7 +19,7 @@ namespace fellow::vm
     void DmemSetWord(uint16_t data) override;
     void DmemSetLong(uint32_t data) override;
     void DmemSetLongNoCounter(uint32_t data, uint32_t offset) override;
-    void DmemSetString(const STR *data) override;
+    void DmemSetString(const char *data) override;
     void DmemSetCounter(uint32_t val) override;
     uint32_t DmemGetCounter() override;
     uint32_t DmemGetCounterWithoutOffset() override;

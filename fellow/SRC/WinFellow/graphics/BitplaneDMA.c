@@ -32,7 +32,7 @@
 
 using namespace CustomChipset;
 
-static STR *BPLDMA_StateNames[3] = {"NONE",
+static char *BPLDMA_StateNames[3] = {"NONE",
 				    "FETCH_LORES",
 				    "FETCH_HIRES"};
 
@@ -40,7 +40,7 @@ void BitplaneDMA::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "BitplaneDMA %s\n", BPLDMA_StateNames[_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }

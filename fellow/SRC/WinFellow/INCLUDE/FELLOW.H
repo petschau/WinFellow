@@ -27,8 +27,8 @@ extern void fellowNastyExit(void);
 extern char *fellowGetVersionString(void);
 extern void fellowSetPreStartReset(BOOLE reset);
 extern BOOLE fellowGetPreStartReset(void);
-extern BOOLE fellowSaveState(STR *filename);
-extern BOOLE fellowLoadState(STR *filename);
+extern BOOLE fellowSaveState(char *filename);
+extern BOOLE fellowLoadState(char *filename);
 extern void fellowSoftReset(void);
 extern void fellowHardReset(void);
 extern BOOLE fellowEmulationStart(void);
@@ -38,6 +38,6 @@ extern void fellowRequestEmulationStop(void);
 extern void fellowAddLog(const char *, ...);
 extern void fellowAddLogRequester(FELLOW_REQUESTER_TYPE, const char *, ...);
 extern void fellowAddTimelessLog(const char *, ...);
-extern void fellowAddLog2(STR *msg);
+extern void fellowAddLog2(char *msg);
 
 #endif

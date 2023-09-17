@@ -336,11 +336,11 @@ uint32_t getNumUnits(void) {
   return mountinfo.num_units;
 }
 
-STR *getVolName(uint32_t index) {
+char *getVolName(uint32_t index) {
   return mountinfo.ui[index].volname;
 }
 
-STR *getRootDir(uint32_t index) {
+char *getRootDir(uint32_t index) {
   return mountinfo.ui[index].rootdir;
 }
 

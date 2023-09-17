@@ -317,7 +317,7 @@ void busEventLog(bus_event *e)
     fprintf(BUSLOG, "%d eof\n", e->cycle);
 }
 
-void busLogCpu(STR *s)
+void busLogCpu(char *s)
 {
   if (!bus_log) return;
   if (BUSLOG == NULL) BUSLOG = busOpenLog();

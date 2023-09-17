@@ -20,7 +20,7 @@ struct draw_mode
   uint32_t height;
   uint32_t bits;
   uint32_t refresh;
-  STR name[80];
+  char name[80];
 };
 
 typedef std::list<draw_mode*> draw_mode_list;

@@ -84,8 +84,8 @@ typedef struct {
   floppytrackinfostruct trackinfo[FLOPPY_TRACKS]; /* Info about each track */
   FLOPPY_STATUS_CODE imagestatus; /* Status of drive (kind of image inserted) */
   uint32_t imageerror;         /* What kind of error if status reports error */
-  STR imagename[CFG_FILENAME_LENGTH];     /* Image name presented to user */
-  STR imagenamereal[CFG_FILENAME_LENGTH]; /* Image name used internally */
+  char imagename[CFG_FILENAME_LENGTH];     /* Image name presented to user */
+  char imagenamereal[CFG_FILENAME_LENGTH]; /* Image name used internally */
 #ifdef FELLOW_SUPPORT_CAPS
   BOOLE flakey;  /* introduced for CAPS support */
   uint32_t *timebuf;        /* dito */
@@ -126,12 +126,12 @@ extern void floppyMotorSet(uint32_t drive, BOOLE mtr);
 extern void floppySideSet(BOOLE s);
 extern void floppyDirSet(BOOLE dr);
 extern void floppyStepSet(BOOLE stp);
-extern bool floppyImageADFCreate(STR *, STR *, bool, bool, bool);
+extern bool floppyImageADFCreate(char *, char *, bool, bool, bool);
 extern void floppyImageRemove(uint32_t drive);
-extern bool floppyValidateAmigaDOSVolumeName(const STR *);
+extern bool floppyValidateAmigaDOSVolumeName(const char *);
 /* Configuration */
 
-extern void floppySetDiskImage(uint32_t drive, STR *diskname);
+extern void floppySetDiskImage(uint32_t drive, char *diskname);
 extern void floppySetEnabled(uint32_t drive, BOOLE enabled);
 extern void floppySetReadOnlyConfig(uint32_t drive, BOOLE readonly);
 extern void floppySetFastDMA(BOOLE fastDMA);

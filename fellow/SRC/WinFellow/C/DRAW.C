@@ -440,11 +440,11 @@ static void drawFpsChar(int character, int x)
 /* Draws text in the FPS counter buffer                                       */
 /*============================================================================*/
 
-static void drawFpsText(STR *text)
+static void drawFpsText(char *text)
 {
   for (int i = 0; i < 4; i++)
   {
-    STR c = *text++;
+    char c = *text++;
     switch (c)
     {
       case '0': drawFpsChar(9, i);
@@ -555,7 +555,7 @@ static void drawFpsCounter(void)
 {
   if (draw_fps_counter_enabled)
   {
-    STR s[16];
+    char s[16];
 
     sprintf(s, "%u", drawStatLast50FramesFps());
     drawFpsText(s);

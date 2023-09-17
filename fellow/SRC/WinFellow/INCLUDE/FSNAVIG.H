@@ -12,7 +12,7 @@ typedef enum {
 
 typedef struct {
   uint8_t drive;
-  STR name[FS_WRAP_MAX_PATH_LENGTH];
+  char name[FS_WRAP_MAX_PATH_LENGTH];
   BOOLE relative;
   BOOLE writeable;
   uint32_t size;

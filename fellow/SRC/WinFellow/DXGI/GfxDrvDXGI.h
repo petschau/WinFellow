@@ -123,7 +123,7 @@ public:
   void GetBufferInformation(draw_buffer_information *buffer_information);
   void Flip();
 
-  bool SaveScreenshot(const bool, const STR *);
+  bool SaveScreenshot(const bool, const char *);
 
   static bool ValidateRequirements();
 

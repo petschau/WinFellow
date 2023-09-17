@@ -19,8 +19,8 @@ void busEndOfLine(void);
 void busEndOfFrame(void);
 
 #ifdef ENABLE_BUS_EVENT_LOGGING
-extern void busLogCpu(STR *s);
-extern void busLogCpuException(STR *s);
+extern void busLogCpu(char *s);
+extern void busLogCpuException(char *s);
 #endif
 
 typedef void (*busEventHandler)(void);

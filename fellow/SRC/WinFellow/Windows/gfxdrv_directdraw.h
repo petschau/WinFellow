@@ -22,7 +22,7 @@ void gfxDrvDDrawEmulationStop();
 bool gfxDrvDDrawStartup();
 void gfxDrvDDrawShutdown();
 
-bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC, DWORD, DWORD, DWORD, DWORD, uint32_t, DWORD, const STR *);
-bool gfxDrvDDrawSaveScreenshot(const bool, const STR *);
+bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC, DWORD, DWORD, DWORD, DWORD, uint32_t, DWORD, const char *);
+bool gfxDrvDDrawSaveScreenshot(const bool, const char *);
 
 #endif

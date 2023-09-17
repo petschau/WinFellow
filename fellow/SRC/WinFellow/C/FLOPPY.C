@@ -143,7 +143,7 @@ void floppyLogClear(void)
   remove(floppylogfilename);
 }
 
-void floppyLog(STR *msg)
+void floppyLog(char *msg)
 {
   if (floppylogfile == 0)
   {
@@ -155,35 +155,35 @@ void floppyLog(STR *msg)
 
 void floppyLogDMARead(uint32_t drive, uint32_t track, uint32_t side, uint32_t length, uint32_t ticks)
 {
-  STR msg[256];
+  char msg[256];
   sprintf(msg, "DMA Read Started: FrameNo=%I64u Y=%.3u X=%.3u Drive=%u Track=%u Side=%u Pt=%.8X Length=%u Ticks=%u PC=%.6X\n", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), drive, track, side, dskpt, length, ticks, cpuGetPC());
   floppyLog(msg);
 }
 
 void floppyLogStep(uint32_t drive, uint32_t from, uint32_t to)
 {
-  STR msg[256];
+  char msg[256];
   sprintf(msg, "Step: FrameNo=%I64u Y=%.3u X=%.3u Drive %u from track %u to %u PC=%.6X\n", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), drive, from, to, cpuGetPC());
   floppyLog(msg);
 }
 
-void floppyLogValue(STR *text, uint32_t v)
+void floppyLogValue(char *text, uint32_t v)
 {
-  STR msg[256];
+  char msg[256];
   sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Value=%.8X PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), v, cpuGetPC());
   floppyLog(msg);
 }
 
-void floppyLogValueWithTicks(STR *text, uint32_t v, uint32_t ticks)
+void floppyLogValueWithTicks(char *text, uint32_t v, uint32_t ticks)
 {
-  STR msg[256];
+  char msg[256];
   sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Value=%.8X Ticks=%.5u PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), v, ticks, cpuGetPC());
   floppyLog(msg);
 }
 
-void floppyLogMessageWithTicks(STR *text, uint32_t ticks)
+void floppyLogMessageWithTicks(char *text, uint32_t ticks)
 {
-  STR msg[256];
+  char msg[256];
   sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Ticks=%.5u PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), ticks, cpuGetPC());
   floppyLog(msg);
 }
@@ -221,7 +221,7 @@ void wadcon(uint16_t data, uint32_t address)
   }
 #ifdef FLOPPY_LOG
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "adcon (wait for disksync %.4X is %s)", dsksync, (adcon & 0x0400) ? "enabled" : "disabled");
     floppyLogValue(msg, adcon);
   }
@@ -816,10 +816,10 @@ static void floppyWriteDiskChecksum(const uint8_t *strBuffer, uint8_t *strChecks
   memoryWriteLongToPointer(lChecksum, strChecksum);
 }
 
-bool floppyValidateAmigaDOSVolumeName(const STR *strVolumeName)
+bool floppyValidateAmigaDOSVolumeName(const char *strVolumeName)
 {
-  STR *strIllegalVolumeNames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
-  STR strIllegalCharacters[2] = { ':', '/' };
+  char *strIllegalVolumeNames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
+  char strIllegalCharacters[2] = { ':', '/' };
   int i;
 
   if(strVolumeName == NULL) 
@@ -871,7 +871,7 @@ static void floppyWriteDiskRootBlock(uint8_t *strCylinderContent, uint32_t lBloc
   floppyWriteDiskChecksum(strCylinderContent + 512, strCylinderContent + 512);
 }
 
-bool floppyImageADFCreate(STR *strImageFilename, STR *strVolumeLabel, bool bFormat, bool bBootable, bool bFFS)
+bool floppyImageADFCreate(char *strImageFilename, char *strVolumeLabel, bool bFormat, bool bBootable, bool bFFS)
 {
   bool bResult = false;
   uint32_t lImageSize = 2*11*80*512; // 2 tracks per cylinder, 11 sectors per track, 80 cylinders, 512 bytes per sector
@@ -929,10 +929,10 @@ bool floppyImageADFCreate(STR *strImageFilename, STR *strVolumeLabel, bool bForm
 /* Uncompress a BZip image */
 /*=========================*/
 
-BOOLE floppyImageCompressedBZipPrepare(STR *diskname, uint32_t drive)
+BOOLE floppyImageCompressedBZipPrepare(char *diskname, uint32_t drive)
 {
   char *gzname;
-  STR cmdline[512];
+  char cmdline[512];
 
   if( (gzname = fileopsGetTemporaryFilename()) == NULL)
   {
@@ -952,7 +952,7 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, uint32_t drive)
 /* Uncompress a DMS image */
 /*========================*/
 
-BOOLE floppyImageCompressedDMSPrepare(STR *diskname, uint32_t drive)
+BOOLE floppyImageCompressedDMSPrepare(char *diskname, uint32_t drive)
 {
   char *gzname;
   USHORT result;
@@ -966,7 +966,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, uint32_t drive)
   result = dmsUnpack(diskname, gzname);
   if(result != 0)
   {
-    STR szErrorMessage[1024] = "";
+    char szErrorMessage[1024] = "";
 
     dmsErrMsg(result, (char *) diskname, gzname, (char *) szErrorMessage);
 
@@ -986,7 +986,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, uint32_t drive)
 /* Uncompress a GZipped image */
 /*============================*/
 
-BOOLE floppyImageCompressedGZipPrepare(STR *diskname, uint32_t drive)
+BOOLE floppyImageCompressedGZipPrepare(char *diskname, uint32_t drive)
 {
   char *gzname;
   if( (gzname = fileopsGetTemporaryFilename()) == NULL)
@@ -1022,7 +1022,7 @@ void floppyImageCompressedRemove(uint32_t drive)
     if( (!floppyIsWriteProtected(drive)) && 
       ((access(floppy[drive].imagename, 2)) != -1 )) // file is not read-only
     {
-	    STR *dotptr = strrchr(floppy[drive].imagename, '.');
+	    char *dotptr = strrchr(floppy[drive].imagename, '.');
 	    if (dotptr != NULL)
 	    {
 	      if ((strcmpi(dotptr, ".gz") == 0) ||
@@ -1053,9 +1053,9 @@ void floppyImageCompressedRemove(uint32_t drive)
 /* compressed.                */
 /*============================*/
 
-BOOLE floppyImageCompressedPrepare(STR *diskname, uint32_t drive)
+BOOLE floppyImageCompressedPrepare(char *diskname, uint32_t drive)
 {
-  STR *dotptr = strrchr(diskname, '.');
+  char *dotptr = strrchr(diskname, '.');
   if (dotptr == NULL)
   {
     return FALSE;
@@ -1119,7 +1119,7 @@ void floppyImageRemove(uint32_t drive)
 /* Prepare a disk image, ie. uncompress and report errors */
 /*========================================================*/
 
-void floppyImagePrepare(STR *diskname, uint32_t drive)
+void floppyImagePrepare(char *diskname, uint32_t drive)
 {
   if (!floppyImageCompressedPrepare(diskname, drive))
   {
@@ -1138,7 +1138,7 @@ void floppyImagePrepare(STR *diskname, uint32_t drive)
 
 uint32_t floppyImageGeometryCheck(fs_navig_point *fsnp, uint32_t drive)
 {
-  STR head[8];
+  char head[8];
   fread(head, 1, 8, floppy[drive].F);
   if (strncmp(head, "UAE--ADF", 8) == 0)
   {
@@ -1285,7 +1285,7 @@ void floppyImageIPFLoad(uint32_t drive)
 
 /** Insert an image into a floppy drive
  */
-void floppySetDiskImage(uint32_t drive, STR *diskname)
+void floppySetDiskImage(uint32_t drive, char *diskname)
 {
   fs_navig_point *fsnp;
   BOOLE bSuccess = FALSE;

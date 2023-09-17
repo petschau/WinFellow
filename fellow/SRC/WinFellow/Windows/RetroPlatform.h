@@ -89,8 +89,8 @@ public:
   bool       SendActivated(const bool, const LPARAM);
   bool       SendClose(void);
   bool       SendEnable(const bool);
-  bool       SendFloppyDriveContent(const uint32_t, const STR *, const bool);
-  bool       SendHardDriveContent(const uint32_t, const STR *, const bool);
+  bool       SendFloppyDriveContent(const uint32_t, const char *, const bool);
+  bool       SendHardDriveContent(const uint32_t, const char *, const bool);
   bool       SendFloppyDriveReadOnly(const uint32_t, const bool);
   bool       SendFloppyTurbo(const bool);
   bool       SendMouseCapture(const bool);
@@ -124,7 +124,7 @@ public:
 private:
   // private functions
   bool       CheckEmulationNecessities(void);
-  bool       ConnectInputDeviceToPort(const uint32_t, const uint32_t, DWORD, const STR *);
+  bool       ConnectInputDeviceToPort(const uint32_t, const uint32_t, DWORD, const char *);
   void       DetermineScreenModeFromConfig(struct RPScreenMode *, cfg *);
   int        EnumerateJoysticks(void);
 
@@ -132,7 +132,7 @@ private:
   uint32_t        GetClippingOffsetTop(void);
   uint32_t        GetCPUSpeed(void);
   bool       GetHostVersion(uint32_t *, uint32_t *, uint32_t *);
-  const STR *GetMessageText(uint32_t);
+  const char *GetMessageText(uint32_t);
   uint32_t        GetScreenHeight(void);
   uint32_t        GetScreenWidth(void);
   bool       GetScreenWindowed(void);
@@ -145,7 +145,7 @@ private:
   bool       SendMessageToHost(uint32_t, WPARAM, LPARAM, LPCVOID, DWORD, const RPGUESTINFO *, LRESULT *);
 
   // setters
-  void       SetCustomKeyboardLayout(const uint32_t, const STR *);
+  void       SetCustomKeyboardLayout(const uint32_t, const char *);
   void       SetDisplayScale(const uint32_t);
   void       SetEmulationPaused(const bool);
   void       SetEmulationState(const bool);
@@ -164,7 +164,7 @@ private:
   bool       SendScreenMode(HWND);
 
   // private variables
-  STR szHostID[CFG_FILENAME_LENGTH];  /// host ID that was passed over by the RetroPlatform player
+  char szHostID[CFG_FILENAME_LENGTH];  /// host ID that was passed over by the RetroPlatform player
   bool bRetroPlatformMode = false;    /// flag to indicate that emulator operates in RetroPlatform/"headless" mode
 
     // emulation/state settings

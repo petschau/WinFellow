@@ -109,7 +109,7 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode(void) {
 
 #define WRITE_LOG_BUF_SIZE 512
 
-void fellowAddLog2(STR* msg)
+void fellowAddLog2(char* msg)
 {
   Service->Log.AddLog2(msg);
 }
@@ -455,7 +455,7 @@ static void fellowDrawFailed(void) {
 /* Save statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowSaveState(STR *filename)
+BOOLE fellowSaveState(char *filename)
 {
   FILE *F = fopen(filename, "wb");
   
@@ -476,7 +476,7 @@ BOOLE fellowSaveState(STR *filename)
 /* Load statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowLoadState(STR *filename)
+BOOLE fellowLoadState(char *filename)
 {
   FILE *F = fopen(filename, "rb");
   

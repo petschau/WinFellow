@@ -116,7 +116,7 @@ RetroPlatform RP;
  *  returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
  */
 
-BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
+BOOL RetroPlatformHandleIncomingGuestEvent(char *strCurrentEvent)
 {
   if(strCurrentEvent == NULL)
   {
@@ -129,7 +129,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 #endif
 
   BOOL blnMatch = FALSE;
-  STR *strRawKeyCode = NULL;
+  char *strRawKeyCode = NULL;
   uint32_t lRawKeyCode = 0;
   
   // handle key_raw_up and key_raw_down events
@@ -161,10 +161,10 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 	  return FALSE;
 }
 
-BOOL RetroPlatformHandleIncomingGuestEventMessageParser(STR *strEventMessage)
+BOOL RetroPlatformHandleIncomingGuestEventMessageParser(char *strEventMessage)
 {
-  STR *strNextEvent, *blank1, *blank2;
-  STR *strCurrentEvent = (STR *)strEventMessage;
+  char *strNextEvent, *blank1, *blank2;
+  char *strCurrentEvent = (char *)strEventMessage;
 
   for(;;)
   {
@@ -193,11 +193,11 @@ BOOL RetroPlatformHandleIncomingGuestEventMessageParser(STR *strEventMessage)
 
 BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 {
-  STR *strEventMessage = NULL;
+  char *strEventMessage = NULL;
   size_t lEventMessageLength = 0, lReturnCode = 0;
 
   lEventMessageLength = wcstombs(NULL, wcsEventMessage, 0); // first call to wcstombs() determines how long the output buffer needs to be
-  strEventMessage = (STR *)malloc(lEventMessageLength+1);
+  strEventMessage = (char *)malloc(lEventMessageLength+1);
   if(strEventMessage == NULL)
     return FALSE;
   lReturnCode = wcstombs(strEventMessage, wcsEventMessage, lEventMessageLength+1);
@@ -363,7 +363,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_DEVICECONTENT:
     {
       struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
-      STR name[CFG_FILENAME_LENGTH] = "";
+      char name[CFG_FILENAME_LENGTH] = "";
       wcstombs(name, dc->szContent, CFG_FILENAME_LENGTH);
   #ifdef _DEBUG
       fellowAddLog("RetroPlatform::HostMessageFunction(): RP_IPC_TO_GUEST_DEVICECONTENT Cat=%d Num=%d Flags=%08x '%s'\n",
@@ -400,7 +400,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_SCREENCAPTURE:
     {
       struct RPScreenCapture *rpsc = (struct RPScreenCapture*)pData;
-      STR szScreenFiltered[CFG_FILENAME_LENGTH] = "", szScreenRaw[CFG_FILENAME_LENGTH] = "";
+      char szScreenFiltered[CFG_FILENAME_LENGTH] = "", szScreenRaw[CFG_FILENAME_LENGTH] = "";
 
       wcstombs(szScreenFiltered, rpsc->szScreenFiltered, CFG_FILENAME_LENGTH);
       wcstombs(szScreenRaw, rpsc->szScreenRaw, CFG_FILENAME_LENGTH);
@@ -468,7 +468,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
  */
 BOOL FAR PASCAL RetroPlatform::EnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
-  STR strHostInputID[CFG_FILENAME_LENGTH];
+  char strHostInputID[CFG_FILENAME_LENGTH];
   WCHAR szHostInputID[CFG_FILENAME_LENGTH];
   WCHAR szHostInputName[CFG_FILENAME_LENGTH];
                                     
@@ -573,11 +573,11 @@ void RetroPlatform::SetClippingOffsetTop(const uint32_t lOffsetTop)
  * Gameport 0 is statically mapped to internal keyboard layout GP_JOYKEY0, 
  * gameport 1 to GP_JOYKEY1 as we reconfigure them anyway
  */
-void RetroPlatform::SetCustomKeyboardLayout(const uint32_t lGameport, const STR *pszKeys) 
+void RetroPlatform::SetCustomKeyboardLayout(const uint32_t lGameport, const char *pszKeys) 
 {
   const char *CustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
   int l[RETRO_PLATFORM_KEYSET_COUNT], n;
-  STR *psz;
+  char *psz;
   size_t ln;
 
   fellowAddLog(" Configuring keyboard layout %d to %s.\n", lGameport, pszKeys);
@@ -629,7 +629,7 @@ void RetroPlatform::SetCustomKeyboardLayout(const uint32_t lGameport, const STR 
  * The device is selected in the RetroPlatform player and passed to the emulator
  * in form of an IPC message.
  */
-bool RetroPlatform::ConnectInputDeviceToPort(const uint32_t lGameport, const uint32_t lDeviceType, DWORD dwFlags, const STR *szName)
+bool RetroPlatform::ConnectInputDeviceToPort(const uint32_t lGameport, const uint32_t lDeviceType, DWORD dwFlags, const char *szName)
 {
   if(lGameport < 0 || lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)	
     return false;
@@ -702,7 +702,7 @@ bool RetroPlatform::ConnectInputDeviceToPort(const uint32_t lGameport, const uin
 
 /** Translate a RetroPlatform IPC message code into readable text.
  */
-const STR *RetroPlatform::GetMessageText(uint32_t iMsg)
+const char *RetroPlatform::GetMessageText(uint32_t iMsg)
 {
   switch(iMsg) {
     case RP_IPC_TO_HOST_FEATURES:           return TEXT("RP_IPC_TO_HOST_FEATURES");
@@ -1074,7 +1074,7 @@ bool RetroPlatform::PostFloppyDriveLED(const uint32_t lFloppyDriveNo, const bool
  * @sa RetroPlatformSendFloppyDriveReadOnly
  * @callergraph
  */
-bool RetroPlatform::SendFloppyDriveContent(const uint32_t lFloppyDriveNo, const STR *szImageName, const bool bWriteProtected) 
+bool RetroPlatform::SendFloppyDriveContent(const uint32_t lFloppyDriveNo, const char *szImageName, const bool bWriteProtected) 
 {
   bool bResult;
   struct RPDeviceContent rpDeviceContent = { 0 };
@@ -1209,7 +1209,7 @@ bool RetroPlatform::PostGameportActivity(const uint32_t lGameport, const uint32_
  * @return true if message sent successfully, false otherwise.
  * @callergraph
  */
-bool RetroPlatform::SendHardDriveContent(const uint32_t lHardDriveNo, const STR *szImageName, const bool bWriteProtected) 
+bool RetroPlatform::SendHardDriveContent(const uint32_t lHardDriveNo, const char *szImageName, const bool bWriteProtected) 
 {
   bool bResult;
   struct RPDeviceContent rpDeviceContent = { 0 };
@@ -1752,7 +1752,7 @@ bool RetroPlatform::SendInputDevice(const DWORD dwHostInputType,
 {
   LRESULT lResult;
   bool bResult;
-  STR szHostInputNameA[CFG_FILENAME_LENGTH];
+  char szHostInputNameA[CFG_FILENAME_LENGTH];
 	struct RPInputDeviceDescription rpInputDevDesc;
 
   wcscpy(rpInputDevDesc.szHostInputID, szHostInputID);

@@ -59,7 +59,7 @@ extern uint8_t kbd_drv_pc_symbol_to_amiga_scancode[106];
 
 #define MAX_PC_NAMES	106
 
-extern STR* kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
+extern char* kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
 #define pc_keys kbd_drv_pc_symbol_to_string
 
 extern int symbol_to_DIK_kbddrv[PCK_LAST_KEY];
@@ -71,7 +71,7 @@ extern int symbol_to_DIK_kbddrv[PCK_LAST_KEY];
 
 #define MAX_AMIGA_NAMES		96
 
-STR *amiga_keys[MAX_AMIGA_NAMES] = 
+char *amiga_keys[MAX_AMIGA_NAMES] = 
 {
   "ESCAPE",
   "GRAVE",
@@ -282,7 +282,7 @@ uint8_t amiga_scancode[MAX_AMIGA_NAMES] =
 
 // the order of the replacement_keys array must coincide with the enum kbd_drv_joykey_directions in kbddrv.c
 
-STR *replacement_keys[MAX_KEY_REPLACEMENT] =
+char *replacement_keys[MAX_KEY_REPLACEMENT] =
 {
   "JOYKEY1_LEFT",
   "JOYKEY1_RIGHT",
@@ -307,7 +307,7 @@ STR *replacement_keys[MAX_KEY_REPLACEMENT] =
 /* Get index of the key							     */
 /*===========================================================================*/
 
-int prsGetKeyIndex( STR *szKey, STR *Keys[], int MaxKeys )
+int prsGetKeyIndex( char *szKey, char *Keys[], int MaxKeys )
 {
   int i = 0;
   for( i = 0; i < MaxKeys; i++ )
@@ -324,10 +324,10 @@ int prsGetKeyIndex( STR *szKey, STR *Keys[], int MaxKeys )
 /* trim the left and right spaces and tab chars				     */
 /*===========================================================================*/
 
-STR *prsTrim( STR *line )
+char *prsTrim( char *line )
 {
   size_t i = 0, j = strlen( line ) - 1;
-  STR *p = line;
+  char *p = line;
 
   // trim starting space and tab
   while(( i < j ) && ((line[i] == '\t') || (line[i] == ' ')))
@@ -366,7 +366,7 @@ STR *prsTrim( STR *line )
 /* read the line and get Amiga key name and Pc key name			     */
 /*===========================================================================*/
 
-BOOLE prsGetAmigaName( STR *line, STR **pAm, STR **pWin )
+BOOLE prsGetAmigaName( char *line, char **pAm, char **pWin )
 {
   int i = 0;
   *pAm = line;

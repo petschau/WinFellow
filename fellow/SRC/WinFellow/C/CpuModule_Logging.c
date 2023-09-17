@@ -49,7 +49,7 @@ void cpuSetExceptionLoggingFunc(cpuExceptionLoggingFunc func)
   cpu_exception_logging_func = func;
 }
 
-void cpuCallExceptionLoggingFunc(STR *description, uint32_t original_pc, uint16_t opcode)
+void cpuCallExceptionLoggingFunc(char *description, uint32_t original_pc, uint16_t opcode)
 {
   if (cpu_exception_logging_func != NULL)
     cpu_exception_logging_func(description, original_pc, opcode);

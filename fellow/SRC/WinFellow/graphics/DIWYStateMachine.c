@@ -29,14 +29,14 @@
 
 #include "Graphics.h"
 
-static STR *DIWYStateNames[2] = {"WAITING_FOR_START_LINE",
+static char *DIWYStateNames[2] = {"WAITING_FOR_START_LINE",
 				 "WAITING_FOR_STOP_LINE"};
 
 void DIWYStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "DIWY: %s\n", DIWYStateNames[_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }

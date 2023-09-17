@@ -120,11 +120,11 @@ bool memory_useautoconfig;
 
 BOOLE memory_address32bit;
 
-STR memory_kickimage[CFG_FILENAME_LENGTH];
+char memory_kickimage[CFG_FILENAME_LENGTH];
 
-STR memory_kickimage_ext[CFG_FILENAME_LENGTH];
+char memory_kickimage_ext[CFG_FILENAME_LENGTH];
 
-STR memory_key[256];
+char memory_key[256];
 
 bool memory_a1000_wcs = false;              ///< emulate the Amiga 1000 WCS (writable control store)
 
@@ -224,7 +224,7 @@ uint32_t memory_kickimage_size;
 
 uint32_t memory_kickimage_version;
 
-STR memory_kickimage_versionstr[80];
+char memory_kickimage_versionstr[80];
 
 uint32_t memory_kickimage_basebank;
 
@@ -232,7 +232,7 @@ uint32_t memory_kickimage_ext_size = 0;
 
 uint32_t memory_kickimage_ext_basebank = 0;
 
-const STR *memory_kickimage_versionstrings[14] = {
+const char *memory_kickimage_versionstrings[14] = {
 
   "Kickstart, version information unavailable",
 
@@ -1218,11 +1218,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemSetString(const STR *st)
+  void memoryDmemSetString(const char *st)
 
   {
 
-    strcpy((STR *) (memory_dmem + memory_dmemcounter), st);
+    strcpy((char *) (memory_dmem + memory_dmemcounter), st);
 
     memory_dmemcounter += (uint32_t) strlen(st) + 1;
 
@@ -2856,7 +2856,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    static STR error1[80], error2[160], error3[160];
+    static char error1[80], error2[160], error3[160];
 
 
 
@@ -2998,7 +2998,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  STR *memoryKickIdentify(STR *s)
+  char *memoryKickIdentify(char *s)
 
   {
 
@@ -3096,11 +3096,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  int memoryKickDecodeAF(STR *filename, STR *keyfile, uint8_t *memory_kick, const bool suppressgui)
+  int memoryKickDecodeAF(char *filename, char *keyfile, uint8_t *memory_kick, const bool suppressgui)
 
   {
 
-    STR *keybuffer = NULL;
+    char *keybuffer = NULL;
 
     uint32_t keysize, filesize = 0, keypos = 0, c;
 
@@ -3120,7 +3120,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
       keysize = ftell(KF);
 
-      keybuffer = (STR*)malloc(keysize);
+      keybuffer = (char*)malloc(keysize);
 
       if (keybuffer != NULL)
 
@@ -3144,11 +3144,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
       HMODULE hAmigaForeverDLL = NULL;
 
-      STR *strLibName = TEXT("amigaforever.dll");
+      char *strLibName = TEXT("amigaforever.dll");
 
-      STR strPath[CFG_FILENAME_LENGTH] = "";
+      char strPath[CFG_FILENAME_LENGTH] = "";
 
-      STR strAmigaForeverRoot[CFG_FILENAME_LENGTH] = "";
+      char strAmigaForeverRoot[CFG_FILENAME_LENGTH] = "";
 
       DWORD dwRet = 0;
 
@@ -3212,7 +3212,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 	  if (keysize) {
 
-	    keybuffer = (STR*)malloc(keysize);
+	    keybuffer = (char*)malloc(keysize);
 
  
 
@@ -3326,13 +3326,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  int memoryKickLoadAF2(STR *filename, FILE *F, uint8_t *memory_kick, const bool suppressgui)
+  int memoryKickLoadAF2(char *filename, FILE *F, uint8_t *memory_kick, const bool suppressgui)
 
   {
 
     uint32_t version;
 
-    STR IDString[12];
+    char IDString[12];
 
 
 
@@ -3482,7 +3482,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    STR head[5];
+    char head[5];
 
 
 
@@ -3546,7 +3546,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     BOOLE kickdisk = FALSE;
 
-    STR *suffix, *lastsuffix;
+    char *suffix, *lastsuffix;
 
     BOOLE afkick = FALSE;
 
@@ -3866,7 +3866,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
         uint32_t version;
 
-        STR IDString[12];
+        char IDString[12];
 
 
 
@@ -4348,7 +4348,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  BOOLE memorySetKickImage(STR *kickimage)
+  BOOLE memorySetKickImage(char *kickimage)
 
   {
 
@@ -4364,7 +4364,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  BOOLE memorySetKickImageExtended(STR *kickimageext)
+  BOOLE memorySetKickImageExtended(char *kickimageext)
 
   {
 
@@ -4384,7 +4384,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  STR *memoryGetKickImage(void)
+  char *memoryGetKickImage(void)
 
   {
 
@@ -4394,7 +4394,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memorySetKey(STR *key)
+  void memorySetKey(char *key)
 
   {
 
@@ -4404,7 +4404,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  STR *memoryGetKey(void)
+  char *memoryGetKey(void)
 
   {
 

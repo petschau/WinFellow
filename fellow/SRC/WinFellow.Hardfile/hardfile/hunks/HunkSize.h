@@ -11,7 +11,7 @@ namespace fellow::hardfile::hunks
     uint32_t MemoryFlags;
     uint32_t AdditionalFlags;
 
-    const STR* GetMemoryFlagsToString();
+    const char* GetMemoryFlagsToString();
 
     HunkSize(uint32_t sizeInLongwords, uint32_t memoryFlags, uint32_t additionalFlags);
   };

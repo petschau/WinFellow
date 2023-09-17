@@ -87,7 +87,7 @@ void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, ui
   ComboBox_SetCurSel(GetDlgItem(windowHandle, controlIdentifier), index);
 }
 
-void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text)
+void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, char *text)
 {
   ComboBox_AddString(GetDlgItem(windowHandle, controlIdentifier), text);
 }
@@ -107,17 +107,17 @@ void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable)
   EnableWindow(GetDlgItem(windowHandle, controlIdentifier), enable);
 }
 
-void ccwStaticSetText(HWND windowHandle, int controlIdentifier, STR *text)
+void ccwStaticSetText(HWND windowHandle, int controlIdentifier, char *text)
 {
   Static_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditSetText(HWND windowHandle, int controlIdentifier, STR *text)
+void ccwEditSetText(HWND windowHandle, int controlIdentifier, char *text)
 {
   Edit_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, uint32_t n)
+void ccwEditGetText(HWND windowHandle, int controlIdentifier, char *text, uint32_t n)
 {
   Edit_GetText(GetDlgItem(windowHandle, controlIdentifier), text, n);
 }

@@ -162,9 +162,9 @@ void gfxDrvEmulationStop()
   gfxDrvCommon->EmulationStop();
 }
 
-bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilename)
+bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const char *szFilename)
 {
-  STR szActualFilename[MAX_PATH] = "";
+  char szActualFilename[MAX_PATH] = "";
   bool result = false;
 
   if (szFilename[0] == 0)

@@ -533,8 +533,8 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
 int winDrvDetectMemoryLeaks(void)
 {
   HANDLE hLogFile;
-  STR stOutputFileName[CFG_FILENAME_LENGTH];
-  STR strLogFileName[CFG_FILENAME_LENGTH];
+  char stOutputFileName[CFG_FILENAME_LENGTH];
+  char strLogFileName[CFG_FILENAME_LENGTH];
   SYSTEMTIME t;
 
   GetSystemTime(&t);

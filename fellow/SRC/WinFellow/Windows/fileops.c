@@ -168,7 +168,7 @@ static BOOLE fileopsGetWinFellowExecutablePath(char *strBuffer, const DWORD lBuf
 /* writes WinFellow installation path into strBuffer                */
 bool fileopsGetWinFellowInstallationPath(char *strBuffer, const DWORD lBufferSize)
 {
-  STR strWinFellowExePath[CFG_FILENAME_LENGTH] = "";
+  char strWinFellowExePath[CFG_FILENAME_LENGTH] = "";
 
   if(fileopsGetWinFellowExecutablePath(strWinFellowExePath, CFG_FILENAME_LENGTH))
   {
@@ -196,7 +196,7 @@ static bool fileopsDirectoryExists(const char *strPath)
 /* writes WinFellow preset directory path into strBuffer            */
 BOOLE fileopsGetWinFellowPresetPath(char *strBuffer, const DWORD lBufferSize)
 {
-  STR strWinFellowInstallPath[CFG_FILENAME_LENGTH] = "";
+  char strWinFellowInstallPath[CFG_FILENAME_LENGTH] = "";
 
   if(fileopsGetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH))
   {
@@ -254,15 +254,15 @@ char *fileopsGetTemporaryFilename(void)
 
 bool fileopsGetKickstartByCRC32(const char *strSearchPath, const uint32_t lCRC32, char *strDestFilename, const uint32_t strDestLen)
 {
-  STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
+  char strSearchPattern[CFG_FILENAME_LENGTH] = "";
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
   uint8_t memory_kick[0x080000 + 32];
   FILE *F = NULL;
-  STR strFilename[CFG_FILENAME_LENGTH] = "";
+  char strFilename[CFG_FILENAME_LENGTH] = "";
   uint32_t lCurrentCRC32 = 0;
 #ifdef FILEOPS_ROMSEARCH_RECURSIVE
-  STR strSubDir[CFG_FILENAME_LENGTH] = "";
+  char strSubDir[CFG_FILENAME_LENGTH] = "";
 #endif
   
   strncpy(strSearchPattern, strSearchPath, CFG_FILENAME_LENGTH);

@@ -2,7 +2,7 @@
 
 namespace test::mock::fellow::api::service
 {
-  bool RetroPlatformWrapperMock::SendHardDriveContent(const uint32_t lHardDriveNo, const STR *szImageName, const bool bWriteProtected)
+  bool RetroPlatformWrapperMock::SendHardDriveContent(const uint32_t lHardDriveNo, const char *szImageName, const bool bWriteProtected)
   {
     return true;
   }

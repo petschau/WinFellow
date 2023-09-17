@@ -16,7 +16,7 @@ using namespace fellow::api::module;
 /*============================================================================*/
 
 typedef struct {
-  STR   filename[CFG_FILENAME_LENGTH];
+  char   filename[CFG_FILENAME_LENGTH];
   BOOLE readonly;
   uint32_t   bytespersector;
   uint32_t   sectorspertrack;
@@ -30,8 +30,8 @@ typedef struct {
 /*============================================================================*/
 
 typedef struct {
-  STR   volumename[64];
-  STR   rootpath[CFG_FILENAME_LENGTH];
+  char   volumename[64];
+  char   rootpath[CFG_FILENAME_LENGTH];
   BOOLE readonly;
 } cfg_filesys;
 
@@ -70,18 +70,18 @@ typedef enum {
 typedef struct {
 
   uint32_t   m_configfileversion;
-  STR	m_description[CFG_FILENAME_LENGTH];
+  char	m_description[CFG_FILENAME_LENGTH];
 
 
   /*==========================================================================*/
   /* Floppy disk configuration                                                */
   /*==========================================================================*/
 
-  STR    m_diskimage[4][CFG_FILENAME_LENGTH];
+  char    m_diskimage[4][CFG_FILENAME_LENGTH];
   BOOLE  m_diskenabled[4];
   BOOLE  m_diskreadonly[4];
   BOOLE  m_diskfast;
-  STR    m_lastuseddiskdir[CFG_FILENAME_LENGTH];	
+  char    m_lastuseddiskdir[CFG_FILENAME_LENGTH];	
 
 
   /*==========================================================================*/
@@ -91,11 +91,11 @@ typedef struct {
   uint32_t    m_chipsize;
   uint32_t    m_fastsize;
   uint32_t    m_bogosize;
-  STR    m_kickimage[CFG_FILENAME_LENGTH];
-  STR    m_kickimage_ext[CFG_FILENAME_LENGTH];
-  STR    m_kickdescription[CFG_FILENAME_LENGTH];
+  char    m_kickimage[CFG_FILENAME_LENGTH];
+  char    m_kickimage_ext[CFG_FILENAME_LENGTH];
+  char    m_kickdescription[CFG_FILENAME_LENGTH];
   uint32_t    m_kickcrc32;
-  STR    m_key[CFG_FILENAME_LENGTH];
+  char    m_key[CFG_FILENAME_LENGTH];
   bool   m_useautoconfig;
   bool   m_rtc;
 
@@ -177,7 +177,7 @@ typedef struct {
 
   felist* m_filesystems;
   BOOLE m_automount_drives;
-  STR m_filesystem_device_name_prefix[CFG_FILENAME_LENGTH];
+  char m_filesystem_device_name_prefix[CFG_FILENAME_LENGTH];
 
   /*==========================================================================*/
   /* Game port configuration                                                  */
@@ -210,22 +210,22 @@ typedef struct {
 /* Configuration                                                              */
 /*============================================================================*/
 
-extern STR *cfgGetDescription(cfg *config);
+extern char *cfgGetDescription(cfg *config);
 
 /*============================================================================*/
 /* Floppy disk configuration property access                                  */
 /*============================================================================*/
 
-extern void cfgSetDiskImage(cfg *config, uint32_t index, STR *diskimage);
-extern STR *cfgGetDiskImage(cfg *config, uint32_t index);
+extern void cfgSetDiskImage(cfg *config, uint32_t index, char *diskimage);
+extern char *cfgGetDiskImage(cfg *config, uint32_t index);
 extern void cfgSetDiskEnabled(cfg *config, uint32_t index, BOOLE enabled);
 extern BOOLE cfgGetDiskEnabled(cfg *config, uint32_t index);
 extern void cfgSetDiskReadOnly(cfg *config, uint32_t index, BOOLE readonly);
 extern BOOLE cfgGetDiskReadOnly(cfg *config, uint32_t index);
 extern void cfgSetDiskFast(cfg *config, BOOLE fast);
 extern BOOLE cfgGetDiskFast(cfg *config);  
-extern void cfgSetLastUsedDiskDir(cfg *config, STR *directory);
-extern STR *cfgGetLastUsedDiskDir(cfg *config);
+extern void cfgSetLastUsedDiskDir(cfg *config, char *directory);
+extern char *cfgGetLastUsedDiskDir(cfg *config);
 
 /*============================================================================*/
 /* Memory configuration property access                                       */
@@ -237,16 +237,16 @@ extern void cfgSetFastSize(cfg *config, uint32_t fastsize);
 extern uint32_t cfgGetFastSize(cfg *config);
 extern void cfgSetBogoSize(cfg *config, uint32_t bogosize);
 extern uint32_t cfgGetBogoSize(cfg *config);
-extern void cfgSetKickImage(cfg *config, STR *kickimage);
-extern STR *cfgGetKickImage(cfg *config);
-extern void cfgSetKickImageExtended(cfg *config, STR *kickimageext);
-extern STR *cfgGetKickImageExtended(cfg *config);
-extern void cfgSetKickDescription(cfg *config, STR *kickdescription);
-extern STR *cfgGetKickDescription(cfg *config);
+extern void cfgSetKickImage(cfg *config, char *kickimage);
+extern char *cfgGetKickImage(cfg *config);
+extern void cfgSetKickImageExtended(cfg *config, char *kickimageext);
+extern char *cfgGetKickImageExtended(cfg *config);
+extern void cfgSetKickDescription(cfg *config, char *kickdescription);
+extern char *cfgGetKickDescription(cfg *config);
 extern void cfgSetKickCRC32(cfg *config, uint32_t kickcrc32);
 extern uint32_t  cfgGetKickCRC32(cfg *config);
-extern void cfgSetKey(cfg *config, STR *key);
-extern STR *cfgGetKey(cfg *config);
+extern void cfgSetKey(cfg *config, char *key);
+extern char *cfgGetKey(cfg *config);
 extern void cfgSetUseAutoconfig(cfg *config, bool useautoconfig);
 extern bool cfgGetUseAutoconfig(cfg *config);
 extern BOOLE cfgGetAddress32Bit(cfg *config);
@@ -374,8 +374,8 @@ extern void cfgSetFilesystemAutomountDrives(cfg *config,
 					    BOOLE automount_drives);
 extern BOOLE cfgGetFilesystemAutomountDrives(cfg *config);
 
-extern void cfgSetFilesystemDeviceNamePrefix(cfg* config, STR* prefix);
-extern STR* cfgGetFilesystemDeviceNamePrefix(cfg* config);
+extern void cfgSetFilesystemDeviceNamePrefix(cfg* config, char* prefix);
+extern char* cfgGetFilesystemDeviceNamePrefix(cfg* config);
 
 
 /*============================================================================*/
@@ -406,10 +406,10 @@ extern bool cfgGetMeasureSpeed(cfg *config);
 /*============================================================================*/
 
 extern void cfgSetDefaults(cfg *config);
-extern BOOLE cfgSetOption(cfg *config, STR *optionstr);
+extern BOOLE cfgSetOption(cfg *config, char *optionstr);
 extern BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile);
-extern bool cfgLoadFromFilename(cfg *, const STR *, const bool);
-extern BOOLE cfgSaveToFilename(cfg *config, STR *filename);
+extern bool cfgLoadFromFilename(cfg *, const char *, const bool);
+extern BOOLE cfgSaveToFilename(cfg *config, char *filename);
 extern void cfgSynopsis(cfg *config);
 
 /*============================================================================*/

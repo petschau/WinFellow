@@ -64,9 +64,9 @@ void fsNavigInitializeStartupDir(void) {
 /* Find Fellow install-directory                                             */
 /*===========================================================================*/
 
-void fsNavigInitializeInstallDir(STR *cmd) {
-  STR *locc;
-  STR tmpname[FS_WRAP_MAX_PATH_LENGTH];
+void fsNavigInitializeInstallDir(char *cmd) {
+  char *locc;
+  char tmpname[FS_WRAP_MAX_PATH_LENGTH];
 
   fsWrapFullPath(tmpname, cmd);
   locc = strrchr(tmpname, FS_WRAP_PATH_SEPARATOR_CHAR);
@@ -80,7 +80,7 @@ void fsNavigInitializeInstallDir(STR *cmd) {
 /* Turns the name path into a relative path                                  */
 /*===========================================================================*/
 
-//void fsNavigMakeRelativePath(STR *name) {
+//void fsNavigMakeRelativePath(char *name) {
 //  fsWrapMakeRelativePath(fs_navig_install_dir->name, name);
 //}
 

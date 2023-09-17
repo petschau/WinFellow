@@ -403,7 +403,7 @@ void RtcOkiMsm6242rs::write(uint16_t data, uint32_t address)
 
 #ifdef RTC_LOG
 
-void RtcOkiMsm6242rs::logRtcTime(STR *msg)
+void RtcOkiMsm6242rs::logRtcTime(char *msg)
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 

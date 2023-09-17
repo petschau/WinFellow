@@ -154,7 +154,7 @@ uint32_t gfx_drv_output_height;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-const STR *gfxDrvDDrawErrorString(HRESULT hResult)
+const char *gfxDrvDDrawErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -263,7 +263,7 @@ const STR *gfxDrvDDrawErrorString(HRESULT hResult)
   return "Not a DirectDraw Error";
 }
 
-void gfxDrvDDrawPrintPixelFlags(DWORD flags, STR *s)
+void gfxDrvDDrawPrintPixelFlags(DWORD flags, char *s)
 {
   s[0] = '\0';
   if (flags & DDPF_ALPHAPIXELS) strcat(s, "(DDPF_ALPHAPIXELS)");
@@ -291,7 +291,7 @@ void gfxDrvDDrawPrintPixelFlags(DWORD flags, STR *s)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void gfxDrvDDrawFailure(const STR *header, HRESULT err)
+void gfxDrvDDrawFailure(const char *header, HRESULT err)
 {
   char s[255];
   sprintf(s, "gfxdrv: %s %s\n", header, gfxDrvDDrawErrorString(err));
@@ -426,7 +426,7 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
 
 void gfxDrvDDrawDeviceInformationDump()
 {
-  STR s[120];
+  char s[120];
 
   sprintf(s, "gfxdrv: DirectDraw devices found: %u\n", listCount(gfx_drv_ddraw_devices));
   fellowAddLog(s);
@@ -709,7 +709,7 @@ uint32_t gfxDrvRGBMaskSize(uint32_t mask)
 void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 {
   list<string> logmessages;
-  STR s[255];
+  char s[255];
 
   sprintf(s, "gfxdrv: DirectDraw fullscreen modes found: %u", listCount(ddraw_device->fullscreen_modes));
   logmessages.emplace_back(s);
@@ -1295,7 +1295,7 @@ uint32_t gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
           (ddpf.dwRGBBitCount == 24) ||
           (ddpf.dwRGBBitCount == 32))))
       {
-        STR pixelFormats[512];
+        char pixelFormats[512];
         gfxDrvDDrawPrintPixelFlags(ddpf.dwFlags, pixelFormats);
         fellowAddLog("gfxdrv: Surface has pixelformat flags %s (%.8X), (%d, %d, %d, %d, %d, %d, %d)\n",
           pixelFormats, ddpf.dwFlags, ddpf.dwRGBBitCount, gfxDrvRGBMaskPos(ddpf.dwRBitMask), gfxDrvRGBMaskSize(ddpf.dwRBitMask), gfxDrvRGBMaskPos(ddpf.dwGBitMask), 
@@ -1760,7 +1760,7 @@ void gfxDrvDDrawShutdown()
   }
 }
 
-bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, DWORD bits, const STR *filename)
+bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, DWORD bits, const char *filename)
 {
   BITMAPFILEHEADER bfh;
   BITMAPINFOHEADER bih;
@@ -1838,7 +1838,7 @@ cleanup:
 }
 
 static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface,
-  DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, const STR *filename) {
+  DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, const char *filename) {
   DDSURFACEDESC ddsd;
   HRESULT hResult = DD_OK;
   HDC surfDC = NULL;
@@ -1861,7 +1861,7 @@ static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface
   return bSuccess;
 }
 
-bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const STR *filename) 
+bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char *filename) 
 {
   bool bResult;
   DWORD width = 0, height = 0, x = 0, y = 0;

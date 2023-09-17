@@ -81,12 +81,12 @@ uint32_t cfgGetConfigFileVersion(cfg *config)
   return config->m_configfileversion;
 }
 
-void cfgSetDescription(cfg *config, STR *description)
+void cfgSetDescription(cfg *config, char *description)
 {
   strncpy(config->m_description, description, 255);
 }
 
-STR *cfgGetDescription(cfg *config)
+char *cfgGetDescription(cfg *config)
 {
   return config->m_description;
 }
@@ -96,7 +96,7 @@ STR *cfgGetDescription(cfg *config)
 /* Floppy disk configuration property access                                  */
 /*============================================================================*/
 
-void cfgSetDiskImage(cfg *config, uint32_t index, STR *diskimage)
+void cfgSetDiskImage(cfg *config, uint32_t index, char *diskimage)
 {
   if (index < 4) 
   {
@@ -104,7 +104,7 @@ void cfgSetDiskImage(cfg *config, uint32_t index, STR *diskimage)
   }
 }
 
-STR *cfgGetDiskImage(cfg *config, uint32_t index) 
+char *cfgGetDiskImage(cfg *config, uint32_t index) 
 {
   if (index < 4)
   {
@@ -157,14 +157,14 @@ BOOLE cfgGetDiskFast(cfg *config)
   return config->m_diskfast;
 }
 
-void cfgSetLastUsedDiskDir(cfg *config, STR *directory)
+void cfgSetLastUsedDiskDir(cfg *config, char *directory)
 {
   if(directory != nullptr) {
     strncpy(config->m_lastuseddiskdir, directory, CFG_FILENAME_LENGTH);
   }
 }
 
-STR *cfgGetLastUsedDiskDir(cfg *config)
+char *cfgGetLastUsedDiskDir(cfg *config)
 {
   return config->m_lastuseddiskdir;
 }
@@ -232,32 +232,32 @@ uint32_t cfgGetBogoSize(cfg *config)
   return config->m_bogosize;
 }
 
-void cfgSetKickImage(cfg *config, STR *kickimage)
+void cfgSetKickImage(cfg *config, char *kickimage)
 {
   strncpy(config->m_kickimage, kickimage, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKickImage(cfg *config)
+char *cfgGetKickImage(cfg *config)
 {
   return config->m_kickimage;
 }
 
-void cfgSetKickImageExtended(cfg *config, STR *kickimageext)
+void cfgSetKickImageExtended(cfg *config, char *kickimageext)
 {
   strncpy(config->m_kickimage_ext, kickimageext, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKickImageExtended(cfg *config)
+char *cfgGetKickImageExtended(cfg *config)
 {
   return config->m_kickimage_ext;
 }
 
-void cfgSetKickDescription(cfg *config, STR *kickdescription)
+void cfgSetKickDescription(cfg *config, char *kickdescription)
 {
   strncpy(config->m_kickdescription, kickdescription, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKickDescription(cfg *config)
+char *cfgGetKickDescription(cfg *config)
 {
   return config->m_kickdescription;
 }
@@ -272,12 +272,12 @@ uint32_t cfgGetKickCRC32(cfg *config)
   return config->m_kickcrc32;
 }
 
-void cfgSetKey(cfg *config, STR *key)
+void cfgSetKey(cfg *config, char *key)
 {
   strncpy(config->m_key, key, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKey(cfg *config)
+char *cfgGetKey(cfg *config)
 {
   return config->m_key;
 }
@@ -753,14 +753,14 @@ BOOLE cfgGetFilesystemAutomountDrives(cfg *config)
   return config->m_automount_drives;
 }
 
-void cfgSetFilesystemDeviceNamePrefix(cfg* config, STR* prefix)
+void cfgSetFilesystemDeviceNamePrefix(cfg* config, char* prefix)
 {
   if (prefix != nullptr) {
     strncpy(config->m_filesystem_device_name_prefix, prefix, CFG_FILENAME_LENGTH);
   }
 }
 
-STR* cfgGetFilesystemDeviceNamePrefix(cfg* config)
+char* cfgGetFilesystemDeviceNamePrefix(cfg* config)
 {
   return config->m_filesystem_device_name_prefix;
 }
@@ -964,32 +964,32 @@ void cfgSetDefaults(cfg *config)
 /* These verify the options, or at least return a default value on error      */
 /*============================================================================*/
 
-static BOOLE cfgGetBOOLEFromString(STR *value)
+static BOOLE cfgGetBOOLEFromString(char *value)
 {
   return (value[0] == 'y' || value[0] == 't');
 }
 
-static const STR *cfgGetBOOLEToString(BOOLE value)
+static const char *cfgGetBOOLEToString(BOOLE value)
 {
   return (value) ? "yes" : "no";
 }
 
-static bool cfgGetboolFromString(STR *value)
+static bool cfgGetboolFromString(char *value)
 {
   return (value[0] == 'y' || value[0] == 't');
 }
 
-static const STR *cfgGetboolToString(bool value)
+static const char *cfgGetboolToString(bool value)
 {
   return (value) ? "yes" : "no";
 }
 
-static uint32_t cfgGetUint32FromString(STR *value)
+static uint32_t cfgGetUint32FromString(char *value)
 {
   return atoi(value);
 }
 
-static gameport_inputs cfgGetGameportFromString(STR *value)
+static gameport_inputs cfgGetGameportFromString(char *value)
 {
   if (stricmp(value, "mouse") == 0)
   {
@@ -1014,7 +1014,7 @@ static gameport_inputs cfgGetGameportFromString(STR *value)
   return GP_NONE;
 }
 
-static STR *cfgGetGameportToString(gameport_inputs gameport)
+static char *cfgGetGameportToString(gameport_inputs gameport)
 {
   switch (gameport)
   {
@@ -1028,7 +1028,7 @@ static STR *cfgGetGameportToString(gameport_inputs gameport)
   return "none";
 }
 
-static cpu_integration_models cfgGetCPUTypeFromString(STR *value)
+static cpu_integration_models cfgGetCPUTypeFromString(char *value)
 {
   if (stricmp(value, "68000") == 0)
   {
@@ -1065,7 +1065,7 @@ static cpu_integration_models cfgGetCPUTypeFromString(STR *value)
   return M68000;
 }
 
-static STR *cfgGetCPUTypeToString(cpu_integration_models cputype)
+static char *cfgGetCPUTypeToString(cpu_integration_models cputype)
 {
   switch (cputype)
   {
@@ -1079,7 +1079,7 @@ static STR *cfgGetCPUTypeToString(cpu_integration_models cputype)
   return "68000";
 }
 
-static uint32_t cfgGetCPUSpeedFromString(STR *value)
+static uint32_t cfgGetCPUSpeedFromString(char *value)
 {
   uint32_t speed;
 
@@ -1099,7 +1099,7 @@ static uint32_t cfgGetCPUSpeedFromString(STR *value)
   return speed;
 }
 
-static sound_notifications cfgGetSoundNotificationFromString(STR *value)
+static sound_notifications cfgGetSoundNotificationFromString(char *value)
 {
   if (stricmp(value, "directsound") == 0)
   {
@@ -1112,7 +1112,7 @@ static sound_notifications cfgGetSoundNotificationFromString(STR *value)
   return SOUND_MMTIMER_NOTIFICATION;
 }
 
-static STR *cfgGetSoundNotificationToString(sound_notifications soundnotification)
+static char *cfgGetSoundNotificationToString(sound_notifications soundnotification)
 {
   switch (soundnotification)
   {
@@ -1122,7 +1122,7 @@ static STR *cfgGetSoundNotificationToString(sound_notifications soundnotificatio
   return "mmtimer";
 }
 
-static sound_emulations cfgGetSoundEmulationFromString(STR *value)
+static sound_emulations cfgGetSoundEmulationFromString(char *value)
 {
   if (stricmp(value, "none") == 0)
   {
@@ -1142,7 +1142,7 @@ static sound_emulations cfgGetSoundEmulationFromString(STR *value)
   return SOUND_NONE;
 }
 
-static STR *cfgGetSoundEmulationToString(sound_emulations soundemulation)
+static char *cfgGetSoundEmulationToString(sound_emulations soundemulation)
 {
   switch (soundemulation)
   {
@@ -1153,7 +1153,7 @@ static STR *cfgGetSoundEmulationToString(sound_emulations soundemulation)
   return "none";
 }
 
-static bool cfgGetSoundStereoFromString(STR *value)
+static bool cfgGetSoundStereoFromString(char *value)
 {
   if (stricmp(value, "mono") == 0 ||
       stricmp(value, "m") == 0 ||
@@ -1170,22 +1170,22 @@ static bool cfgGetSoundStereoFromString(STR *value)
   return false;
 }
 
-static const STR *cfgGetSoundStereoToString(bool soundstereo)
+static const char *cfgGetSoundStereoToString(bool soundstereo)
 {
   return (soundstereo) ? "stereo" : "mono";
 }
 
-static bool cfgGetSound16BitsFromString(STR *value)
+static bool cfgGetSound16BitsFromString(char *value)
 {
   return stricmp(value, "16") == 0;
 }
 
-static const STR *cfgGetSound16BitsToString(bool sound16bits)
+static const char *cfgGetSound16BitsToString(bool sound16bits)
 {
   return (sound16bits) ? "16" : "8";
 }
 
-static sound_rates cfgGetSoundRateFromString(STR *value)
+static sound_rates cfgGetSoundRateFromString(char *value)
 {
   uint32_t rate = cfgGetUint32FromString(value);
 
@@ -1204,7 +1204,7 @@ static sound_rates cfgGetSoundRateFromString(STR *value)
   return SOUND_44100;
 }
 
-static STR *cfgGetSoundRateToString(sound_rates soundrate)
+static char *cfgGetSoundRateToString(sound_rates soundrate)
 {
   switch (soundrate)
   {
@@ -1216,7 +1216,7 @@ static STR *cfgGetSoundRateToString(sound_rates soundrate)
   return "44100";
 }
 
-static sound_filters cfgGetSoundFilterFromString(STR *value)
+static sound_filters cfgGetSoundFilterFromString(char *value)
 {
   if (stricmp(value, "never") == 0)
   {
@@ -1233,7 +1233,7 @@ static sound_filters cfgGetSoundFilterFromString(STR *value)
   return SOUND_FILTER_ORIGINAL;
 }
 
-static STR *cfgGetSoundFilterToString(sound_filters filter)
+static char *cfgGetSoundFilterToString(sound_filters filter)
 {
   switch (filter)
   {
@@ -1244,7 +1244,7 @@ static STR *cfgGetSoundFilterToString(sound_filters filter)
   return "original";
 }
 
-static uint32_t cfgGetBufferLengthFromString(STR *value)
+static uint32_t cfgGetBufferLengthFromString(char *value)
 {
   uint32_t buffer_length = cfgGetUint32FromString(value);
 
@@ -1259,7 +1259,7 @@ static uint32_t cfgGetBufferLengthFromString(STR *value)
   return buffer_length;
 }
 
-static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
+static DISPLAYSCALE cfgGetDisplayScaleFromString(char *value)
 {
   if (stricmp(value, "auto") == 0)
   {
@@ -1284,7 +1284,7 @@ static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
   return DISPLAYSCALE_1X; // Default
 }
 
-static STR* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
+static char* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
 {
   switch (displayscale)
   {
@@ -1297,7 +1297,7 @@ static STR* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
   return "single";
 }
 
-static DISPLAYDRIVER cfgGetDisplayDriverFromString(STR *value)
+static DISPLAYDRIVER cfgGetDisplayDriverFromString(char *value)
 {
   if (stricmp(value, "directdraw") == 0)
   {
@@ -1310,7 +1310,7 @@ static DISPLAYDRIVER cfgGetDisplayDriverFromString(STR *value)
   return DISPLAYDRIVER_DIRECTDRAW; // Default
 }
 
-static STR *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
+static char *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
 {
   switch (displaydriver)
   {
@@ -1322,7 +1322,7 @@ static STR *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
   return "directdraw";
 }
 
-static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(STR *value)
+static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(char *value)
 {
   if (stricmp(value, "scanlines") == 0)
   {
@@ -1335,7 +1335,7 @@ static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(STR *value)
   return DISPLAYSCALE_STRATEGY_SOLID; // Default
 }
 
-static STR* cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscalestrategy)
+static char* cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscalestrategy)
 {
   switch (displayscalestrategy)
   {
@@ -1345,7 +1345,7 @@ static STR* cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscal
   return "solid";
 }
 
-static uint32_t cfgGetColorBitsFromString(STR *value)
+static uint32_t cfgGetColorBitsFromString(char *value)
 {
   if ((stricmp(value, "8bit") == 0) ||
     (stricmp(value, "8") == 0))
@@ -1375,7 +1375,7 @@ static uint32_t cfgGetColorBitsFromString(STR *value)
   return 16;
 }
 
-static STR *cfgGetColorBitsToString(uint32_t colorbits)
+static char *cfgGetColorBitsToString(uint32_t colorbits)
 {
   switch (colorbits)
   {
@@ -1386,7 +1386,7 @@ static STR *cfgGetColorBitsToString(uint32_t colorbits)
   return "8bit";
 }
 
-static bool cfgGetECSFromString(STR *value)
+static bool cfgGetECSFromString(char *value)
 {
   if ((stricmp(value, "ocs") == 0) ||
     (stricmp(value, "0") == 0))
@@ -1406,7 +1406,7 @@ static bool cfgGetECSFromString(STR *value)
   return false;
 }
 
-static const STR *cfgGetECSToString(bool chipset_ecs)
+static const char *cfgGetECSToString(bool chipset_ecs)
 {
   return (chipset_ecs) ? "ecs" : "ocs";
 }
@@ -1427,7 +1427,7 @@ BOOLE cfgGetConfigChangedSinceLastSave(cfg *config) {
   return config->m_config_changed_since_save;
 }
 
-static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(STR *value)
+static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(char *value)
 {
   if (stricmp(value, "lineexact") == 0)
   {
@@ -1440,7 +1440,7 @@ static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(STR *value)
   return GRAPHICSEMULATIONMODE_LINEEXACT;
 }
 
-static STR *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsemulationmode)
+static char *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsemulationmode)
 {
   switch (graphicsemulationmode)
   {
@@ -1472,9 +1472,9 @@ void cfgSynopsis(cfg *config)
 /* Returns TRUE if the option was recognized                                  */
 /*============================================================================*/
 
-BOOLE cfgSetOption(cfg *config, STR *optionstr)
+BOOLE cfgSetOption(cfg *config, char *optionstr)
 {
-  STR *option, *value;
+  char *option, *value;
   BOOLE result;
 
   value = strchr(optionstr, '=');
@@ -1754,8 +1754,8 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "hardfile") == 0)
     {
-      STR *curpos = value;
-      STR *nextpos;
+      char *curpos = value;
+      char *nextpos;
       cfg_hardfile hf;
 
       if ((nextpos = strchr(curpos, ',')) == nullptr)
@@ -1824,8 +1824,8 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "filesystem") == 0)
     {
-      STR *curpos = value;
-      STR *nextpos;
+      char *curpos = value;
+      char *nextpos;
       cfg_filesys fs;
 
       if ((nextpos = strchr(curpos, ',')) == nullptr)
@@ -2078,7 +2078,7 @@ void cfgUpgradeConfig(cfg *config)
 /* Remove unwanted newline chars on the end of a string                       */
 /*============================================================================*/
 
-static void cfgStripTrailingNewlines(STR *line)
+static void cfgStripTrailingNewlines(char *line)
 {
   size_t length = strlen(line);
   while ((length > 0) && 
@@ -2106,9 +2106,9 @@ static bool cfgLoadFromFile(cfg *config, FILE *cfgfile)
   return true;
 }
 
-bool cfgLoadFromFilename(cfg *config, const STR *filename, const bool bIsPreset)
+bool cfgLoadFromFilename(cfg *config, const char *filename, const bool bIsPreset)
 {
-  STR newfilename[CFG_FILENAME_LENGTH];
+  char newfilename[CFG_FILENAME_LENGTH];
 
   fileopsResolveVariables(filename, newfilename);
 
@@ -2149,7 +2149,7 @@ static BOOLE cfgSaveToFile(cfg *config, FILE *cfgfile)
   return cfgSaveOptions(config, cfgfile);
 }
 
-BOOLE cfgSaveToFilename(cfg *config, STR *filename)
+BOOLE cfgSaveToFilename(cfg *config, char *filename)
 {
   FILE *cfgfile;
   BOOLE result;

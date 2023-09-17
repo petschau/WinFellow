@@ -94,7 +94,7 @@ bool kbd_in_task_switcher = false;
 /* Map symbolic key to a description string                                  */
 /*===========================================================================*/
 
-STR *kbd_drv_pc_symbol_to_string[106] = 
+char *kbd_drv_pc_symbol_to_string[106] = 
 {
   "NONE",
   "ESCAPE",
@@ -203,7 +203,7 @@ STR *kbd_drv_pc_symbol_to_string[106] =
   "NUMPAD_0",
   "NUMPAD_DOT"};
 
-STR *symbol_pretty_name[106] = {
+char *symbol_pretty_name[106] = {
   "none",
   "Escape",
   "F1",
@@ -622,7 +622,7 @@ void kbdDrvClearPressedKeys(void)
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *kbdDrvDInputErrorString(HRESULT hResult) 
+char *kbdDrvDInputErrorString(HRESULT hResult) 
 {
   switch (hResult) 
   {
@@ -652,7 +652,7 @@ STR *kbdDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
-STR* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
+char* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -666,12 +666,12 @@ STR* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void kbdDrvDInputFailure(STR *header, HRESULT err)
+void kbdDrvDInputFailure(char *header, HRESULT err)
 {
   fellowAddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
-void kbdDrvDInputUnacquireFailure(STR* header, HRESULT err)
+void kbdDrvDInputUnacquireFailure(char* header, HRESULT err)
 {
   fellowAddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
 }
@@ -691,7 +691,7 @@ bool kbdDrvDInputSetCooperativeLevel(void)
   return true;
 }
 
-void kbdDrvDInputAcquireFailure(STR* header, HRESULT err)
+void kbdDrvDInputAcquireFailure(char* header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -1272,7 +1272,7 @@ void kbdDrvKeypressHandler(void)
 /* Return string describing the given symbolic key                           */
 /*===========================================================================*/
 
-STR *kbdDrvKeyString(uint32_t symbolickey)
+char *kbdDrvKeyString(uint32_t symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1281,7 +1281,7 @@ STR *kbdDrvKeyString(uint32_t symbolickey)
   return kbd_drv_pc_symbol_to_string[symbolickey];
 }
 
-STR *kbdDrvKeyPrettyString(uint32_t symbolickey)
+char *kbdDrvKeyPrettyString(uint32_t symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1290,7 +1290,7 @@ STR *kbdDrvKeyPrettyString(uint32_t symbolickey)
   return symbol_pretty_name[symbolickey];
 }
 
-STR *DikKeyString(int dikkey)
+char *DikKeyString(int dikkey)
 {
   for (int j = 0; j < PCK_LAST_KEY; j++ )
   {

@@ -93,7 +93,7 @@ sound_drv_dsound_device sound_drv_dsound_device_current;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *soundDrvDSoundErrorString(HRESULT hResult)
+char *soundDrvDSoundErrorString(HRESULT hResult)
 {
   switch( hResult )
   {
@@ -136,7 +136,7 @@ void CALLBACK timercb(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWOR
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void soundDrvDSoundFailure(STR *header, HRESULT err)
+void soundDrvDSoundFailure(char *header, HRESULT err)
 {
   fellowAddLog(header);
   fellowAddLog(soundDrvDSoundErrorString(err));
@@ -263,7 +263,7 @@ void soundDrvDSoundModeInformationRelease(sound_drv_dsound_device *dsound_device
 /* Initialize DirectSound mode information                                   */
 /*===========================================================================*/
 
-void soundDrvYesNoLog(STR *intro, bool pred)
+void soundDrvYesNoLog(char *intro, bool pred)
 {
   fellowAddLog(intro);
   fellowAddLog((pred) ? " - Yes\n" : " - No\n");

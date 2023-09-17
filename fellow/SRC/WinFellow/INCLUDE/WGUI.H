@@ -21,7 +21,7 @@ struct wgui_drawmode
   uint32_t height;
   uint32_t refresh;
   uint32_t colorbits;
-  STR name[32];
+  char name[32];
 
   bool operator<(const wgui_drawmode& dm)
   {
@@ -61,8 +61,8 @@ typedef struct {
 } wgui_drawmodes;
 
 typedef struct {
-  STR strPresetFilename[CFG_FILENAME_LENGTH];
-  STR strPresetDescription[CFG_FILENAME_LENGTH];
+  char strPresetFilename[CFG_FILENAME_LENGTH];
+  char strPresetDescription[CFG_FILENAME_LENGTH];
 } wgui_preset;
 
 /*===========================================================================*/
@@ -70,16 +70,16 @@ typedef struct {
 /* Fellow                                                                    */
 /*===========================================================================*/
 
-extern BOOLE wguiSaveFile(HWND, STR *, uint32_t, STR *, SelectFileFlags);
-extern STR *wguiExtractPath(STR *);
+extern BOOLE wguiSaveFile(HWND, char *, uint32_t, char *, SelectFileFlags);
+extern char *wguiExtractPath(char *);
 
 extern void wguiStartup(void);
 extern void wguiStartupPost(void);
 extern void wguiShutdown(void);
 extern BOOLE wguiCheckEmulationNecessities(void);
 extern BOOLE wguiEnter(void);
-extern void wguiRequester(STR *szMessage, UINT uType);
-extern void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert);
+extern void wguiRequester(char *szMessage, UINT uType);
+extern void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert);
 extern void wguiSetProcessDPIAwareness(const char *pszAwareness);
 
 #endif /* End of WGUI_H */

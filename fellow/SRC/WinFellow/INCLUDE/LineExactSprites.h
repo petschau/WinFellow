@@ -83,7 +83,7 @@ private:
   static spr_register_func sprxptl_functions[8];
   static spr_register_func sprxpth_functions[8];
 
-  STR buffer[128]; // Used for debug logging
+  char buffer[128]; // Used for debug logging
 
   uint32_t sprite_state[8];
   uint32_t sprite_state_old[8];

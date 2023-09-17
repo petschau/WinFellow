@@ -29,14 +29,14 @@
 
 using namespace CustomChipset;
 
-static STR *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH",
+static char *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH",
 				"WAITING_FOR_NEXT_FETCH"};
 
 void DDFStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "DDF: %s\n", DDFStateNames[_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }

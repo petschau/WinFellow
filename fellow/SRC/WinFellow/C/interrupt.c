@@ -57,7 +57,7 @@ uint32_t interrupt_pending_chip_interrupt_number;
 static unsigned int interrupt_cpu_level[16] = {1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7};
 
 
-STR *interruptGetInterruptName(uint32_t interrupt_number)
+char *interruptGetInterruptName(uint32_t interrupt_number)
 {
   switch (interrupt_number)
   {

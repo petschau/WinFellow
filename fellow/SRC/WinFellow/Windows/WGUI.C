@@ -76,8 +76,8 @@ using namespace fellow::api::module;
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
 cfg *wgui_cfg;                               /* GUI copy of configuration */
 ini *wgui_ini;								 /* GUI copy of initdata */
-STR extractedfilename[CFG_FILENAME_LENGTH];
-STR extractedpathname[CFG_FILENAME_LENGTH];
+char extractedfilename[CFG_FILENAME_LENGTH];
+char extractedpathname[CFG_FILENAME_LENGTH];
 
 wgui_drawmodes wgui_dm;								// data structure for resolution data
 wgui_drawmode *pwgui_dm_match;
@@ -142,7 +142,7 @@ enum {DID_IMAGENAME_MAIN, DID_EJECT_MAIN, DID_FILEDIALOG_MAIN, DID_LED_MAIN};
 
 #define NUMBER_OF_CHIPRAM_SIZES 8
 
-STR *wgui_chipram_strings[NUMBER_OF_CHIPRAM_SIZES] = {
+char *wgui_chipram_strings[NUMBER_OF_CHIPRAM_SIZES] = {
   "256 KB", 
   "512 KB", 
   "768 KB", 
@@ -155,7 +155,7 @@ STR *wgui_chipram_strings[NUMBER_OF_CHIPRAM_SIZES] = {
 
 #define NUMBER_OF_FASTRAM_SIZES 5
 
-STR *wgui_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = {
+char *wgui_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = {
   "0 MB", 
   "1 MB", 
   "2 MB", 
@@ -165,7 +165,7 @@ STR *wgui_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = {
 
 #define NUMBER_OF_BOGORAM_SIZES 8
 
-STR *wgui_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = {
+char *wgui_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = {
   "0 KB", 
   "256 KB", 
   "512 KB", 
@@ -212,7 +212,7 @@ int wgui_cpus_cci[NUMBER_OF_CPUS] = {
 
 //from gameport.h: typedef enum {GP_NONE, GP_JOYKEY0, GP_JOYKEY1, GP_ANALOG0, GP_ANALOG1, GP_MOUSE0, GP_MOUSE1} gameport_inputs;
 #define NUMBER_OF_GAMEPORT_STRINGS 6
-STR *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {
+char *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {
   "none",
   "keyboard layout 1",
   "keyboard layout 2",
@@ -222,7 +222,7 @@ STR *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {
 };
 
 // preset handling
-STR wgui_preset_path[CFG_FILENAME_LENGTH] = "";
+char wgui_preset_path[CFG_FILENAME_LENGTH] = "";
 uint32_t wgui_num_presets = 0;
 wgui_preset *wgui_presets = NULL;
 
@@ -625,7 +625,7 @@ wgui_drawmode* wguiMatchFullScreenResolution()
 /* Extract the filename from a full path name                                 */
 /*============================================================================*/
 
-STR *wguiExtractFilename(STR *fullpathname) {
+char *wguiExtractFilename(char *fullpathname) {
 
   char *strpointer;
 
@@ -638,7 +638,7 @@ STR *wguiExtractFilename(STR *fullpathname) {
 /* Extract the path from a full path name (includes filename)                 */
 /*============================================================================*/
 
-STR *wguiExtractPath(STR *fullpathname) {
+char *wguiExtractPath(char *fullpathname) {
 
   char *strpointer;
 
@@ -657,7 +657,7 @@ STR *wguiExtractPath(STR *fullpathname) {
 /* Convert bool to string                                                     */
 /*============================================================================*/
 
-static STR *wguiGetBOOLEToString(BOOLE value) {
+static char *wguiGetBOOLEToString(BOOLE value) {
   return (value) ? "yes" : "no";
 }
 
@@ -665,7 +665,7 @@ static STR *wguiGetBOOLEToString(BOOLE value) {
 /* Runs a session in the file requester                                       */
 /*============================================================================*/
 
-static STR FileType[7][CFG_FILENAME_LENGTH] = {
+static char FileType[7][CFG_FILENAME_LENGTH] = {
   "ROM Images (.rom;.bin)\0*.rom;*.bin\0ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
 #ifndef FELLOW_SUPPORT_CAPS
   "ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
@@ -679,11 +679,11 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   "State Files (.fst)\0\0\0"
 };
 
-BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, uint32_t filenamesize, STR *title, SelectFileFlags SelectFileType)
+BOOLE wguiSelectFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *title, SelectFileFlags SelectFileType)
 {
   OPENFILENAME ofn;
-  STR filters[CFG_FILENAME_LENGTH];
-  STR *pfilters;
+  char filters[CFG_FILENAME_LENGTH];
+  char *pfilters;
 
   memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
   pfilters = &filters[0];
@@ -743,11 +743,11 @@ BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, uint32_t filenamesize, STR *ti
   return GetOpenFileName(&ofn);
 }
 
-BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, uint32_t filenamesize, STR *title, SelectFileFlags SelectFileType)
+BOOLE wguiSaveFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *title, SelectFileFlags SelectFileType)
 {
   OPENFILENAME ofn;
-  STR filters[CFG_FILENAME_LENGTH];
-  STR *pfilters;
+  char filters[CFG_FILENAME_LENGTH];
+  char *pfilters;
 
   memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
   pfilters = &filters[0];
@@ -814,7 +814,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, uint32_t filenamesize, STR *titl
   return GetSaveFileName(&ofn);
 }
 
-BOOLE wguiSelectDirectory(HWND hwndDlg, STR *szPath, STR *szDescription, uint32_t filenamesize, STR *szTitle)
+BOOLE wguiSelectDirectory(HWND hwndDlg, char *szPath, char *szDescription, uint32_t filenamesize, char *szTitle)
 {
   BROWSEINFO bi =
   {
@@ -862,7 +862,7 @@ void wguiRemoveAllHistory(void) {
 }
 
 void wguiInstallHistoryIntoMenu(void) {
-  STR cfgfilename[CFG_FILENAME_LENGTH+2];
+  char cfgfilename[CFG_FILENAME_LENGTH+2];
 
   wguiRemoveAllHistory();
   cfgfilename[0] = '&'; cfgfilename[1] = '1'; cfgfilename[2] = ' '; cfgfilename[3] = '\0';
@@ -892,7 +892,7 @@ void wguiInstallHistoryIntoMenu(void) {
 
 void wguiPutCfgInHistoryOnTop(uint32_t cfgtotop) {
   uint32_t i;
-  STR cfgfilename[CFG_FILENAME_LENGTH];
+  char cfgfilename[CFG_FILENAME_LENGTH];
 
   strncpy(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, cfgtotop), CFG_FILENAME_LENGTH);
   for (i=cfgtotop; i>0; i--) {
@@ -902,8 +902,8 @@ void wguiPutCfgInHistoryOnTop(uint32_t cfgtotop) {
   wguiInstallHistoryIntoMenu();
 }
 
-void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert) {
-  STR cfgfilename[CFG_FILENAME_LENGTH];
+void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert) {
+  char cfgfilename[CFG_FILENAME_LENGTH];
   uint32_t i;
   BOOL exists;
 
@@ -941,7 +941,7 @@ void wguiDeleteCfgFromHistory(uint32_t itemtodelete) {
 }
 
 void wguiSwapCfgsInHistory(uint32_t itemA, uint32_t itemB) {
-  STR cfgfilename[CFG_FILENAME_LENGTH];
+  char cfgfilename[CFG_FILENAME_LENGTH];
 
   strncpy(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, itemA), CFG_FILENAME_LENGTH);
   iniSetConfigurationHistoryFilename(wgui_ini, itemA, iniGetConfigurationHistoryFilename(wgui_ini, itemB));
@@ -955,7 +955,7 @@ void wguiSwapCfgsInHistory(uint32_t itemA, uint32_t itemB) {
 /*============================================================================*/
 
 void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg) {
-  STR filename[CFG_FILENAME_LENGTH];
+  char filename[CFG_FILENAME_LENGTH];
 
   strcpy(filename, "");
 
@@ -967,7 +967,7 @@ void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg) {
 }
 
 void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg) {
-  STR filename[CFG_FILENAME_LENGTH];
+  char filename[CFG_FILENAME_LENGTH];
 
   if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open", FSEL_WFC)) {
     cfgLoadFromFilename(wgui_cfg, filename, false);
@@ -984,7 +984,7 @@ void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg) {
 
 void wguiSaveStateFileAs(cfg *conf, HWND hwndDlg)
 {
-  STR filename[CFG_FILENAME_LENGTH];
+  char filename[CFG_FILENAME_LENGTH];
 
   strcpy(filename, "");
 
@@ -997,7 +997,7 @@ void wguiSaveStateFileAs(cfg *conf, HWND hwndDlg)
 
 void wguiOpenStateFile(cfg *conf, HWND hwndDlg)
 {
-  STR filename[CFG_FILENAME_LENGTH];
+  char filename[CFG_FILENAME_LENGTH];
 
   if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open State File", FSEL_FST))
   {
@@ -1482,9 +1482,9 @@ void wguiToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
   gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ischecked);
 }
 
-void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumber, const HardfilePartition& partition)
+void wguiHardfileSetInformationString(char *s, char *deviceName, int partitionNumber, const HardfilePartition& partition)
 {
-  STR preferredName[512];
+  char preferredName[512];
   preferredName[0] = '\0';
 
   if (!partition.PreferredName.empty())
@@ -1507,9 +1507,9 @@ void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumb
     geometry.ReservedBlocks);
 }
 
-HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, STR* filename, rdb_status rdbStatus, const HardfileGeometry& geometry, int hardfileIndex)
+HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, char* filename, rdb_status rdbStatus, const HardfileGeometry& geometry, int hardfileIndex)
 {
-  STR s[256];
+  char s[256];
   snprintf(s, 256, "%s%s", filename, rdbStatus == rdb_status::RDB_FOUND ? " (RDB)" : (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR || rdbStatus == RDB_FOUND_WITH_PARTITION_ERROR ? " (Invalid RDB)" : ""));
 
   TV_INSERTSTRUCT tvInsert;
@@ -1522,9 +1522,9 @@ HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, STR* filename, rdb_status r
   return TreeView_InsertItem(hwndTree, &tvInsert);
 }
 
-void wguiHardfileTreeViewAddPartition(HWND hwndTree, HTREEITEM parent, int partitionNumber, STR* deviceName, const HardfilePartition& partition, int hardfileIndex)
+void wguiHardfileTreeViewAddPartition(HWND hwndTree, HTREEITEM parent, int partitionNumber, char* deviceName, const HardfilePartition& partition, int hardfileIndex)
 {
-  STR s[256];
+  char s[256];
   wguiHardfileSetInformationString(s, deviceName, partitionNumber, partition);
 
   TV_INSERTSTRUCT tvInsert;
@@ -1548,14 +1548,14 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
 
   if (hf->rdbstatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
   {
-    STR s[256];
+    char s[256];
     sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with errors.\n", hf->filename);
     MessageBox(wgui_hDialog, s, "Configuration Error", 0);
   }
 
   if (hf->rdbstatus == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR)
   {
-    STR s[256];
+    char s[256];
     sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with partition errors.\n", hf->filename);
     MessageBox(wgui_hDialog, s, "Configuration Error", 0);
   }
@@ -1566,7 +1566,7 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
 
   if (result != 0)
   {
-    STR s[256];
+    char s[256];
     sprintf(s, "ERROR: Unable to open hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", hf->filename);
     MessageBox(wgui_hDialog, s, "Configuration Error", 0);
   }
@@ -1653,10 +1653,10 @@ bool wguiHardfileCreate(HWND hwndDlg, cfg *conf, uint32_t index, cfg_hardfile *t
 
 /* Update filesystem description in the list view box */
 
-void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, uint32_t i, BOOL add, STR* prefix)
+void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, uint32_t i, BOOL add, char* prefix)
 {
   LV_ITEM lvi;
-  STR stmp[48];
+  char stmp[48];
 
   memset(&lvi, 0, sizeof(lvi));
   lvi.mask = LVIF_TEXT;
@@ -1689,7 +1689,7 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
 {
   LV_COLUMN lvc;
   HWND lvHWND = GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS);
-  STR *colheads[FILESYSTEM_COLS] = {"Unit", "Volume", "Root Path", "RW"};
+  char *colheads[FILESYSTEM_COLS] = {"Unit", "Volume", "Root Path", "RW"};
 
   /* Create list view control columns */
 
@@ -1726,7 +1726,7 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
 
 void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
 {
-  STR strFilesystemDeviceNamePrefix[CFG_FILENAME_LENGTH];
+  char strFilesystemDeviceNamePrefix[CFG_FILENAME_LENGTH];
   cfgSetFilesystemAutomountDrives(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS));
 
   ccwEditGetText(hwndDlg, IDC_EDIT_PREFIX_FILESYSTEMS, strFilesystemDeviceNamePrefix, CFG_FILENAME_LENGTH);
@@ -2146,7 +2146,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
   {
     case WM_INITDIALOG:
     {
-      STR *strLastPresetROMDir, strAmigaForeverROMDir[CFG_FILENAME_LENGTH] = "";
+      char *strLastPresetROMDir, strAmigaForeverROMDir[CFG_FILENAME_LENGTH] = "";
 
       wgui_propsheetHWND[PROPSHEETPRESETS] = hwndDlg;
       strLastPresetROMDir = iniGetLastUsedPresetROMDir(wgui_ini);
@@ -2183,7 +2183,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 	switch(LOWORD(wParam)) {
           case IDC_BUTTON_PRESETS_ROMSEARCHPATH:
             {
-              STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
+              char strROMSearchPath[CFG_FILENAME_LENGTH] = "";
 
               if (wguiSelectDirectory(hwndDlg, strROMSearchPath, NULL, CFG_FILENAME_LENGTH, 
 	        "Select ROM Directory:")) {
@@ -2195,9 +2195,9 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
           case IDC_BUTTON_PRESETS_APPLY:
             {
               uint32_t lIndex = 0;
-              STR strFilename[CFG_FILENAME_LENGTH] = "";
-              STR strKickstart[CFG_FILENAME_LENGTH] = "";
-              STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
+              char strFilename[CFG_FILENAME_LENGTH] = "";
+              char strKickstart[CFG_FILENAME_LENGTH] = "";
+              char strROMSearchPath[CFG_FILENAME_LENGTH] = "";
 
               lIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
 
@@ -2245,7 +2245,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             {
               uint32_t index = 0;
               cfg *cfgTemp = NULL;
-              STR strTemp[CFG_FILENAME_LENGTH] = "";
+              char strTemp[CFG_FILENAME_LENGTH] = "";
 
               index = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
 #ifdef _DEBUG
@@ -2262,8 +2262,8 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
               if(cfgTemp = cfgManagerGetNewConfig(&cfg_manager)) {
                 if(cfgLoadFromFilename(cfgTemp, wgui_presets[index].strPresetFilename, true)) {
-                  STR strKickstart[CFG_FILENAME_LENGTH] = "";
-                  STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
+                  char strKickstart[CFG_FILENAME_LENGTH] = "";
+                  char strROMSearchPath[CFG_FILENAME_LENGTH] = "";
                   uint32_t lCRC32 = 0;
 
                   ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPSET, cfgGetECS(cfgTemp) ? "ECS": "OCS");
@@ -2350,7 +2350,7 @@ INT_PTR CALLBACK wguiCPUDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 /*============================================================================*/
 
 void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, int editIdentifier, uint32_t index) {
-  STR filename[CFG_FILENAME_LENGTH];
+  char filename[CFG_FILENAME_LENGTH];
 
   if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Diskimage", FSEL_ADF)) {
     cfgSetDiskImage(conf, index, filename);
@@ -2468,7 +2468,7 @@ INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPar
           case IDOK:
             {
               char *strFilename;
-              STR strVolume[CFG_FILENAME_LENGTH] = "";
+              char strVolume[CFG_FILENAME_LENGTH] = "";
               bool bResult = false;
               bool bFormat, bBootable = false, bFFS = false;
 
@@ -2529,7 +2529,7 @@ INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPar
             break;
           case IDC_FLOPPY_ADF_CREATE_SELECT:
             {
-              STR strFilename[CFG_FILENAME_LENGTH] = "";
+              char strFilename[CFG_FILENAME_LENGTH] = "";
 
               if(wguiSaveFile(hwndDlg, strFilename, CFG_FILENAME_LENGTH, "Select disk image filename", FSEL_ADF)) {
                 ccwEditSetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_FILENAME, strFilename);
@@ -2549,7 +2549,7 @@ INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPar
 /*============================================================================*/
 
 INT_PTR CALLBACK wguiMemoryDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  STR filename[CFG_FILENAME_LENGTH];
+  char filename[CFG_FILENAME_LENGTH];
 
   switch (uMsg) {
     case WM_INITDIALOG:
@@ -2801,8 +2801,8 @@ BOOL CALLBACK wguiBlitterDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
 INT_PTR CALLBACK wguiSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   long buffer_length;
   long sound_volume;
-  STR buffer[16];
-  STR volume[16];
+  char buffer[16];
+  char volume[16];
 
   switch (uMsg) {
     case WM_INITDIALOG:
@@ -2964,9 +2964,9 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
       {
       case IDOK:
       {
-        STR stmp[32];
+        char stmp[32];
         HardfileConfiguration hfile;
-        STR fname[CFG_FILENAME_LENGTH];
+        char fname[CFG_FILENAME_LENGTH];
         ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, fname, CFG_FILENAME_LENGTH);
         hfile.Filename = fname;
 
@@ -3032,9 +3032,9 @@ void wguiHardfileAddDialogEnableGeometry(HWND hwndDlg, bool enable)
   ccwEditEnableConditionalBool(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, enable);
 }
 
-void wguiHardfileAddDialogSetGeometryEdits(HWND hwndDlg, STR* filename, bool readonly, int sectorsPerTrack, int surfaces, int reservedBlocks, int bytesPerSector, bool enable)
+void wguiHardfileAddDialogSetGeometryEdits(HWND hwndDlg, char* filename, bool readonly, int sectorsPerTrack, int surfaces, int reservedBlocks, int bytesPerSector, bool enable)
 {
-  STR stmp[64];
+  char stmp[64];
 
   sprintf(stmp, "%u", wgui_current_hardfile_edit_index);
   ccwStaticSetText(hwndDlg, IDC_STATIC_HARDFILE_ADD_UNIT, stmp);
@@ -3077,13 +3077,13 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
           rdb_status rdbStatus = HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
           if (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
           {
-            STR s[256];
+            char s[256];
             sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with errors.\n", wgui_current_hardfile_edit->filename);
             MessageBox(wgui_hDialog, s, "Configuration Error", 0);
           }
           else if (rdbStatus == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR)
           {
-            STR s[256];
+            char s[256];
             sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with partition errors.\n", wgui_current_hardfile_edit->filename);
             MessageBox(wgui_hDialog, s, "Configuration Error", 0);
           }
@@ -3102,7 +3102,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
         break;
       case IDOK:
       {
-        STR stmp[32];
+        char stmp[32];
         ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename, 256);
         if (wgui_current_hardfile_edit->filename[0] == '\0')
         {
@@ -3385,7 +3385,7 @@ void wguiAbout(HWND hwndDlg) {
 /*============================================================================*/
 
 INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  STR l_diskimage[CFG_FILENAME_LENGTH];
+  char l_diskimage[CFG_FILENAME_LENGTH];
   char *versionstring;
 
   switch (uMsg) {
@@ -3559,7 +3559,7 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
 /* Shows a message box                                                        */
 /*============================================================================*/
 
-void wguiRequester(STR *szMessage, UINT uType) {
+void wguiRequester(char *szMessage, UINT uType) {
   MessageBox(NULL, szMessage, "WinFellow Amiga Emulator", uType);
 }
 
@@ -3782,13 +3782,13 @@ BOOLE wguiEnter(void)
 }
 
 static bool wguiInitializePresets(wgui_preset **wgui_presets, uint32_t *wgui_num_presets) {
-  STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
+  char strSearchPattern[CFG_FILENAME_LENGTH] = "";
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
   uint32_t i = 0;
   cfg *cfgTemp = NULL;
   bool bResult = false;
-  STR strFilename[CFG_FILENAME_LENGTH] = "";
+  char strFilename[CFG_FILENAME_LENGTH] = "";
 
   strncpy(strSearchPattern, wgui_preset_path, CFG_FILENAME_LENGTH);
   strncat(strSearchPattern, "\\*", 3);

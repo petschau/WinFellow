@@ -157,7 +157,7 @@ extern BOOLE cpuCalculateConditionCode(uint32_t cc);
 // Logging
 #ifdef CPU_INSTRUCTION_LOGGING
 extern void cpuCallInstructionLoggingFunc(void);
-extern void cpuCallExceptionLoggingFunc(STR *description, uint32_t original_pc, uint16_t opcode);
+extern void cpuCallExceptionLoggingFunc(char *description, uint32_t original_pc, uint16_t opcode);
 extern void cpuCallInterruptLoggingFunc(uint32_t level, uint32_t vector_address);
 #endif
 

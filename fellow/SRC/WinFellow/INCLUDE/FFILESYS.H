@@ -12,8 +12,8 @@ typedef enum {
 } ffilesys_status;
 
 typedef struct {
-  STR		  volumename[FFILESYS_MAX_VOLUMENAME];
-  STR		  rootpath[CFG_FILENAME_LENGTH];
+  char		  volumename[FFILESYS_MAX_VOLUMENAME];
+  char		  rootpath[CFG_FILENAME_LENGTH];
   BOOLE		  readonly;
   ffilesys_status status;
 } ffilesys_dev;

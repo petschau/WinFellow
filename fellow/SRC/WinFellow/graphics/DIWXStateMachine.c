@@ -26,14 +26,14 @@
 
 #include "Graphics.h"
 
-static STR *DIWXStateNames[2] = {"WAITING_FOR_START_POS",
+static char *DIWXStateNames[2] = {"WAITING_FOR_START_POS",
 				 "WAITING_FOR_STOP_POS"};
 
 void DIWXStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "DIWX: %s\n", DIWXStateNames[_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }

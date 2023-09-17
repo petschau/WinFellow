@@ -55,7 +55,7 @@ void cpuSetResetExceptionFunc(cpuResetExceptionFunc func)
   cpu_reset_exception_func = func;
 }
 
-static STR *cpuGetExceptionName(uint32_t vector_offset)
+static char *cpuGetExceptionName(uint32_t vector_offset)
 {
   char *name;
 

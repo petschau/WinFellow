@@ -55,7 +55,7 @@ extern void memoryDmemSetByte(uint8_t data);
 extern void memoryDmemSetWord(uint16_t data);
 extern void memoryDmemSetLong(uint32_t data);
 extern void memoryDmemSetLongNoCounter(uint32_t data, uint32_t offset);
-extern void memoryDmemSetString(const STR *data);
+extern void memoryDmemSetString(const char *data);
 extern void memoryDmemSetCounter(uint32_t val);
 extern uint32_t memoryDmemGetCounter(void);
 extern uint32_t memoryDmemGetCounterWithoutOffset();
@@ -119,11 +119,11 @@ extern bool memorySetUseAutoconfig(bool useautoconfig);
 extern bool memoryGetUseAutoconfig();
 extern BOOLE memorySetAddress32Bit(BOOLE address32bit);
 extern BOOLE memoryGetAddress32Bit(void);
-extern BOOLE memorySetKickImage(STR *kickimage);
-extern BOOLE memorySetKickImageExtended(STR *kickimageext);
-extern STR *memoryGetKickImage(void);
-extern void memorySetKey(STR *key);
-extern STR *memoryGetKey(void);
+extern BOOLE memorySetKickImage(char *kickimage);
+extern BOOLE memorySetKickImageExtended(char *kickimageext);
+extern char *memoryGetKickImage(void);
+extern void memorySetKey(char *key);
+extern char *memoryGetKey(void);
 extern BOOLE memoryGetKickImageOK(void);
 
 /* Derived from memory configuration */
@@ -134,7 +134,7 @@ extern uint32_t memoryInitialPC(void);
 extern uint32_t memoryInitialSP(void);
 
 /* Kickstart decryption */
-extern int memoryKickLoadAF2(STR *filename, FILE *F, uint8_t *memory_kick, const bool);
+extern int memoryKickLoadAF2(char *filename, FILE *F, uint8_t *memory_kick, const bool);
 
 /* Kickstart load error handling */
 

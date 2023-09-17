@@ -544,7 +544,7 @@ static void sysinfoParseOSVersionInfo(void) {
 	  case 10:
       switch (osInfo.dwMinorVersion) {
         case 0:
-          STR strOS[24] = "Windows 10 or 11";
+          char strOS[24] = "Windows 10 or 11";
           switch (osInfo.dwBuildNumber)
           {
             case 10240:

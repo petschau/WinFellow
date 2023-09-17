@@ -29,7 +29,7 @@ namespace fellow::api::vm
     virtual void DmemSetWord(uint16_t data) = 0;
     virtual void DmemSetLong(uint32_t data) = 0;
     virtual void DmemSetLongNoCounter(uint32_t data, uint32_t offset) = 0;
-    virtual void DmemSetString(const STR *data) = 0;
+    virtual void DmemSetString(const char *data) = 0;
     virtual void DmemSetCounter(uint32_t val) = 0;
     virtual uint32_t DmemGetCounter() = 0;
     virtual uint32_t DmemGetCounterWithoutOffset() = 0;

@@ -21,7 +21,6 @@ typedef int BOOLE;
 
 #define FALSE 0
 #define TRUE  1
-typedef char STR;
 
 #ifndef X64
 #define PTR_TO_INT(i) ((uint32_t)i)

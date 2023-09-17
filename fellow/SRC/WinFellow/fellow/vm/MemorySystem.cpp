@@ -55,7 +55,7 @@ namespace fellow::vm
     memoryDmemSetLongNoCounter(data, offset);
   }
 
-  void MemorySystem::DmemSetString(const STR *data)
+  void MemorySystem::DmemSetString(const char *data)
   {
     memoryDmemSetString(data);
   }

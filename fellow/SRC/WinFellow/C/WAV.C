@@ -30,7 +30,7 @@
 #include "fileops.h"
 
 FILE *wav_FILE;
-STR wav_filename[MAX_PATH];
+char wav_filename[MAX_PATH];
 uint32_t wav_serial;
 sound_rates wav_rate;
 uint32_t wav_rate_real;
@@ -104,10 +104,10 @@ void wav16BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
 /*===========================================================================*/
 
 void wavHeaderWrite(void) {
-  static STR *wav_RIFF = {"RIFF"};
-  static STR *wav_WAVEfmt = {"WAVEfmt "};
+  static char *wav_RIFF = {"RIFF"};
+  static char *wav_WAVEfmt = {"WAVEfmt "};
   static uint32_t wav_fmtchunklength = 16;
-  static STR *wav_data = {"data"};
+  static char *wav_data = {"data"};
   uint32_t bytespersecond=wav_rate_real*(wav_stereo+1)*(wav_16bits+1);
   uint32_t bits = (wav_16bits + 1)*8;
   uint32_t blockalign = (wav_stereo + 1)*(wav_16bits + 1);

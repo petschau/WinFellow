@@ -12,13 +12,13 @@ extern void ccwButtonEnableConditional(HWND windowHandle, int controlIdentifier,
 extern void ccwSliderSetRange(HWND windowHandle, int controlIdentifier, uint32_t minPos, uint32_t maxPos);
 extern uint32_t ccwComboBoxGetCurrentSelection(HWND windowHandle, int controlIdentifier);
 extern void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, uint32_t index);
-extern void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text);
+extern void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, char *text);
 extern uint32_t ccwSliderGetPosition(HWND windowHandle, int controlIdentifier);
 extern void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position);
 extern void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable);
-extern void ccwStaticSetText(HWND windowHandle, int controlIdentifier, STR *text);
-extern void ccwEditSetText(HWND windowHandle, int controlIdentifier, STR *text);
-extern void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, uint32_t n);
+extern void ccwStaticSetText(HWND windowHandle, int controlIdentifier, char *text);
+extern void ccwEditSetText(HWND windowHandle, int controlIdentifier, char *text);
+extern void ccwEditGetText(HWND windowHandle, int controlIdentifier, char *text, uint32_t n);
 extern void ccwEditEnableConditional(HWND windowHandle, int controlIdentifier, BOOLE enable);
 extern void ccwEditEnableConditionalBool(HWND windowHandle, int controlIdentifier, bool enable);
 extern void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bitmapFirst, HBITMAP bitmapSecond, BOOLE setFirst);

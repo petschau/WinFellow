@@ -45,7 +45,7 @@ void PixelSerializer::LogOutput(uint32_t line, uint32_t cylinder, uint32_t start
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "Output: %d to %d\n", startCylinder, untilCylinder);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }

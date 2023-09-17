@@ -134,7 +134,7 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info, MemoryAccessFunc func)
 		    return FALSE;
    	  }
       else {
-        iniSetLastUsedModDir(wgui_ini, (STR*) wguiExtractPath(info->filename));
+        iniSetLastUsedModDir(wgui_ini, (char*) wguiExtractPath(info->filename));
         return TRUE;
 	    }
     }

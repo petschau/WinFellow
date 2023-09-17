@@ -15,7 +15,7 @@ extern void cpuIntegrationCalculateMultiplier(void);
 extern void cpuIntegrationExecuteInstructionEventHandler68000Fast(void);
 extern void cpuIntegrationExecuteInstructionEventHandler68000General(void);
 extern void cpuIntegrationExecuteInstructionEventHandler68020(void);
-extern uint32_t cpuIntegrationDisOpcode(uint32_t disasm_pc, STR *saddress, STR *sdata, STR *sinstruction, STR *soperands);
+extern uint32_t cpuIntegrationDisOpcode(uint32_t disasm_pc, char *saddress, char *sdata, char *sinstruction, char *soperands);
 
 extern BOOLE cpuIntegrationSetModel(cpu_integration_models model);
 extern cpu_integration_models cpuIntegrationGetModel(void);

@@ -1108,7 +1108,7 @@ GfxDrvDXGI::~GfxDrvDXGI()
   Shutdown();
 }
 
-bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *filename)
+bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *filename)
 {
   bool bResult = false;
   DWORD width = 0, height = 0, x = 0, y = 0;

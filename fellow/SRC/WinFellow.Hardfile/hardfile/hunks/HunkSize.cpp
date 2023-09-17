@@ -2,7 +2,7 @@
 
 namespace fellow::hardfile::hunks
 {
-  const STR* HunkSize::GetMemoryFlagsToString()
+  const char* HunkSize::GetMemoryFlagsToString()
   {
     switch (MemoryFlags)
     {
