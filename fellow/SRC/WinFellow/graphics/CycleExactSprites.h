@@ -39,7 +39,7 @@ typedef enum SpriteDMAStates_
 
 typedef union SpriteDecodedUnion_
 {
-  UBY barray[16];
+  uint8_t barray[16];
   ByteLongUnion blu[4];
 } SpriteDecodedUnion;
 

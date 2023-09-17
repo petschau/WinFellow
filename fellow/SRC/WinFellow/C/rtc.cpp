@@ -27,10 +27,10 @@
 bool rtc_enabled = false;
 RtcOkiMsm6242rs rtc;
 
-UBY rtcReadByte(uint32_t address)
+uint8_t rtcReadByte(uint32_t address)
 {
   UWO result = rtc.read(address);
-  UBY byte_result = (UBY) ((address & 1) ? result : (result>>8));
+  uint8_t byte_result = (uint8_t) ((address & 1) ? result : (result>>8));
 
 #ifdef RTC_LOG
   fellowAddLog("RTC Byte Read: %.8X, returned %.2X\n", address, byte_result);
@@ -63,7 +63,7 @@ uint32_t rtcReadLong(uint32_t address)
   return result;
 }
 
-void rtcWriteByte(UBY data, uint32_t address)
+void rtcWriteByte(uint8_t data, uint32_t address)
 {
   rtc.write(data, address);
 

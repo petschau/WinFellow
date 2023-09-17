@@ -3,7 +3,7 @@
 
 typedef union sprite_deco_
 {
-  UBY i8[8];
+  uint8_t i8[8];
   uint32_t i32[2];
 } sprite_deco;
 

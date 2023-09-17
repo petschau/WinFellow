@@ -54,12 +54,12 @@ uint32_t kbd_time_to_wait;
 /* Stuff that later goes other places                                        */
 /*===========================================================================*/
 
-UBY insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
+uint8_t insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
 
 
 /* Add an EOL event to the core, used by kbddrv */
 
-void kbdEventEOLAdd(UBY eventId)
+void kbdEventEOLAdd(uint8_t eventId)
 {
   kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.inpos & KBDBUFFERMASK] = eventId;
   kbd_state.eventsEOL.inpos++;
@@ -67,7 +67,7 @@ void kbdEventEOLAdd(UBY eventId)
 
 /* Add an EOF event to the core, used by kbddrv */
 
-void kbdEventEOFAdd(UBY eventId)
+void kbdEventEOFAdd(uint8_t eventId)
 {
   kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.inpos & KBDBUFFERMASK] = eventId;
   kbd_state.eventsEOF.inpos++;
@@ -75,7 +75,7 @@ void kbdEventEOFAdd(UBY eventId)
 
 /* Add a key to the core, used by kbddrv */
 
-void kbdKeyAdd(UBY keyCode)
+void kbdKeyAdd(uint8_t keyCode)
 {
   automator.RecordKey(keyCode);
 
@@ -326,7 +326,7 @@ void kbdQueueHandler(void) {
 #ifdef _DEBUG
         fellowAddLog("   kbdQueueHandler(): writing scancode 0x%x to CIA and raising interrupt.\n", scode);
 #endif
-	      ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
+	      ciaWritesp(0, (uint8_t) ~(((scode >> 7) & 1) | (scode << 1)));
 	      ciaRaiseIRQ(0, 8);
       }
     }

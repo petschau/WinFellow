@@ -165,7 +165,7 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, uint32_t drive
 BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
   struct CapsImageInfo capsImageInfo;
   uint32_t ImageSize, ReturnCode;
-  UBY *ImageBuffer;
+  uint8_t *ImageBuffer;
 
   /* make sure we're up and running beforehand */
   if(!capsIsInitialized)
@@ -180,7 +180,7 @@ BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
   ImageSize = ftell(F);
   fseek(F, 0, SEEK_SET);
 
-  ImageBuffer = (UBY *) malloc(ImageSize);
+  ImageBuffer = (uint8_t *) malloc(ImageSize);
   if(!ImageBuffer)
     return FALSE;
 
@@ -204,7 +204,7 @@ BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
   return TRUE;
 }
 
-BOOLE capsLoadTrack(uint32_t drive, uint32_t track, UBY *mfm_data, uint32_t *tracklength, uint32_t *maxtracklength, uint32_t *timebuf, BOOLE *flakey) {
+BOOLE capsLoadTrack(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t *tracklength, uint32_t *maxtracklength, uint32_t *timebuf, BOOLE *flakey) {
   uint32_t i, len, type;
   struct CapsTrackInfo capsTrackInfo;
 
@@ -259,7 +259,7 @@ BOOLE capsLoadTrack(uint32_t drive, uint32_t track, UBY *mfm_data, uint32_t *tra
   return TRUE;
 }
 
-BOOLE capsLoadNextRevolution(uint32_t drive, uint32_t track, UBY *mfm_data, uint32_t *tracklength) {
+BOOLE capsLoadNextRevolution(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t *tracklength) {
   static uint32_t revolutioncount = 0;
   uint32_t revolution, len;
   struct CapsTrackInfo capsTrackInfo;

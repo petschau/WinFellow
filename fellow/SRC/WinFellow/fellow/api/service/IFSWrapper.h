@@ -15,7 +15,7 @@ namespace fellow::api::service
 
   typedef struct
   {
-    UBY drive;
+    uint8_t drive;
     std::string name;
     bool relative;
     bool writeable;

@@ -111,15 +111,15 @@ typedef struct cia_state_
   uint32_t evalarmlatch;
   uint32_t evalarmlatching;
   uint32_t ev;
-  UBY icrreq;
-  UBY icrmsk;
-  UBY cra;
-  UBY crb;
-  UBY pra;
-  UBY prb;
-  UBY ddra;
-  UBY ddrb;
-  UBY sp;
+  uint8_t icrreq;
+  uint8_t icrmsk;
+  uint8_t cra;
+  uint8_t crb;
+  uint8_t pra;
+  uint8_t prb;
+  uint8_t ddra;
+  uint8_t ddrb;
+  uint8_t sp;
 } cia_state;
 
 extern cia_state cia[2];

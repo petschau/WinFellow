@@ -94,8 +94,8 @@ typedef enum {
 
 typedef struct {
   graph_linetypes linetype;
-  UBY line1[1024];
-  UBY line2[1024];
+  uint8_t line1[1024];
+  uint8_t line2[1024];
   uint32_t colors[64];
   uint32_t DIW_first_draw;
   uint32_t DIW_pixel_count;

@@ -51,7 +51,7 @@ Tuesday, September 05, 2000: nova
 #include <stdio.h>
 
 
-extern UBY kbd_drv_pc_symbol_to_amiga_scancode[106];
+extern uint8_t kbd_drv_pc_symbol_to_amiga_scancode[106];
 
 /*===========================================================================*/
 /* windows key names to be used in the mapfile				     */
@@ -175,7 +175,7 @@ STR *amiga_keys[MAX_AMIGA_NAMES] =
 /* map for the amiga key names						     */
 /*===========================================================================*/
 
-UBY amiga_scancode[MAX_AMIGA_NAMES] = 
+uint8_t amiga_scancode[MAX_AMIGA_NAMES] = 
 {
   A_ESCAPE,
   A_GRAVE,
@@ -392,7 +392,7 @@ BOOLE prsGetAmigaName( STR *line, STR **pAm, STR **pWin )
 /* read the mapping file and set the map array				     */
 /*===========================================================================*/
 
-BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
+BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
 {
   FILE *f = NULL;
   char line[256], *pAmigaName = NULL, *pWinName = NULL;
@@ -472,7 +472,7 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
   return FALSE;
 }
 
-BOOLE prsWriteFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
+BOOLE prsWriteFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
 {
   FILE *f = NULL;
   char line[256];

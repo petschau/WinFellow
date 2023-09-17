@@ -12,7 +12,7 @@ namespace fellow::hardfile::hunks
     uint32_t _allocateSizeInLongwords;
     uint32_t _contentSizeInLongwords;
     uint32_t _vmAddress;
-    std::unique_ptr<UBY> _rawData;
+    std::unique_ptr<uint8_t> _rawData;
 
   public:
     void Parse(RawDataReader& rawReader) override = 0;
@@ -20,7 +20,7 @@ namespace fellow::hardfile::hunks
     uint32_t GetAllocateSizeInBytes();
     uint32_t GetContentSizeInLongwords();
     uint32_t GetContentSizeInBytes();
-    UBY *GetContent();
+    uint8_t *GetContent();
     void SetVMAddress(uint32_t vmAddress);
     uint32_t GetVMAddress();
 

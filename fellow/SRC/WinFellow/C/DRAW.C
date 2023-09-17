@@ -317,20 +317,20 @@ static void drawLED16(int x, int y, int width, int height, uint32_t color)
     {
       *(bufw + x1) = color16;
     }
-    bufw = (UWO *)(((UBY *)bufw) + draw_buffer_info.pitch);
+    bufw = (UWO *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
   }
 }
 
 
 static void drawLED24(int x, int y, int width, int height, uint32_t color)
 {
-  UBY *bufb = draw_buffer_info.top_ptr + draw_buffer_info.pitch*y + x * 3;
+  uint8_t *bufb = draw_buffer_info.top_ptr + draw_buffer_info.pitch*y + x * 3;
   uint32_t color24 = draw_color_table[((color & 0xf00000) >> 12) |
 		((color & 0x00f000) >> 8) |
 		((color & 0x0000f0) >> 4)];
-  UBY color24_1 = (UBY) ((color24 & 0xff0000) >> 16);
-  UBY color24_2 = (UBY) ((color24 & 0x00ff00) >> 8);
-  UBY color24_3 = (UBY) (color24 & 0x0000ff);
+  uint8_t color24_1 = (uint8_t) ((color24 & 0xff0000) >> 16);
+  uint8_t color24_2 = (uint8_t) ((color24 & 0x00ff00) >> 8);
+  uint8_t color24_3 = (uint8_t) (color24 & 0x0000ff);
   for (int y1 = 0; y1 < height; y1++)
   {
     for (int x1 = 0; x1 < width; x1++)
@@ -355,7 +355,7 @@ static void drawLED32(int x, int y, int width, int height, uint32_t color)
     {
       *(bufl + x1) = color32;
     }
-    bufl = (uint32_t *)(((UBY *)bufl) + draw_buffer_info.pitch);
+    bufl = (uint32_t *)(((uint8_t *)bufl) + draw_buffer_info.pitch);
   }
 }
 
@@ -490,7 +490,7 @@ static void drawFpsToFramebuffer16(void)
     {
       *(bufw + x) = draw_fps_buffer[y][x] ? 0xffff : 0;
     }
-    bufw = (UWO *)(((UBY *)bufw) + draw_buffer_info.pitch);
+    bufw = (UWO *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
   }
 }
 
@@ -501,13 +501,13 @@ static void drawFpsToFramebuffer16(void)
 
 static void drawFpsToFramebuffer24(void)
 {
-  UBY *bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
+  uint8_t *bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
 
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
     {
-      UBY color = draw_fps_buffer[y][x] ? 0xff : 0;
+      uint8_t color = draw_fps_buffer[y][x] ? 0xff : 0;
       *(bufb + x*3) = color;
       *(bufb + x*3 + 1) = color;
       *(bufb + x*3 + 2) = color;
@@ -542,7 +542,7 @@ static void drawFpsToFramebuffer32(void)
     {
       *(bufl + x) = draw_fps_buffer[y][x] ? 0xffffffff : 0;
     }
-    bufl = (uint32_t*)(((UBY*)bufl) + draw_buffer_info.pitch);
+    bufl = (uint32_t*)(((uint8_t*)bufl) + draw_buffer_info.pitch);
   }
 }
 
@@ -1267,7 +1267,7 @@ void drawEndOfFrame(void)
       if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
       {
         uint32_t height = drawGetInternalClip().GetHeight();
-	UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+	uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
 	for (uint32_t i = 0; i < height; i++)
         {
 	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);

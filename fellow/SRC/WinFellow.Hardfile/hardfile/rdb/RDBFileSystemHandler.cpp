@@ -50,7 +50,7 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("%d LSegBlocks read\n", blocks.size());
     Service->Log.AddLogDebug("Total filesystem size was %d bytes\n", Size);
 
-    RawData.reset(new UBY[Size]);
+    RawData.reset(new uint8_t[Size]);
     uint32_t nextCopyPosition = 0;
     for (const RDBLSegBlock& block : blocks)
     {

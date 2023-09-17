@@ -21,7 +21,7 @@ namespace fellow::hardfile::rdb
     return 4 * (SizeInLongs - 5);
   }
 
-  const UBY* RDBLSegBlock::GetData() const
+  const uint8_t* RDBLSegBlock::GetData() const
   {
     return Data.get();
   }

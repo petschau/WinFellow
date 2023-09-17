@@ -197,7 +197,7 @@ void cgSetDisassemblyFunction(unsigned int opcode, char *dis_func_no)
 void cgDisFunc(void)
 {
   unsigned int opcode;
-  fprintf(disfuncf, "static UBY cpu_dis_func_tab[65536] = \n{");
+  fprintf(disfuncf, "static uint8_t cpu_dis_func_tab[65536] = \n{");
   for (opcode = 0; opcode < 65536; opcode += 16)
   {
     fprintf(disfuncf,
@@ -308,7 +308,7 @@ unsigned int cgEAReg2(unsigned int eano, unsigned int eareg)
 
 char *cgSize(unsigned int size)
 {
-  if (size == 1) return "UBY";
+  if (size == 1) return "uint8_t";
   else if (size == 2) return "UWO";
   else if (size == 4) return "uint32_t";
   return "ERROR_cgSize()";
@@ -316,7 +316,7 @@ char *cgSize(unsigned int size)
 
 char *cgCastSize(unsigned int size)
 {
-  if (size == 1) return "(UBY)";
+  if (size == 1) return "(uint8_t)";
   else if (size == 2) return "(UWO)";
   else if (size == 4) return "(uint32_t)";
   return "ERROR_cgCastSize()";
@@ -395,7 +395,7 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   if (regtype == 'I' || cg_ea_immediate[eano])
   {
     // Read source value from an immediate word.
-    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
+    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(uint8_t)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (regtype == '2')
   {
@@ -463,7 +463,7 @@ void cgFetchDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   // Fetch operand
   if (cg_ea_immediate[eano])
   {
-    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
+    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(uint8_t)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (eano == 1)
   {
@@ -1843,7 +1843,7 @@ void cgData()
     fprintf(dataf, "{%s,{%uU,%uU,%uU}}%s\n", cpu_opcode_data[i].name, cpu_opcode_data[i].data[0], cpu_opcode_data[i].data[1], cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
   }
   fprintf(dataf, "};\n");
-  fprintf(dataf, "UBY cpu_opcode_model_mask[65536] = {\n");
+  fprintf(dataf, "uint8_t cpu_opcode_model_mask[65536] = {\n");
   for (i = 0; i < 65536; i = i + 16)
   {
     fprintf(dataf, 

@@ -535,7 +535,7 @@ void drawWriteProfilingResultsToFile(void)
 /* Syntax: dualtranslate[0 - PF1 behind, 1 - PF2 behind][PF1data][PF2data]    */
 /*============================================================================*/
 
-UBY draw_dual_translate[2][256][256];
+uint8_t draw_dual_translate[2][256][256];
 
 
 /*============================================================================*/
@@ -635,15 +635,15 @@ void drawDualTranslationInitialize(void)
 	    l = i;                     /* PF1 visible amd not transparent */
 	  }
 	}
-	draw_dual_translate[k][i][j] = (UBY) l;
+	draw_dual_translate[k][i][j] = (uint8_t) l;
       }
     }
   }
 }
 
-static UBY *drawGetDualTranslatePtr(graph_line *linedescription)
+static uint8_t *drawGetDualTranslatePtr(graph_line *linedescription)
 {
-  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
+  uint8_t *draw_dual_translate_ptr = (uint8_t *) draw_dual_translate;
 
   if ((linedescription->bplcon2 & 0x40) == 0)
   {
@@ -672,55 +672,55 @@ ULL drawMake64BitColorFrom32Bit(uint32_t color)
   return color64;
 }
 
-static UWO drawGetColorUWO(uint32_t *colors, UBY color_index)
+static UWO drawGetColorUWO(uint32_t *colors, uint8_t color_index)
 {
-  return *((UWO *) ((UBY *) colors + color_index));
+  return *((UWO *) ((uint8_t *) colors + color_index));
 }
 
-static uint32_t drawGetColorUint32(uint32_t *colors, UBY color_index)
+static uint32_t drawGetColorUint32(uint32_t *colors, uint8_t color_index)
 {
-  return *((uint32_t *) ((UBY *) colors + color_index));
+  return *((uint32_t *) ((uint8_t *) colors + color_index));
 }
 
-static ULL drawGetColorULL(uint32_t *colors, UBY color_index)
+static ULL drawGetColorULL(uint32_t *colors, uint8_t color_index)
 {
   uint32_t pixel_color = drawGetColorUint32(colors, color_index);
   return drawMake64BitColorFrom32Bit(pixel_color);
 }
 
-static UBY drawGetDualColorIndex(UBY *dual_translate_ptr, UBY playfield1_value, UBY playfield2_value)
+static uint8_t drawGetDualColorIndex(uint8_t *dual_translate_ptr, uint8_t playfield1_value, uint8_t playfield2_value)
 {
   return *(dual_translate_ptr + ((playfield1_value << 8) + playfield2_value));
 }
 
-static UWO drawGetDualColorUWO(uint32_t *colors, UBY *dual_translate_ptr, UBY playfield1_value, UBY playfield2_value)
+static UWO drawGetDualColorUWO(uint32_t *colors, uint8_t *dual_translate_ptr, uint8_t playfield1_value, uint8_t playfield2_value)
 {
-  UBY color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
+  uint8_t color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
   return drawGetColorUWO(colors, color_index);
 }
 
-static uint32_t drawGetDualColorUint32(uint32_t *colors, UBY *dual_translate_ptr, UBY playfield1_value, UBY playfield2_value)
+static uint32_t drawGetDualColorUint32(uint32_t *colors, uint8_t *dual_translate_ptr, uint8_t playfield1_value, uint8_t playfield2_value)
 {
-  UBY color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
+  uint8_t color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
   return drawGetColorUint32(colors, color_index);
 }
 
-static ULL drawGetDualColorULL(uint32_t *colors, UBY *dual_translate_ptr, UBY playfield1_value, UBY playfield2_value)
+static ULL drawGetDualColorULL(uint32_t *colors, uint8_t *dual_translate_ptr, uint8_t playfield1_value, uint8_t playfield2_value)
 {
-  UBY color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
+  uint8_t color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
   return drawGetColorULL(colors, color_index);
 }
 
-static uint32_t drawUpdateHAMPixel(uint32_t hampixel, UBY pixel_value)
+static uint32_t drawUpdateHAMPixel(uint32_t hampixel, uint8_t pixel_value)
 {
-  UBY *holdmask = ((UBY *) draw_HAM_modify_table + ((pixel_value & 0xc0) >> 3));
+  uint8_t *holdmask = ((uint8_t *) draw_HAM_modify_table + ((pixel_value & 0xc0) >> 3));
   uint32_t bitindex = *((uint32_t *) (holdmask + draw_HAM_modify_table_bitindex));
   hampixel &= *((uint32_t *) (holdmask + draw_HAM_modify_table_holdmask));
   hampixel |= (((pixel_value & 0x3c) >> 2) << (bitindex & 0xff));
   return hampixel;
 }
 
-static uint32_t drawMakeHAMPixel(uint32_t *colors, uint32_t hampixel, UBY pixel_value)
+static uint32_t drawMakeHAMPixel(uint32_t *colors, uint32_t hampixel, uint8_t pixel_value)
 {
   if ((pixel_value & 0xc0) == 0)
   {
@@ -731,7 +731,7 @@ static uint32_t drawMakeHAMPixel(uint32_t *colors, uint32_t hampixel, UBY pixel_
 
 static uint32_t drawProcessNonVisibleHAMPixels(graph_line *linedescription, LON pixel_count)
 {
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DDF_start;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DDF_start;
   uint32_t hampixel = 0;
   while (pixel_count-- > 0) 
   {
@@ -806,7 +806,7 @@ static void drawLineNormal1x1_16Bit(graph_line *linedescription, uint32_t nextli
 
   UWO *framebuffer = (UWO *) draw_buffer_info.current_ptr;
   UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -814,7 +814,7 @@ static void drawLineNormal1x1_16Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel1x1_16Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln1x1_16bit_tmp, &dln1x1_16bit, &dln1x1_16bit_times);
@@ -838,7 +838,7 @@ static void drawLineNormal1x2_16Bit(graph_line *linedescription, uint32_t nextli
 
   UWO *framebuffer = (UWO *) draw_buffer_info.current_ptr;
   UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 2;
 
   while (framebuffer != framebuffer_end)
@@ -847,7 +847,7 @@ static void drawLineNormal1x2_16Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln1x2_16bit_tmp, &dln1x2_16bit, &dln1x2_16bit_times);
@@ -871,7 +871,7 @@ static void drawLineNormal2x1_16Bit(graph_line *linedescription, uint32_t nextli
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -879,7 +879,7 @@ static void drawLineNormal2x1_16Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel2x1_16Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln2x1_16bit_tmp, &dln2x1_16bit, &dln2x1_16bit_times);
@@ -903,7 +903,7 @@ static void drawLineNormal2x2_16Bit(graph_line *linedescription, uint32_t nextli
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 4;
 
   while (framebuffer != framebuffer_end)
@@ -912,7 +912,7 @@ static void drawLineNormal2x2_16Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln2x2_16bit_tmp, &dln2x2_16bit, &dln2x2_16bit_times);
@@ -936,7 +936,7 @@ static void drawLineNormal2x4_16Bit(graph_line *linedescription, uint32_t nextli
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 4;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -947,7 +947,7 @@ static void drawLineNormal2x4_16Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel2x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln2x4_16bit_tmp, &dln2x4_16bit, &dln2x4_16bit_times);
@@ -971,7 +971,7 @@ static void drawLineNormal4x2_16Bit(graph_line *linedescription, uint32_t nextli
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -980,7 +980,7 @@ static void drawLineNormal4x2_16Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln4x2_16bit_tmp, &dln4x2_16bit, &dln4x2_16bit_times);
@@ -1004,7 +1004,7 @@ static void drawLineNormal4x4_16Bit(graph_line *linedescription, uint32_t nextli
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1 *2;
   uint32_t nextlineoffset3 = nextlineoffset1 *3;
@@ -1015,7 +1015,7 @@ static void drawLineNormal4x4_16Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln4x4_16bit_tmp, &dln4x4_16bit, &dln4x4_16bit_times);
@@ -1039,9 +1039,9 @@ static void drawLineDual1x1_16Bit(graph_line *linedescription, uint32_t nextline
 
   UWO *framebuffer = (UWO *)draw_buffer_info.current_ptr;
   UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   
   while (framebuffer != framebuffer_end)
   {
@@ -1049,7 +1049,7 @@ static void drawLineDual1x1_16Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel1x1_16Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld1x1_16bit_tmp, &dld1x1_16bit, &dld1x1_16bit_times);
@@ -1073,9 +1073,9 @@ static void drawLineDual1x2_16Bit(graph_line *linedescription, uint32_t nextline
 
   UWO *framebuffer = (UWO *)draw_buffer_info.current_ptr;
   UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   uint32_t nextlineoffset1 = nextlineoffset / 2;
 
   while (framebuffer != framebuffer_end)
@@ -1084,7 +1084,7 @@ static void drawLineDual1x2_16Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld1x2_16bit_tmp, &dld1x2_16bit, &dld1x2_16bit_times);
@@ -1108,9 +1108,9 @@ static void drawLineDual2x1_16Bit(graph_line *linedescription, uint32_t nextline
 
   uint32_t *framebuffer = (uint32_t *) draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
 
   while (framebuffer != framebuffer_end)
   {
@@ -1118,7 +1118,7 @@ static void drawLineDual2x1_16Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel2x1_16Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld2x1_16bit_tmp, &dld2x1_16bit, &dld2x1_16bit_times);
@@ -1142,9 +1142,9 @@ static void drawLineDual2x2_16Bit(graph_line *linedescription, uint32_t nextline
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   uint32_t nextlineoffset1 = nextlineoffset / 4;
 
   while (framebuffer != framebuffer_end)
@@ -1153,7 +1153,7 @@ static void drawLineDual2x2_16Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld2x2_16bit_tmp, &dld2x2_16bit, &dld2x2_16bit_times);
@@ -1177,9 +1177,9 @@ static void drawLineDual2x4_16Bit(graph_line *linedescription, uint32_t nextline
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   uint32_t nextlineoffset1 = nextlineoffset / 4;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -1190,7 +1190,7 @@ static void drawLineDual2x4_16Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel2x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld2x4_16bit_tmp, &dld2x4_16bit, &dld2x4_16bit_times);
@@ -1214,9 +1214,9 @@ static void drawLineDual4x2_16Bit(graph_line *linedescription, uint32_t nextline
 
   ULL *framebuffer = (ULL *) draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -1225,7 +1225,7 @@ static void drawLineDual4x2_16Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld4x2_16bit_tmp, &dld4x2_16bit, &dld4x2_16bit_times);
@@ -1249,9 +1249,9 @@ static void drawLineDual4x4_16Bit(graph_line *linedescription, uint32_t nextline
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -1262,7 +1262,7 @@ static void drawLineDual4x4_16Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY *)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld4x4_16bit_tmp, &dld4x4_16bit, &dld4x4_16bit_times);
@@ -1292,10 +1292,10 @@ static void drawLineHAM2x1_16Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   uint32_t *framebuffer = (uint32_t*)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -1305,7 +1305,7 @@ static void drawLineHAM2x1_16Bit(graph_line *linedescription, uint32_t nextlineo
 
   line_exact_sprites->MergeHAM2x1x16((uint32_t*)draw_buffer_current_ptr_local, linedescription);
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh2x1_16bit_tmp, &dlh2x1_16bit, &dlh2x1_16bit_times);
@@ -1335,10 +1335,10 @@ static void drawLineHAM2x2_16Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   uint32_t *framebuffer = (uint32_t*)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 4;
   
   while (framebuffer != framebuffer_end)
@@ -1349,7 +1349,7 @@ static void drawLineHAM2x2_16Bit(graph_line *linedescription, uint32_t nextlineo
 
   line_exact_sprites->MergeHAM2x2x16((uint32_t*)draw_buffer_current_ptr_local, linedescription, nextlineoffset1);
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh2x2_16bit_tmp, &dlh2x2_16bit, &dlh2x2_16bit_times);
@@ -1379,10 +1379,10 @@ static void drawLineHAM4x2_16Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   ULL *framebuffer = (ULL*)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   
   while (framebuffer != framebuffer_end)
@@ -1393,7 +1393,7 @@ static void drawLineHAM4x2_16Bit(graph_line *linedescription, uint32_t nextlineo
 
   line_exact_sprites->MergeHAM4x2x16((ULL*)draw_buffer_current_ptr_local, linedescription, nextlineoffset1);
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh4x2_16bit_tmp, &dlh4x2_16bit, &dlh4x2_16bit_times);
@@ -1423,10 +1423,10 @@ static void drawLineHAM4x4_16Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   ULL *framebuffer = (ULL*)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;  
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -1439,7 +1439,7 @@ static void drawLineHAM4x4_16Bit(graph_line *linedescription, uint32_t nextlineo
 
   line_exact_sprites->MergeHAM4x4x16((ULL*)draw_buffer_current_ptr_local, linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh4x4_16bit_tmp, &dlh4x4_16bit, &dlh4x4_16bit_times);
@@ -1464,7 +1464,7 @@ static void drawLineSegmentBG2x1_16Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     drawSetPixel2x1_16Bit(framebuffer++, bgcolor);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/
@@ -1486,7 +1486,7 @@ static void drawLineSegmentBG2x2_16Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, bgcolor);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/
@@ -1509,7 +1509,7 @@ static void drawLineSegmentBG4x2_16Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, bgcolor64);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/
@@ -1534,7 +1534,7 @@ static void drawLineSegmentBG4x4_16Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, bgcolor64);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/
@@ -1687,24 +1687,24 @@ void drawLineBG4x4_16Bit(graph_line *linedescription, uint32_t nextlineoffset)
 
 /* 24 Bit */
 
-static void drawSetPixel1x1_24Bit(UBY *framebuffer, uint32_t pixel_color)
+static void drawSetPixel1x1_24Bit(uint8_t *framebuffer, uint32_t pixel_color)
 {
   *((uint32_t*)framebuffer) = pixel_color;
 }
 
-static void drawSetPixel1x2_24Bit(UBY *framebuffer, uint32_t nextlineoffset, uint32_t pixel_color)
+static void drawSetPixel1x2_24Bit(uint8_t *framebuffer, uint32_t nextlineoffset, uint32_t pixel_color)
 {
   *((uint32_t*)framebuffer) = pixel_color;
   *((uint32_t*)(framebuffer + nextlineoffset)) = pixel_color;
 }
 
-static void drawSetPixel2x1_24Bit(UBY *framebuffer, uint32_t pixel_color)
+static void drawSetPixel2x1_24Bit(uint8_t *framebuffer, uint32_t pixel_color)
 {
   *((uint32_t*)framebuffer) = pixel_color;
   *((uint32_t*)(framebuffer + 3)) = pixel_color;
 }
 
-static void drawSetPixel2x2_24Bit(UBY *framebuffer, uint32_t nextlineoffset, uint32_t pixel_color)
+static void drawSetPixel2x2_24Bit(uint8_t *framebuffer, uint32_t nextlineoffset, uint32_t pixel_color)
 {
   *((uint32_t*)framebuffer) = pixel_color;
   *((uint32_t*)(framebuffer + 3)) = pixel_color;
@@ -1712,7 +1712,7 @@ static void drawSetPixel2x2_24Bit(UBY *framebuffer, uint32_t nextlineoffset, uin
   *((uint32_t*)(framebuffer + nextlineoffset + 3)) = pixel_color;
 }
 
-static void drawSetPixel2x4_24Bit(UBY *framebuffer, uint32_t nextlineoffset1, uint32_t nextlineoffset2, uint32_t nextlineoffset3, uint32_t pixel_color)
+static void drawSetPixel2x4_24Bit(uint8_t *framebuffer, uint32_t nextlineoffset1, uint32_t nextlineoffset2, uint32_t nextlineoffset3, uint32_t pixel_color)
 {
   *((uint32_t*)framebuffer) = pixel_color;
   *((uint32_t*)(framebuffer + 3)) = pixel_color;
@@ -1724,7 +1724,7 @@ static void drawSetPixel2x4_24Bit(UBY *framebuffer, uint32_t nextlineoffset1, ui
   *((uint32_t*)(framebuffer + nextlineoffset3 + 3)) = pixel_color;
 }
 
-static void drawSetPixel4x2_24Bit(UBY *framebuffer, uint32_t nextlineoffset, uint32_t pixel_color)
+static void drawSetPixel4x2_24Bit(uint8_t *framebuffer, uint32_t nextlineoffset, uint32_t pixel_color)
 {
   *((uint32_t*)framebuffer) = pixel_color;
   *((uint32_t*)(framebuffer + 3)) = pixel_color;
@@ -1736,7 +1736,7 @@ static void drawSetPixel4x2_24Bit(UBY *framebuffer, uint32_t nextlineoffset, uin
   *((uint32_t*)(framebuffer + nextlineoffset + 9)) = pixel_color;
 }
 
-static void drawSetPixel4x4_24Bit(UBY *framebuffer, uint32_t nextlineoffset1, uint32_t nextlineoffset2, uint32_t nextlineoffset3, uint32_t pixel_color)
+static void drawSetPixel4x4_24Bit(uint8_t *framebuffer, uint32_t nextlineoffset1, uint32_t nextlineoffset2, uint32_t nextlineoffset3, uint32_t pixel_color)
 {
   *((uint32_t*)framebuffer) = pixel_color;
   *((uint32_t*)(framebuffer + 3)) = pixel_color;
@@ -1771,9 +1771,9 @@ static void drawLineNormal1x1_24Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln1x1_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -1804,9 +1804,9 @@ static void drawLineNormal1x2_24Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln1x2_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -1837,9 +1837,9 @@ static void drawLineNormal2x1_24Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln2x1_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -1870,9 +1870,9 @@ static void drawLineNormal2x2_24Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln2x2_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -1903,9 +1903,9 @@ static void drawLineNormal2x4_24Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln2x4_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset2 = nextlineoffset*2;
   uint32_t nextlineoffset3 = nextlineoffset*3;
 
@@ -1938,9 +1938,9 @@ static void drawLineNormal4x2_24Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln4x2_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -1971,9 +1971,9 @@ static void drawLineNormal4x4_24Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln4x4_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset2 = nextlineoffset*2;
   uint32_t nextlineoffset3 = nextlineoffset*3;
 
@@ -2006,11 +2006,11 @@ static void drawLineDual1x1_24Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld1x1_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   
   while (framebuffer != framebuffer_end)
   {
@@ -2041,11 +2041,11 @@ static void drawLineDual1x2_24Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld1x2_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*3;
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   
   while (framebuffer != framebuffer_end)
   {
@@ -2076,11 +2076,11 @@ static void drawLineDual2x1_24Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld2x1_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   
   while (framebuffer != framebuffer_end)
   {
@@ -2111,11 +2111,11 @@ static void drawLineDual2x2_24Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld2x2_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   
   while (framebuffer != framebuffer_end)
   {
@@ -2146,11 +2146,11 @@ static void drawLineDual2x4_24Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld2x4_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   uint32_t nextlineoffset2 = nextlineoffset*2;
   uint32_t nextlineoffset3 = nextlineoffset*3;
   
@@ -2183,11 +2183,11 @@ static void drawLineDual4x2_24Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld4x2_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   
   while (framebuffer != framebuffer_end)
   {
@@ -2218,11 +2218,11 @@ static void drawLineDual4x4_24Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld4x4_24bit_tmp);
 #endif
 
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   uint32_t nextlineoffset2 = nextlineoffset*2;
   uint32_t nextlineoffset3 = nextlineoffset*3;
   
@@ -2263,10 +2263,10 @@ static void drawLineHAM2x1_24Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2307,10 +2307,10 @@ static void drawLineHAM2x2_24Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*6;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2351,10 +2351,10 @@ static void drawLineHAM4x2_24Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2395,10 +2395,10 @@ static void drawLineHAM4x4_24Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*12;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset2 = nextlineoffset*2;
   uint32_t nextlineoffset3 = nextlineoffset*3;
 
@@ -2428,8 +2428,8 @@ static void drawLineHAM4x4_24Bit(graph_line *linedescription, uint32_t nextlineo
 
 static void drawLineSegmentBG2x1_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint32_t nextlineoffset)
 {
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + pixelcount*6;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + pixelcount*6;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2450,8 +2450,8 @@ static void drawLineSegmentBG2x1_24Bit(uint32_t pixelcount, uint32_t bgcolor, ui
 
 static void drawLineSegmentBG2x2_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint32_t nextlineoffset)
 {
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + pixelcount*6;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + pixelcount*6;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2472,8 +2472,8 @@ static void drawLineSegmentBG2x2_24Bit(uint32_t pixelcount, uint32_t bgcolor, ui
 
 static void drawLineSegmentBG4x2_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint32_t nextlineoffset)
 {
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + pixelcount*12;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + pixelcount*12;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2494,8 +2494,8 @@ static void drawLineSegmentBG4x2_24Bit(uint32_t pixelcount, uint32_t bgcolor, ui
 
 static void drawLineSegmentBG4x4_24Bit(uint32_t pixelcount, uint32_t bgcolor, uint32_t nextlineoffset)
 {
-  UBY *framebuffer = draw_buffer_info.current_ptr;
-  UBY *framebuffer_end = framebuffer + pixelcount*12;
+  uint8_t *framebuffer = draw_buffer_info.current_ptr;
+  uint8_t *framebuffer_end = framebuffer + pixelcount*12;
   uint32_t nextlineoffset2 = nextlineoffset*2;
   uint32_t nextlineoffset3 = nextlineoffset*3;
 
@@ -2725,7 +2725,7 @@ static void drawLineNormal1x1_32Bit(graph_line *linedescription, uint32_t nextli
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2733,7 +2733,7 @@ static void drawLineNormal1x1_32Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel1x1_32Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln1x1_32bit_tmp, &dln1x1_32bit, &dln1x1_32bit_times);
@@ -2757,7 +2757,7 @@ static void drawLineNormal1x2_32Bit(graph_line *linedescription, uint32_t nextli
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 4;
 
   while (framebuffer != framebuffer_end)
@@ -2766,7 +2766,7 @@ static void drawLineNormal1x2_32Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel1x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln1x2_32bit_tmp, &dln1x2_32bit, &dln1x2_32bit_times);
@@ -2790,7 +2790,7 @@ static void drawLineNormal2x1_32Bit(graph_line *linedescription, uint32_t nextli
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2798,7 +2798,7 @@ static void drawLineNormal2x1_32Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel2x1_32Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln2x1_32bit_tmp, &dln2x1_32bit, &dln2x1_32bit_times);
@@ -2822,7 +2822,7 @@ static void drawLineNormal2x2_32Bit(graph_line *linedescription, uint32_t nextli
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -2831,7 +2831,7 @@ static void drawLineNormal2x2_32Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln2x2_32bit_tmp, &dln2x2_32bit, &dln2x2_32bit_times);
@@ -2855,7 +2855,7 @@ static void drawLineNormal2x4_32Bit(graph_line *linedescription, uint32_t nextli
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -2866,7 +2866,7 @@ static void drawLineNormal2x4_32Bit(graph_line *linedescription, uint32_t nextli
     drawSetPixel2x4_32Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln2x4_32bit_tmp, &dln2x4_32bit, &dln2x4_32bit_times);
@@ -2890,7 +2890,7 @@ static void drawLineNormal4x2_32Bit(graph_line *linedescription, uint32_t nextli
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*2;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -2900,7 +2900,7 @@ static void drawLineNormal4x2_32Bit(graph_line *linedescription, uint32_t nextli
     framebuffer += 2;
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln4x2_32bit_tmp, &dln4x2_32bit, &dln4x2_32bit_times);
@@ -2924,7 +2924,7 @@ static void drawLineNormal4x4_32Bit(graph_line *linedescription, uint32_t nextli
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*2;
-  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -2936,7 +2936,7 @@ static void drawLineNormal4x4_32Bit(graph_line *linedescription, uint32_t nextli
     framebuffer += 2;
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dln4x4_32bit_tmp, &dln4x4_32bit, &dln4x4_32bit_times);
@@ -2960,9 +2960,9 @@ static void drawLineDual1x1_32Bit(graph_line *linedescription, uint32_t nextline
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -2970,7 +2970,7 @@ static void drawLineDual1x1_32Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel1x1_32Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld1x1_32bit_tmp, &dld1x1_32bit, &dld1x1_32bit_times);
@@ -2994,9 +2994,9 @@ static void drawLineDual1x2_32Bit(graph_line *linedescription, uint32_t nextline
 
   uint32_t *framebuffer = (uint32_t *)draw_buffer_info.current_ptr;
   uint32_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 4;
 
   while (framebuffer != framebuffer_end)
@@ -3005,7 +3005,7 @@ static void drawLineDual1x2_32Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel1x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld1x2_32bit_tmp, &dld1x2_32bit, &dld1x2_32bit_times);
@@ -3029,9 +3029,9 @@ static void drawLineDual2x1_32Bit(graph_line *linedescription, uint32_t nextline
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -3039,7 +3039,7 @@ static void drawLineDual2x1_32Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel2x1_32Bit(framebuffer++, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld2x1_32bit_tmp, &dld2x1_32bit, &dld2x1_32bit_times);
@@ -3063,9 +3063,9 @@ static void drawLineDual2x2_32Bit(graph_line *linedescription, uint32_t nextline
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -3074,7 +3074,7 @@ static void drawLineDual2x2_32Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld2x2_32bit_tmp, &dld2x2_32bit, &dld2x2_32bit_times);
@@ -3098,9 +3098,9 @@ static void drawLineDual2x4_32Bit(graph_line *linedescription, uint32_t nextline
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -3111,7 +3111,7 @@ static void drawLineDual2x4_32Bit(graph_line *linedescription, uint32_t nextline
     drawSetPixel2x4_32Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, pixel_color);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld2x4_32bit_tmp, &dld2x4_32bit, &dld2x4_32bit_times);
@@ -3135,9 +3135,9 @@ static void drawLineDual4x2_32Bit(graph_line *linedescription, uint32_t nextline
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*2;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -3147,7 +3147,7 @@ static void drawLineDual4x2_32Bit(graph_line *linedescription, uint32_t nextline
     framebuffer += 2;
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld4x2_32bit_tmp, &dld4x2_32bit, &dld4x2_32bit_times);
@@ -3171,9 +3171,9 @@ static void drawLineDual4x4_32Bit(graph_line *linedescription, uint32_t nextline
 
   ULL *framebuffer = (ULL *)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = framebuffer + linedescription->DIW_pixel_count*2;
-  UBY *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
+  uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -3185,7 +3185,7 @@ static void drawLineDual4x4_32Bit(graph_line *linedescription, uint32_t nextline
     framebuffer += 2;
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dld4x4_32bit_tmp, &dld4x4_32bit, &dld4x4_32bit_times);
@@ -3215,10 +3215,10 @@ static void drawLineHAM2x1_32Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   ULL *framebuffer = (ULL*)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = (ULL*)draw_buffer_info.current_ptr + linedescription->DIW_pixel_count;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
@@ -3228,7 +3228,7 @@ static void drawLineHAM2x1_32Bit(graph_line *linedescription, uint32_t nextlineo
 
   line_exact_sprites->MergeHAM2x1x32((ULL*)draw_buffer_current_ptr_local, linedescription);
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh2x1_32bit_tmp, &dlh2x1_32bit, &dlh2x1_32bit_times);
@@ -3258,10 +3258,10 @@ static void drawLineHAM2x2_32Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   ULL *framebuffer = (ULL*)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = (ULL*)draw_buffer_info.current_ptr + linedescription->DIW_pixel_count;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -3272,7 +3272,7 @@ static void drawLineHAM2x2_32Bit(graph_line *linedescription, uint32_t nextlineo
 
   line_exact_sprites->MergeHAM2x2x32(reinterpret_cast<ULL*>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh2x2_32bit_tmp, &dlh2x2_32bit, &dlh2x2_32bit_times);
@@ -3302,10 +3302,10 @@ static void drawLineHAM4x2_32Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   ULL *framebuffer = (ULL*)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = (ULL*)draw_buffer_info.current_ptr + linedescription->DIW_pixel_count * 2;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
 
   while (framebuffer != framebuffer_end)
@@ -3317,7 +3317,7 @@ static void drawLineHAM4x2_32Bit(graph_line *linedescription, uint32_t nextlineo
 
   line_exact_sprites->MergeHAM4x2x32(reinterpret_cast<ULL*>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh4x2_32bit_tmp, &dlh4x2_32bit, &dlh4x2_32bit_times);
@@ -3347,10 +3347,10 @@ static void drawLineHAM4x4_32Bit(graph_line *linedescription, uint32_t nextlineo
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
   }
 
-  UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+  uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
   ULL *framebuffer = (ULL*)draw_buffer_info.current_ptr;
   ULL *framebuffer_end = (ULL*)draw_buffer_info.current_ptr + linedescription->DIW_pixel_count * 2;
-  UBY *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  uint8_t *source_line_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 8;
   uint32_t nextlineoffset2 = nextlineoffset1*2;
   uint32_t nextlineoffset3 = nextlineoffset1*3;
@@ -3363,7 +3363,7 @@ static void drawLineHAM4x4_32Bit(graph_line *linedescription, uint32_t nextlineo
   }
 
   line_exact_sprites->MergeHAM4x4x32(reinterpret_cast<ULL*>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh4x4_32bit_tmp, &dlh4x4_32bit, &dlh4x4_32bit_times);
@@ -3389,7 +3389,7 @@ static void drawLineSegmentBG2x1_32Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     drawSetPixel2x1_32Bit(framebuffer++, bgcolor64);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/
@@ -3412,7 +3412,7 @@ static void drawLineSegmentBG2x2_32Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, bgcolor64);
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/
@@ -3436,7 +3436,7 @@ static void drawLineSegmentBG4x2_32Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     framebuffer += 2;
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/
@@ -3462,7 +3462,7 @@ static void drawLineSegmentBG4x4_32Bit(uint32_t pixelcount, uint32_t bgcolor, ui
     framebuffer += 2;
   }
 
-  draw_buffer_info.current_ptr = (UBY*)framebuffer;
+  draw_buffer_info.current_ptr = (uint8_t*)framebuffer;
 }
 
 /*==============================================================================*/

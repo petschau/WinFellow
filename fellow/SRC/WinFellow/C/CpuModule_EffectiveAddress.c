@@ -143,7 +143,7 @@ uint32_t cpuEA06(uint32_t regno)
       return cpuEA06Ext(ext, reg_value, index_value);
     }
   }
-  return reg_value + index_value + cpuSignExtByteToLong((UBY)ext);
+  return reg_value + index_value + cpuSignExtByteToLong((uint8_t)ext);
 }
 
 /* Calculates EA for xxxx.W */
@@ -189,5 +189,5 @@ uint32_t cpuEA73(void)
       return cpuEA06Ext(ext, reg_value, index_value);
     }
   }
-  return reg_value + index_value + cpuSignExtByteToLong((UBY)ext);
+  return reg_value + index_value + cpuSignExtByteToLong((uint8_t)ext);
 }

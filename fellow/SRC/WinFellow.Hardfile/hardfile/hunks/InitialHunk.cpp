@@ -22,7 +22,7 @@ namespace fellow::hardfile::hunks
     return GetContentSizeInLongwords() * 4;
   }
 
-  UBY *InitialHunk::GetContent()
+  uint8_t *InitialHunk::GetContent()
   {
     return _rawData.get();
   }

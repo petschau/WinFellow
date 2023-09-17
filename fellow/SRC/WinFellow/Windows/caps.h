@@ -35,8 +35,8 @@ extern BOOLE capsStartup(void);
 extern BOOLE capsShutdown(void);
 extern BOOLE capsLoadImage(uint32_t, FILE *, uint32_t *);
 extern BOOLE capsUnloadImage(uint32_t);
-extern BOOLE capsLoadNextRevolution(uint32_t, uint32_t, UBY *, uint32_t *);
-extern BOOLE capsLoadTrack(uint32_t, uint32_t, UBY *, uint32_t *, uint32_t *, uint32_t *, BOOLE *);
+extern BOOLE capsLoadNextRevolution(uint32_t, uint32_t, uint8_t *, uint32_t *);
+extern BOOLE capsLoadTrack(uint32_t, uint32_t, uint8_t *, uint32_t *, uint32_t *, uint32_t *, BOOLE *);
 
 #endif
 

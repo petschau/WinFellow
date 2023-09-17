@@ -88,7 +88,7 @@ namespace fellow::hardfile::hunks
     return true;
   }
 
-  HunkParser::HunkParser(UBY* rawData, uint32_t rawDataLength, FileImage& fileImage)
+  HunkParser::HunkParser(uint8_t* rawData, uint32_t rawDataLength, FileImage& fileImage)
     : _rawDataReader(rawData, rawDataLength), _fileImage(fileImage)
   {
   }

@@ -15,7 +15,7 @@ extern void gfxDrvSetMode(draw_mode *dm, bool windowed);
 extern void gfxDrvSizeChanged(unsigned int width, unsigned int height);
 extern void gfxDrvPositionChanged();
 
-extern UBY *gfxDrvValidateBufferPointer();
+extern uint8_t *gfxDrvValidateBufferPointer();
 extern void gfxDrvInvalidateBufferPointer();
 extern void gfxDrvGetBufferInformation(draw_buffer_information *buffer_information);
 

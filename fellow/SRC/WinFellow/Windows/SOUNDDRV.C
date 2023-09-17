@@ -803,7 +803,7 @@ void soundDrvCopy16BitsMono(UWO *audio_buffer,
   }
 }
 
-void soundDrvCopy8BitsStereo(UBY *audio_buffer,
+void soundDrvCopy8BitsStereo(uint8_t *audio_buffer,
 			     UWO *left, 
 			     UWO *right, 
 			     uint32_t sample_count)
@@ -815,7 +815,7 @@ void soundDrvCopy8BitsStereo(UBY *audio_buffer,
   }
 }
 
-void soundDrvCopy8BitsMono(UBY *audio_buffer,
+void soundDrvCopy8BitsMono(uint8_t *audio_buffer,
 			   UWO *left, 
 			   UWO *right, 
 			   uint32_t sample_count)
@@ -885,7 +885,7 @@ bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
     }
     else
     {
-      soundDrvCopy8BitsStereo((UBY*)lpvAudio, left, right, sample_count);
+      soundDrvCopy8BitsStereo((uint8_t*)lpvAudio, left, right, sample_count);
     }
   }
   else
@@ -896,7 +896,7 @@ bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
     }
     else
     {
-      soundDrvCopy8BitsMono((UBY*)lpvAudio, left, right, sample_count);
+      soundDrvCopy8BitsMono((uint8_t*)lpvAudio, left, right, sample_count);
     }
   }
   HRESULT unlockResult = IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpvAudio, dwBytes, NULL, 0);

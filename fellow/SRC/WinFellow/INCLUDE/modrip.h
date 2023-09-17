@@ -30,7 +30,7 @@
 #define MODRIP_MAXMODLEN (1024 * 1024)
 
 /* memory access wrapper functions */
-typedef UBY (*MemoryAccessFunc)(uint32_t);
+typedef uint8_t (*MemoryAccessFunc)(uint32_t);
 
 /* module type detection functions */
 typedef void (*ModuleDetectFunc)(uint32_t, MemoryAccessFunc); 

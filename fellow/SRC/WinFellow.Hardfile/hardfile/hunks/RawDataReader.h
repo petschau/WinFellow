@@ -9,7 +9,7 @@ namespace fellow::hardfile::hunks
   class RawDataReader
   {
   private:
-    UBY * _rawData;
+    uint8_t * _rawData;
     uint32_t _rawDataLength;
     uint32_t _index;
 
@@ -22,9 +22,9 @@ namespace fellow::hardfile::hunks
     uint32_t GetIndex();
     uint32_t GetNextByteswappedLong();
     std::string GetNextString(uint32_t lengthInLongwords);
-    UBY *GetNextBytes(uint32_t lengthInLongwords);
+    uint8_t *GetNextBytes(uint32_t lengthInLongwords);
 
-    RawDataReader(UBY *rawData, uint32_t rawDataLength);
+    RawDataReader(uint8_t *rawData, uint32_t rawDataLength);
   };
 }
 

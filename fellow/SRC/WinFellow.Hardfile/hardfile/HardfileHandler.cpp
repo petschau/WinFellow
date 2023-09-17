@@ -72,7 +72,7 @@ namespace fellow::hardfile
     fellow::api::module::HardfileHandler->CardMap(mapping);
   }
 
-  UBY HardfileHandler_ReadByte(uint32_t address)
+  uint8_t HardfileHandler_ReadByte(uint32_t address)
   {
     return fellow::api::module::HardfileHandler->ReadByte(address);
   }
@@ -87,7 +87,7 @@ namespace fellow::hardfile
     return fellow::api::module::HardfileHandler->ReadLong(address);
   }
 
-  void HardfileHandler_WriteByte(UBY data, uint32_t address)
+  void HardfileHandler_WriteByte(uint8_t data, uint32_t address)
   {
     // Deliberately left blank
   }
@@ -149,20 +149,20 @@ namespace fellow::hardfile
   /* Functions to get and set data in the fhfile memory area                    */
   /*============================================================================*/
 
-  UBY HardfileHandler::ReadByte(uint32_t address)
+  uint8_t HardfileHandler::ReadByte(uint32_t address)
   {
     return _rom[address & 0xffff];
   }
 
   UWO HardfileHandler::ReadWord(uint32_t address)
   {
-    UBY *p = _rom + (address & 0xffff);
+    uint8_t *p = _rom + (address & 0xffff);
     return (static_cast<UWO>(p[0]) << 8) | static_cast<UWO>(p[1]);
   }
 
   uint32_t HardfileHandler::ReadLong(uint32_t address)
   {
-    UBY *p = _rom + (address & 0xffff);
+    uint8_t *p = _rom + (address & 0xffff);
     return (static_cast<uint32_t>(p[0]) << 24) | (static_cast<uint32_t>(p[1]) << 16) | (static_cast<uint32_t>(p[2]) << 8) | static_cast<uint32_t>(p[3]);
   }
 
@@ -676,7 +676,7 @@ namespace fellow::hardfile
     }
     Service->Log.AddLogDebug("\n");
 
-    UBY commandNumber = VM->Memory.ReadByte(scsiCommand);
+    uint8_t commandNumber = VM->Memory.ReadByte(scsiCommand);
     uint32_t returnData = VM->Memory.ReadLong(scsiCmdStruct);
     switch (commandNumber)
     {
@@ -783,9 +783,9 @@ namespace fellow::hardfile
         // Show values for debug
         uint32_t senseData = VM->Memory.ReadLong(scsiCmdStruct + 22); // senseData and related fields are only used for autosensing error condition when the command fail
         UWO senseLengthAllocated = VM->Memory.ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
-        UBY scsciCommandFlags = VM->Memory.ReadByte(scsiCmdStruct + 20);
+        uint8_t scsciCommandFlags = VM->Memory.ReadByte(scsiCmdStruct + 20);
 
-        UBY pageCode = VM->Memory.ReadByte(scsiCommand + 2) & 0x3f;
+        uint8_t pageCode = VM->Memory.ReadByte(scsiCommand + 2) & 0x3f;
         if (pageCode == 3)
         {
           UWO sectorsPerTrack = _devices[index].Configuration.Geometry.SectorsPerTrack;
@@ -836,7 +836,7 @@ namespace fellow::hardfile
         else if (pageCode == 4)
         {
           uint32_t numberOfCylinders = _devices[index].Configuration.Geometry.HighCylinder + 1;
-          UBY surfaces = _devices[index].Configuration.Geometry.Surfaces;
+          uint8_t surfaces = _devices[index].Configuration.Geometry.Surfaces;
 
           // Header
           VM->Memory.WriteByte(24 + 3, returnData);
@@ -1850,10 +1850,10 @@ namespace fellow::hardfile
 
       _rom[0x1090] = 0x4e; /* BootPoint */
       _rom[0x1091] = 0xf9; /* JMP fhfile_bootcode */
-      _rom[0x1092] = static_cast<UBY>(_bootcode >> 24);
-      _rom[0x1093] = static_cast<UBY>(_bootcode >> 16);
-      _rom[0x1094] = static_cast<UBY>(_bootcode >> 8);
-      _rom[0x1095] = static_cast<UBY>(_bootcode);
+      _rom[0x1092] = static_cast<uint8_t>(_bootcode >> 24);
+      _rom[0x1093] = static_cast<uint8_t>(_bootcode >> 16);
+      _rom[0x1094] = static_cast<uint8_t>(_bootcode >> 8);
+      _rom[0x1095] = static_cast<uint8_t>(_bootcode);
 
       /* NULLIFY pointer to configdev */
 

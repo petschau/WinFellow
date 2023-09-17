@@ -25,15 +25,15 @@ namespace fellow::hardfile::rdb
     return s;
   }
 
-  UBY RDBFileReader::ReadUBY(off_t offset)
+  uint8_t RDBFileReader::ReadUint8(off_t offset)
   {
     fseek(_F, offset, SEEK_SET);
-    return static_cast<UBY>(fgetc(_F));
+    return static_cast<uint8_t>(fgetc(_F));
   }
 
   uint32_t RDBFileReader::ReadUint32(off_t offset)
   {
-    UBY value[4];
+    uint8_t value[4];
     fseek(_F, offset, SEEK_SET);
     fread(&value, 1, 4, _F);
     return static_cast<uint32_t>(value[0]) << 24 | static_cast<uint32_t>(value[1]) << 16 | static_cast<uint32_t>(value[2]) << 8 | static_cast<uint32_t>(value[3]);
@@ -44,9 +44,9 @@ namespace fellow::hardfile::rdb
     return static_cast<LON>(ReadUint32(offset));
   }
 
-  UBY *RDBFileReader::ReadData(off_t offset, size_t byteCount)
+  uint8_t *RDBFileReader::ReadData(off_t offset, size_t byteCount)
   {
-    UBY *data = new UBY[byteCount];
+    uint8_t *data = new uint8_t[byteCount];
     fseek(_F, offset, SEEK_SET);
     fread(data, 1, byteCount, _F);
     return data;

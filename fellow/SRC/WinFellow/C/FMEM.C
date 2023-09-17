@@ -128,7 +128,7 @@ STR memory_key[256];
 
 bool memory_a1000_wcs = false;              ///< emulate the Amiga 1000 WCS (writable control store)
 
-UBY *memory_a1000_bootstrap = NULL;         ///< hold A1000 bootstrap ROM, if used
+uint8_t *memory_a1000_bootstrap = NULL;         ///< hold A1000 bootstrap ROM, if used
 
 bool memory_a1000_bootstrap_mapped = false; ///< true while A1000 bootstrap ROM mapped to KS area
 
@@ -142,21 +142,21 @@ bool memory_a1000_bootstrap_mapped = false; ///< true while A1000 bootstrap ROM 
 
 
 
-UBY memory_chip[0x200000 + 32];
+uint8_t memory_chip[0x200000 + 32];
 
-UBY memory_slow[0x1c0000 + 32];
+uint8_t memory_slow[0x1c0000 + 32];
 
-UBY memory_kick[0x080000 + 32];
+uint8_t memory_kick[0x080000 + 32];
 
-UBY *memory_kick_ext = NULL;
+uint8_t *memory_kick_ext = NULL;
 
-UBY *memory_fast = NULL;
+uint8_t *memory_fast = NULL;
 
 uint32_t memory_fast_baseaddress;
 
 uint32_t memory_fastallocatedsize;
 
-UBY *memory_slow_base;
+uint8_t *memory_slow_base;
 
 
 
@@ -172,7 +172,7 @@ UBY *memory_slow_base;
 
 #define EMEM_MAXARDS 4
 
-UBY memory_emem[0x10000];
+uint8_t memory_emem[0x10000];
 
 memoryEmemCardInitFunc memory_ememard_initfunc[EMEM_MAXARDS];
 
@@ -198,7 +198,7 @@ uint32_t memory_ememards_finishedcount;                         /* Current card 
 
 
 
-UBY memory_dmem[65536];
+uint8_t memory_dmem[65536];
 
 uint32_t memory_dmemcounter;
 
@@ -296,7 +296,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryWriteByteToPointer(UBY data, UBY *address)
+  void memoryWriteByteToPointer(uint8_t data, uint8_t *address)
 
   {
 
@@ -306,29 +306,29 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryWriteWordToPointer(UWO data, UBY *address)
+  void memoryWriteWordToPointer(UWO data, uint8_t *address)
 
   {
 
-    address[0] = (UBY) (data >> 8);
+    address[0] = (uint8_t) (data >> 8);
 
-    address[1] = (UBY) data;
+    address[1] = (uint8_t) data;
 
   }
 
 
 
-  void memoryWriteLongToPointer(uint32_t data, UBY *address)
+  void memoryWriteLongToPointer(uint32_t data, uint8_t *address)
 
   {
 
-    address[0] = (UBY) (data >> 24);
+    address[0] = (uint8_t) (data >> 24);
 
-    address[1] = (UBY) (data >> 16);
+    address[1] = (uint8_t) (data >> 16);
 
-    address[2] = (UBY) (data >> 8);
+    address[2] = (uint8_t) (data >> 8);
 
-    address[3] = (UBY) data;
+    address[3] = (uint8_t) data;
 
   }
 
@@ -402,7 +402,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   memoryWriteLongFunc memory_bank_writelong[65536];
 
-  UBY *memory_bank_pointer[65536];                   /* Used by the filesystem */
+  uint8_t *memory_bank_pointer[65536];                   /* Used by the filesystem */
 
   BOOLE memory_bank_pointer_can_write[65536];
 
@@ -444,7 +444,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
                      memoryWriteLongFunc wl, 
 
-                     UBY *basep, 
+                     uint8_t *basep, 
 
                      uint32_t bank,
 
@@ -520,13 +520,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  static UBY memory_previous_unmapped_byte = 0;
+  static uint8_t memory_previous_unmapped_byte = 0;
 
-  UBY memoryUnmappedReadByte(uint32_t address)
+  uint8_t memoryUnmappedReadByte(uint32_t address)
 
   {
 
-    UBY val;
+    uint8_t val;
 
     do
 
@@ -600,7 +600,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryUnmappedWriteByte(UBY data, uint32_t address)
+  void memoryUnmappedWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -878,17 +878,17 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     case 0x42:
 
-      memory_emem[index] = (UBY) (value & 0xf0);
+      memory_emem[index] = (uint8_t) (value & 0xf0);
 
-      memory_emem[index + 2] = (UBY) ((value & 0xf)<<4);
+      memory_emem[index + 2] = (uint8_t) ((value & 0xf)<<4);
 
       break;
 
     default:
 
-      memory_emem[index] = (UBY) (~(value & 0xf0));
+      memory_emem[index] = (uint8_t) (~(value & 0xf0));
 
-      memory_emem[index + 2] = (UBY) (~((value & 0xf)<<4));
+      memory_emem[index + 2] = (uint8_t) (~((value & 0xf)<<4));
 
       break;
 
@@ -906,7 +906,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemMirror(uint32_t emem_offset, UBY *src, uint32_t size)
+  void memoryEmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size)
 
   {
 
@@ -924,11 +924,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryEmemReadByte(uint32_t address)
+  uint8_t memoryEmemReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_emem + (address & 0xffff);
+    uint8_t *p = memory_emem + (address & 0xffff);
 
     return memoryReadByteFromPointer(p);
 
@@ -940,7 +940,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_emem + (address & 0xffff);
+    uint8_t *p = memory_emem + (address & 0xffff);
 
     return memoryReadWordFromPointer(p);
 
@@ -952,7 +952,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_emem + (address & 0xffff);
+    uint8_t *p = memory_emem + (address & 0xffff);
 
     return memoryReadLongFromPointer(p);
 
@@ -960,7 +960,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemWriteByte(UBY data, uint32_t address)
+  void memoryEmemWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -1098,11 +1098,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryDmemReadByte(uint32_t address)
+  uint8_t memoryDmemReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_dmem + (address & 0xffff);
+    uint8_t *p = memory_dmem + (address & 0xffff);
 
     return memoryReadByteFromPointer(p);
 
@@ -1114,7 +1114,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_dmem + (address & 0xffff);
+    uint8_t *p = memory_dmem + (address & 0xffff);
 
     return memoryReadWordFromPointer(p);
 
@@ -1126,7 +1126,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_dmem + (address & 0xffff);
+    uint8_t *p = memory_dmem + (address & 0xffff);
 
     return memoryReadLongFromPointer(p);
 
@@ -1134,7 +1134,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemWriteByte(UBY data, uint32_t address)
+  void memoryDmemWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -1232,7 +1232,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemSetByte(UBY data)
+  void memoryDmemSetByte(uint8_t data)
 
   {
 
@@ -1322,11 +1322,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY *memoryAddressToPtr(uint32_t address)
+  uint8_t *memoryAddressToPtr(uint32_t address)
 
   {
 
-    UBY *result = memory_bank_pointer[address>>16];
+    uint8_t *result = memory_bank_pointer[address>>16];
 
 
 
@@ -1352,11 +1352,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryChipReadByte(uint32_t address)
+  uint8_t memoryChipReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_chip + chipmemMaskAddress(address);
+    uint8_t *p = memory_chip + chipmemMaskAddress(address);
 
     return memoryReadByteFromPointer(p);
 
@@ -1368,7 +1368,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_chip + chipmemMaskAddress(address);
+    uint8_t *p = memory_chip + chipmemMaskAddress(address);
 
     return memoryReadWordFromPointer(p);
 
@@ -1380,7 +1380,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_chip + chipmemMaskAddress(address);
+    uint8_t *p = memory_chip + chipmemMaskAddress(address);
 
     return memoryReadLongFromPointer(p);
 
@@ -1388,11 +1388,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryChipWriteByte(UBY data, uint32_t address)
+  void memoryChipWriteByte(uint8_t data, uint32_t address)
 
   {
 
-    UBY *p = memory_chip + chipmemMaskAddress(address);
+    uint8_t *p = memory_chip + chipmemMaskAddress(address);
 
     memoryWriteByteToPointer(data, p);
 
@@ -1404,7 +1404,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_chip + chipmemMaskAddress(address);
+    uint8_t *p = memory_chip + chipmemMaskAddress(address);
 
     memoryWriteWordToPointer(data, p);
 
@@ -1416,7 +1416,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_chip + chipmemMaskAddress(address);
+    uint8_t *p = memory_chip + chipmemMaskAddress(address);
 
     memoryWriteLongToPointer(data, p);
 
@@ -1434,11 +1434,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryOverlayReadByte(uint32_t address)
+  uint8_t memoryOverlayReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_kick + (address & 0xffffff);
+    uint8_t *p = memory_kick + (address & 0xffffff);
 
     return memoryReadByteFromPointer(p);
 
@@ -1450,7 +1450,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_kick + (address & 0xffffff);
+    uint8_t *p = memory_kick + (address & 0xffffff);
 
     return memoryReadWordFromPointer(p);
 
@@ -1462,7 +1462,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_kick + (address & 0xffffff);
+    uint8_t *p = memory_kick + (address & 0xffffff);
 
     return memoryReadLongFromPointer(p);
 
@@ -1470,7 +1470,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryOverlayWriteByte(UBY data, uint32_t address)
+  void memoryOverlayWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -1682,11 +1682,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryFastReadByte(uint32_t address)
+  uint8_t memoryFastReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    uint8_t *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
 
     return memoryReadByteFromPointer(p);
 
@@ -1698,7 +1698,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    uint8_t *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
 
     return memoryReadWordFromPointer(p);
 
@@ -1710,7 +1710,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    uint8_t *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
 
     return memoryReadLongFromPointer(p);
 
@@ -1718,11 +1718,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastWriteByte(UBY data, uint32_t address)
+  void memoryFastWriteByte(uint8_t data, uint32_t address)
 
   {
 
-    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    uint8_t *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
 
     memoryWriteByteToPointer(data, p);
 
@@ -1734,7 +1734,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    uint8_t *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
 
     memoryWriteWordToPointer(data, p);
 
@@ -1746,7 +1746,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    uint8_t *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
 
     memoryWriteLongToPointer(data, p);
 
@@ -1852,7 +1852,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
       memoryFastFree();
 
-      memory_fast = (UBY *) malloc(memoryGetFastSize());
+      memory_fast = (uint8_t *) malloc(memoryGetFastSize());
 
       if (memory_fast == NULL) memorySetFastSize(0);
 
@@ -1952,11 +1952,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memorySlowReadByte(uint32_t address)
+  uint8_t memorySlowReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
+    uint8_t *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
 
     return memoryReadByteFromPointer(p);
 
@@ -1968,7 +1968,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
+    uint8_t *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
 
     return memoryReadWordFromPointer(p);
 
@@ -1980,7 +1980,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
+    uint8_t *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
 
     return memoryReadLongFromPointer(p);
 
@@ -1988,11 +1988,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySlowWriteByte(UBY data, uint32_t address)
+  void memorySlowWriteByte(uint8_t data, uint32_t address)
 
   {
 
-    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
+    uint8_t *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
 
     memoryWriteByteToPointer(data, p);
 
@@ -2004,7 +2004,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
+    uint8_t *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
 
     memoryWriteWordToPointer(data, p);
 
@@ -2016,7 +2016,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
+    uint8_t *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
 
     memoryWriteLongToPointer(data, p);
 
@@ -2124,7 +2124,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryMysteryReadByte(uint32_t address)
+  uint8_t memoryMysteryReadByte(uint32_t address)
 
   {
 
@@ -2154,7 +2154,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryMysteryWriteByte(UBY data, uint32_t address)
+  void memoryMysteryWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -2234,7 +2234,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryIoReadByte(uint32_t address)
+  uint8_t memoryIoReadByte(uint32_t address)
 
   {
 
@@ -2244,7 +2244,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     { // Odd address
 
-      return (UBY) memory_iobank_read[adr >> 1](adr);
+      return (uint8_t) memory_iobank_read[adr >> 1](adr);
 
     }
 
@@ -2252,7 +2252,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     { // Even address
 
-      return (UBY) (memory_iobank_read[adr >> 1](adr) >> 8);
+      return (uint8_t) (memory_iobank_read[adr >> 1](adr) >> 8);
 
     }
 
@@ -2286,7 +2286,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryIoWriteByte(UBY data, uint32_t address)
+  void memoryIoWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -2466,11 +2466,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryKickReadByte(uint32_t address)
+  uint8_t memoryKickReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_kick + ((address & 0xffffff) - 0xf80000);
+    uint8_t *p = memory_kick + ((address & 0xffffff) - 0xf80000);
 
     return memoryReadByteFromPointer(p);
 
@@ -2478,11 +2478,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryKickExtendedReadByte(uint32_t address)
+  uint8_t memoryKickExtendedReadByte(uint32_t address)
 
   {
 
-    UBY *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
+    uint8_t *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
 
     return memoryReadByteFromPointer(p);
 
@@ -2494,7 +2494,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_kick + ((address & 0xffffff) - 0xf80000);
+    uint8_t *p = memory_kick + ((address & 0xffffff) - 0xf80000);
 
     return memoryReadWordFromPointer(p);
 
@@ -2506,7 +2506,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
+    uint8_t *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
 
     return memoryReadWordFromPointer(p);
 
@@ -2518,7 +2518,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_kick + ((address & 0xffffff) - 0xf80000);
+    uint8_t *p = memory_kick + ((address & 0xffffff) - 0xf80000);
 
     return memoryReadLongFromPointer(p);
 
@@ -2530,7 +2530,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
+    uint8_t *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
 
     return memoryReadLongFromPointer(p);
 
@@ -2538,7 +2538,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteByte(UBY data, uint32_t address)
+  void memoryKickWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -2548,7 +2548,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedWriteByte(UBY data, uint32_t address)
+  void memoryKickExtendedWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -2598,13 +2598,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteByteA1000WCS(UBY data, uint32_t address)
+  void memoryKickWriteByteA1000WCS(uint8_t data, uint32_t address)
 
   {
 
     if(address >= 0xfc0000) {
 
-      UBY *p = NULL;
+      uint8_t *p = NULL;
 
       address = (address & 0xffffff) - 0xf80000;
 
@@ -2628,7 +2628,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     if(address >= 0xfc0000) {
 
-      UBY *p = NULL;
+      uint8_t *p = NULL;
 
       address = (address & 0xffffff) - 0xf80000;
 
@@ -2652,7 +2652,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     if(address >= 0xfc0000) {
 
-      UBY *p = NULL;
+      uint8_t *p = NULL;
 
       address = (address & 0xffffff) - 0xf80000;
 
@@ -2974,7 +2974,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     for (i = 0; i < 0x80000; i += 4) {
 
-      UBY *p = memory_kick + i;
+      uint8_t *p = memory_kick + i;
 
       sum += memoryReadLongFromPointer(p);
 
@@ -3002,7 +3002,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    UBY *rom = memory_kick;
+    uint8_t *rom = memory_kick;
 
     uint32_t ver, rev;
 
@@ -3096,7 +3096,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  int memoryKickDecodeAF(STR *filename, STR *keyfile, UBY *memory_kick, const bool suppressgui)
+  int memoryKickDecodeAF(STR *filename, STR *keyfile, uint8_t *memory_kick, const bool suppressgui)
 
   {
 
@@ -3290,7 +3290,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 	        keypos = 0;
 
-  	    memory_kick[filesize++] = (UBY) c;
+  	    memory_kick[filesize++] = (uint8_t) c;
 
       }
 
@@ -3326,7 +3326,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  int memoryKickLoadAF2(STR *filename, FILE *F, UBY *memory_kick, const bool suppressgui)
+  int memoryKickLoadAF2(STR *filename, FILE *F, uint8_t *memory_kick, const bool suppressgui)
 
   {
 
@@ -3414,7 +3414,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
           if(memory_a1000_bootstrap == NULL)
 
-            memory_a1000_bootstrap = (UBY *) malloc(262144);
+            memory_a1000_bootstrap = (uint8_t *) malloc(262144);
 
 
 
@@ -3664,7 +3664,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
           if(memory_a1000_bootstrap == NULL) 
 
-            memory_a1000_bootstrap = (UBY *) malloc(262144);
+            memory_a1000_bootstrap = (uint8_t *) malloc(262144);
 
 
 
@@ -3888,7 +3888,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
           { /* Seems to be a file we can handle */
 
-            memory_kick_ext = (UBY *) malloc(size - 11);
+            memory_kick_ext = (uint8_t *) malloc(size - 11);
 
             size = memoryKickDecodeAF(memory_kickimage_ext, memory_key, memory_kick_ext, false);
 
@@ -3904,7 +3904,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
         if (size == 262144 || size == 524288) {
 
-          memory_kick_ext = (UBY *) malloc(size);
+          memory_kick_ext = (uint8_t *) malloc(size);
 
 
 
@@ -4020,7 +4020,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryReadByteViaBankHandler(uint32_t address)
+  uint8_t memoryReadByteViaBankHandler(uint32_t address)
 
   {
 
@@ -4030,17 +4030,17 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-__inline  UBY memoryReadByte(uint32_t address)
+__inline  uint8_t memoryReadByte(uint32_t address)
 
   {
 
-    UBY *memory_ptr = memory_bank_pointer[address>>16];
+    uint8_t *memory_ptr = memory_bank_pointer[address>>16];
 
     if (memory_ptr != NULL)
 
     {
 
-      UBY *p = memory_ptr + address;
+      uint8_t *p = memory_ptr + address;
 
       return memoryReadByteFromPointer(p);
 
@@ -4068,13 +4068,13 @@ __inline  UWO memoryReadWord(uint32_t address)
 
   {
 
-    UBY *memory_ptr = memory_bank_pointer[address>>16];
+    uint8_t *memory_ptr = memory_bank_pointer[address>>16];
 
     if ((memory_ptr != NULL) && !(address & 1))
 
     {
 
-      UBY *p = memory_ptr + address;
+      uint8_t *p = memory_ptr + address;
 
       return memoryReadWordFromPointer(p);
 
@@ -4096,7 +4096,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
 
 
-  void memoryWriteByte(UBY data, uint32_t address)
+  void memoryWriteByte(uint8_t data, uint32_t address)
 
   {
 
@@ -4592,7 +4592,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
     {
 
-      fwrite(&memory_chip[0], sizeof(UBY), memory_chipsize, F);
+      fwrite(&memory_chip[0], sizeof(uint8_t), memory_chipsize, F);
 
     }
 
@@ -4600,7 +4600,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
     {
 
-      fwrite(&memory_slow[0], sizeof(UBY), memory_slowsize, F);
+      fwrite(&memory_slow[0], sizeof(uint8_t), memory_slowsize, F);
 
     }
 
@@ -4608,7 +4608,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
     {
 
-      fwrite(memory_fast, sizeof(UBY), memory_fastsize, F);
+      fwrite(memory_fast, sizeof(uint8_t), memory_fastsize, F);
 
     }
 
@@ -4630,7 +4630,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
     {
 
-      fread(&memory_chip[0], sizeof(UBY), memory_chipsize, F);
+      fread(&memory_chip[0], sizeof(uint8_t), memory_chipsize, F);
 
     }
 
@@ -4638,7 +4638,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
     {
 
-      fread(&memory_slow[0], sizeof(UBY), memory_slowsize, F);
+      fread(&memory_slow[0], sizeof(uint8_t), memory_slowsize, F);
 
     }
 
@@ -4646,7 +4646,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
     {
 
-      fread(memory_fast, sizeof(UBY), memory_fastsize, F);
+      fread(memory_fast, sizeof(uint8_t), memory_fastsize, F);
 
     }
 

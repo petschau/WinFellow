@@ -56,8 +56,8 @@ using namespace fellow::api;
 extern uint32_t cpuGetOriginalPC();
 #endif
 
-typedef UBY (*ciaFetchFunc)(uint32_t i);
-typedef void (*ciaWriteFunc)(uint32_t i, UBY data);
+typedef uint8_t (*ciaFetchFunc)(uint32_t i);
+typedef void (*ciaWriteFunc)(uint32_t i, uint8_t data);
 
 uint32_t cia_next_event_type; /* What type of event */
 
@@ -81,15 +81,15 @@ typedef struct cia_state_
   uint32_t evalarmlatch;
   uint32_t evalarmlatching;
   uint32_t ev;
-  UBY icrreq;
-  UBY icrmsk;           
-  UBY cra;              
-  UBY crb;              
-  UBY pra;
-  UBY prb;              
-  UBY ddra;             
-  UBY ddrb;             
-  UBY sp;
+  uint8_t icrreq;
+  uint8_t icrmsk;           
+  uint8_t cra;              
+  uint8_t crb;              
+  uint8_t pra;
+  uint8_t prb;              
+  uint8_t ddra;             
+  uint8_t ddrb;             
+  uint8_t sp;
 } cia_state;
 
 cia_state cia[2];
@@ -402,9 +402,9 @@ void ciaRecheckIRQ()
 
 /* PRA */
 
-UBY ciaReadApra(void)
+uint8_t ciaReadApra(void)
 {
-  UBY result = 0;
+  uint8_t result = 0;
   uint32_t drivesel;
 
   if( gameport_autofire0[0] )
@@ -426,15 +426,15 @@ UBY ciaReadApra(void)
     result |= 8;
   if (!floppyIsChanged(drivesel))
     result |= 4;
-  return result | (UBY)(cia[0].pra & 2);
+  return result | (uint8_t)(cia[0].pra & 2);
 }
 
-UBY ciaReadBpra(void)
+uint8_t ciaReadBpra(void)
 {
-  return (UBY) cia[1].pra;
+  return (uint8_t) cia[1].pra;
 }
 
-UBY ciaReadpra(uint32_t i)
+uint8_t ciaReadpra(uint32_t i)
 {
   if (i == 0)
     return ciaReadApra();
@@ -442,7 +442,7 @@ UBY ciaReadpra(uint32_t i)
   return ciaReadBpra();
 }
 
-void ciaWriteApra(UBY data)
+void ciaWriteApra(uint8_t data)
 {
   if ((data & 0x1) && !(cia[0].pra & 0x1))
   {
@@ -455,12 +455,12 @@ void ciaWriteApra(UBY data)
   cia[0].pra = data;
 }
 
-void ciaWriteBpra(UBY data)
+void ciaWriteBpra(uint8_t data)
 {
   cia[1].pra = data;
 }
 
-void ciaWritepra(uint32_t i, UBY data)
+void ciaWritepra(uint32_t i, uint8_t data)
 {
   if (i == 0)
     ciaWriteApra(data);
@@ -470,20 +470,20 @@ void ciaWritepra(uint32_t i, UBY data)
 
 /* PRB */
 
-UBY ciaReadprb(uint32_t i)
+uint8_t ciaReadprb(uint32_t i)
 {
   return cia[i].prb;
 }
 
 
-void ciaWriteAprb(UBY data)
+void ciaWriteAprb(uint8_t data)
 {
   cia[0].prb = data;
 }
 
 /* Motor, drive latches this value when SEL goes from high to low */
 
-void ciaWriteBprb(UBY data)
+void ciaWriteBprb(uint8_t data)
 {
   int j = 0;
   BOOLE motor_was_high = (cia[1].prb & 0x80) == 0x80;
@@ -514,7 +514,7 @@ void ciaWriteBprb(UBY data)
   floppyStepSet(data & 1);
 }
 
-void ciaWriteprb(uint32_t i, UBY data)
+void ciaWriteprb(uint32_t i, uint8_t data)
 {
   if (i == 0)
     ciaWriteAprb(data);
@@ -524,27 +524,27 @@ void ciaWriteprb(uint32_t i, UBY data)
 
 /* DDRA */
 
-UBY ciaReadddra(uint32_t i)
+uint8_t ciaReadddra(uint32_t i)
 {
   if (i == 0)
     return 3;
   return 0xff;
 }
 
-void ciaWriteddra(uint32_t i, UBY data)
+void ciaWriteddra(uint32_t i, uint8_t data)
 {
 }
 
 /* DDRB */
 
-UBY ciaReadddrb(uint32_t i)
+uint8_t ciaReadddrb(uint32_t i)
 {
   if (i == 0)
     return cia[0].ddrb;
   return 0xff;
 }
 
-void ciaWriteddrb(uint32_t i, UBY data)
+void ciaWriteddrb(uint32_t i, uint8_t data)
 {
   if (i == 0)
     cia[0].ddrb = data;
@@ -552,33 +552,33 @@ void ciaWriteddrb(uint32_t i, UBY data)
 
 /* SP (Keyboard serial data on Cia A) */
 
-UBY ciaReadsp(uint32_t i)
+uint8_t ciaReadsp(uint32_t i)
 {
   return cia[i].sp;
 }
 
-void ciaWritesp(uint32_t i, UBY data)
+void ciaWritesp(uint32_t i, uint8_t data)
 {
   cia[i].sp = data;
 }
 
 /* Timer A */
 
-UBY ciaReadtalo(uint32_t i)
+uint8_t ciaReadtalo(uint32_t i)
 {
   if (cia[i].cra & 1)
-    return (UBY) ciaStabilizeValue(cia[i].taleft);
-  return (UBY) cia[i].ta;
+    return (uint8_t) ciaStabilizeValue(cia[i].taleft);
+  return (uint8_t) cia[i].ta;
 }
 
-UBY ciaReadtahi(uint32_t i)
+uint8_t ciaReadtahi(uint32_t i)
 {
   if (cia[i].cra & 1)
-    return (UBY)(ciaStabilizeValue(cia[i].taleft)>>8);
-  return (UBY)(cia[i].ta>>8);
+    return (uint8_t)(ciaStabilizeValue(cia[i].taleft)>>8);
+  return (uint8_t)(cia[i].ta>>8);
 }  
 
-void ciaWritetalo(uint32_t i, UBY data)
+void ciaWritetalo(uint32_t i, uint8_t data)
 {
   cia[i].talatch = (cia[i].talatch & 0xff00) | (uint32_t)data;
 
@@ -587,13 +587,13 @@ void ciaWritetalo(uint32_t i, UBY data)
 #endif
 }
 
-bool ciaMustReloadOnTHiWrite(UBY cr)
+bool ciaMustReloadOnTHiWrite(uint8_t cr)
 {
   // Reload when not started, or one-shot mode
   return !(cr & 1) || (cr & 8);
 }
 
-void ciaWritetahi(uint32_t i, UBY data)
+void ciaWritetahi(uint32_t i, uint8_t data)
 {
   cia[i].talatch = (cia[i].talatch & 0xff) | (((uint32_t)data)<<8);
 
@@ -622,21 +622,21 @@ void ciaWritetahi(uint32_t i, UBY data)
 
 /* Timer B */
 
-UBY ciaReadtblo(uint32_t i)
+uint8_t ciaReadtblo(uint32_t i)
 {
   if ((cia[i].crb & 1) && !(cia[i].crb & 0x40))
-    return (UBY)ciaStabilizeValue(cia[i].tbleft);
-  return (UBY)cia[i].tb;
+    return (uint8_t)ciaStabilizeValue(cia[i].tbleft);
+  return (uint8_t)cia[i].tb;
 }
 
-UBY ciaReadtbhi(uint32_t i)
+uint8_t ciaReadtbhi(uint32_t i)
 {
   if ((cia[i].crb & 1) && !(cia[i].crb & 0x40))
-    return (UBY)(ciaStabilizeValue(cia[i].tbleft)>>8);
-  return (UBY)(cia[i].tb>>8);
+    return (uint8_t)(ciaStabilizeValue(cia[i].tbleft)>>8);
+  return (uint8_t)(cia[i].tb>>8);
 }
 
-void ciaWritetblo(uint32_t i, UBY data)
+void ciaWritetblo(uint32_t i, uint8_t data)
 {
   cia[i].tblatch = (cia[i].tblatch & 0xff00) | ((uint32_t)data);
 #ifdef CIA_LOGGING  
@@ -644,7 +644,7 @@ void ciaWritetblo(uint32_t i, UBY data)
 #endif
 }
 
-void ciaWritetbhi(uint32_t i, UBY data)
+void ciaWritetbhi(uint32_t i, uint8_t data)
 {
   cia[i].tblatch = (cia[i].tblatch & 0xff) | (((uint32_t)data)<<8);
 
@@ -671,33 +671,33 @@ void ciaWritetbhi(uint32_t i, UBY data)
 
 /* Event counter */
 
-UBY ciaReadevlo(uint32_t i)
+uint8_t ciaReadevlo(uint32_t i)
 {
   if (cia[i].evlatching)
   {
     cia[i].evlatching = FALSE;
-    return (UBY)cia[i].evlatch;
+    return (uint8_t)cia[i].evlatch;
   }
-  return (UBY)cia[i].ev;
+  return (uint8_t)cia[i].ev;
 }
 
-UBY ciaReadevmi(uint32_t i)
+uint8_t ciaReadevmi(uint32_t i)
 {
   if (cia[i].evlatching)
   {
-    return (UBY)(cia[i].evlatch >> 8);
+    return (uint8_t)(cia[i].evlatch >> 8);
   }
-  return (UBY)(cia[i].ev>>8);
+  return (uint8_t)(cia[i].ev>>8);
 }
 
-UBY ciaReadevhi(uint32_t i)
+uint8_t ciaReadevhi(uint32_t i)
 {
   cia[i].evlatching = TRUE;
   cia[i].evlatch = cia[i].ev;
-  return (UBY)(cia[i].ev>>16);
+  return (uint8_t)(cia[i].ev>>16);
 }
 
-void ciaWriteevlo(uint32_t i, UBY data)
+void ciaWriteevlo(uint32_t i, uint8_t data)
 {
   if (cia[i].crb & 0x80)  // Alarm
   {
@@ -712,7 +712,7 @@ void ciaWriteevlo(uint32_t i, UBY data)
   ciaCheckAlarmMatch(i);
 }
 
-void ciaWriteevmi(uint32_t i, UBY data)
+void ciaWriteevmi(uint32_t i, uint8_t data)
 {
   if (cia[i].crb & 0x80)  // Alarm
   {
@@ -726,7 +726,7 @@ void ciaWriteevmi(uint32_t i, UBY data)
   }
 }
 
-void ciaWriteevhi(uint32_t i, UBY data)
+void ciaWriteevhi(uint32_t i, uint8_t data)
 {
   if (cia[i].crb & 0x80)  // Alarm
   {
@@ -742,9 +742,9 @@ void ciaWriteevhi(uint32_t i, UBY data)
 
 /* ICR */
 
-UBY ciaReadicr(uint32_t i)
+uint8_t ciaReadicr(uint32_t i)
 {
-  UBY tmp = cia[i].icrreq;
+  uint8_t tmp = cia[i].icrreq;
   cia[i].icrreq = 0;
 
 #ifdef CIA_LOGGING 
@@ -754,7 +754,7 @@ UBY ciaReadicr(uint32_t i)
   return tmp;
 }
 
-void ciaWriteicr(uint32_t i, UBY data)
+void ciaWriteicr(uint32_t i, uint8_t data)
 {
   uint32_t old = cia[i].icrmsk;
   if (data & 0x80)
@@ -775,12 +775,12 @@ void ciaWriteicr(uint32_t i, UBY data)
 
 /* CRA */
 
-UBY ciaReadcra(uint32_t i)
+uint8_t ciaReadcra(uint32_t i)
 {
   return cia[i].cra;
 }
 
-void ciaWritecra(uint32_t i, UBY data)
+void ciaWritecra(uint32_t i, uint8_t data)
 {
   ciaStabilize(i);
   if (data & 0x10) // Force load
@@ -805,12 +805,12 @@ void ciaWritecra(uint32_t i, UBY data)
 
 /* CRB */
 
-UBY ciaReadcrb(uint32_t i)
+uint8_t ciaReadcrb(uint32_t i)
 {
   return cia[i].crb;
 }
 
-void ciaWritecrb(uint32_t i, UBY data)
+void ciaWritecrb(uint32_t i, uint8_t data)
 {
   ciaStabilize(i);
   if (data & 0x10) // Force load
@@ -835,12 +835,12 @@ void ciaWritecrb(uint32_t i, UBY data)
 
 /* Dummy read and write */
 
-UBY ciaReadNothing(uint32_t i)
+uint8_t ciaReadNothing(uint32_t i)
 {
   return 0xff;
 }
 
-void ciaWriteNothing(uint32_t i, UBY data)
+void ciaWriteNothing(uint32_t i, uint8_t data)
 {
 }
 
@@ -861,7 +861,7 @@ ciaWriteFunc cia_write[16] =
   ciaWritesp,  ciaWriteicr, ciaWritecra, ciaWritecrb
 };
 
-  UBY ciaReadByte(uint32_t address)
+  uint8_t ciaReadByte(uint32_t address)
   {
     if ((address & 0xa01001) == 0xa00001)
       return cia_read[(address & 0xf00)>>8](0);
@@ -881,7 +881,7 @@ ciaWriteFunc cia_write[16] =
       (((uint32_t)ciaReadByte(address + 2))<<8) | ((uint32_t)ciaReadByte(address + 3));
   }
 
-  void ciaWriteByte(UBY data, uint32_t address)
+  void ciaWriteByte(uint8_t data, uint32_t address)
   {
     if ((address & 0xa01001) == 0xa00001)
       cia_write[(address & 0xf00)>>8](0, data);
@@ -891,16 +891,16 @@ ciaWriteFunc cia_write[16] =
 
   void ciaWriteWord(UWO data, uint32_t address)
   {
-    ciaWriteByte((UBY) (data>>8), address);
-    ciaWriteByte((UBY) data, address + 1);
+    ciaWriteByte((uint8_t) (data>>8), address);
+    ciaWriteByte((uint8_t) data, address + 1);
   }
 
   void ciaWriteLong(uint32_t data, uint32_t address)
   {
-    ciaWriteByte((UBY) (data>>24), address);
-    ciaWriteByte((UBY) (data>>16), address + 1);
-    ciaWriteByte((UBY) (data>>8), address + 2);
-    ciaWriteByte((UBY) data, address + 3);
+    ciaWriteByte((uint8_t) (data>>24), address);
+    ciaWriteByte((uint8_t) (data>>16), address + 1);
+    ciaWriteByte((uint8_t) (data>>8), address + 2);
+    ciaWriteByte((uint8_t) data, address + 3);
   }
 
   /*============================================================================*/

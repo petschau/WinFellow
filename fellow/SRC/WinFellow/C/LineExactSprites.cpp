@@ -309,14 +309,14 @@ void LineExactSprites::MergeHAM2x1x16(uint32_t *frameptr, graph_line *linedescri
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint32_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               uint32_t color = graph_color_shadow[pixel >> 2];
@@ -365,14 +365,14 @@ void LineExactSprites::MergeHAM2x2x16(uint32_t *frameptr, graph_line *linedescri
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint32_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               uint32_t color = graph_color_shadow[pixel >> 2];
@@ -422,14 +422,14 @@ void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
@@ -479,14 +479,14 @@ void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
@@ -506,7 +506,7 @@ void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription
 union sprham24helper
 {
   uint32_t color_i;
-  UBY color_b[4];
+  uint8_t color_b[4];
 };
 
 /*===========================================================================*/
@@ -514,7 +514,7 @@ union sprham24helper
 /* 24-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x24(uint8_t *frameptr, graph_line *linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -544,14 +544,14 @@ void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          UBY *frame_ptr = frameptr + 6 * (first_visible_cylinder - DIW_first_visible);
+          uint8_t *frame_ptr = frameptr + 6 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               union sprham24helper color;
@@ -575,7 +575,7 @@ void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription
 /* 24-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
+void LineExactSprites::MergeHAM2x2x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -605,14 +605,14 @@ void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          UBY *frame_ptr = frameptr + 6 * (first_visible_cylinder - DIW_first_visible);
+          uint8_t *frame_ptr = frameptr + 6 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               union sprham24helper color;
@@ -644,7 +644,7 @@ void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription
 /* 24-bit pixels, 4x2 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
+void LineExactSprites::MergeHAM4x2x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -674,14 +674,14 @@ void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          UBY *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
+          uint8_t *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               union sprham24helper color;
@@ -725,7 +725,7 @@ void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription
 /* 24-bit pixels, 4x4 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3)
+void LineExactSprites::MergeHAM4x4x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -755,14 +755,14 @@ void LineExactSprites::MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          UBY *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
+          uint8_t *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               union sprham24helper color;
@@ -862,14 +862,14 @@ void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
@@ -918,14 +918,14 @@ void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
@@ -975,14 +975,14 @@ void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           ULL *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
@@ -1034,14 +1034,14 @@ void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription
           {
             last_visible_cylinder = DIW_last_visible;
           }
-          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           ULL *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
-            UBY pixel = *spr_ptr++;
+            uint8_t pixel = *spr_ptr++;
             if (pixel != 0)
             {
               ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
@@ -1115,7 +1115,7 @@ void LineExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
 
   if (output_sprite_log == TRUE)
   {
-    *((UWO *)((UBY *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
+    *((UWO *)((uint8_t *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
     sprintf(buffer,
       "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
       busGetRasterY(),
@@ -1139,7 +1139,7 @@ void LineExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
 
   if (output_sprite_log == TRUE)
   {
-    *((UWO *)((UBY *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
+    *((UWO *)((uint8_t *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
     sprintf(buffer,
       "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
       busGetRasterY(),
@@ -1783,43 +1783,43 @@ void LineExactSprites::SetDebugging()
 // current sprite is in front of playfield 2, and thus also in front of playfield 1
 void LineExactSprites::MergeDualLoresPF2loopinfront2(graph_line* current_graph_line, uint32_t sprnr)
 {
-  UBY line2_buildup[4];
+  uint8_t line2_buildup[4];
 
   uint32_t count = MergeListCount(&spr_merge_list[sprnr]);
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line2 = current_graph_line->line2 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    uint8_t* line2 = current_graph_line->line2 + next_item->sprx + 1;
+    uint8_t* sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
       *((uint32_t *)line2_buildup) = *((uint32_t *)line2);
-      if ((UBY)(*((uint32_t *)sprite_data)) != 0)
+      if ((uint8_t)(*((uint32_t *)sprite_data)) != 0)
       {
         //cl = dl; 
-        line2_buildup[0] = (UBY)*((uint32_t *)sprite_data);
+        line2_buildup[0] = (uint8_t)*((uint32_t *)sprite_data);
       }
 
       // mdlpf21:
-      if ((UBY)((*((uint32_t *)sprite_data)) >> 8) != 0)
+      if ((uint8_t)((*((uint32_t *)sprite_data)) >> 8) != 0)
       {
         //ch = dh; 
-        line2_buildup[1] = (UBY)((*((uint32_t *)sprite_data) >> 8));
+        line2_buildup[1] = (uint8_t)((*((uint32_t *)sprite_data) >> 8));
       }
 
       // mdlph22:
-      if ((UBY)((*((uint32_t *)sprite_data)) >> 16) != 0)
+      if ((uint8_t)((*((uint32_t *)sprite_data)) >> 16) != 0)
       {
         //cl = dl; 
-        line2_buildup[2] = (UBY)((*((uint32_t *)sprite_data) >> 16));
+        line2_buildup[2] = (uint8_t)((*((uint32_t *)sprite_data) >> 16));
       }
 
       // mdlpf23:
-      if ((UBY)((*((uint32_t *)sprite_data)) >> 24) != 0)
+      if ((uint8_t)((*((uint32_t *)sprite_data)) >> 24) != 0)
       {
         //ch = dh; 
-        line2_buildup[3] = (UBY)((*((uint32_t *)sprite_data) >> 24));
+        line2_buildup[3] = (uint8_t)((*((uint32_t *)sprite_data) >> 24));
       }
 
       // mdlpf24:
@@ -1833,43 +1833,43 @@ void LineExactSprites::MergeDualLoresPF2loopinfront2(graph_line* current_graph_l
 // current sprite is behind of playfield 2, but in front of playfield 1
 void LineExactSprites::MergeDualLoresPF1loopinfront2(graph_line* current_graph_line, uint32_t sprnr)
 {
-  UBY line_buildup[4];
+  uint8_t line_buildup[4];
 
   uint32_t count = MergeListCount(&spr_merge_list[sprnr]);
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    uint8_t* line1 = current_graph_line->line1 + next_item->sprx + 1;
+    uint8_t* sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
       *((uint32_t *)line_buildup) = *((uint32_t *)line1);
-      if ((UBY)(*((uint32_t *)sprite_data)) != 0)
+      if ((uint8_t)(*((uint32_t *)sprite_data)) != 0)
       {
         //cl = dl; 
-        line_buildup[0] = (UBY)*((uint32_t *)sprite_data);
+        line_buildup[0] = (uint8_t)*((uint32_t *)sprite_data);
       }
 
       // mdlpf21:
-      if ((UBY)((*((uint32_t *)sprite_data)) >> 8) != 0)
+      if ((uint8_t)((*((uint32_t *)sprite_data)) >> 8) != 0)
       {
         //ch = dh; 
-        line_buildup[1] = (UBY)((*((uint32_t *)sprite_data) >> 8));
+        line_buildup[1] = (uint8_t)((*((uint32_t *)sprite_data) >> 8));
       }
 
       // mdlph22:
-      if ((UBY)((*((uint32_t *)sprite_data)) >> 16) != 0)
+      if ((uint8_t)((*((uint32_t *)sprite_data)) >> 16) != 0)
       {
         //cl = dl; 
-        line_buildup[2] = (UBY)((*((uint32_t *)sprite_data) >> 16));
+        line_buildup[2] = (uint8_t)((*((uint32_t *)sprite_data) >> 16));
       }
 
       // mdlpf23:
-      if ((UBY)((*((uint32_t *)sprite_data)) >> 24) != 0)
+      if ((uint8_t)((*((uint32_t *)sprite_data)) >> 24) != 0)
       {
         //ch = dh; 
-        line_buildup[3] = (UBY)((*((uint32_t *)sprite_data) >> 24));
+        line_buildup[3] = (uint8_t)((*((uint32_t *)sprite_data) >> 24));
       }
 
       // mdlpf24:
@@ -1883,53 +1883,53 @@ void LineExactSprites::MergeDualLoresPF1loopinfront2(graph_line* current_graph_l
 // current sprite is behind of playfield 2, and also behind playfield 1
 void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_line, uint32_t sprnr)
 {
-  UBY line_buildup[4];
+  uint8_t line_buildup[4];
 
   uint32_t count = MergeListCount(&spr_merge_list[sprnr]);
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    uint8_t* line1 = current_graph_line->line1 + next_item->sprx + 1;
+    uint8_t* sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
       *((uint32_t *)line_buildup) = *((uint32_t *)line1);
-      if ((UBY)(*((uint32_t *)line1)) == 0)
+      if ((uint8_t)(*((uint32_t *)line1)) == 0)
       {
-        if ((UBY)(*((uint32_t *)sprite_data)) != 0)
+        if ((uint8_t)(*((uint32_t *)sprite_data)) != 0)
         {
-          line_buildup[0] = (UBY)*((uint32_t *)sprite_data);
+          line_buildup[0] = (uint8_t)*((uint32_t *)sprite_data);
         }
       }
 
       // mdlb1:
-      if ((UBY)((*((uint32_t *)line1)) >> 8) == 0)
+      if ((uint8_t)((*((uint32_t *)line1)) >> 8) == 0)
       {
-        if ((UBY)((*((uint32_t *)sprite_data)) >> 8) != 0)
+        if ((uint8_t)((*((uint32_t *)sprite_data)) >> 8) != 0)
         {
           //ch = dh; 
-          line_buildup[1] = (UBY)((*((uint32_t *)sprite_data) >> 8));
+          line_buildup[1] = (uint8_t)((*((uint32_t *)sprite_data) >> 8));
         }
       }
 
       // mdlb2:
-      if ((UBY)((*((uint32_t *)line1)) >> 16) == 0)
+      if ((uint8_t)((*((uint32_t *)line1)) >> 16) == 0)
       {
-        if ((UBY)((*((uint32_t *)sprite_data)) >> 16) != 0)
+        if ((uint8_t)((*((uint32_t *)sprite_data)) >> 16) != 0)
         {
           //cl = dl; 
-          line_buildup[2] = (UBY)((*((uint32_t *)sprite_data) >> 16));
+          line_buildup[2] = (uint8_t)((*((uint32_t *)sprite_data) >> 16));
         }
       }
 
       // mdlb3:
-      if ((UBY)((*((uint32_t *)line1)) >> 24) == 0)
+      if ((uint8_t)((*((uint32_t *)line1)) >> 24) == 0)
       {
-        if ((UBY)((*((uint32_t *)sprite_data)) >> 24) != 0)
+        if ((uint8_t)((*((uint32_t *)sprite_data)) >> 24) != 0)
         {
           //ch = dh; 
-          line_buildup[3] = (UBY)((*((uint32_t *)sprite_data) >> 24));
+          line_buildup[3] = (uint8_t)((*((uint32_t *)sprite_data) >> 24));
         }
       }
 
@@ -1944,53 +1944,53 @@ void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_li
 // current sprite is in behind of playfield 2, and thus also behind playfield 1
 void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_line, uint32_t sprnr)
 {
-  UBY line_buildup[4];
+  uint8_t line_buildup[4];
 
   uint32_t count = MergeListCount(&spr_merge_list[sprnr]);
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line2 = current_graph_line->line2 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    uint8_t* line2 = current_graph_line->line2 + next_item->sprx + 1;
+    uint8_t* sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
       *((uint32_t *)line_buildup) = *((uint32_t *)line2);
-      if ((UBY)(*((uint32_t *)line2)) == 0)
+      if ((uint8_t)(*((uint32_t *)line2)) == 0)
       {
-        if ((UBY)(*((uint32_t *)sprite_data)) != 0)
+        if ((uint8_t)(*((uint32_t *)sprite_data)) != 0)
         {
-          line_buildup[0] = (UBY)*((uint32_t *)sprite_data);
+          line_buildup[0] = (uint8_t)*((uint32_t *)sprite_data);
         }
       }
 
       // mdlpfb1:
-      if ((UBY)((*((uint32_t *)line2)) >> 8) == 0)
+      if ((uint8_t)((*((uint32_t *)line2)) >> 8) == 0)
       {
-        if ((UBY)((*((uint32_t *)sprite_data)) >> 8) != 0)
+        if ((uint8_t)((*((uint32_t *)sprite_data)) >> 8) != 0)
         {
           //ch = dh; 
-          line_buildup[1] = (UBY)((*((uint32_t *)sprite_data) >> 8));
+          line_buildup[1] = (uint8_t)((*((uint32_t *)sprite_data) >> 8));
         }
       }
 
       // mdlpfb2:
-      if ((UBY)((*((uint32_t *)line2)) >> 16) == 0)
+      if ((uint8_t)((*((uint32_t *)line2)) >> 16) == 0)
       {
-        if ((UBY)((*((uint32_t *)sprite_data)) >> 16) != 0)
+        if ((uint8_t)((*((uint32_t *)sprite_data)) >> 16) != 0)
         {
           //cl = dl; 
-          line_buildup[2] = (UBY)((*((uint32_t *)sprite_data) >> 16));
+          line_buildup[2] = (uint8_t)((*((uint32_t *)sprite_data) >> 16));
         }
       }
 
       // mdlpfb3:
-      if ((UBY)((*((uint32_t *)line2)) >> 24) == 0)
+      if ((uint8_t)((*((uint32_t *)line2)) >> 24) == 0)
       {
-        if ((UBY)((*((uint32_t *)sprite_data)) >> 24) != 0)
+        if ((uint8_t)((*((uint32_t *)sprite_data)) >> 24) != 0)
         {
           //ch = dh; 
-          line_buildup[3] = (UBY)((*((uint32_t *)sprite_data) >> 24));
+          line_buildup[3] = (uint8_t)((*((uint32_t *)sprite_data) >> 24));
         }
       }
 
@@ -2065,12 +2065,12 @@ void LineExactSprites::MergeDualHiresPF2loopinfront2(graph_line* current_graph_l
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY *line2 = current_graph_line->line2 + 2 * (next_item->sprx + 1);
-    UBY *sprite_data = next_item->sprite_data;
+    uint8_t *line2 = current_graph_line->line2 + 2 * (next_item->sprx + 1);
+    uint8_t *sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
-      UBY sprite_color = sprite_data[0];
+      uint8_t sprite_color = sprite_data[0];
       if (sprite_color != 0)
       {
         line2[0] = sprite_color;
@@ -2111,12 +2111,12 @@ void LineExactSprites::MergeDualHiresPF1loopinfront2(graph_line* current_graph_l
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
-    UBY* sprite_data = next_item->sprite_data;
+    uint8_t* line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
+    uint8_t* sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
-      UBY sprite_color = sprite_data[0];
+      uint8_t sprite_color = sprite_data[0];
       if (sprite_color != 0)
       {
         line1[0] = sprite_color;
@@ -2157,12 +2157,12 @@ void LineExactSprites::MergeDualHiresPF1loopbehind2(graph_line* current_graph_li
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
-    UBY* sprite_data = next_item->sprite_data;
+    uint8_t* line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
+    uint8_t* sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
-      UBY sprite_color = sprite_data[0];
+      uint8_t sprite_color = sprite_data[0];
       if (sprite_color != 0)
       {
         if (line1[0] == 0)
@@ -2226,12 +2226,12 @@ void LineExactSprites::MergeDualHiresPF2loopbehind2(graph_line* current_graph_li
   for (uint32_t j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY *line2 = current_graph_line->line2 + 2 * (next_item->sprx + 1);
-    UBY *sprite_data = next_item->sprite_data;
+    uint8_t *line2 = current_graph_line->line2 + 2 * (next_item->sprx + 1);
+    uint8_t *sprite_data = next_item->sprite_data;
 
     for (uint32_t i = 0; i < 4; i++)
     {
-      UBY sprite_color = sprite_data[0];
+      uint8_t sprite_color = sprite_data[0];
       if (sprite_color != 0)
       {
         if (line2[0] == 0)
@@ -2359,8 +2359,8 @@ void LineExactSprites::MergeHires(graph_line* current_graph_line)
         if (next_item->sprx <= graph_DIW_last_visible)
         {
           // set destination and source 
-          UBY *line1 = (current_graph_line->line1 + 2 * (next_item->sprx + 1));
-          UBY *sprite_data = next_item->sprite_data;
+          uint8_t *line1 = (current_graph_line->line1 + 2 * (next_item->sprx + 1));
+          uint8_t *sprite_data = next_item->sprite_data;
 
           SpriteMerger::MergeHires(sprnr, line1, sprite_data, 16);
         }
@@ -2383,8 +2383,8 @@ void LineExactSprites::MergeLores(graph_line* current_graph_line)
         if (next_item->sprx <= graph_DIW_last_visible)
         {
           // set destination and source 
-          UBY *line1 = (current_graph_line->line1 + (next_item->sprx) + 1);
-          UBY *sprite_data = next_item->sprite_data;
+          uint8_t *line1 = (current_graph_line->line1 + (next_item->sprx) + 1);
+          uint8_t *sprite_data = next_item->sprite_data;
 
           SpriteMerger::MergeLores(sprnr, line1, sprite_data, 16);
         }

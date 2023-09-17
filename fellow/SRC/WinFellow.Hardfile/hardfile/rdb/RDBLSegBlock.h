@@ -16,12 +16,12 @@ namespace fellow::hardfile::rdb
     LON CheckSum;
     LON HostID;
     LON Next;
-    std::unique_ptr<const UBY> Data;
+    std::unique_ptr<const uint8_t> Data;
 
     bool HasValidCheckSum;
 
     LON GetDataSize() const;
-    const UBY* GetData() const;
+    const uint8_t* GetData() const;
     void ReadFromFile(RDBFileReader& reader, uint32_t index);
     void Log();
 

@@ -27,7 +27,7 @@
 
 
 /// Sets the Z flag for bit operations
-void cpuSetZFlagBitOpsB(UBY res)
+void cpuSetZFlagBitOpsB(uint8_t res)
 {
   uint32_t flags = cpu_sr & 0xfffb;
   if (res == 0) flags |= 4;
@@ -199,11 +199,11 @@ void cpuClearFlagsVC(void)
   cpu_sr = cpu_sr & 0xfffc;
 }
 
-UWO cpuGetZFlagB(UBY res) {return (UWO)((res) ? 0 : 4);}
+UWO cpuGetZFlagB(uint8_t res) {return (UWO)((res) ? 0 : 4);}
 UWO cpuGetZFlagW(UWO res) {return (UWO)((res) ? 0 : 4);}
 UWO cpuGetZFlagL(uint32_t res) {return (UWO)((res) ? 0 : 4);}
 
-UWO cpuGetNFlagB(UBY res) {return (UWO)((res & 0x80) >> 4);}
+UWO cpuGetNFlagB(uint8_t res) {return (UWO)((res & 0x80) >> 4);}
 UWO cpuGetNFlagW(UWO res) {return (UWO)((res & 0x8000) >> 12);}
 UWO cpuGetNFlagL(uint32_t res) {return (UWO)((res & 0x80000000) >> 28);}
 
@@ -414,7 +414,7 @@ void cpuSetFlagsRotateX(UWO z, UWO rm, UWO x)
 /// <summary>
 /// Set the flags (ZN00).
 /// </summary>
-void cpuSetFlagsNZ00NewB(UBY res)
+void cpuSetFlagsNZ00NewB(uint8_t res)
 {
   uint32_t flag = cpu_sr & 0xfff0;
   if (res & 0x80) flag |= 0x8;

@@ -658,12 +658,12 @@ __inline uint32_t soundGetScale(void)
   return sound_scale;
 }
 
-__inline void soundSetSampleVolume(UBY sample_in, UBY volume, WOR sample_out)
+__inline void soundSetSampleVolume(uint8_t sample_in, uint8_t volume, WOR sample_out)
 {
   volumes[sample_in][volume] = sample_out;
 }
 
-__inline WOR soundGetSampleVolume(BYT sample_in, UBY volume)
+__inline WOR soundGetSampleVolume(BYT sample_in, uint8_t volume)
 {
   return volumes[sample_in][volume];
 }
@@ -695,9 +695,9 @@ void soundVolumeTableInitialize(BOOLE stereo)
   for (i = -128; i < 128; i++) 
     for (j = 0; j < 64; j++)
       if (j == 0)
-	soundSetSampleVolume((UBY) (i & 0xff), (UBY) j, (WOR)  0);
+	soundSetSampleVolume((uint8_t) (i & 0xff), (uint8_t) j, (WOR)  0);
       else
-	soundSetSampleVolume((UBY) (i & 0xff), (UBY) j, (WOR) ((i*j*s)));
+	soundSetSampleVolume((uint8_t) (i & 0xff), (uint8_t) j, (WOR) ((i*j*s)));
 }
 
 

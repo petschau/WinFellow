@@ -7,10 +7,10 @@ sprite_deco SpriteP2CDecoder::sprite_deco16[4][256];
 void SpriteP2CDecoder::Decode4(unsigned int sprite_number, uint32_t *chunky_destination, UWO data1, UWO data2)
 {
   uint32_t sprite_class = sprite_number >> 1;
-  UBY* word[2] =
+  uint8_t* word[2] =
   {
-    (UBY *)&data1,
-    (UBY *)&data2
+    (uint8_t *)&data1,
+    (uint8_t *)&data2
   };
   uint32_t planardata = *word[0]++;
   chunky_destination[2] = sprite_deco4[sprite_class][0][planardata].i32[0];
@@ -31,12 +31,12 @@ void SpriteP2CDecoder::Decode4(unsigned int sprite_number, uint32_t *chunky_dest
 
 void SpriteP2CDecoder::Decode16(uint32_t *chunky_destination, UWO data1, UWO data2, UWO data3, UWO data4)
 {
-  UBY *word[4] =
+  uint8_t *word[4] =
   {
-    (UBY*)&data1,
-    (UBY*)&data2,
-    (UBY*)&data3,
-    (UBY*)&data4
+    (uint8_t*)&data1,
+    (uint8_t*)&data2,
+    (uint8_t*)&data3,
+    (uint8_t*)&data4
   };
   uint32_t planardata = *word[0]++;
   chunky_destination[2] = sprite_deco16[0][planardata].i32[0];
@@ -46,7 +46,7 @@ void SpriteP2CDecoder::Decode16(uint32_t *chunky_destination, UWO data1, UWO dat
   chunky_destination[0] = sprite_deco16[0][planardata].i32[0];
   chunky_destination[1] = sprite_deco16[0][planardata].i32[1];
 
-  for (UBY bpl = 1; bpl < 4; bpl++)
+  for (uint8_t bpl = 1; bpl < 4; bpl++)
   {
     planardata = *word[bpl]++;
     chunky_destination[2] |= sprite_deco16[bpl][planardata].i32[0];
@@ -68,7 +68,7 @@ void SpriteP2CDecoder::P2CTablesInitialize()
       {
         for (uint32_t p = 0; p < 8; p++)
         {
-          sprite_deco4[m][n][q].i8[p] = (UBY)(((q & (0x80 >> p)) == 0) ? 0 : (((m + 4) << 4) | (1 << (n + 2))));
+          sprite_deco4[m][n][q].i8[p] = (uint8_t)(((q & (0x80 >> p)) == 0) ? 0 : (((m + 4) << 4) | (1 << (n + 2))));
         }
       }
     }

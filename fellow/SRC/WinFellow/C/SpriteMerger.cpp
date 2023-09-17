@@ -2,9 +2,9 @@
 #include "GRAPH.H"
 #include "CoreHost.h"
 
-UBY SpriteMerger::sprite_translate[2][256][256];
+uint8_t SpriteMerger::sprite_translate[2][256][256];
 
-void SpriteMerger::MergeLores(uint32_t sprite_number, UBY *playfield, UBY *sprite, uint32_t pixel_count)
+void SpriteMerger::MergeLores(uint32_t sprite_number, uint8_t *playfield, uint8_t *sprite, uint32_t pixel_count)
 {
   uint32_t in_front = ((_core.Registers.BplCon2 & 0x38) > (4 * sprite_number)) ? 1 : 0;
 
@@ -15,7 +15,7 @@ void SpriteMerger::MergeLores(uint32_t sprite_number, UBY *playfield, UBY *sprit
 }
 
 
-void SpriteMerger::MergeHires(uint32_t sprite_number, UBY *playfield, UBY *sprite, uint32_t pixel_count)
+void SpriteMerger::MergeHires(uint32_t sprite_number, uint8_t *playfield, uint8_t *sprite, uint32_t pixel_count)
 {
   uint32_t in_front = ((_core.Registers.BplCon2 & 0x38) >(4 * sprite_number)) ? 1 : 0;
 
@@ -26,7 +26,7 @@ void SpriteMerger::MergeHires(uint32_t sprite_number, UBY *playfield, UBY *sprit
   }
 }
 
-void SpriteMerger::MergeHam(uint32_t sprite_number, UBY *playfield, UBY *ham_sprites_playfield, UBY *sprite, uint32_t pixel_count)
+void SpriteMerger::MergeHam(uint32_t sprite_number, uint8_t *playfield, uint8_t *ham_sprites_playfield, uint8_t *sprite, uint32_t pixel_count)
 {
   uint32_t in_front = ((_core.Registers.BplCon2 & 0x38) >(4 * sprite_number)) ? 1 : 0;
 
@@ -47,7 +47,7 @@ void SpriteMerger::Initialize()
         uint32_t l;
         if (k == 0) l = (i == 0) ? j : i;
         else l = (j == 0) ? i : j;
-        sprite_translate[k][i][j] = (UBY)l;
+        sprite_translate[k][i][j] = (uint8_t)l;
       }
     }
   }

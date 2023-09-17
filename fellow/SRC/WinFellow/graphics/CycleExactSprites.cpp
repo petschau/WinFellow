@@ -73,25 +73,25 @@ void CycleExactSprites::Arm(uint32_t sprite_number)
 
 void CycleExactSprites::MergeLores(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeLores(spriteNo, playfield, sprite_data, pixel_count);
 }
 
 void CycleExactSprites::MergeHires(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHires(spriteNo, playfield, sprite_data, pixel_count);
 }
 
 void CycleExactSprites::MergeHam(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  UBY *ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
-  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHam(spriteNo, playfield, ham_sprites_playfield, sprite_data, pixel_count);
 }

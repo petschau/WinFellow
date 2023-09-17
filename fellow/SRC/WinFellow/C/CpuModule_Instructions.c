@@ -181,9 +181,9 @@ static void cpuBkpt(uint32_t vector)
 /// Adds bytes src1 to src2. Sets all flags.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuAddB(UBY src2, UBY src1)
+static uint8_t cpuAddB(uint8_t src2, uint8_t src1)
 {
-  UBY res = src2 + src1;
+  uint8_t res = src2 + src1;
   cpuSetFlagsAdd(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src2), cpuMsbB(src1));
   return res;
 }
@@ -232,9 +232,9 @@ static uint32_t cpuAddaL(uint32_t src2, uint32_t src1)
 /// Subtracts src1 from src2. Sets all flags.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuSubB(UBY src2, UBY src1)
+static uint8_t cpuSubB(uint8_t src2, uint8_t src1)
 {
-  UBY res = src2 - src1;
+  uint8_t res = src2 - src1;
   cpuSetFlagsSub(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src2), cpuMsbB(src1));
   return res;
 }
@@ -282,9 +282,9 @@ static uint32_t cpuSubaL(uint32_t src2, uint32_t src1)
 /// <summary>
 /// Subtracts src1 from src2. Sets all flags.
 /// </summary>
-static void cpuCmpB(UBY src2, UBY src1)
+static void cpuCmpB(uint8_t src2, uint8_t src1)
 {
-  UBY res = src2 - src1;
+  uint8_t res = src2 - src1;
   cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src2), cpuMsbB(src1));
 }
 
@@ -310,9 +310,9 @@ static void cpuCmpL(uint32_t src2, uint32_t src1)
 /// Ands src1 to src2. Sets NZ00 flags.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuAndB(UBY src2, UBY src1)
+static uint8_t cpuAndB(uint8_t src2, uint8_t src1)
 {
-  UBY res = src2 & src1;
+  uint8_t res = src2 & src1;
   cpuSetFlagsNZ00NewB(res);
   return res;
 }
@@ -343,9 +343,9 @@ static uint32_t cpuAndL(uint32_t src2, uint32_t src1)
 /// Eors src1 to src2. Sets NZ00 flags.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuEorB(UBY src2, UBY src1)
+static uint8_t cpuEorB(uint8_t src2, uint8_t src1)
 {
-  UBY res = src2 ^ src1;
+  uint8_t res = src2 ^ src1;
   cpuSetFlagsNZ00NewB(res);
   return res;
 }
@@ -376,9 +376,9 @@ static uint32_t cpuEorL(uint32_t src2, uint32_t src1)
 /// Ors src1 to src2. Sets NZ00 flags.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuOrB(UBY src2, UBY src1)
+static uint8_t cpuOrB(uint8_t src2, uint8_t src1)
 {
-  UBY res = src2 | src1;
+  uint8_t res = src2 | src1;
   cpuSetFlagsNZ00NewB(res);
   return res;
 }
@@ -409,9 +409,9 @@ static uint32_t cpuOrL(uint32_t src2, uint32_t src1)
 /// Changes bit in src. Sets Z flag.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuBchgB(UBY src, UBY bit)
+static uint8_t cpuBchgB(uint8_t src, uint8_t bit)
 {
-  UBY bit_mask = 1 << (bit & 7);
+  uint8_t bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
   return src ^ bit_mask;
 }
@@ -431,9 +431,9 @@ static uint32_t cpuBchgL(uint32_t src, uint32_t bit)
 /// Clears bit in src. Sets Z flag.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuBclrB(UBY src, UBY bit)
+static uint8_t cpuBclrB(uint8_t src, uint8_t bit)
 {
-  UBY bit_mask = 1 << (bit & 7);
+  uint8_t bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
   return src & ~bit_mask;
 }
@@ -453,9 +453,9 @@ static uint32_t cpuBclrL(uint32_t src, uint32_t bit)
 /// Sets bit in src. Sets Z flag.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuBsetB(UBY src, UBY bit)
+static uint8_t cpuBsetB(uint8_t src, uint8_t bit)
 {
-  UBY bit_mask = 1 << (bit & 7);
+  uint8_t bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
   return src | bit_mask;
 }
@@ -474,9 +474,9 @@ static uint32_t cpuBsetL(uint32_t src, uint32_t bit)
 /// <summary>
 /// Tests bit in src. Sets Z flag.
 /// </summary>
-static void cpuBtstB(UBY src, UBY bit)
+static void cpuBtstB(uint8_t src, uint8_t bit)
 {
-  UBY bit_mask = 1 << (bit & 7);
+  uint8_t bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
 }
 
@@ -501,9 +501,9 @@ static void cpuClr()
 /// Neg src1. Sets sub flags.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuNegB(UBY src1)
+static uint8_t cpuNegB(uint8_t src1)
 {
-  UBY res = (UBY)-(BYT)src1;
+  uint8_t res = (uint8_t)-(BYT)src1;
   cpuSetFlagsNeg(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src1));
   return res;
 }
@@ -534,10 +534,10 @@ static uint32_t cpuNegL(uint32_t src1)
 /// Negx src1.
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuNegxB(UBY src1)
+static uint8_t cpuNegxB(uint8_t src1)
 {
   BYT x = (cpuGetFlagX()) ? 1 : 0;
-  UBY res = (UBY)-(BYT)src1 - x;
+  uint8_t res = (uint8_t)-(BYT)src1 - x;
   cpuSetFlagsNegx(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src1));
   return res;
 }
@@ -570,9 +570,9 @@ static uint32_t cpuNegxL(uint32_t src1)
 /// Not src1. 
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuNotB(UBY src1)
+static uint8_t cpuNotB(uint8_t src1)
 {
-  UBY res = ~src1;
+  uint8_t res = ~src1;
   cpuSetFlagsNZ00NewB(res);
   return res;
 }
@@ -603,7 +603,7 @@ static uint32_t cpuNotL(uint32_t src)
 /// Tas src. 
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuTas(UBY src)
+static uint8_t cpuTas(uint8_t src)
 {
   cpuSetFlagsNZ00NewB(src);
   return src | 0x80;
@@ -612,7 +612,7 @@ static UBY cpuTas(UBY src)
 /// <summary>
 /// Tst res. 
 /// </summary>
-static void cpuTestB(UBY res)
+static void cpuTestB(uint8_t res)
 {
   cpuSetFlagsNZ00NewB(res);
 }
@@ -664,7 +664,7 @@ static void cpuJsr(uint32_t ea)
 /// Move res
 /// </summary>
 /// <returns>The result</returns>
-static void cpuMoveB(UBY res)
+static void cpuMoveB(uint8_t res)
 {
   cpuSetFlagsNZ00NewB(res);
 }
@@ -963,7 +963,7 @@ static UWO cpuMoveFromSr()
 /// <summary>
 /// Scc byte.
 /// </summary>
-static UBY cpuScc(uint32_t cc)
+static uint8_t cpuScc(uint32_t cc)
 {
   return (cpuCalculateConditionCode(cc)) ? 0xff : 0;
 }
@@ -1057,8 +1057,8 @@ static void cpuMulL(uint32_t src1, UWO extension)
   cpuSetInstructionTime(4);
 }
 
-UBY cpuMuluTime[256];
-UBY cpuMulsTime[512];
+uint8_t cpuMuluTime[256];
+uint8_t cpuMulsTime[512];
 
 void cpuCreateMuluTimeTable(void)
 {
@@ -1070,7 +1070,7 @@ void cpuCreateMuluTimeTable(void)
     for (k = 0; k < 8; k++)
       if (((i>>k) & 1) == 1)
 	j++;
-    cpuMuluTime[i] = (UBY) j*2;
+    cpuMuluTime[i] = (uint8_t) j*2;
   }
 }
 
@@ -1084,7 +1084,7 @@ void cpuCreateMulsTimeTable(void)
     for (k = 0; k < 9; k++)
       if ((((i>>k) & 3) == 1) || (((i>>k) & 3) == 2))
 	j++; 
-    cpuMulsTime[i] = (UBY) j*2;
+    cpuMulsTime[i] = (uint8_t) j*2;
   }
 }
 
@@ -1266,9 +1266,9 @@ static void cpuDivL(uint32_t divisor, uint32_t ext, uint32_t instruction_time)
 /// <summary>
 /// Lslb
 /// </summary>
-static UBY cpuLslB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuLslB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
-  UBY res;
+  uint8_t res;
   sh &= 0x3f;
   if (sh == 0)
   {
@@ -1344,9 +1344,9 @@ static uint32_t cpuLslL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// <summary>
 /// Lsrb
 /// </summary>
-static UBY cpuLsrB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuLsrB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
-  UBY res;
+  uint8_t res;
   sh &= 0x3f;
   if (sh == 0)
   {
@@ -1422,7 +1422,7 @@ static uint32_t cpuLsrL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// <summary>
 /// Aslb
 /// </summary>
-static UBY cpuAslB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuAslB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
   BYT res;
   sh &= 0x3f;
@@ -1438,8 +1438,8 @@ static UBY cpuAslB(UBY dst, uint32_t sh, uint32_t cycles)
   }
   else
   {
-    UBY mask = 0xff << (7-sh);
-    UBY out = dst & mask;
+    uint8_t mask = 0xff << (7-sh);
+    uint8_t out = dst & mask;
     res = ((BYT)dst) << sh;
 
     // Overflow calculation: 
@@ -1452,7 +1452,7 @@ static UBY cpuAslB(UBY dst, uint32_t sh, uint32_t cycles)
     cpuSetFlagsShift(cpuIsZeroB(res), n_result, dst & (0x80>>(sh-1)), msb_changed);
   }
   cpuSetInstructionTime(cycles + sh*2);
-  return (UBY) res;
+  return (uint8_t) res;
 }
 
 /// <summary>
@@ -1530,7 +1530,7 @@ static uint32_t cpuAslL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// <summary>
 /// Asrb
 /// </summary>
-static UBY cpuAsrB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuAsrB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
   BYT res;
   sh &= 0x3f;
@@ -1550,7 +1550,7 @@ static UBY cpuAsrB(UBY dst, uint32_t sh, uint32_t cycles)
     cpuSetFlagsShift(cpuIsZeroB(res), cpuMsbB(res), dst & (1<<(sh-1)), FALSE);
   }
   cpuSetInstructionTime(cycles + sh*2);
-  return (UBY) res;
+  return (uint8_t) res;
 }
 
 /// <summary>
@@ -1609,9 +1609,9 @@ static uint32_t cpuAsrL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// <summary>
 /// Rolb
 /// </summary>
-static UBY cpuRolB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuRolB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
-  UBY res;
+  uint8_t res;
   sh &= 0x3f;
   cycles += sh*2;
   if (sh == 0)
@@ -1678,9 +1678,9 @@ static uint32_t cpuRolL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// <summary>
 /// Rorb
 /// </summary>
-static UBY cpuRorB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuRorB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
-  UBY res;
+  uint8_t res;
   sh &= 0x3f;
   cycles += sh*2;
   if (sh == 0)
@@ -1747,11 +1747,11 @@ static uint32_t cpuRorL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// <summary>
 /// Roxlb
 /// </summary>
-static UBY cpuRoxlB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuRoxlB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
   BOOLE x_temp;
-  UBY res = dst;
+  uint8_t res = dst;
   uint32_t i;
   sh &= 0x3f;
   for (i = 0; i < sh; ++i)
@@ -1810,11 +1810,11 @@ static uint32_t cpuRoxlL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// <summary>
 /// Roxrb
 /// </summary>
-static UBY cpuRoxrB(UBY dst, uint32_t sh, uint32_t cycles)
+static uint8_t cpuRoxrB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
   BOOLE x_temp;
-  UBY res = dst;
+  uint8_t res = dst;
   uint32_t i;
   sh &= 0x3f;
   for (i = 0; i < sh; ++i)
@@ -2372,9 +2372,9 @@ static void cpuMoveFromUsp(uint32_t reg)
 /// </summary>
 static void cpuCmpMB(uint32_t regx, uint32_t regy)
 {
-  UBY src = memoryReadByte(cpuEA03(regy, 1));
-  UBY dst = memoryReadByte(cpuEA03(regx, 1));
-  UBY res = dst - src;
+  uint8_t src = memoryReadByte(cpuEA03(regy, 1));
+  uint8_t dst = memoryReadByte(cpuEA03(regx, 1));
+  uint8_t res = dst - src;
   cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(src));
   cpuSetInstructionTime(12);
 }
@@ -2460,9 +2460,9 @@ static void cpuChkL(uint32_t value, uint32_t ub, uint32_t instructionTime)
 /// <summary>
 /// addx.b dx,dy
 /// </summary>
-static UBY cpuAddXB(UBY dst, UBY src)
+static uint8_t cpuAddXB(uint8_t dst, uint8_t src)
 {
-  UBY res = dst + src + ((cpuGetFlagX()) ? 1:0);
+  uint8_t res = dst + src + ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsAddX(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(src));
   return res;
 }
@@ -2490,9 +2490,9 @@ static uint32_t cpuAddXL(uint32_t dst, uint32_t src)
 /// <summary>
 /// subx.b dx,dy
 /// </summary>
-static UBY cpuSubXB(UBY dst, UBY src)
+static uint8_t cpuSubXB(uint8_t dst, uint8_t src)
 {
-  UBY res = dst - src - ((cpuGetFlagX()) ? 1:0);
+  uint8_t res = dst - src - ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsSubX(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(src));
   return res;
 }
@@ -2524,9 +2524,9 @@ static uint32_t cpuSubXL(uint32_t dst, uint32_t src)
 ///                Fourth Edition
 ///    by Bart Trzynadlowski, May 12, 2003
 /// </summary>
-static UBY cpuAbcdB(UBY dst, UBY src)
+static uint8_t cpuAbcdB(uint8_t dst, uint8_t src)
 {
-  UBY xflag = (cpuGetFlagX()) ? 1 : 0;
+  uint8_t xflag = (cpuGetFlagX()) ? 1 : 0;
   UWO low_nibble = (dst & 0xf) + (src & 0xf) + xflag;
   UWO high_nibble = ((UWO)(dst & 0xf0)) + ((UWO)(src & 0xf0));
   UWO result_unadjusted = low_nibble + high_nibble;
@@ -2554,7 +2554,7 @@ static UBY cpuAbcdB(UBY dst, UBY src)
     cpuSetFlagN(result_bcd & 0x80);
     cpuSetFlagV(((result_unadjusted & 0x80) == 0) && (result_bcd & 0x80));
   }
-  return (UBY)result_bcd;
+  return (uint8_t)result_bcd;
 }
 
 /// <summary>
@@ -2565,7 +2565,7 @@ static UBY cpuAbcdB(UBY dst, UBY src)
 ///                Fourth Edition
 ///    by Bart Trzynadlowski, May 12, 2003
 /// </summary>
-static UBY cpuSbcdB(UBY dst, UBY src)
+static uint8_t cpuSbcdB(uint8_t dst, uint8_t src)
 {
   UWO xflag = (cpuGetFlagX()) ? 1:0;
   UWO result_plain_binary = (UWO)dst - (UWO)src - xflag;
@@ -2598,13 +2598,13 @@ static UBY cpuSbcdB(UBY dst, UBY src)
     cpuSetFlagN(result_bcd & 0x80);
     cpuSetFlagV(((result_unadjusted & 0x80) == 0x80) && !(result_bcd & 0x80));
   }
-  return (UBY) result_bcd;
+  return (uint8_t) result_bcd;
 }
 
 /// <summary>
 /// nbcd.b dst
 /// </summary>
-static UBY cpuNbcdB(UBY dst)
+static uint8_t cpuNbcdB(uint8_t dst)
 {
   return cpuSbcdB(0, dst);
 }
@@ -2670,7 +2670,7 @@ static void cpuSetBfField(struct cpuBfData *bf_data, uint32_t ea_or_reg, bool ha
 
     for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
     {
-      UBY field_byte = (field_value >> (i*8)) & 0xff;
+      uint8_t field_byte = (field_value >> (i*8)) & 0xff;
       memoryWriteByte(field_byte, address);
       ++address;
     }
@@ -3018,7 +3018,7 @@ static void cpuMovepLReg(uint32_t areg, uint32_t dreg)
 static void cpuMovepWEa(uint32_t areg, uint32_t dreg)
 {
   uint32_t ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
-  memoryWriteByte((UBY) (cpuGetDReg(dreg) >> 8), ea);
+  memoryWriteByte((uint8_t) (cpuGetDReg(dreg) >> 8), ea);
   memoryWriteByte(cpuGetDRegByte(dreg), ea + 2);
   cpuSetInstructionTime(16);
 }
@@ -3029,9 +3029,9 @@ static void cpuMovepWEa(uint32_t areg, uint32_t dreg)
 static void cpuMovepLEa(uint32_t areg, uint32_t dreg)
 {
   uint32_t ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
-  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 24), ea);
-  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 16), ea + 2);
-  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 8), ea + 4);
+  memoryWriteByte((uint8_t)(cpuGetDReg(dreg) >> 24), ea);
+  memoryWriteByte((uint8_t)(cpuGetDReg(dreg) >> 16), ea + 2);
+  memoryWriteByte((uint8_t)(cpuGetDReg(dreg) >> 8), ea + 4);
   memoryWriteByte(cpuGetDRegByte(dreg), ea + 6);
   cpuSetInstructionTime(24);
 }
@@ -3043,7 +3043,7 @@ static void cpuPackReg(uint32_t xreg, uint32_t yreg)
 {
   UWO adjustment = cpuGetNextWord();
   UWO src = cpuGetDRegWord(xreg) + adjustment;
-  cpuSetDRegByte(yreg, (UBY) (((src >> 4) & 0xf0) | (src & 0xf)));
+  cpuSetDRegByte(yreg, (uint8_t) (((src >> 4) & 0xf0) | (src & 0xf)));
   cpuSetInstructionTime(4);
 }
 
@@ -3055,7 +3055,7 @@ static void cpuPackEa(uint32_t xreg, uint32_t yreg)
   UWO adjustment = cpuGetNextWord();
   UWO src = memoryReadWord(cpuEA04(xreg, 2));
   UWO result = src + adjustment;
-  memoryWriteByte((UBY) (((result >> 4) & 0xf0) | (result & 0xf)), cpuEA04(yreg, 1));
+  memoryWriteByte((uint8_t) (((result >> 4) & 0xf0) | (result & 0xf)), cpuEA04(yreg, 1));
   cpuSetInstructionTime(4);
 }
 
@@ -3065,7 +3065,7 @@ static void cpuPackEa(uint32_t xreg, uint32_t yreg)
 static void cpuUnpkReg(uint32_t xreg, uint32_t yreg)
 {
   UWO adjustment = cpuGetNextWord();
-  UBY b1 = cpuGetDRegByte(xreg);
+  uint8_t b1 = cpuGetDRegByte(xreg);
   UWO result = ((((UWO)(b1 & 0xf0)) << 4) | ((UWO)(b1 & 0xf))) + adjustment;
   cpuSetDRegWord(yreg, result);
   cpuSetInstructionTime(4);
@@ -3077,7 +3077,7 @@ static void cpuUnpkReg(uint32_t xreg, uint32_t yreg)
 static void cpuUnpkEa(uint32_t xreg, uint32_t yreg)
 {
   UWO adjustment = cpuGetNextWord();
-  UBY b1 = memoryReadByte(cpuEA04(xreg, 1));
+  uint8_t b1 = memoryReadByte(cpuEA04(xreg, 1));
   UWO result = ((((UWO)(b1 & 0xf0)) << 4) | ((UWO)(b1 & 0xf))) + adjustment;
   memoryWriteWord(result, cpuEA04(yreg, 2));
   cpuSetInstructionTime(4);
@@ -3216,11 +3216,11 @@ static void cpuMoveSB(uint32_t ea, UWO extension)
     uint32_t regno = (extension >> 12) & 7;
     if (extension & 0x0800) // From Rn to ea (in dfc)
     {
-      memoryWriteByte((UBY)cpuGetReg(da, regno), ea);
+      memoryWriteByte((uint8_t)cpuGetReg(da, regno), ea);
     }
     else  // From ea to Rn (in sfc)
     {
-      UBY data = memoryReadByte(ea);
+      uint8_t data = memoryReadByte(ea);
       if (da == 0)
       {
 	cpuSetDRegByte(regno, data);
@@ -3345,9 +3345,9 @@ static void cpuTrapccL(uint32_t cc)
 /// </summary>
 static void cpuCasB(uint32_t ea, UWO extension)
 {
-  UBY dst = memoryReadByte(ea);
+  uint8_t dst = memoryReadByte(ea);
   uint32_t cmp_regno = extension & 7;
-  UBY res = dst - cpuGetDRegByte(cmp_regno);
+  uint8_t res = dst - cpuGetDRegByte(cmp_regno);
 
   cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(cpuGetDRegByte(cmp_regno)));
 
@@ -3520,7 +3520,7 @@ static void cpuChkCmp2B(uint32_t ea, UWO extension)
   }
   else
   {
-    cpuChk2Cmp2((uint32_t)memoryReadByte(ea), (uint32_t)memoryReadByte(ea + 1), (uint32_t)(UBY)cpuGetDReg(rn), is_chk2);
+    cpuChk2Cmp2((uint32_t)memoryReadByte(ea), (uint32_t)memoryReadByte(ea + 1), (uint32_t)(uint8_t)cpuGetDReg(rn), is_chk2);
   }
 }
 

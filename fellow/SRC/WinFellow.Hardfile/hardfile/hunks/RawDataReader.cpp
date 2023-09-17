@@ -64,11 +64,11 @@ namespace fellow::hardfile::hunks
     return s;
   }
 
-  UBY *RawDataReader::GetNextBytes(uint32_t lengthInLongwords)
+  uint8_t *RawDataReader::GetNextBytes(uint32_t lengthInLongwords)
   {
     uint32_t lengthInBytes = lengthInLongwords * 4;
     AssertValidIndexAndLength(lengthInBytes);
-    UBY *bytes = new UBY[lengthInBytes];
+    uint8_t *bytes = new uint8_t[lengthInBytes];
     memcpy(bytes, _rawData + _index, lengthInBytes);
     _index += lengthInBytes;
     return bytes;
@@ -79,7 +79,7 @@ namespace fellow::hardfile::hunks
     return _index;
   }
 
-  RawDataReader::RawDataReader(UBY *rawData, uint32_t rawDataLength)
+  RawDataReader::RawDataReader(uint8_t *rawData, uint32_t rawDataLength)
     : _rawData(rawData), _rawDataLength(rawDataLength), _index(0)
   {
   }

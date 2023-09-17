@@ -52,7 +52,7 @@ private:
   void OutputCylindersUntilPreviousCylinder(uint32_t rasterY, uint32_t cylinder);
 
 public:
-  //UBY GetOutputMask(uint32_t rasterX);
+  //uint8_t GetOutputMask(uint32_t rasterX);
   bool IsVisible(void);
   void ChangedValue(void);
 

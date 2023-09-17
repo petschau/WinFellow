@@ -33,7 +33,7 @@
 
 using namespace CustomChipset;
 
-extern UBY draw_dual_translate[2][256][256];
+extern uint8_t draw_dual_translate[2][256][256];
 extern uint32_t draw_HAM_modify_table[4][2];
 
 #define draw_HAM_modify_table_bitindex 0
@@ -42,7 +42,7 @@ extern uint32_t draw_HAM_modify_table[4][2];
 void BitplaneDraw::TempLores(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
-  UBY *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
 
   for (uint32_t i = 0; i < pixel_count; i++)
   {
@@ -56,7 +56,7 @@ void BitplaneDraw::TempLores(uint32_t rasterY, uint32_t pixel_index, uint32_t pi
 
 void BitplaneDraw::TempLoresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
+  uint8_t *draw_dual_translate_ptr = (uint8_t *) draw_dual_translate;
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
 
   if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
@@ -64,8 +64,8 @@ void BitplaneDraw::TempLoresDual(uint32_t rasterY, uint32_t pixel_index, uint32_
     draw_dual_translate_ptr += 0x10000;
   }
 
-  UBY *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
-  UBY *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
+  uint8_t *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
   for (uint32_t i = 0; i < pixel_count; i++)
   {
     uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];
@@ -78,10 +78,10 @@ void BitplaneDraw::TempLoresDual(uint32_t rasterY, uint32_t pixel_index, uint32_
 void BitplaneDraw::TempLoresHam(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
   uint32_t bitindex;
-  UBY *holdmask;
+  uint8_t *holdmask;
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
   static uint32_t pixel_color;
-  UBY* playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t* playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
 
   for (uint32_t i = 0; i < pixel_count; i++)
   {
@@ -91,7 +91,7 @@ void BitplaneDraw::TempLoresHam(uint32_t rasterY, uint32_t pixel_index, uint32_t
     }
     else
     {
-      holdmask = ((UBY *) draw_HAM_modify_table + ((playfield[i] & 0xc0) >> 3));
+      holdmask = ((uint8_t *) draw_HAM_modify_table + ((playfield[i] & 0xc0) >> 3));
       bitindex = *((uint32_t *) (holdmask + draw_HAM_modify_table_bitindex));
       pixel_color &= *((uint32_t *) (holdmask + draw_HAM_modify_table_holdmask));
       pixel_color |= (((playfield[i] & 0x3c) >> 2) << (bitindex & 0xff));
@@ -105,7 +105,7 @@ void BitplaneDraw::TempLoresHam(uint32_t rasterY, uint32_t pixel_index, uint32_t
 void BitplaneDraw::TempHires(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
-  UBY *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
 
   for (uint32_t i = 0; i < pixel_count; i++)
   {
@@ -116,7 +116,7 @@ void BitplaneDraw::TempHires(uint32_t rasterY, uint32_t pixel_index, uint32_t pi
 
 void BitplaneDraw::TempHiresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
+  uint8_t *draw_dual_translate_ptr = (uint8_t *) draw_dual_translate;
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
 
   if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
@@ -124,8 +124,8 @@ void BitplaneDraw::TempHiresDual(uint32_t rasterY, uint32_t pixel_index, uint32_
     draw_dual_translate_ptr += 0x10000;
   }
 
-  UBY *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
-  UBY *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
+  uint8_t *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
   for (uint32_t i = 0; i < pixel_count; i++)
   {
     uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];

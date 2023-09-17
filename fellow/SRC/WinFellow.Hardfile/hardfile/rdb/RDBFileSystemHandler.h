@@ -10,7 +10,7 @@ namespace fellow::hardfile::rdb
   struct RDBFileSystemHandler
   {
     uint32_t Size;
-    std::unique_ptr<UBY> RawData;
+    std::unique_ptr<uint8_t> RawData;
     fellow::hardfile::hunks::FileImage FileImage;
 
     RDBFileSystemHandler();

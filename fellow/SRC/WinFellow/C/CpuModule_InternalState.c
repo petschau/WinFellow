@@ -53,7 +53,7 @@ static BOOLE cpu_stop;
 /* The current CPU model */
 static uint32_t cpu_model_major = -1;
 static uint32_t cpu_model_minor;
-static UBY cpu_model_mask;
+static uint8_t cpu_model_mask;
 
 /* For exception handling */
 #ifdef CPU_INSTRUCTION_LOGGING
@@ -213,8 +213,8 @@ uint32_t cpuGetInitialPC(void) {return cpu_initial_pc;}
 void cpuSetInitialSP(uint32_t sp) {cpu_initial_sp = sp;}
 uint32_t cpuGetInitialSP(void) {return cpu_initial_sp;}
 
-void cpuSetModelMask(UBY model_mask) {cpu_model_mask = model_mask;}
-UBY cpuGetModelMask(void) {return cpu_model_mask;}
+void cpuSetModelMask(uint8_t model_mask) {cpu_model_mask = model_mask;}
+uint8_t cpuGetModelMask(void) {return cpu_model_mask;}
 
 uint32_t cpuGetModelMajor(void) {return cpu_model_major;}
 uint32_t cpuGetModelMinor(void) {return cpu_model_minor;}
@@ -249,18 +249,18 @@ void cpuSetModel(uint32_t major, uint32_t minor)
 }
 
 void cpuSetDRegWord(uint32_t regno, UWO val) {*((WOR*)&cpu_regs[0][regno]) = val;}
-void cpuSetDRegByte(uint32_t regno, UBY val) {*((UBY*)&cpu_regs[0][regno]) = val;}
+void cpuSetDRegByte(uint32_t regno, uint8_t val) {*((uint8_t*)&cpu_regs[0][regno]) = val;}
 UWO cpuGetRegWord(uint32_t i, uint32_t regno) {return (UWO)cpu_regs[i][regno];}
 
 UWO cpuGetDRegWord(uint32_t regno) {return (UWO)cpu_regs[0][regno];}
-UBY cpuGetDRegByte(uint32_t regno) {return (UBY)cpu_regs[0][regno];}
+uint8_t cpuGetDRegByte(uint32_t regno) {return (uint8_t)cpu_regs[0][regno];}
 
 uint32_t cpuGetDRegWordSignExtLong(uint32_t regno) {return cpuSignExtWordToLong(cpuGetDRegWord(regno));}
 UWO cpuGetDRegByteSignExtWord(uint32_t regno) {return cpuSignExtByteToWord(cpuGetDRegByte(regno));}
 uint32_t cpuGetDRegByteSignExtLong(uint32_t regno) {return cpuSignExtByteToLong(cpuGetDRegByte(regno));}
 
 UWO cpuGetARegWord(uint32_t regno) {return (UWO)cpu_regs[1][regno];}
-UBY cpuGetARegByte(uint32_t regno) {return (UBY)cpu_regs[1][regno];}
+uint8_t cpuGetARegByte(uint32_t regno) {return (uint8_t)cpu_regs[1][regno];}
 
 typedef UWO (*cpuGetWordFunc)(void);
 typedef uint32_t (*cpuGetLongFunc)(void);

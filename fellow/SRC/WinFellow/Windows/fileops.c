@@ -257,7 +257,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const uint32_t lCRC32
   STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
-  UBY memory_kick[0x080000 + 32];
+  uint8_t memory_kick[0x080000 + 32];
   FILE *F = NULL;
   STR strFilename[CFG_FILENAME_LENGTH] = "";
   uint32_t lCurrentCRC32 = 0;

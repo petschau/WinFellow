@@ -65,7 +65,7 @@ typedef enum {
 #define KBDBUFFERMASK   511
 
 typedef struct {
-  UBY buffer[KBDBUFFERLENGTH];
+  uint8_t buffer[KBDBUFFERLENGTH];
   uint32_t inpos;
   uint32_t outpos;
 } kbd_buffer_type;
@@ -78,9 +78,9 @@ typedef struct {
 
 extern kbd_state_type kbd_state;
 
-extern void kbdEventEOLAdd(UBY eventId);
-extern void kbdEventEOFAdd(UBY eventId);
-extern void kbdKeyAdd(UBY keyCode);
+extern void kbdEventEOLAdd(uint8_t eventId);
+extern void kbdEventEOFAdd(uint8_t eventId);
+extern void kbdKeyAdd(uint8_t keyCode);
 
 extern void kbdHardReset(void);
 extern void kbdEmulationStart(void);
@@ -98,6 +98,6 @@ void kbdEventEOFHandler(void);
 extern void kbdQueueHandler(void);
 extern void kbdEventEOLHandler(void);
 
-extern UBY insert_dfX[4];
+extern uint8_t insert_dfX[4];
 
 #endif

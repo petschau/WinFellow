@@ -193,17 +193,17 @@ void Planar2ChunkyDecoder::NewBatch(void)
   _batch_size = 0;
 }
 
-UBY *Planar2ChunkyDecoder::GetOddPlayfield(void)
+uint8_t *Planar2ChunkyDecoder::GetOddPlayfield(void)
 {
   return _playfield_odd.barray;
 }
 
-UBY *Planar2ChunkyDecoder::GetEvenPlayfield(void)
+uint8_t *Planar2ChunkyDecoder::GetEvenPlayfield(void)
 {
   return _playfield_even.barray;
 }
 
-UBY *Planar2ChunkyDecoder::GetHamSpritesPlayfield(void)
+uint8_t *Planar2ChunkyDecoder::GetHamSpritesPlayfield(void)
 {
   return _playfield_ham_sprites.barray;
 }

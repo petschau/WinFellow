@@ -246,7 +246,7 @@ UWO filesys_wget(uint32_t addr)
     return (UWO) do_get_mem_word ((uae_u16 *)m);
 }
 
-UBY filesys_bget(uint32_t addr)
+uint8_t filesys_bget(uint32_t addr)
 {
     addr -= filesys_start & 65535;
     addr &= 65535;
@@ -263,7 +263,7 @@ void filesys_wput(UWO w, uint32_t addr)
     write_log ("filesys_wput called\n");
 }
 
-void filesys_bput(UBY b, uint32_t addr)
+void filesys_bput(uint8_t b, uint32_t addr)
 {
     write_log ("filesys_bput called. This usually means that you are using\n");
     /* FELLOW CHANGE (START)-------------

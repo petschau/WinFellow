@@ -35,7 +35,7 @@ void Script::ExecuteJoystickCommand(const string& parameters)
 
 void Script::ExecuteEmulatorActionCommand(const string& parameters)
 {
-  UBY eventId = GetIdForAction(parameters);
+  uint8_t eventId = GetIdForAction(parameters);
   if (eventId != 255)
   {
     kbdEventEOFAdd(eventId);
@@ -75,7 +75,7 @@ void Script::ExecuteUntil(ULL frameNumber, uint32_t lineNumber)
   }
 }
 
-void Script::RecordKey(UBY keyCode)
+void Script::RecordKey(uint8_t keyCode)
 {
   char parameters[32];
   sprintf(parameters, "%u", (uint32_t)keyCode);
@@ -114,9 +114,9 @@ string Script::GetStringForAction(kbd_event action)
   return "";
 }
 
-UBY Script::GetIdForAction(const string& action)
+uint8_t Script::GetIdForAction(const string& action)
 {
-  UBY eventId = 255;
+  uint8_t eventId = 255;
   if (action == "EVENT_EXIT")
   {
     eventId = EVENT_EXIT;

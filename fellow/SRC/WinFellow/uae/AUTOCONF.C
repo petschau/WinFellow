@@ -328,7 +328,7 @@ uint32_t rtarea_lget(uint32_t addr)
            rtarea[maskedAddress -RTAREA_BASE+3];
 }
 
-UBY rtarea_bget(uint32_t addr)
+uint8_t rtarea_bget(uint32_t addr)
 {
   uint32_t maskedAddress = addr & 0xffffff;
   return rtarea[maskedAddress - RTAREA_BASE];
@@ -338,7 +338,7 @@ UBY rtarea_bget(uint32_t addr)
 
 void rtarea_lput(uint32_t value, uint32_t addr) { }
 void rtarea_wput(UWO value, uint32_t addr) { }
-void rtarea_bput(UBY value, uint32_t addr) { }
+void rtarea_bput(uint8_t value, uint32_t addr) { }
 
 /* FELLOW IN (END)---------------------------------*/
 

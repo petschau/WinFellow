@@ -432,7 +432,7 @@ int symbol_to_DIK_kbddrv[PCK_LAST_KEY] =
 /* Map symbolic pc key to amiga scancode                                     */
 /*===========================================================================*/
 
-UBY kbd_drv_pc_symbol_to_amiga_scancode[106] = 
+uint8_t kbd_drv_pc_symbol_to_amiga_scancode[106] = 
 {
   /* 0x00 */
 
@@ -730,7 +730,7 @@ void kbdDrvEOFHandler(void)
     ULONGLONG tCurrentTime = RP.GetTime();
 
     if(t < tCurrentTime) {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
+      uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
       fellowAddLog("RetroPlatform escape key simulation interval ended.\n");
       RP.SetEscapeKeySimulatedTargetTime(0);
@@ -1010,7 +1010,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
           
           if((t != 0) && (t < RP.GetEscapeKeyHoldTime())) 
 	  {
-            UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
+            uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
 	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
               t);
@@ -1161,7 +1161,7 @@ void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
     {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+      uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
       kbdKeyAdd(a_code | 0x80);
     }
   }
@@ -1170,7 +1170,7 @@ void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
     {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+      uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
       kbdKeyAdd(a_code);
     }
   }

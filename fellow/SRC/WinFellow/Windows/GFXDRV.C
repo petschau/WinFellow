@@ -23,7 +23,7 @@ void gfxDrvClearCurrentBuffer()
   }
 }
 
-UBY* gfxDrvValidateBufferPointer()
+uint8_t* gfxDrvValidateBufferPointer()
 {
   gfxDrvCommon->RunEventWait();
 

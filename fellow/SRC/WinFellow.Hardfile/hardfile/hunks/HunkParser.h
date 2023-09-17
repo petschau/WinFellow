@@ -19,7 +19,7 @@ namespace fellow::hardfile::hunks
   public:
     bool Parse();
 
-    HunkParser(UBY *rawData, uint32_t rawDataLength, FileImage& fileImage);
+    HunkParser(uint8_t *rawData, uint32_t rawDataLength, FileImage& fileImage);
   };
 }
 

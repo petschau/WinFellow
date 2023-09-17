@@ -25,7 +25,7 @@ typedef struct {
 
 
 typedef struct {
-  UBY sprite_data[16];
+  uint8_t sprite_data[16];
   uint32_t sprx;
 } spr_merge_list_item;
 
@@ -95,7 +95,7 @@ private:
   /* Sprite appearance data                                                    */
   /*===========================================================================*/
 
-  UBY sprite[8][16];
+  uint8_t sprite[8][16];
 
   typedef struct {
     spr_merge_list_master merge_list_master[8];
@@ -157,10 +157,10 @@ public:
   void MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
   void MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
 
-  void MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription);
-  void MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
-  void MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
-  void MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
+  void MergeHAM2x1x24(uint8_t *frameptr, graph_line *linedescription);
+  void MergeHAM2x2x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
+  void MergeHAM4x2x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
+  void MergeHAM4x4x24(uint8_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
 
   void MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription);
   void MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset);

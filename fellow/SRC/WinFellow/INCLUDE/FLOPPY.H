@@ -55,7 +55,7 @@ typedef enum {
 typedef struct {
   uint32_t file_offset;/* Track starts at this offset in image file, used for writing back */
   uint32_t mfm_length; /* Length of mfm data in bytes */
-  UBY *mfm_data;  /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
+  uint8_t *mfm_data;  /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
 } floppytrackinfostruct;
 
 /* Info about a drive */
@@ -80,7 +80,7 @@ typedef struct {
   uint32_t motor_ticks;	      /* EOLs since motor was started */
   uint32_t insertedframe;      /* Will not be detected until some time after this */
   uint32_t idcount;            /* Number of times ID has been read */
-  UBY *mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
+  uint8_t *mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
   floppytrackinfostruct trackinfo[FLOPPY_TRACKS]; /* Info about each track */
   FLOPPY_STATUS_CODE imagestatus; /* Status of drive (kind of image inserted) */
   uint32_t imageerror;         /* What kind of error if status reports error */

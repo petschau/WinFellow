@@ -982,7 +982,7 @@ void GfxDrvDXGI::RegisterModes()
 
 void GfxDrvDXGI::ClearCurrentBuffer()
 {
-  UBY* buffer = ValidateBufferPointer();
+  uint8_t* buffer = ValidateBufferPointer();
 
   if (buffer != nullptr)
   {

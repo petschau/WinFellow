@@ -22,7 +22,7 @@ void Automator::TakeSnapshot()
   }
 }
 
-void Automator::RecordKey(UBY keyCode)
+void Automator::RecordKey(uint8_t keyCode)
 {
   if (RecordScript)
   {

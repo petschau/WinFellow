@@ -835,7 +835,7 @@ static void modripScanFellowMemory(void)
 /* meant to hold the read floppy cache */
 static char *modripCurrentFloppyCache = NULL;
 
-static UBY modripFloppyCacheRead(uint32_t address)
+static uint8_t modripFloppyCacheRead(uint32_t address)
 {
   return(modripCurrentFloppyCache[address & MODRIP_FLOPCACHE]);
 }

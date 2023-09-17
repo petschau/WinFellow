@@ -20,7 +20,6 @@
 
 /* Fellow types to ensure correct sizes */
 
-typedef unsigned char UBY;
 typedef unsigned short int UWO;
 typedef unsigned FELLOW_LONG_LONG ULL;
 typedef signed char BYT;
@@ -52,15 +51,15 @@ typedef char STR;
 
 typedef void (*decoderoutinetype)(uint32_t, uint32_t);
 
-extern UBY configromname[];
+extern uint8_t configromname[];
 
 typedef union {
           uint32_t *lptr;
           UWO *wptr;
-          UBY *bptr;
+          uint8_t *bptr;
           uint32_t lval;
           UWO wval[2];
-          UBY bval[4];
+          uint8_t bval[4];
           } ptunion;
 
 typedef void (*planar2chunkyroutine)(void);

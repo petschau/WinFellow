@@ -11,7 +11,7 @@ typedef enum {
 } fs_navig_file_types;
 
 typedef struct {
-  UBY drive;
+  uint8_t drive;
   STR name[FS_WRAP_MAX_PATH_LENGTH];
   BOOLE relative;
   BOOLE writeable;

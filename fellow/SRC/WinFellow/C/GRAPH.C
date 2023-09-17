@@ -64,8 +64,8 @@ uint32_t graph_deco4[256][2];
 uint32_t graph_deco5[256][2];
 uint32_t graph_deco6[256][2];
 
-UBY graph_line1_tmp[1024];
-UBY graph_line2_tmp[1024];
+uint8_t graph_line1_tmp[1024];
+uint8_t graph_line2_tmp[1024];
 
 
 /*===========================================================================*/
@@ -1094,7 +1094,7 @@ static __inline void graphDecodeModulo(int bitplanes, uint32_t bpl_length_in_byt
   }
 }
 
-static void graphSetLinePointers(UBY **line1, UBY **line2)
+static void graphSetLinePointers(uint8_t **line1, uint8_t **line2)
 {
   // make function compatible for no line skipping
   // Dummy lines
@@ -1114,12 +1114,12 @@ static __inline void graphDecodeGeneric(int bitplanes)
     uint32_t *dest_tmp;
     uint32_t *end_odd;
     uint32_t *end_even;
-    UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
+    uint8_t *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     uint32_t dat1, dat2, dat3, dat4, dat5, dat6; 
     int maxscroll;
     uint32_t temp = 0;
-    UBY *line1;
-    UBY *line2;
+    uint8_t *line1;
+    uint8_t *line2;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
@@ -1226,13 +1226,13 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     uint32_t *dest_tmp;
     uint32_t *end_odd;
     uint32_t *end_even;
-    UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
+    uint8_t *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     uint32_t dat1, dat2, dat3, dat4, dat5, dat6; 
 
     int maxscroll;
     uint32_t temp;
-    UBY *line1;
-    UBY *line2;
+    uint8_t *line1;
+    uint8_t *line2;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
@@ -1906,7 +1906,7 @@ BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
 /* Return TRUE = not equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopyRest(uint32_t first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
+static BOOLE graphCompareCopyRest(uint32_t first_pixel, LON pixel_count, uint8_t* dest_line, uint8_t* source_line)
 {
   // line has changed, copy the rest
   while ((first_pixel & 0x3) != 0)
@@ -1941,7 +1941,7 @@ static BOOLE graphCompareCopyRest(uint32_t first_pixel, LON pixel_count, UBY* de
 /* Return TRUE = not equal FALSE = equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopy(uint32_t first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
+static BOOLE graphCompareCopy(uint32_t first_pixel, LON pixel_count, uint8_t* dest_line, uint8_t* source_line)
 {
   BOOLE result = FALSE;
 

@@ -5,7 +5,7 @@ using namespace fellow::api::vm;
 
 namespace fellow::vm
 {
-  UBY MemorySystem::ReadByte(uint32_t address)
+  uint8_t MemorySystem::ReadByte(uint32_t address)
   {
     return memoryReadByte(address);
   }
@@ -20,7 +20,7 @@ namespace fellow::vm
     return memoryReadLong(address);
   }
 
-  void MemorySystem::WriteByte(UBY data, uint32_t address)
+  void MemorySystem::WriteByte(uint8_t data, uint32_t address)
   {
     memoryWriteByte(data, address);
   }
@@ -35,7 +35,7 @@ namespace fellow::vm
     memoryWriteLong(data, address);
   }
 
-  void MemorySystem::DmemSetByte(UBY data)
+  void MemorySystem::DmemSetByte(uint8_t data)
   {
     memoryDmemSetByte(data);
   }
@@ -95,7 +95,7 @@ namespace fellow::vm
     memoryEmemCardAdd(cardinit, cardmap);
   }
 
-  void MemorySystem::EmemMirror(uint32_t emem_offset, UBY *src, uint32_t size)
+  void MemorySystem::EmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size)
   {
     memoryEmemMirror(emem_offset, src, size);
   }
@@ -107,7 +107,7 @@ namespace fellow::vm
     WriteByteFunc wb,
     WriteWordFunc ww,
     WriteLongFunc wl,
-    UBY *basep,
+    uint8_t *basep,
     uint32_t bank,
     uint32_t basebank,
     BOOLE pointer_can_write)
@@ -115,7 +115,7 @@ namespace fellow::vm
     memoryBankSet(rb, rw, rl, wb, ww, wl, basep, bank, basebank, pointer_can_write);
   }
 
-  UBY *MemorySystem::AddressToPtr(uint32_t address)
+  uint8_t *MemorySystem::AddressToPtr(uint32_t address)
   {
     return memoryAddressToPtr(address);
   }

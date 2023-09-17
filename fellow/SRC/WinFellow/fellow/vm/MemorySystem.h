@@ -8,14 +8,14 @@ namespace fellow::vm
   class MemorySystem : public fellow::api::vm::IMemorySystem
   {
   public:
-    UBY ReadByte(uint32_t address) override;
+    uint8_t ReadByte(uint32_t address) override;
     UWO ReadWord(uint32_t address) override;
     uint32_t ReadLong(uint32_t address) override;
-    void WriteByte(UBY data, uint32_t address) override;
+    void WriteByte(uint8_t data, uint32_t address) override;
     void WriteWord(UWO data, uint32_t address) override;
     void WriteLong(uint32_t data, uint32_t address) override;
 
-    void DmemSetByte(UBY data) override;
+    void DmemSetByte(uint8_t data) override;
     void DmemSetWord(UWO data) override;
     void DmemSetLong(uint32_t data) override;
     void DmemSetLongNoCounter(uint32_t data, uint32_t offset) override;
@@ -28,7 +28,7 @@ namespace fellow::vm
     void EmemClear() override;
     void EmemSet(uint32_t index, uint32_t data) override;
     void EmemCardAdd(fellow::api::vm::EmemCardInitFunc cardinit, fellow::api::vm::EmemCardMapFunc cardmap) override;
-    void EmemMirror(uint32_t emem_offset, UBY *src, uint32_t size) override;
+    void EmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size) override;
 
     void BankSet(
       fellow::api::vm::ReadByteFunc rb,
@@ -37,12 +37,12 @@ namespace fellow::vm
       fellow::api::vm::WriteByteFunc wb,
       fellow::api::vm::WriteWordFunc ww,
       fellow::api::vm::WriteLongFunc wl,
-      UBY *basep,
+      uint8_t *basep,
       uint32_t bank,
       uint32_t basebank,
       BOOLE pointer_can_write) override;
 
-    UBY *AddressToPtr(uint32_t address) override;
+    uint8_t *AddressToPtr(uint32_t address) override;
     uint32_t GetKickImageVersion() override;
 
     MemorySystem();

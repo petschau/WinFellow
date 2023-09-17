@@ -99,7 +99,7 @@ uint32_t blit_cyclefree[16] =
 /* Blitter fill-mode lookup tables                                            */
 /*============================================================================*/
 
-UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data] */
+uint8_t blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data] */
 
 #ifdef BLIT_VERIFY_MINTERMS
 BOOLE blit_minterm_seen[256];
@@ -881,8 +881,8 @@ void blitterOperationLog(void) {
 { \
   if (fill) \
   { \
-    UBY dat1 = (UBY) dat; \
-    UBY dat2 = (UBY) (dat >> 8); \
+    uint8_t dat1 = (uint8_t) dat; \
+    uint8_t dat2 = (uint8_t) (dat >> 8); \
     uint32_t fc2 = blit_fill[exclusive][fc][dat1][0]; \
     dat = ((uint32_t) blit_fill[exclusive][fc][dat1][1]) | (((uint32_t) blit_fill[exclusive][fc2][dat2][1]) << 8); \
     fc = blit_fill[exclusive][fc2][dat2][0]; \
@@ -910,7 +910,7 @@ void blitterOperationLog(void) {
   uint32_t d_mod = (ascending) ? blitter.bltdmod : ((uint32_t) - (LON) blitter.bltdmod); \
   uint32_t fwm[2]; \
   uint32_t lwm[2]; \
-  UBY minterms = (UBY) (blitter.bltcon >> 16); \
+  uint8_t minterms = (uint8_t) (blitter.bltcon >> 16); \
   uint32_t fill_exclusive = (blitter.bltcon & 0x8) ? 0 : 1; \
   uint32_t zero_flag = 0; \
   LON height = blitter.height; \
@@ -1114,7 +1114,7 @@ void blitterLineMode(void)
   BOOLE x_inc = ((!x_independent) && !(sulsudaul & 2)) || (x_independent && !(sulsudaul & 1));
   BOOLE y_inc = ((!x_independent) && !(sulsudaul & 1)) || (x_independent && !(sulsudaul & 2));
   BOOLE single_dot = FALSE;
-  UBY minterm = (UBY)(blitter.bltcon >> 16);
+  uint8_t minterm = (uint8_t)(blitter.bltcon >> 16);
 
   for (i = 0; i < blitter.height; ++i)
   {
@@ -1811,8 +1811,8 @@ static void blitterFillTableInit(void)
 	  else data ^= fc_tmp << bit;
 	  if ((i & (0x1 << bit))) fc_tmp = (fc_tmp == 1) ? 0 : 1;
 	}
-	blit_fill[mode][fc][i][0] = (UBY)fc_tmp;
-	blit_fill[mode][fc][i][1] = (UBY)data;
+	blit_fill[mode][fc][i][0] = (uint8_t)fc_tmp;
+	blit_fill[mode][fc][i][1] = (uint8_t)data;
       }
 }
 
@@ -1983,14 +1983,14 @@ void blitterEmulationStop(void)
 
 #ifdef BLIT_VERIFY_MINTERMS
 
-uint32_t optimizedMinterms(UBY minterm, uint32_t a_dat, uint32_t b_dat, uint32_t c_dat)
+uint32_t optimizedMinterms(uint8_t minterm, uint32_t a_dat, uint32_t b_dat, uint32_t c_dat)
 {
   uint32_t d_dat = 0;
   blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterm);
   return d_dat;
 }
 
-uint32_t correctMinterms(UBY minterm, uint32_t a_dat, uint32_t b_dat, uint32_t c_dat)
+uint32_t correctMinterms(uint8_t minterm, uint32_t a_dat, uint32_t b_dat, uint32_t c_dat)
 {
   uint32_t d_dat = 0;
   blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, minterm);
@@ -1999,7 +1999,7 @@ uint32_t correctMinterms(UBY minterm, uint32_t a_dat, uint32_t b_dat, uint32_t c
 
 void verifyMinterms()
 {
-  UBY minterm;
+  uint8_t minterm;
   uint32_t a_dat, b_dat, c_dat;
   for (minterm = 0xff; minterm < 0xff; minterm++)
   {

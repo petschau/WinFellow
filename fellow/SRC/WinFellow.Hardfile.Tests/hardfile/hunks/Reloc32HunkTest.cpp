@@ -37,7 +37,7 @@ namespace test::fellow::hardfile::hunks
   unique_ptr<uint8_t[]> CreateReloc32HunkData(unsigned int offsetTableCount)
   {
     unsigned int index = 0;
-    unique_ptr<uint8_t[]> hunkData(new UBY[128]);
+    unique_ptr<uint8_t[]> hunkData(new uint8_t[128]);
 
     for (unsigned int i = 0; i < offsetTableCount; i++)
     {

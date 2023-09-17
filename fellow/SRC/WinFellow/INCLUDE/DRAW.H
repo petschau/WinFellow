@@ -43,8 +43,8 @@ struct draw_rect
 
 struct draw_buffer_information
 {
-  UBY *top_ptr;
-  UBY *current_ptr;
+  uint8_t *top_ptr;
+  uint8_t *current_ptr;
   uint32_t width;
   uint32_t height;
   uint32_t pitch;

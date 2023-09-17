@@ -17,7 +17,7 @@ namespace fellow::hardfile::rdb
     Next = reader.ReadUint32(index + 16);
     Flags = reader.ReadUint32(index + 20);
     DevFlags = reader.ReadUint32(index + 32);
-    DriveNameLength = reader.ReadUBY(index + 36);
+    DriveNameLength = reader.ReadUint8(index + 36);
     DriveName = reader.ReadString(index + 37, DriveNameLength);
 
     // DOS Environment vector

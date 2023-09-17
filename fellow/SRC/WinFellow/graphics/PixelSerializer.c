@@ -31,7 +31,7 @@
 
 using namespace CustomChipset;
 
-extern UBY draw_dual_translate[2][256][256];
+extern uint8_t draw_dual_translate[2][256][256];
 
 void PixelSerializer::LogEndOfLine(uint32_t line, uint32_t cylinder)
 {

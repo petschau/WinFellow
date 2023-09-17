@@ -1390,7 +1390,7 @@ void gfxDrvDDrawClearWindowBorders(gfx_drv_ddraw_device *ddraw_device)
 /* Lock the current drawing surface                                         */
 /*==========================================================================*/
 
-UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, uint32_t *pitch)
+uint8_t *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, uint32_t *pitch)
 {
   LPDIRECTDRAWSURFACE lpDDS;
   LPDDSURFACEDESC lpDDSD;
@@ -1441,7 +1441,7 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, uint32_t *pitch)
     }
   }
   *pitch = lpDDSD->lPitch;
-  return (UBY*)lpDDSD->lpSurface;
+  return (uint8_t*)lpDDSD->lpSurface;
 }
 
 
@@ -1596,10 +1596,10 @@ void gfxDrvDDrawClearCurrentBuffer()
 /* Locks surface and puts a valid framebuffer pointer in framebuffer        */
 /*==========================================================================*/
 
-UBY *gfxDrvDDrawValidateBufferPointer()
+uint8_t *gfxDrvDDrawValidateBufferPointer()
 {
   uint32_t pitch;
-  UBY *buffer = gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device_current, &pitch);
+  uint8_t *buffer = gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device_current, &pitch);
   if (buffer != nullptr)
   {
     draw_buffer_info.pitch = pitch;
@@ -1610,14 +1610,14 @@ UBY *gfxDrvDDrawValidateBufferPointer()
     {
       if ((PTR_TO_INT(buffer) & 0x7) != 0)
       {
-        buffer = (UBY *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(7)) + 8;
+        buffer = (uint8_t *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(7)) + 8;
       }
     }
     if (gfx_drv_ddraw_device_current->drawmode->bits == 15 || gfx_drv_ddraw_device_current->drawmode->bits == 16)
     {
       if ((PTR_TO_INT(buffer) & 0x3) != 0)
       {
-        buffer = (UBY *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(3)) + 4;
+        buffer = (uint8_t *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(3)) + 4;
       }
     }
   }

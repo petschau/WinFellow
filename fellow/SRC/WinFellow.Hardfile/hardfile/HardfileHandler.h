@@ -23,7 +23,7 @@ namespace fellow::hardfile
     uint32_t _fsname = 0;
     uint32_t _endOfDmem = 0;
     uint32_t _dosDevPacketListStart = 0;
-    UBY _rom[65536] = {};
+    uint8_t _rom[65536] = {};
     bool _enabled = false;
     unsigned int _deviceNameStartNumber = 0;
 
@@ -94,7 +94,7 @@ namespace fellow::hardfile
     // Autoconfig and ROM memory
     void CardInit() override;
     void CardMap(uint32_t mapping) override;
-    UBY ReadByte(uint32_t address) override;
+    uint8_t ReadByte(uint32_t address) override;
     UWO ReadWord(uint32_t address) override;
     uint32_t ReadLong(uint32_t address) override;
 

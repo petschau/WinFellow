@@ -32,7 +32,7 @@ using namespace CustomChipset;
 
 typedef union ByteLongArrayUnion_
 {
-  UBY barray[1024];
+  uint8_t barray[1024];
   ByteWordUnion bwu[512];
   ByteLongUnion blu[256];
 } ByteLongArrayUnion;
@@ -63,9 +63,9 @@ private:
   void P2CNext8PixelsDual(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
 
 public:
-  UBY *GetOddPlayfield(void);
-  UBY *GetEvenPlayfield(void);
-  UBY *GetHamSpritesPlayfield(void);
+  uint8_t *GetOddPlayfield(void);
+  uint8_t *GetEvenPlayfield(void);
+  uint8_t *GetHamSpritesPlayfield(void);
   uint32_t GetBatchSize(void);
 
   void NewBatch(void);
