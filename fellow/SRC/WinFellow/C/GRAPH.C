@@ -864,7 +864,7 @@ void wbplcon2(uint16_t data, uint32_t address)
 
 void wbpl1mod(uint16_t data, uint32_t address)
 {
-  uint32_t new_value = (uint32_t)(LON)(WOR)(data & 0xfffe);
+  uint32_t new_value = (uint32_t)(LON)(int16_t)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl1mod != new_value)
@@ -882,7 +882,7 @@ void wbpl1mod(uint16_t data, uint32_t address)
 
 void wbpl2mod(uint16_t data, uint32_t address)
 {
-  uint32_t new_value = (uint32_t)(LON)(WOR)(data & 0xfffe);
+  uint32_t new_value = (uint32_t)(LON)(int16_t)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl2mod != new_value)

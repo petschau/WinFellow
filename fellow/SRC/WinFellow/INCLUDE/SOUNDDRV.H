@@ -13,7 +13,7 @@ extern bool soundDrvEmulationStart(uint32_t outputrate,
 				   bool stereo, 
 				   uint32_t *buffersamplecountmax);
 extern void soundDrvEmulationStop(void);
-extern void soundDrvPlay(WOR *leftbuffer, WOR *rightbuffer, uint32_t samplecount);
+extern void soundDrvPlay(int16_t *leftbuffer, int16_t *rightbuffer, uint32_t samplecount);
 extern void soundDrvPollBufferPosition(void);
 extern bool soundDrvDSoundSetCurrentSoundDeviceVolume(const int);
 

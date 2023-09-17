@@ -56,7 +56,7 @@ uint32_t sound_volume;
 /*===========================================================================*/
 
 uint32_t sound_current_buffer;
-WOR sound_left[2][MAX_BUFFER_SAMPLES],
+int16_t sound_left[2][MAX_BUFFER_SAMPLES],
 sound_right[2][MAX_BUFFER_SAMPLES];         /* Samplebuffer, 16-b.signed */
 uint32_t sound_buffer_length;                      /* Current buffer length in ms */
 uint32_t sound_buffer_sample_count;    /* Current number of samples in the buffer */
@@ -126,7 +126,7 @@ uint32_t audptw[4];               /* Current dma-pointer, reloaded at some point
 /*===========================================================================*/
 
 uint32_t periodtable[65536];
-WOR volumes[256][64];
+int16_t volumes[256][64];
 uint32_t audioirqmask[4] = {0x0080, 0x0100, 0x0200, 0x0400};
 uint32_t audiodmaconmask[4] = {0x1, 0x2, 0x4, 0x8};
 
@@ -399,7 +399,7 @@ and move the generated samples to a temporary buffer
 ; coded by Rainer Sinsch (sinsch@informatik.uni-frankfurt.de)
 ;==============================================================================*/
 
-void soundLowPass(uint32_t count, WOR *buffer_left, WOR *buffer_right)
+void soundLowPass(uint32_t count, int16_t *buffer_left, int16_t *buffer_right)
 {
   uint32_t i;
   double amplitude_div;
@@ -427,13 +427,13 @@ void soundLowPass(uint32_t count, WOR *buffer_left, WOR *buffer_right)
   for (i = 0; i < count; ++i)
   {
     last_left = filter_value*last_left + (double)buffer_left[i];
-    buffer_left[i] = (WOR) (last_left / amplitude_div);
+    buffer_left[i] = (int16_t) (last_left / amplitude_div);
     last_right = filter_value*last_right + (double)buffer_right[i];
-    buffer_right[i] = (WOR) (last_right / amplitude_div);
+    buffer_right[i] = (int16_t) (last_right / amplitude_div);
   }
 }
 
-uint32_t soundChannelUpdate(uint32_t ch, WOR *buffer_left, WOR *buffer_right, uint32_t count, BOOLE halfscale, BOOLE odd)
+uint32_t soundChannelUpdate(uint32_t ch, int16_t *buffer_left, int16_t *buffer_right, uint32_t count, BOOLE halfscale, BOOLE odd)
 {
   uint32_t samples_added = 0;
   uint32_t i;
@@ -447,11 +447,11 @@ uint32_t soundChannelUpdate(uint32_t ch, WOR *buffer_left, WOR *buffer_right, ui
       {
 	if (ch == 0 || ch == 3)
 	{
-	  buffer_left[samples_added++] += (WOR) auddatw[ch];
+	  buffer_left[samples_added++] += (int16_t) auddatw[ch];
 	}
 	else
 	{
-	  buffer_right[samples_added++] += (WOR) auddatw[ch];
+	  buffer_right[samples_added++] += (int16_t) auddatw[ch];
 	}
       }
       odd = !odd;
@@ -485,8 +485,8 @@ uint32_t soundChannelUpdate(uint32_t ch, WOR *buffer_left, WOR *buffer_right, ui
 
 void soundFrequencyHandler(void)
 {
-  WOR *buffer_left = (WOR*) sound_left + sound_buffer_sample_count;
-  WOR *buffer_right = (WOR*) sound_right + sound_buffer_sample_count;
+  int16_t *buffer_left = (int16_t*) sound_left + sound_buffer_sample_count;
+  int16_t *buffer_right = (int16_t*) sound_right + sound_buffer_sample_count;
   uint32_t count = 0;
   uint32_t samples_added;
   BOOLE halfscale = (soundGetRate() == SOUND_22050 || soundGetRate() == SOUND_15650);
@@ -658,12 +658,12 @@ __inline uint32_t soundGetScale(void)
   return sound_scale;
 }
 
-__inline void soundSetSampleVolume(uint8_t sample_in, uint8_t volume, WOR sample_out)
+__inline void soundSetSampleVolume(uint8_t sample_in, uint8_t volume, int16_t sample_out)
 {
   volumes[sample_in][volume] = sample_out;
 }
 
-__inline WOR soundGetSampleVolume(int8_t sample_in, uint8_t volume)
+__inline int16_t soundGetSampleVolume(int8_t sample_in, uint8_t volume)
 {
   return volumes[sample_in][volume];
 }
@@ -695,9 +695,9 @@ void soundVolumeTableInitialize(BOOLE stereo)
   for (i = -128; i < 128; i++) 
     for (j = 0; j < 64; j++)
       if (j == 0)
-	soundSetSampleVolume((uint8_t) (i & 0xff), (uint8_t) j, (WOR)  0);
+	soundSetSampleVolume((uint8_t) (i & 0xff), (uint8_t) j, (int16_t)  0);
       else
-	soundSetSampleVolume((uint8_t) (i & 0xff), (uint8_t) j, (WOR) ((i*j*s)));
+	soundSetSampleVolume((uint8_t) (i & 0xff), (uint8_t) j, (int16_t) ((i*j*s)));
 }
 
 

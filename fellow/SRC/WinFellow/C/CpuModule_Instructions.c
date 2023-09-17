@@ -514,7 +514,7 @@ static uint8_t cpuNegB(uint8_t src1)
 /// <returns>The result</returns>
 static uint16_t cpuNegW(uint16_t src1)
 {
-  uint16_t res = (uint16_t)-(WOR)src1;
+  uint16_t res = (uint16_t)-(int16_t)src1;
   cpuSetFlagsNeg(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(src1));
   return res;
 }
@@ -548,8 +548,8 @@ static uint8_t cpuNegxB(uint8_t src1)
 /// <returns>The result</returns>
 static uint16_t cpuNegxW(uint16_t src1)
 {
-  WOR x = (cpuGetFlagX()) ? 1 : 0;
-  uint16_t res = (uint16_t)-(WOR)src1 - x;
+  int16_t x = (cpuGetFlagX()) ? 1 : 0;
+  uint16_t res = (uint16_t)-(int16_t)src1 - x;
   cpuSetFlagsNegx(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(src1));
   return res;
 }
@@ -823,7 +823,7 @@ static void cpuDbcc(BOOLE cc, uint32_t reg)
 {
   if (!cc)
   {
-    WOR val = (WOR)cpuGetDRegWord(reg);
+    int16_t val = (int16_t)cpuGetDRegWord(reg);
     val--;
     cpuSetDRegWord(reg, val);
     if (val != -1)
@@ -1099,7 +1099,7 @@ void cpuCreateMulTimeTables(void)
 /// </summary>
 static uint32_t cpuMulsW(uint16_t src2, uint16_t src1, uint32_t eatime)
 {
-  uint32_t res = (uint32_t)(((LON)(WOR)src2)*((LON)(WOR)src1));
+  uint32_t res = (uint32_t)(((LON)(int16_t)src2)*((LON)(int16_t)src1));
   cpuSetFlagsNZ00NewL(res);
   cpuSetInstructionTime(38 + eatime + cpuMulsTime[(src1 << 1) & 0x1ff] + cpuMulsTime[src1 >> 7]);
   return res;
@@ -1131,7 +1131,7 @@ static void cpuDivsW(uint32_t dst, uint16_t src1, uint32_t destination_reg, uint
   {
     uint32_t result;
     LON x = (LON) dst;
-    LON y = (LON)(WOR) src1;
+    LON y = (LON)(int16_t) src1;
     LON res = x / y;
     LON rem = x % y;
     if (res > 32767 || res < -32768)
@@ -1460,12 +1460,12 @@ static uint8_t cpuAslB(uint8_t dst, uint32_t sh, uint32_t cycles)
 /// </summary>
 static uint16_t cpuAslW(uint16_t dst, uint32_t sh, uint32_t cycles)
 {
-  WOR res;
+  int16_t res;
   sh &= 0x3f;
   if (sh == 0)
   {
     cpuSetFlagsShiftZero(cpuIsZeroW(dst), cpuMsbW(dst));
-    res = (WOR) dst;
+    res = (int16_t) dst;
   }
   else if (sh >= 16)
   {
@@ -1476,7 +1476,7 @@ static uint16_t cpuAslW(uint16_t dst, uint32_t sh, uint32_t cycles)
   {
     uint16_t mask = 0xffff << (15-sh);
     uint16_t out = dst & mask;
-    res = ((WOR)dst) << sh;
+    res = ((int16_t)dst) << sh;
 
     // Overflow calculation: 
     // 1. The msb of the result and original are different
@@ -1558,12 +1558,12 @@ static uint8_t cpuAsrB(uint8_t dst, uint32_t sh, uint32_t cycles)
 /// </summary>
 static uint16_t cpuAsrW(uint16_t dst, uint32_t sh, uint32_t cycles)
 {
-  WOR res;
+  int16_t res;
   sh &= 0x3f;
   if (sh == 0)
   {
     cpuSetFlagsShiftZero(cpuIsZeroW(dst), cpuMsbW(dst));
-    res = (WOR) dst;
+    res = (int16_t) dst;
   }
   else if (sh >= 16)
   {
@@ -1572,7 +1572,7 @@ static uint16_t cpuAsrW(uint16_t dst, uint32_t sh, uint32_t cycles)
   }
   else
   {
-    res = ((WOR)dst) >> sh;
+    res = ((int16_t)dst) >> sh;
     cpuSetFlagsShift(cpuIsZeroW(res), cpuMsbW(res), dst & (1<<(sh-1)), FALSE);
   }
   cpuSetInstructionTime(cycles + sh*2);
@@ -2176,7 +2176,7 @@ static void cpuMovemwPost(uint16_t regs, uint32_t reg)
       if (regs & index)
       {
 	// Each word, for both data and address registers, is sign-extended before stored.
-	cpuSetReg(i, j, (uint32_t)(LON)(WOR) memoryReadWord(dstea));
+	cpuSetReg(i, j, (uint32_t)(LON)(int16_t) memoryReadWord(dstea));
 	dstea += 2;
 	cycles += 4;
       }
@@ -2233,7 +2233,7 @@ static void cpuMovemwEa2R(uint16_t regs, uint32_t ea, uint32_t eacycles)
       if (regs & index)
       {
 	// Each word, for both data and address registers, is sign-extended before stored.
-	cpuSetReg(i, j, (uint32_t)(LON)(WOR) memoryReadWord(dstea));
+	cpuSetReg(i, j, (uint32_t)(LON)(int16_t) memoryReadWord(dstea));
 	dstea += 2;
 	cycles += 4;
       }
@@ -2413,12 +2413,12 @@ static void cpuChkW(uint16_t value, uint16_t ub, uint32_t instructionTime)
 {
   cpuSetFlagZ(value == 0);
   cpuClearFlagsVC();
-  if (((WOR)value) < 0)
+  if (((int16_t)value) < 0)
   {
     cpuSetFlagN(TRUE);
     cpuThrowChkException();
   }
-  else if (((WOR)value) > ((WOR)ub))
+  else if (((int16_t)value) > ((int16_t)ub))
   {
     cpuSetFlagN(FALSE);
     cpuThrowChkException();
@@ -2574,18 +2574,18 @@ static uint8_t cpuSbcdB(uint8_t dst, uint8_t src)
   uint16_t result_unadjusted = low_nibble + high_nibble;
   uint16_t result_bcd = result_unadjusted;
 
-  if ((WOR)result_plain_binary < 0)
+  if ((int16_t)result_plain_binary < 0)
   {
     result_bcd -= 0x60;
   }
 
-  if (((WOR)low_nibble) < 0)
+  if (((int16_t)low_nibble) < 0)
   {
     result_bcd -= 6;
     result_plain_binary -= 6;
   }
 
-  BOOLE borrow = ((WOR)result_plain_binary < 0);
+  BOOLE borrow = ((int16_t)result_plain_binary < 0);
   cpuSetFlagXC(borrow);
 
   if (result_bcd & 0xff)
@@ -3261,7 +3261,7 @@ static void cpuMoveSW(uint32_t ea, uint16_t extension)
       }
       else
       {
-	cpuSetAReg(regno, (uint32_t)(LON)(WOR) data);
+	cpuSetAReg(regno, (uint32_t)(LON)(int16_t) data);
       }
     }
   }
@@ -3534,7 +3534,7 @@ static void cpuChkCmp2W(uint32_t ea, uint16_t extension)
   BOOLE is_chk2 = (extension & 0x0800);
   if (da == 1)
   {
-    cpuChk2Cmp2((uint32_t)(LON)(WOR)memoryReadWord(ea), (uint32_t)(LON)(WOR)memoryReadWord(ea + 1), cpuGetAReg(rn), is_chk2);
+    cpuChk2Cmp2((uint32_t)(LON)(int16_t)memoryReadWord(ea), (uint32_t)(LON)(int16_t)memoryReadWord(ea + 1), cpuGetAReg(rn), is_chk2);
   }
   else
   {

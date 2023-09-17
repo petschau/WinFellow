@@ -1097,11 +1097,11 @@ void blitterLineMode(void)
   BOOLE c_enabled = blitter.bltcon & 0x02000000;
 
   BOOLE decision_is_signed = (((blitter.bltcon >> 6) & 1) == 1);
-  LON decision_variable = (LON)(WOR)blitter.bltapt;
+  LON decision_variable = (LON)(int16_t)blitter.bltapt;
 
   // Quirk: Set decision increases to 0 if a is disabled, ensures bltapt remains unchanged
-  WOR decision_inc_signed = (a_enabled) ? ((WOR)blitter.bltbmod) : 0;
-  WOR decision_inc_unsigned = (a_enabled) ? ((WOR)blitter.bltamod) : 0;
+  int16_t decision_inc_signed = (a_enabled) ? ((int16_t)blitter.bltbmod) : 0;
+  int16_t decision_inc_unsigned = (a_enabled) ? ((int16_t)blitter.bltamod) : 0;
 
   uint32_t bltcpt_local = blitter.bltcpt;
   uint32_t bltdpt_local = blitter.bltdpt;
@@ -1202,7 +1202,7 @@ void blitterLineMode(void)
 	single_dot = FALSE;
       }
     }
-    decision_is_signed = ((WOR)decision_variable < 0);
+    decision_is_signed = ((int16_t)decision_variable < 0);
 
     if (!x_independent)
     {
@@ -1684,7 +1684,7 @@ void wbltsizh(uint16_t data, uint32_t address)
 void wbltcmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcmod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltcmod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1700,7 +1700,7 @@ void wbltcmod(uint16_t data, uint32_t address)
 void wbltbmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltbmod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltbmod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1716,7 +1716,7 @@ void wbltbmod(uint16_t data, uint32_t address)
 void wbltamod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltamod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltamod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1732,7 +1732,7 @@ void wbltamod(uint16_t data, uint32_t address)
 void wbltdmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltdmod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltdmod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/

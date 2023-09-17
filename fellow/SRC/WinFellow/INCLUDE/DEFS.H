@@ -21,7 +21,6 @@
 /* Fellow types to ensure correct sizes */
 
 typedef unsigned FELLOW_LONG_LONG ULL;
-typedef signed short int WOR;
 typedef signed int LON;
 typedef signed FELLOW_LONG_LONG LLO;
 typedef int BOOLE;

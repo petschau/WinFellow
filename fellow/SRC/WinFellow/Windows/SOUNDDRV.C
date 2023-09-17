@@ -916,7 +916,7 @@ bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
 /* ready slows the emulator down to its original 50hz PAL speed.             */
 /*===========================================================================*/
 
-void soundDrvPlay(WOR *left, WOR *right, uint32_t sample_count)
+void soundDrvPlay(int16_t *left, int16_t *right, uint32_t sample_count)
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
   WaitForSingleObject(dsound_device->can_add_data, INFINITE);

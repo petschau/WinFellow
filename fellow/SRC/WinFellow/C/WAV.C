@@ -48,7 +48,7 @@ LON wav_samplesum;
 /* anything we can do on our own.                             */
 /*============================================================*/
 
-void wav8BitsMonoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+void wav8BitsMonoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
   uint32_t i;
 
   if (wav_FILE) {
@@ -60,7 +60,7 @@ void wav8BitsMonoAdd(WOR *left, WOR *right, uint32_t sample_count) {
   }
 }
 
-void wav8BitsStereoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+void wav8BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
   uint32_t i;
 
   if (wav_FILE) {
@@ -74,7 +74,7 @@ void wav8BitsStereoAdd(WOR *left, WOR *right, uint32_t sample_count) {
   }
 }
 
-void wav16BitsMonoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+void wav16BitsMonoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
   uint32_t i;
 
   if (wav_FILE) {
@@ -86,7 +86,7 @@ void wav16BitsMonoAdd(WOR *left, WOR *right, uint32_t sample_count) {
   }
 }
 
-void wav16BitsStereoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+void wav16BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
   uint32_t i;
 
   if (wav_FILE) {
@@ -184,7 +184,7 @@ void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo)
 /* Play samples, or in this case, save it                                    */
 /*===========================================================================*/
 
-void wavPlay(WOR *left, WOR *right, uint32_t sample_count) {
+void wavPlay(int16_t *left, int16_t *right, uint32_t sample_count) {
   if (wav_stereo && wav_16bits)
     wav16BitsStereoAdd(left, right, sample_count);
   else if (!wav_stereo && wav_16bits)

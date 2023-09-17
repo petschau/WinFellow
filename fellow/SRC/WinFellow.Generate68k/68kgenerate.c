@@ -370,7 +370,7 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
     // The source value is read from the specified ea mode below.
     // Declare 32-bit and set up sign extension from the specified size.
     // The source size will never be a byte.
-    fprintf(codef, "\tuint32_t src = %s%s", (size == 4) ? "" : "(uint32_t)(LON)", (size == 2) ? "(WOR)" : "");
+    fprintf(codef, "\tuint32_t src = %s%s", (size == 4) ? "" : "(uint32_t)(LON)", (size == 2) ? "(int16_t)" : "");
     if (size == 1) fprintf(codef, "BUG! cgFetchSrc(), byte size used with regtype 'A'");
   }
   else if (regtype == 'B')
@@ -1066,7 +1066,7 @@ unsigned int cgMove(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (uint32_t)(LON)(WOR)src);\n", dstreg_cpu_data_index);
+	    if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (uint32_t)(LON)(int16_t)src);\n", dstreg_cpu_data_index);
 	    else fprintf(codef, "\tcpuSetAReg(opc_data[%d], src);\n", dstreg_cpu_data_index);
 	  }
 	  cgMakeInstructionTimeAbs(cgGetMoveTime(size, srceano, dsteano));

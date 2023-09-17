@@ -248,7 +248,7 @@ void cpuSetModel(uint32_t major, uint32_t minor)
   if (makeOpcodeTable) cpuMakeOpcodeTableForModel();
 }
 
-void cpuSetDRegWord(uint32_t regno, uint16_t val) {*((WOR*)&cpu_regs[0][regno]) = val;}
+void cpuSetDRegWord(uint32_t regno, uint16_t val) {*((int16_t*)&cpu_regs[0][regno]) = val;}
 void cpuSetDRegByte(uint32_t regno, uint8_t val) {*((uint8_t*)&cpu_regs[0][regno]) = val;}
 uint16_t cpuGetRegWord(uint32_t i, uint32_t regno) {return (uint16_t)cpu_regs[i][regno];}
 
