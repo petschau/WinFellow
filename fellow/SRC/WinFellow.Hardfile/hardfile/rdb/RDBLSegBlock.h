@@ -11,16 +11,16 @@ namespace fellow::hardfile::rdb
   struct RDBLSegBlock
   {
     std::string ID;
-    LON Blocknumber;
-    LON SizeInLongs;
-    LON CheckSum;
-    LON HostID;
-    LON Next;
+    int32_t Blocknumber;
+    int32_t SizeInLongs;
+    int32_t CheckSum;
+    int32_t HostID;
+    int32_t Next;
     std::unique_ptr<const uint8_t> Data;
 
     bool HasValidCheckSum;
 
-    LON GetDataSize() const;
+    int32_t GetDataSize() const;
     const uint8_t* GetData() const;
     void ReadFromFile(RDBFileReader& reader, uint32_t index);
     void Log();

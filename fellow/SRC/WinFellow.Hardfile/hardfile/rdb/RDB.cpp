@@ -12,7 +12,7 @@ namespace fellow::hardfile::rdb
   {
     ID = reader.ReadString(index + 0, 4);
     SizeInLongs = reader.ReadUint32(index + 4);
-    CheckSum = reader.ReadLON(index + 8);
+    CheckSum = reader.ReadInt32(index + 8);
     HostID = reader.ReadUint32(index + 12);
     BlockSize = reader.ReadUint32(index + 16);
     Flags = reader.ReadUint32(index + 20);

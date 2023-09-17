@@ -12,7 +12,7 @@ ScriptLine::ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const string& 
 void Script::ExecuteMouseCommand(const string& parameters)
 {
   uint32_t port;
-  LON x, y;
+  int32_t x, y;
   BOOLE button1, button2, button3;
 
   sscanf(parameters.c_str(), "%d %d %d %d %d %d", &port, &x, &y, &button1, &button2, &button3);
@@ -82,7 +82,7 @@ void Script::RecordKey(uint8_t keyCode)
   _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), KeyCommand, parameters));
 }
 
-void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
+void Script::RecordMouse(gameport_inputs mousedev, int32_t x, int32_t y, BOOLE button1, BOOLE button2, BOOLE button3)
 {
   uint32_t port = (mousedev == GP_MOUSE0) ? 0 : 1;
   char parameters[128];

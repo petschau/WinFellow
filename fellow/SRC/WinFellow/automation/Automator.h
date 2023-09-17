@@ -22,7 +22,7 @@ public:
   bool SnapshotEnable;
 
   void RecordKey(uint8_t keyCode);
-  void RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3);
+  void RecordMouse(gameport_inputs mousedev, int32_t x, int32_t y, BOOLE button1, BOOLE button2, BOOLE button3);
   void RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2);
   void RecordEmulatorAction(kbd_event action);
 

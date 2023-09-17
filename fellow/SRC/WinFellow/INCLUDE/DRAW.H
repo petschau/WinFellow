@@ -77,7 +77,7 @@ extern uint32_t draw_frame_count;
 extern uint32_t draw_color_table[4096];
 extern uint32_t draw_buffer_draw;                 /* Number of the current drawing buffer */
 
-extern LON draw_frame_skip;
+extern int32_t draw_frame_skip;
 extern uint32_t draw_switch_bg_to_bpl;
 extern uint32_t draw_clear_buffers;
 

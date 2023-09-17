@@ -424,8 +424,8 @@ void mouseDrvMovementHandler(void)
 {
   if (mouse_drv_in_use)
   {
-    static LON lx = 0;
-    static LON ly = 0;
+    static int32_t lx = 0;
+    static int32_t ly = 0;
     HRESULT res;
 	
     DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];

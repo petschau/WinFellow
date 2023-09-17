@@ -38,7 +38,7 @@ BOOLE wav_stereo;
 BOOLE wav_16bits;
 uint32_t wav_filelength;
 uint32_t wav_samplecount;
-LON wav_samplesum;
+int32_t wav_samplesum;
 
 
 /*============================================================*/
@@ -53,7 +53,7 @@ void wav8BitsMonoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
 
   if (wav_FILE) {
     for (i = 0; i < sample_count; i++) {
-      wav_samplesum = (((LON) left[i] + (LON) right[i])>>8) + 0x80;
+      wav_samplesum = (((int32_t) left[i] + (int32_t) right[i])>>8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
     }
     wav_filelength += sample_count;
@@ -65,9 +65,9 @@ void wav8BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
 
   if (wav_FILE) {
     for (i = 0; i < sample_count; i++) {
-      wav_samplesum = (((LON) left[i])>>8) + 0x80;
+      wav_samplesum = (((int32_t) left[i])>>8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
-      wav_samplesum = (((LON) right[i])>>8) + 0x80;
+      wav_samplesum = (((int32_t) right[i])>>8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
     }
     wav_filelength += sample_count*2;

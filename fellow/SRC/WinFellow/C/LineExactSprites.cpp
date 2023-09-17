@@ -312,7 +312,7 @@ void LineExactSprites::MergeHAM2x1x16(uint32_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint32_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -368,7 +368,7 @@ void LineExactSprites::MergeHAM2x2x16(uint32_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint32_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -425,7 +425,7 @@ void LineExactSprites::MergeHAM4x2x16(uint64_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -482,7 +482,7 @@ void LineExactSprites::MergeHAM4x4x16(uint64_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -547,7 +547,7 @@ void LineExactSprites::MergeHAM2x1x24(uint8_t *frameptr, graph_line *linedescrip
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint8_t *frame_ptr = frameptr + 6 * (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -608,7 +608,7 @@ void LineExactSprites::MergeHAM2x2x24(uint8_t *frameptr, graph_line *linedescrip
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint8_t *frame_ptr = frameptr + 6 * (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -677,7 +677,7 @@ void LineExactSprites::MergeHAM4x2x24(uint8_t *frameptr, graph_line *linedescrip
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint8_t *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -758,7 +758,7 @@ void LineExactSprites::MergeHAM4x4x24(uint8_t *frameptr, graph_line *linedescrip
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint8_t *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -865,7 +865,7 @@ void LineExactSprites::MergeHAM2x1x32(uint64_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -921,7 +921,7 @@ void LineExactSprites::MergeHAM2x2x32(uint64_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint64_t *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -978,7 +978,7 @@ void LineExactSprites::MergeHAM4x2x32(uint64_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint64_t *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {
@@ -1037,7 +1037,7 @@ void LineExactSprites::MergeHAM4x4x32(uint64_t *frameptr, graph_line *linedescri
           uint8_t *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
           uint64_t *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
-          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+          int32_t pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
           {

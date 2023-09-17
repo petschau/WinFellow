@@ -58,9 +58,9 @@ static uint32_t cpuDisGetBit(uint16_t opcode, uint32_t bit)
   return (uint32_t) ((opcode >> bit) & 1);
 }
 
-static LON cpuDisGetLowByteSignExtend(uint16_t opc)
+static int32_t cpuDisGetLowByteSignExtend(uint16_t opc)
 {
-  return (LON)(int8_t)opc;
+  return (int32_t)(int8_t)opc;
 }
 
 static uint32_t cpuDisGetSize(uint16_t opcode)
@@ -741,7 +741,7 @@ static uint32_t cpuDisBcc(uint32_t prc, uint16_t opc, STR *sdata, STR *sinstruct
 {
   uint32_t disp2;
   uint32_t adr;
-  LON disp = cpuDisGetLowByteSignExtend(opc);
+  int32_t disp = cpuDisGetLowByteSignExtend(opc);
 
   sprintf(sinstruction, "B%s.%c", cpu_dis_btab[cpuDisGetBranchType(opc)], (disp == -1) ? 'L' : ((disp == 0) ? 'W' : 'B'));
   if (disp == 0)

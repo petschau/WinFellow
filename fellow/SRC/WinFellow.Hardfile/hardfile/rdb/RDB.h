@@ -16,7 +16,7 @@ namespace fellow::hardfile::rdb
   public:
     std::string ID;
     uint32_t SizeInLongs;
-    LON CheckSum;
+    int32_t CheckSum;
     uint32_t HostID;
     uint32_t BlockSize;
     uint32_t Flags;

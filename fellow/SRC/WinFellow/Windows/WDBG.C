@@ -101,8 +101,8 @@ typedef struct cia_state_
   uint32_t tb_rem;
   uint32_t talatch;
   uint32_t tblatch;
-  LON taleft;
-  LON tbleft;
+  int32_t taleft;
+  int32_t tbleft;
   uint32_t evalarm;
   uint32_t evlatch;
   uint32_t evlatching;

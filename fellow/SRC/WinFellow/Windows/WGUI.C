@@ -2097,7 +2097,7 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 /* List view selection investigate                                            */
 /*============================================================================*/
 
-LON wguiListViewNext(HWND ListHWND, uint32_t initialindex)
+int32_t wguiListViewNext(HWND ListHWND, uint32_t initialindex)
 {
   uint32_t itemcount = ListView_GetItemCount(ListHWND);
   uint32_t index = initialindex;
@@ -2920,7 +2920,7 @@ INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
       break;
       case IDC_BUTTON_FILESYSTEM_REMOVE:
       {
-        LON sel = 0;
+        int32_t sel = 0;
         while ((sel = wguiListViewNext(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), sel)) != -1)
         {
           cfgFilesystemRemove(wgui_cfg, sel);

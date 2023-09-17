@@ -52,8 +52,8 @@ uint32_t potgor, potdat[2];
 
 BOOLE gameport_fire0[2], gameport_fire1[2], gameport_autofire0[2], gameport_autofire1[2];
 BOOLE gameport_left[2], gameport_right[2], gameport_up[2], gameport_down[2];
-LON gameport_x[2], gameport_y[2];
-LON gameport_x_last_read[2], gameport_y_last_read[2];
+int32_t gameport_x[2], gameport_y[2];
+int32_t gameport_x_last_read[2], gameport_y_last_read[2];
 BOOLE gameport_mouse_first_time[2];
 
 
@@ -92,7 +92,7 @@ BOOLE gameportGetAnalogJoystickInUse(void)
 
 static uint32_t rjoydat(uint32_t i) {
   if (gameport_input[i] == GP_MOUSE0) { /* Gameport input is mouse */
-    LON diffx, diffy;
+    int32_t diffx, diffy;
 
     diffx = gameport_x[i] - gameport_x_last_read[i];
     diffy = gameport_y[i] - gameport_y_last_read[i];
@@ -198,8 +198,8 @@ void wjoytest(uint16_t data, uint32_t address)
 /*===========================================================================*/
 
 void gameportMouseHandler(gameport_inputs mousedev,
-			  LON x,
-			  LON y,
+			  int32_t x,
+			  int32_t y,
 			  BOOLE button1,
 			  BOOLE button2,
 			  BOOLE button3) {

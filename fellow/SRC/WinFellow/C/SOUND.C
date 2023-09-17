@@ -685,7 +685,7 @@ __inline uint32_t soundGetPeriodValue(uint32_t period)
 
 void soundVolumeTableInitialize(BOOLE stereo)
 {
-  LON i, s, j;
+  int32_t i, s, j;
 
   if (!stereo)
     s = 1;                                                           /* Mono */
@@ -708,7 +708,7 @@ void soundVolumeTableInitialize(BOOLE stereo)
 void soundPeriodTableInitialize(uint32_t outputrate)
 {
   double j;
-  LON i, periodvalue;
+  int32_t i, periodvalue;
 
   if (outputrate < 29000)
     outputrate *= 2;   /* Internally, can not run slower than max Amiga rate */

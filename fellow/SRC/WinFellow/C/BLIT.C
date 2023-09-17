@@ -891,7 +891,7 @@ void blitterOperationLog(void) {
 
 #define blitterBlit(a_enabled, b_enabled, c_enabled, d_enabled, ascending, fill) \
 { \
-  LON x, y; \
+  int32_t x, y; \
   uint32_t a_pt = blitter.bltapt; \
   uint32_t b_pt = blitter.bltbpt; \
   uint32_t c_pt = blitter.bltcpt; \
@@ -904,17 +904,17 @@ void blitterOperationLog(void) {
   uint32_t b_dat_preload = 0; \
   uint32_t a_prev = 0; \
   uint32_t b_prev = 0; \
-  uint32_t a_mod = (ascending) ? blitter.bltamod : ((uint32_t) - (LON) blitter.bltamod); \
-  uint32_t b_mod = (ascending) ? blitter.bltbmod : ((uint32_t) - (LON) blitter.bltbmod); \
-  uint32_t c_mod = (ascending) ? blitter.bltcmod : ((uint32_t) - (LON) blitter.bltcmod); \
-  uint32_t d_mod = (ascending) ? blitter.bltdmod : ((uint32_t) - (LON) blitter.bltdmod); \
+  uint32_t a_mod = (ascending) ? blitter.bltamod : ((uint32_t) - (int32_t) blitter.bltamod); \
+  uint32_t b_mod = (ascending) ? blitter.bltbmod : ((uint32_t) - (int32_t) blitter.bltbmod); \
+  uint32_t c_mod = (ascending) ? blitter.bltcmod : ((uint32_t) - (int32_t) blitter.bltcmod); \
+  uint32_t d_mod = (ascending) ? blitter.bltdmod : ((uint32_t) - (int32_t) blitter.bltdmod); \
   uint32_t fwm[2]; \
   uint32_t lwm[2]; \
   uint8_t minterms = (uint8_t) (blitter.bltcon >> 16); \
   uint32_t fill_exclusive = (blitter.bltcon & 0x8) ? 0 : 1; \
   uint32_t zero_flag = 0; \
-  LON height = blitter.height; \
-  LON width = blitter.width; \
+  int32_t height = blitter.height; \
+  int32_t width = blitter.width; \
   BOOLE fc_original = !!(blitter.bltcon & 0x4); \
   BOOLE fill_carry; \
   fwm[0] = lwm[0] = 0xffff; \
@@ -1097,7 +1097,7 @@ void blitterLineMode(void)
   BOOLE c_enabled = blitter.bltcon & 0x02000000;
 
   BOOLE decision_is_signed = (((blitter.bltcon >> 6) & 1) == 1);
-  LON decision_variable = (LON)(int16_t)blitter.bltapt;
+  int32_t decision_variable = (int32_t)(int16_t)blitter.bltapt;
 
   // Quirk: Set decision increases to 0 if a is disabled, ensures bltapt remains unchanged
   int16_t decision_inc_signed = (a_enabled) ? ((int16_t)blitter.bltbmod) : 0;
@@ -1684,7 +1684,7 @@ void wbltsizh(uint16_t data, uint32_t address)
 void wbltcmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcmod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
+  blitter.bltcmod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1700,7 +1700,7 @@ void wbltcmod(uint16_t data, uint32_t address)
 void wbltbmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltbmod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
+  blitter.bltbmod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1716,7 +1716,7 @@ void wbltbmod(uint16_t data, uint32_t address)
 void wbltamod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltamod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
+  blitter.bltamod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1732,7 +1732,7 @@ void wbltamod(uint16_t data, uint32_t address)
 void wbltdmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltdmod = (uint32_t)(LON)(int16_t)(data & 0x0000FFFE);
+  blitter.bltdmod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1896,7 +1896,7 @@ void blitterEndOfFrame(void)
 {
   if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
   {
-    LON cycle = blitterEvent.cycle -= busGetCyclesInThisFrame();
+    int32_t cycle = blitterEvent.cycle -= busGetCyclesInThisFrame();
     blitterRemoveEvent();
     blitterInsertEvent(cycle);
   }

@@ -45,339 +45,339 @@ It can be imported into excel for better viewing
 
 LLO dlsbg2x1_16bit_tmp = 0;
 LLO dlsbg2x1_16bit = 0;
-LON dlsbg2x1_16bit_times = 0;
-LON dlsbg2x1_16bit_pixels = 0;
+int32_t dlsbg2x1_16bit_times = 0;
+int32_t dlsbg2x1_16bit_pixels = 0;
 
 LLO dlsbg2x2_16bit_tmp = 0;
 LLO dlsbg2x2_16bit = 0;
-LON dlsbg2x2_16bit_times = 0;
-LON dlsbg2x2_16bit_pixels = 0;
+int32_t dlsbg2x2_16bit_times = 0;
+int32_t dlsbg2x2_16bit_pixels = 0;
 
 LLO dlsbg4x2_16bit_tmp = 0;
 LLO dlsbg4x2_16bit = 0;
-LON dlsbg4x2_16bit_times = 0;
-LON dlsbg4x2_16bit_pixels = 0;
+int32_t dlsbg4x2_16bit_times = 0;
+int32_t dlsbg4x2_16bit_pixels = 0;
 
 LLO dlsbg4x4_16bit_tmp = 0;
 LLO dlsbg4x4_16bit = 0;
-LON dlsbg4x4_16bit_times = 0;
-LON dlsbg4x4_16bit_pixels = 0;
+int32_t dlsbg4x4_16bit_times = 0;
+int32_t dlsbg4x4_16bit_pixels = 0;
 
 LLO dlsbg2x1_24bit_tmp = 0;
 LLO dlsbg2x1_24bit = 0;
-LON dlsbg2x1_24bit_times = 0;
-LON dlsbg2x1_24bit_pixels = 0;
+int32_t dlsbg2x1_24bit_times = 0;
+int32_t dlsbg2x1_24bit_pixels = 0;
 
 LLO dlsbg2x2_24bit_tmp = 0;
 LLO dlsbg2x2_24bit = 0;
-LON dlsbg2x2_24bit_times = 0;
-LON dlsbg2x2_24bit_pixels = 0;
+int32_t dlsbg2x2_24bit_times = 0;
+int32_t dlsbg2x2_24bit_pixels = 0;
 
 LLO dlsbg4x2_24bit_tmp = 0;
 LLO dlsbg4x2_24bit = 0;
-LON dlsbg4x2_24bit_times = 0;
-LON dlsbg4x2_24bit_pixels = 0;
+int32_t dlsbg4x2_24bit_times = 0;
+int32_t dlsbg4x2_24bit_pixels = 0;
 
 LLO dlsbg4x4_24bit_tmp = 0;
 LLO dlsbg4x4_24bit = 0;
-LON dlsbg4x4_24bit_times = 0;
-LON dlsbg4x4_24bit_pixels = 0;
+int32_t dlsbg4x4_24bit_times = 0;
+int32_t dlsbg4x4_24bit_pixels = 0;
 
 LLO dlsbg2x1_32bit_tmp = 0;
 LLO dlsbg2x1_32bit = 0;
-LON dlsbg2x1_32bit_times = 0;
-LON dlsbg2x1_32bit_pixels = 0;
+int32_t dlsbg2x1_32bit_times = 0;
+int32_t dlsbg2x1_32bit_pixels = 0;
 
 LLO dlsbg2x2_32bit_tmp = 0;
 LLO dlsbg2x2_32bit = 0;
-LON dlsbg2x2_32bit_times = 0;
-LON dlsbg2x2_32bit_pixels = 0;
+int32_t dlsbg2x2_32bit_times = 0;
+int32_t dlsbg2x2_32bit_pixels = 0;
 
 LLO dlsbg4x2_32bit_tmp = 0;
 LLO dlsbg4x2_32bit = 0;
-LON dlsbg4x2_32bit_times = 0;
-LON dlsbg4x2_32bit_pixels = 0;
+int32_t dlsbg4x2_32bit_times = 0;
+int32_t dlsbg4x2_32bit_pixels = 0;
 
 LLO dlsbg4x4_32bit_tmp = 0;
 LLO dlsbg4x4_32bit = 0;
-LON dlsbg4x4_32bit_times = 0;
-LON dlsbg4x4_32bit_pixels = 0;
+int32_t dlsbg4x4_32bit_times = 0;
+int32_t dlsbg4x4_32bit_pixels = 0;
 
 // variables for holding profile data on normal line drawing
 
 LLO dln1x1_16bit_tmp = 0;
 LLO dln1x1_16bit = 0;
-LON dln1x1_16bit_times = 0;
-LON dln1x1_16bit_pixels = 0;
+int32_t dln1x1_16bit_times = 0;
+int32_t dln1x1_16bit_pixels = 0;
 
 LLO dln2x1_16bit_tmp = 0;
 LLO dln2x1_16bit = 0;
-LON dln2x1_16bit_times = 0;
-LON dln2x1_16bit_pixels = 0;
+int32_t dln2x1_16bit_times = 0;
+int32_t dln2x1_16bit_pixels = 0;
 
 LLO dln1x2_16bit_tmp = 0;
 LLO dln1x2_16bit = 0;
-LON dln1x2_16bit_times = 0;
-LON dln1x2_16bit_pixels = 0;
+int32_t dln1x2_16bit_times = 0;
+int32_t dln1x2_16bit_pixels = 0;
 
 LLO dln2x2_16bit_tmp = 0;
 LLO dln2x2_16bit = 0;
-LON dln2x2_16bit_times = 0;
-LON dln2x2_16bit_pixels = 0;
+int32_t dln2x2_16bit_times = 0;
+int32_t dln2x2_16bit_pixels = 0;
 
 LLO dln2x4_16bit_tmp = 0;
 LLO dln2x4_16bit = 0;
-LON dln2x4_16bit_times = 0;
-LON dln2x4_16bit_pixels = 0;
+int32_t dln2x4_16bit_times = 0;
+int32_t dln2x4_16bit_pixels = 0;
 
 LLO dln4x2_16bit_tmp = 0;
 LLO dln4x2_16bit = 0;
-LON dln4x2_16bit_times = 0;
-LON dln4x2_16bit_pixels = 0;
+int32_t dln4x2_16bit_times = 0;
+int32_t dln4x2_16bit_pixels = 0;
 
 LLO dln4x4_16bit_tmp = 0;
 LLO dln4x4_16bit = 0;
-LON dln4x4_16bit_times = 0;
-LON dln4x4_16bit_pixels = 0;
+int32_t dln4x4_16bit_times = 0;
+int32_t dln4x4_16bit_pixels = 0;
 
 LLO dln1x1_24bit_tmp = 0;
 LLO dln1x1_24bit = 0;
-LON dln1x1_24bit_times = 0;
-LON dln1x1_24bit_pixels = 0;
+int32_t dln1x1_24bit_times = 0;
+int32_t dln1x1_24bit_pixels = 0;
 
 LLO dln2x1_24bit_tmp = 0;
 LLO dln2x1_24bit = 0;
-LON dln2x1_24bit_times = 0;
-LON dln2x1_24bit_pixels = 0;
+int32_t dln2x1_24bit_times = 0;
+Lint32_tON dln2x1_24bit_pixels = 0;
 
 LLO dln1x2_24bit_tmp = 0;
 LLO dln1x2_24bit = 0;
-LON dln1x2_24bit_times = 0;
-LON dln1x2_24bit_pixels = 0;
+int32_t dln1x2_24bit_times = 0;
+int32_t dln1x2_24bit_pixels = 0;
 
 LLO dln2x2_24bit_tmp = 0;
 LLO dln2x2_24bit = 0;
-LON dln2x2_24bit_times = 0;
-LON dln2x2_24bit_pixels = 0;
+int32_t dln2x2_24bit_times = 0;
+int32_t dln2x2_24bit_pixels = 0;
 
 LLO dln2x4_24bit_tmp = 0;
 LLO dln2x4_24bit = 0;
-LON dln2x4_24bit_times = 0;
-LON dln2x4_24bit_pixels = 0;
+int32_t dln2x4_24bit_times = 0;
+int32_t dln2x4_24bit_pixels = 0;
 
 LLO dln4x2_24bit_tmp = 0;
 LLO dln4x2_24bit = 0;
-LON dln4x2_24bit_times = 0;
-LON dln4x2_24bit_pixels = 0;
+int32_t dln4x2_24bit_times = 0;
+Lint32_tON dln4x2_24bit_pixels = 0;
 
 LLO dln4x4_24bit_tmp = 0;
 LLO dln4x4_24bit = 0;
-LON dln4x4_24bit_times = 0;
-LON dln4x4_24bit_pixels = 0;
+int32_t dln4x4_24bit_times = 0;
+int32_t dln4x4_24bit_pixels = 0;
 
 LLO dln1x1_32bit_tmp = 0;
 LLO dln1x1_32bit = 0;
-LON dln1x1_32bit_times = 0;
-LON dln1x1_32bit_pixels = 0;
+int32_t dln1x1_32bit_times = 0;
+int32_t dln1x1_32bit_pixels = 0;
 
 LLO dln2x1_32bit_tmp = 0;
 LLO dln2x1_32bit = 0;
-LON dln2x1_32bit_times = 0;
-LON dln2x1_32bit_pixels = 0;
+int32_t dln2x1_32bit_times = 0;
+int32_t dln2x1_32bit_pixels = 0;
 
 LLO dln1x2_32bit_tmp = 0;
 LLO dln1x2_32bit = 0;
-LON dln1x2_32bit_times = 0;
-LON dln1x2_32bit_pixels = 0;
+int32_t dln1x2_32bit_times = 0;
+int32_t dln1x2_32bit_pixels = 0;
 
 LLO dln2x2_32bit_tmp = 0;
 LLO dln2x2_32bit = 0;
-LON dln2x2_32bit_times = 0;
-LON dln2x2_32bit_pixels = 0;
+int32_t dln2x2_32bit_times = 0;
+int32_t dln2x2_32bit_pixels = 0;
 
 LLO dln2x4_32bit_tmp = 0;
 LLO dln2x4_32bit = 0;
-LON dln2x4_32bit_times = 0;
-LON dln2x4_32bit_pixels = 0;
+int32_t dln2x4_32bit_times = 0;
+int32_t dln2x4_32bit_pixels = 0;
 
 LLO dln4x2_32bit_tmp = 0;
 LLO dln4x2_32bit = 0;
-LON dln4x2_32bit_times = 0;
-LON dln4x2_32bit_pixels = 0;
+int32_t dln4x2_32bit_times = 0;
+int32_t dln4x2_32bit_pixels = 0;
 
 LLO dln4x4_32bit_tmp = 0;
 LLO dln4x4_32bit = 0;
-LON dln4x4_32bit_times = 0;
-LON dln4x4_32bit_pixels = 0;
+int32_t dln4x4_32bit_times = 0;
+int32_t dln4x4_32bit_pixels = 0;
 
 // variables for holding profile data on dual playfield line drawing
 
 LLO dld1x1_16bit_tmp = 0;
 LLO dld1x1_16bit = 0;
-LON dld1x1_16bit_times = 0;
-LON dld1x1_16bit_pixels = 0;
+int32_t dld1x1_16bit_times = 0;
+int32_t dld1x1_16bit_pixels = 0;
 
 LLO dld2x1_16bit_tmp = 0;
 LLO dld2x1_16bit = 0;
-LON dld2x1_16bit_times = 0;
-LON dld2x1_16bit_pixels = 0;
+int32_t dld2x1_16bit_times = 0;
+int32_t dld2x1_16bit_pixels = 0;
 
 LLO dld1x2_16bit_tmp = 0;
 LLO dld1x2_16bit = 0;
-LON dld1x2_16bit_times = 0;
-LON dld1x2_16bit_pixels = 0;
+int32_t dld1x2_16bit_times = 0;
+Lint32_tON dld1x2_16bit_pixels = 0;
 
 LLO dld2x2_16bit_tmp = 0;
 LLO dld2x2_16bit = 0;
-LON dld2x2_16bit_times = 0;
-LON dld2x2_16bit_pixels = 0;
+int32_t dld2x2_16bit_times = 0;
+int32_t dld2x2_16bit_pixels = 0;
 
 LLO dld2x4_16bit_tmp = 0;
 LLO dld2x4_16bit = 0;
-LON dld2x4_16bit_times = 0;
-LON dld2x4_16bit_pixels = 0;
+int32_t dld2x4_16bit_times = 0;
+int32_t dld2x4_16bit_pixels = 0;
 
 LLO dld4x2_16bit_tmp = 0;
 LLO dld4x2_16bit = 0;
-LON dld4x2_16bit_times = 0;
-LON dld4x2_16bit_pixels = 0;
+int32_t dld4x2_16bit_times = 0;
+int32_t dld4x2_16bit_pixels = 0;
 
 LLO dld4x4_16bit_tmp = 0;
 LLO dld4x4_16bit = 0;
-LON dld4x4_16bit_times = 0;
-LON dld4x4_16bit_pixels = 0;
+int32_t dld4x4_16bit_times = 0;
+int32_t dld4x4_16bit_pixels = 0;
 
 LLO dld1x1_24bit_tmp = 0;
 LLO dld1x1_24bit = 0;
-LON dld1x1_24bit_times = 0;
-LON dld1x1_24bit_pixels = 0;
+int32_t dld1x1_24bit_times = 0;
+int32_t dld1x1_24bit_pixels = 0;
 
 LLO dld2x1_24bit_tmp = 0;
 LLO dld2x1_24bit = 0;
-LON dld2x1_24bit_times = 0;
-LON dld2x1_24bit_pixels = 0;
+int32_t dld2x1_24bit_times = 0;
+int32_t dld2x1_24bit_pixels = 0;
 
 LLO dld1x2_24bit_tmp = 0;
 LLO dld1x2_24bit = 0;
-LON dld1x2_24bit_times = 0;
-LON dld1x2_24bit_pixels = 0;
+int32_t dld1x2_24bit_times = 0;
+int32_t dld1x2_24bit_pixels = 0;
 
 LLO dld2x2_24bit_tmp = 0;
 LLO dld2x2_24bit = 0;
-LON dld2x2_24bit_times = 0;
-LON dld2x2_24bit_pixels = 0;
+int32_t dld2x2_24bit_times = 0;
+int32_t dld2x2_24bit_pixels = 0;
 
 LLO dld2x4_24bit_tmp = 0;
 LLO dld2x4_24bit = 0;
-LON dld2x4_24bit_times = 0;
-LON dld2x4_24bit_pixels = 0;
+int32_t dld2x4_24bit_times = 0;
+int32_t dld2x4_24bit_pixels = 0;
 
 LLO dld4x2_24bit_tmp = 0;
 LLO dld4x2_24bit = 0;
-LON dld4x2_24bit_times = 0;
-LON dld4x2_24bit_pixels = 0;
+int32_t dld4x2_24bit_times = 0;
+int32_t dld4x2_24bit_pixels = 0;
 
 LLO dld4x4_24bit_tmp = 0;
 LLO dld4x4_24bit = 0;
-LON dld4x4_24bit_times = 0;
-LON dld4x4_24bit_pixels = 0;
+int32_t dld4x4_24bit_times = 0;
+int32_t dld4x4_24bit_pixels = 0;
 
 LLO dld1x1_32bit_tmp = 0;
 LLO dld1x1_32bit = 0;
-LON dld1x1_32bit_times = 0;
-LON dld1x1_32bit_pixels = 0;
+int32_t dld1x1_32bit_times = 0;
+int32_t dld1x1_32bit_pixels = 0;
 
 LLO dld2x1_32bit_tmp = 0;
 LLO dld2x1_32bit = 0;
-LON dld2x1_32bit_times = 0;
-LON dld2x1_32bit_pixels = 0;
+int32_t dld2x1_32bit_times = 0;
+int32_t dld2x1_32bit_pixels = 0;
 
 LLO dld1x2_32bit_tmp = 0;
 LLO dld1x2_32bit = 0;
-LON dld1x2_32bit_times = 0;
-LON dld1x2_32bit_pixels = 0;
+int32_t dld1x2_32bit_times = 0;
+int32_t dld1x2_32bit_pixels = 0;
 
 LLO dld2x2_32bit_tmp = 0;
 LLO dld2x2_32bit = 0;
-LON dld2x2_32bit_times = 0;
-LON dld2x2_32bit_pixels = 0;
+int32_t dld2x2_32bit_times = 0;
+int32_t dld2x2_32bit_pixels = 0;
 
 LLO dld2x4_32bit_tmp = 0;
 LLO dld2x4_32bit = 0;
-LON dld2x4_32bit_times = 0;
-LON dld2x4_32bit_pixels = 0;
+int32_t dld2x4_32bit_times = 0;
+int32_t dld2x4_32bit_pixels = 0;
 
 LLO dld4x2_32bit_tmp = 0;
 LLO dld4x2_32bit = 0;
-LON dld4x2_32bit_times = 0;
-LON dld4x2_32bit_pixels = 0;
+int32_t dld4x2_32bit_times = 0;
+int32_t dld4x2_32bit_pixels = 0;
 
 LLO dld4x4_32bit_tmp = 0;
 LLO dld4x4_32bit = 0;
-LON dld4x4_32bit_times = 0;
-LON dld4x4_32bit_pixels = 0;
+int32_t dld4x4_32bit_times = 0;
+int32_t dld4x4_32bit_pixels = 0;
 
 // variables for holding profile data on HAM line drawing
 
 LLO dlh2x1_16bit_tmp = 0;
 LLO dlh2x1_16bit = 0;
-LON dlh2x1_16bit_times = 0;
-LON dlh2x1_16bit_pixels = 0;
+int32_t dlh2x1_16bit_times = 0;
+int32_t dlh2x1_16bit_pixels = 0;
 
 LLO dlh2x2_16bit_tmp = 0;
 LLO dlh2x2_16bit = 0;
-LON dlh2x2_16bit_times = 0;
-LON dlh2x2_16bit_pixels = 0;
+int32_t dlh2x2_16bit_times = 0;
+int32_t dlh2x2_16bit_pixels = 0;
 
 LLO dlh4x2_16bit_tmp = 0;
 LLO dlh4x2_16bit = 0;
-LON dlh4x2_16bit_times = 0;
-LON dlh4x2_16bit_pixels = 0;
+int32_t dlh4x2_16bit_times = 0;
+int32_t dlh4x2_16bit_pixels = 0;
 
 LLO dlh4x4_16bit_tmp = 0;
 LLO dlh4x4_16bit = 0;
-LON dlh4x4_16bit_times = 0;
-LON dlh4x4_16bit_pixels = 0;
+int32_t dlh4x4_16bit_times = 0;
+int32_t dlh4x4_16bit_pixels = 0;
 
 LLO dlh2x1_24bit_tmp = 0;
 LLO dlh2x1_24bit = 0;
-LON dlh2x1_24bit_times = 0;
-LON dlh2x1_24bit_pixels = 0;
+int32_t dlh2x1_24bit_times = 0;
+int32_t dlh2x1_24bit_pixels = 0;
 
 LLO dlh2x2_24bit_tmp = 0;
 LLO dlh2x2_24bit = 0;
-LON dlh2x2_24bit_times = 0;
-LON dlh2x2_24bit_pixels = 0;
+int32_t dlh2x2_24bit_times = 0;
+int32_t dlh2x2_24bit_pixels = 0;
 
 LLO dlh4x2_24bit_tmp = 0;
 LLO dlh4x2_24bit = 0;
-LON dlh4x2_24bit_times = 0;
-LON dlh4x2_24bit_pixels = 0;
+int32_t dlh4x2_24bit_times = 0;
+int32_t dlh4x2_24bit_pixels = 0;
 
 LLO dlh4x4_24bit_tmp = 0;
 LLO dlh4x4_24bit = 0;
-LON dlh4x4_24bit_times = 0;
-LON dlh4x4_24bit_pixels = 0;
+int32_t dlh4x4_24bit_times = 0;
+int32_t dlh4x4_24bit_pixels = 0;
 
 LLO dlh2x1_32bit_tmp = 0;
 LLO dlh2x1_32bit = 0;
-LON dlh2x1_32bit_times = 0;
-LON dlh2x1_32bit_pixels = 0;
+int32_t dlh2x1_32bit_times = 0;
+int32_t dlh2x1_32bit_pixels = 0;
 
 LLO dlh2x2_32bit_tmp = 0;
 LLO dlh2x2_32bit = 0;
-LON dlh2x2_32bit_times = 0;
-LON dlh2x2_32bit_pixels = 0;
+int32_t dlh2x2_32bit_times = 0;
+int32_t dlh2x2_32bit_pixels = 0;
 
 LLO dlh4x2_32bit_tmp = 0;
 LLO dlh4x2_32bit = 0;
-LON dlh4x2_32bit_times = 0;
-LON dlh4x2_32bit_pixels = 0;
+int32_t dlh4x2_32bit_times = 0;
+int32_t dlh4x2_32bit_pixels = 0;
 
 LLO dlh4x4_32bit_tmp = 0;
 LLO dlh4x4_32bit = 0;
-LON dlh4x4_32bit_times = 0;
-LON dlh4x4_32bit_pixels = 0;
+int32_t dlh4x4_32bit_times = 0;
+int32_t dlh4x4_32bit_pixels = 0;
 
 /*============================================================================*/
 /* profiling help functions                                                   */
@@ -402,11 +402,11 @@ static __inline void drawTscBefore(LLO* a)
   *a = local_a;
 }
 
-static __inline void drawTscAfter(LLO* a, LLO* b, LON* c)
+static __inline void drawTscAfter(LLO* a, LLO* b, int32_t* c)
 {
   LLO local_a = *a;
   LLO local_b = *b;
-  LON local_c = *c;
+  int32_t local_c = *c;
 
   __asm 
   {
@@ -586,7 +586,7 @@ void drawHAMTableInit()
 
 void drawDualTranslationInitialize(void)
 {
-  LON i,j,k,l;
+  int32_t i,j,k,l;
 
   for (k = 0; k < 2; k++)
   {
@@ -729,7 +729,7 @@ static uint32_t drawMakeHAMPixel(uint32_t *colors, uint32_t hampixel, uint8_t pi
   return drawUpdateHAMPixel(hampixel, pixel_value);
 }
 
-static uint32_t drawProcessNonVisibleHAMPixels(graph_line *linedescription, LON pixel_count)
+static uint32_t drawProcessNonVisibleHAMPixels(graph_line *linedescription, int32_t pixel_count)
 {
   uint8_t *source_line_ptr = linedescription->line1 + linedescription->DDF_start;
   uint32_t hampixel = 0;
@@ -1280,13 +1280,13 @@ static void drawLineDual4x4_16Bit(graph_line *linedescription, uint32_t nextline
 static void drawLineHAM2x1_16Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh2x1_16bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh2x1_16bit_tmp);
 #endif
 
   uint32_t hampixel = 0;  
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -1323,13 +1323,13 @@ static void drawLineHAM2x1_16Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM2x2_16Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh2x2_16bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh2x2_16bit_tmp);
 #endif	
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -1367,13 +1367,13 @@ static void drawLineHAM2x2_16Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM4x2_16Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh4x2_16bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh4x2_16bit_tmp);
 #endif	
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -1411,13 +1411,13 @@ static void drawLineHAM4x2_16Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM4x4_16Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh4x4_16bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh4x4_16bit_tmp);
 #endif	
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -2251,13 +2251,13 @@ static void drawLineDual4x4_24Bit(graph_line *linedescription, uint32_t nextline
 static void drawLineHAM2x1_24Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh2x1_24bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh2x1_24bit_tmp);
 #endif	
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -2295,13 +2295,13 @@ static void drawLineHAM2x1_24Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM2x2_24Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh2x2_24bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh2x2_24bit_tmp);
 #endif	
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -2339,13 +2339,13 @@ static void drawLineHAM2x2_24Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM4x2_24Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh4x2_24bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh4x2_24bit_tmp);
 #endif	
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -2383,13 +2383,13 @@ static void drawLineHAM4x2_24Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM4x4_24Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh4x4_24bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh4x4_24bit_tmp);
 #endif	
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -3203,13 +3203,13 @@ static void drawLineDual4x4_32Bit(graph_line *linedescription, uint32_t nextline
 static void drawLineHAM2x1_32Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh2x1_32bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh2x1_32bit_tmp);
 #endif
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -3246,13 +3246,13 @@ static void drawLineHAM2x1_32Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM2x2_32Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh2x2_32bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh2x2_32bit_tmp);
 #endif
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -3290,13 +3290,13 @@ static void drawLineHAM2x2_32Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM4x2_32Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh4x2_32bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh4x2_32bit_tmp);
 #endif
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);
@@ -3335,13 +3335,13 @@ static void drawLineHAM4x2_32Bit(graph_line *linedescription, uint32_t nextlineo
 static void drawLineHAM4x4_32Bit(graph_line *linedescription, uint32_t nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  LON tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t tscnonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
   dlh4x4_32bit_pixels += linedescription->DIW_pixel_count + ((tscnonvisible > 0) ? tscnonvisible : 0);
   drawTscBefore(&dlh4x4_32bit_tmp);
 #endif
 
   uint32_t hampixel = 0;
-  LON non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
+  int32_t non_visible_pixel_count = linedescription->DIW_first_draw - linedescription->DDF_start;
   if (non_visible_pixel_count > 0)
   {
     hampixel = drawProcessNonVisibleHAMPixels(linedescription, non_visible_pixel_count);

@@ -116,7 +116,7 @@ extern uint32_t diskDMAen;   /* Counts the number of writes to dsklen */
 extern void floppyDMAStart(void);
 extern void floppyStartup(void);
 extern void floppyShutdown(void);
-extern LON floppySelectedGet(void);
+extern int32_t floppySelectedGet(void);
 extern void floppySelectedSet(uint32_t selbits);
 extern BOOLE floppyIsTrack0(uint32_t drive);
 extern BOOLE floppyIsWriteProtected(uint32_t drive);

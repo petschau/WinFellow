@@ -39,9 +39,9 @@ namespace fellow::hardfile::rdb
     return static_cast<uint32_t>(value[0]) << 24 | static_cast<uint32_t>(value[1]) << 16 | static_cast<uint32_t>(value[2]) << 8 | static_cast<uint32_t>(value[3]);
   }
 
-  LON RDBFileReader::ReadLON(off_t offset)
+  int32_t RDBFileReader::ReadInt32(off_t offset)
   {
-    return static_cast<LON>(ReadUint32(offset));
+    return static_cast<int32_t>(ReadUint32(offset));
   }
 
   uint8_t *RDBFileReader::ReadData(off_t offset, size_t byteCount)

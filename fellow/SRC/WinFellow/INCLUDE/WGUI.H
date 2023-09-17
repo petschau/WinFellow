@@ -52,9 +52,9 @@ typedef struct {
   uint32_t numberof16bit;
   uint32_t numberof24bit;
   uint32_t numberof32bit;
-  LON comboxbox16bitindex;
-  LON comboxbox24bitindex;
-  LON comboxbox32bitindex;
+  int32_t comboxbox16bitindex;
+  int32_t comboxbox24bitindex;
+  int32_t comboxbox32bitindex;
   wgui_drawmode_list res16bit;
   wgui_drawmode_list res24bit;
   wgui_drawmode_list res32bit;

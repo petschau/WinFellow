@@ -281,7 +281,7 @@ uint32_t draw_buffer_draw;                 /* Number of the current drawing buff
 uint32_t draw_buffer_count;                    /* Number of available framebuffers */
 uint32_t draw_frame_count;                /* Counts frames, both skipped and drawn */
 uint32_t draw_frame_skip_factor;            /* Frame-skip factor, 1 / (factor + 1) */
-LON draw_frame_skip;                            /* Running frame-skip counter */
+int32_t draw_frame_skip;                            /* Running frame-skip counter */
 uint32_t draw_switch_bg_to_bpl;       /* Flag TRUE if on current line, switch from */
 /* background color to bitplane data */
 

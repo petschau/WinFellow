@@ -177,9 +177,9 @@ private:
   uint32_t lMainVersion = 0, lRevision = 0, lBuild = 0;
 
   // screen settings
-  LON lClippingOffsetLeftRP = RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
-  LON lClippingOffsetTopRP  = RETRO_PLATFORM_OFFSET_ADJUST_TOP;
-  LON lScreenWidthRP        = 0, lScreenHeightRP      = 0;
+  int32_t lClippingOffsetLeftRP = RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
+  int32_t lClippingOffsetTopRP  = RETRO_PLATFORM_OFFSET_ADJUST_TOP;
+  int32_t lScreenWidthRP        = 0, lScreenHeightRP      = 0;
   uint32_t lScreenMode = 0;
   bool bScreenWindowed = true;
   uint32_t lDisplayScale = 1;

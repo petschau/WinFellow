@@ -11,7 +11,7 @@ namespace fellow::hardfile::rdb
     uint32_t index = blockSize * blockChainStart;
 
     SizeInLongs = reader.ReadUint32(index + 4);
-    CheckSum = reader.ReadLON(index + 8);
+    CheckSum = reader.ReadInt32(index + 8);
     HostID = reader.ReadUint32(index + 12);
     Next = reader.ReadUint32(index + 16);
     Flags = reader.ReadUint32(index + 20);

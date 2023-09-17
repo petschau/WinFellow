@@ -864,7 +864,7 @@ void wbplcon2(uint16_t data, uint32_t address)
 
 void wbpl1mod(uint16_t data, uint32_t address)
 {
-  uint32_t new_value = (uint32_t)(LON)(int16_t)(data & 0xfffe);
+  uint32_t new_value = (uint32_t)(int32_t)(int16_t)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl1mod != new_value)
@@ -882,7 +882,7 @@ void wbpl1mod(uint16_t data, uint32_t address)
 
 void wbpl2mod(uint16_t data, uint32_t address)
 {
-  uint32_t new_value = (uint32_t)(LON)(int16_t)(data & 0xfffe);
+  uint32_t new_value = (uint32_t)(int32_t)(int16_t)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl2mod != new_value)
@@ -1690,14 +1690,14 @@ void graphLinedescRoutines(graph_line* current_graph_line)
 void graphLinedescGeometry(graph_line* current_graph_line)
 {
   uint32_t local_graph_DIW_first_visible;
-  LON local_graph_DIW_last_visible;
+  int32_t local_graph_DIW_last_visible;
   uint32_t local_graph_DDF_start;
   uint32_t local_draw_left;
   uint32_t local_draw_right;
   uint32_t shift;
 
   local_graph_DIW_first_visible = graph_DIW_first_visible;
-  local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
+  local_graph_DIW_last_visible  = (int32_t) graph_DIW_last_visible;
   local_graph_DDF_start         = graph_DDF_start;
   local_draw_left               = drawGetInternalClip().left;
   local_draw_right              = drawGetInternalClip().right;
@@ -1719,9 +1719,9 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible >(LON) local_draw_right)
+  if (local_graph_DIW_last_visible >(int32_t) local_draw_right)
   {
-    local_graph_DIW_last_visible = (LON)local_draw_right;
+    local_graph_DIW_last_visible = (int32_t)local_draw_right;
   }
   local_graph_DIW_last_visible -= local_graph_DIW_first_visible;
   if (local_graph_DIW_last_visible < 0)
@@ -1787,7 +1787,7 @@ BOOLE graphLinedescRoutinesSmart(graph_line* current_graph_line)
 BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
 {
   uint32_t local_graph_DIW_first_visible;
-  LON local_graph_DIW_last_visible;
+  int32_t local_graph_DIW_last_visible;
   uint32_t local_graph_DDF_start;
   uint32_t local_draw_left;
   uint32_t local_draw_right;
@@ -1795,7 +1795,7 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   BOOLE line_desc_changed;
 
   local_graph_DIW_first_visible = graph_DIW_first_visible;
-  local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
+  local_graph_DIW_last_visible  = (int32_t) graph_DIW_last_visible;
   local_graph_DDF_start         = graph_DDF_start;
   local_draw_left               = drawGetInternalClip().left;
   local_draw_right              = drawGetInternalClip().right;
@@ -1818,9 +1818,9 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible > (LON) local_draw_right)
+  if (local_graph_DIW_last_visible > (int32_t) local_draw_right)
   {
-    local_graph_DIW_last_visible = (LON) local_draw_right;
+    local_graph_DIW_last_visible = (int32_t) local_draw_right;
   }
   local_graph_DIW_last_visible -= local_graph_DIW_first_visible;
   if (local_graph_DIW_last_visible < 0)
@@ -1906,7 +1906,7 @@ BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
 /* Return TRUE = not equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopyRest(uint32_t first_pixel, LON pixel_count, uint8_t* dest_line, uint8_t* source_line)
+static BOOLE graphCompareCopyRest(uint32_t first_pixel, int32_t pixel_count, uint8_t* dest_line, uint8_t* source_line)
 {
   // line has changed, copy the rest
   while ((first_pixel & 0x3) != 0)
@@ -1941,7 +1941,7 @@ static BOOLE graphCompareCopyRest(uint32_t first_pixel, LON pixel_count, uint8_t
 /* Return TRUE = not equal FALSE = equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopy(uint32_t first_pixel, LON pixel_count, uint8_t* dest_line, uint8_t* source_line)
+static BOOLE graphCompareCopy(uint32_t first_pixel, int32_t pixel_count, uint8_t* dest_line, uint8_t* source_line)
 {
   BOOLE result = FALSE;
 
@@ -2103,12 +2103,12 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
     graph_decode_line_ptr();
 
     // compare line data to old data  
-    line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
+    line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (int32_t) (current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
 
     // if the line is dual playfield, compare second playfield too
     if (_core.RegisterUtility.IsDualPlayfieldEnabled())
     {
-      line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
+      line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (int32_t) (current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
     }
 
     if (current_graph_line->has_ham_sprites_online)

@@ -51,7 +51,7 @@ static __inline void cpuTscBefore(LLO* a)
   *a = local_a;
 }
 
-static __inline void cpuTscAfter(LLO* a, LLO* b, LON* c)
+static __inline void cpuTscAfter(LLO* a, LLO* b, int32_t* c)
 {
   LLO local_a = *a;
   LLO local_b = *b;
@@ -525,7 +525,7 @@ static uint16_t cpuNegW(uint16_t src1)
 /// <returns>The result</returns>
 static uint32_t cpuNegL(uint32_t src1)
 {
-  uint32_t res = (uint32_t)-(LON)src1;
+  uint32_t res = (uint32_t)-(int32_t)src1;
   cpuSetFlagsNeg(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(src1));
   return res;
 }
@@ -560,8 +560,8 @@ static uint16_t cpuNegxW(uint16_t src1)
 /// <returns>The result</returns>
 static uint32_t cpuNegxL(uint32_t src1)
 {
-  LON x = (cpuGetFlagX()) ? 1 : 0;
-  uint32_t res = (uint32_t)-(LON)src1 - x;
+  int32_t x = (cpuGetFlagX()) ? 1 : 0;
+  uint32_t res = (uint32_t)-(int32_t)src1 - x;
   cpuSetFlagsNegx(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(src1));
   return res;
 }
@@ -1019,7 +1019,7 @@ static void cpuMulL(uint32_t src1, uint16_t extension)
   uint32_t dl = (extension >> 12) & 7;
   if (extension & 0x0800) // muls.l
   {
-    LLO result = ((LLO)(LON) src1) * ((LLO)(LON)cpuGetDReg(dl));
+    LLO result = ((LLO)(int32_t) src1) * ((LLO)(int32_t)cpuGetDReg(dl));
     if (extension & 0x0400) // 32bx32b=64b
     {  
       uint32_t dh = extension & 7;
@@ -1099,7 +1099,7 @@ void cpuCreateMulTimeTables(void)
 /// </summary>
 static uint32_t cpuMulsW(uint16_t src2, uint16_t src1, uint32_t eatime)
 {
-  uint32_t res = (uint32_t)(((LON)(int16_t)src2)*((LON)(int16_t)src1));
+  uint32_t res = (uint32_t)(((int32_t)(int16_t)src2)*((int32_t)(int16_t)src1));
   cpuSetFlagsNZ00NewL(res);
   cpuSetInstructionTime(38 + eatime + cpuMulsTime[(src1 << 1) & 0x1ff] + cpuMulsTime[src1 >> 7]);
   return res;
@@ -1130,10 +1130,10 @@ static void cpuDivsW(uint32_t dst, uint16_t src1, uint32_t destination_reg, uint
   else
   {
     uint32_t result;
-    LON x = (LON) dst;
-    LON y = (LON)(int16_t) src1;
-    LON res = x / y;
-    LON rem = x % y;
+    int32_t x = (int32_t) dst;
+    int32_t y = (int32_t)(int16_t) src1;
+    int32_t res = x / y;
+    int32_t rem = x % y;
     if (res > 32767 || res < -32768)
     {
       result = dst;
@@ -1198,8 +1198,8 @@ static void cpuDivL(uint32_t divisor, uint32_t ext, uint32_t instruction_time)
     if (sign)
     { 
       if (size64) x_signed = (LLO) ((uint64_t) cpuGetDReg(dq_reg)) | (((LLO) cpuGetDReg(dr_reg))<<32);
-      else x_signed = (LLO) (LON) cpuGetDReg(dq_reg);
-      y_signed = (LLO) (LON) divisor;
+      else x_signed = (LLO) (int32_t) cpuGetDReg(dq_reg);
+      y_signed = (LLO) (int32_t) divisor;
 
       if (y_signed < 0)
       {
@@ -1496,12 +1496,12 @@ static uint16_t cpuAslW(uint16_t dst, uint32_t sh, uint32_t cycles)
 /// </summary>
 static uint32_t cpuAslL(uint32_t dst, uint32_t sh, uint32_t cycles)
 {
-  LON res;
+  int32_t res;
   sh &= 0x3f;
   if (sh == 0)
   {
     cpuSetFlagsShiftZero(cpuIsZeroL(dst), cpuMsbL(dst));
-    res = (LON) dst;
+    res = (int32_t) dst;
   }
   else if (sh >= 32)
   {
@@ -1512,7 +1512,7 @@ static uint32_t cpuAslL(uint32_t dst, uint32_t sh, uint32_t cycles)
   {
     uint32_t mask = 0xffffffff << (31-sh);
     uint32_t out = dst & mask;
-    res = ((LON)dst) << sh;
+    res = ((int32_t)dst) << sh;
 
     // Overflow calculation: 
     // 1. The msb of the result and original are different
@@ -1584,13 +1584,13 @@ static uint16_t cpuAsrW(uint16_t dst, uint32_t sh, uint32_t cycles)
 /// </summary>
 static uint32_t cpuAsrL(uint32_t dst, uint32_t sh, uint32_t cycles)
 {
-  LON res;
+  int32_t res;
   sh &= 0x3f;
 
   if (sh == 0)
   {
     cpuSetFlagsShiftZero(cpuIsZeroL(dst), cpuMsbL(dst));
-    res = (LON) dst;
+    res = (int32_t) dst;
   }
   else if (sh >= 32)
   {
@@ -1599,7 +1599,7 @@ static uint32_t cpuAsrL(uint32_t dst, uint32_t sh, uint32_t cycles)
   }
   else
   {
-    res = ((LON)dst) >> sh;
+    res = ((int32_t)dst) >> sh;
     cpuSetFlagsShift(cpuIsZeroL(res), cpuMsbL(res), dst & (1<<(sh-1)), FALSE);
   }
   cpuSetInstructionTime(cycles + sh*2);
@@ -2076,7 +2076,7 @@ static void cpuMovemwPre(uint16_t regs, uint32_t reg)
   uint32_t cycles = 8;
   uint32_t dstea = cpuGetAReg(reg);
   uint32_t index = 1;
-  LON i, j;
+  int32_t i, j;
 
   i = 1;
   for (j = 7; j >= 0; j--)
@@ -2121,7 +2121,7 @@ static void cpuMovemlPre(uint16_t regs, uint32_t reg)
   uint32_t cycles = 8;
   uint32_t dstea = cpuGetAReg(reg);
   uint32_t index = 1;
-  LON i, j;
+  int32_t i, j;
 
   i = 1;
   for (j = 7; j >= 0; j--)
@@ -2176,7 +2176,7 @@ static void cpuMovemwPost(uint16_t regs, uint32_t reg)
       if (regs & index)
       {
 	// Each word, for both data and address registers, is sign-extended before stored.
-	cpuSetReg(i, j, (uint32_t)(LON)(int16_t) memoryReadWord(dstea));
+	cpuSetReg(i, j, (uint32_t)(int32_t)(int16_t) memoryReadWord(dstea));
 	dstea += 2;
 	cycles += 4;
       }
@@ -2233,7 +2233,7 @@ static void cpuMovemwEa2R(uint16_t regs, uint32_t ea, uint32_t eacycles)
       if (regs & index)
       {
 	// Each word, for both data and address registers, is sign-extended before stored.
-	cpuSetReg(i, j, (uint32_t)(LON)(int16_t) memoryReadWord(dstea));
+	cpuSetReg(i, j, (uint32_t)(int32_t)(int16_t) memoryReadWord(dstea));
 	dstea += 2;
 	cycles += 4;
       }
@@ -2441,12 +2441,12 @@ static void cpuChkL(uint32_t value, uint32_t ub, uint32_t instructionTime)
 {
   cpuSetFlagZ(value == 0);
   cpuClearFlagsVC();
-  if (((LON)value) < 0)
+  if (((int32_t)value) < 0)
   {
     cpuSetFlagN(TRUE);
     cpuThrowChkException();
   }
-  else if (((LON)value) > ((LON)ub))
+  else if (((int32_t)value) > ((int32_t)ub))
   {
     cpuSetFlagN(FALSE);
     cpuThrowChkException();
@@ -2612,12 +2612,12 @@ static uint8_t cpuNbcdB(uint8_t dst)
 // Bit field functions
 struct cpuBfData
 {
-  LON offset;
+  int32_t offset;
   uint32_t width;
   uint32_t normalized_offset;
 
   uint32_t base_address;
-  LON base_address_byte_offset;
+  int32_t base_address_byte_offset;
   uint32_t base_address_byte_count;
 
   uint32_t field;
@@ -2626,12 +2626,12 @@ struct cpuBfData
   uint64_t field_memory;
 };
 
-static LON cpuGetBfOffset(uint16_t ext, bool offsetIsDataRegister)
+static int32_t cpuGetBfOffset(uint16_t ext, bool offsetIsDataRegister)
 {
-  LON offset = (ext >> 6) & 0x1f;
+  int32_t offset = (ext >> 6) & 0x1f;
   if (offsetIsDataRegister)
   {
-    offset = (LON) cpuGetDReg(offset & 7);
+    offset = (int32_t) cpuGetDReg(offset & 7);
   }
   return offset;
 }
@@ -3227,7 +3227,7 @@ static void cpuMoveSB(uint32_t ea, uint16_t extension)
       }
       else
       {
-	cpuSetAReg(regno, (uint32_t)(LON)(int8_t) data);
+	cpuSetAReg(regno, (uint32_t)(int32_t)(int8_t) data);
       }
     }
   }
@@ -3261,7 +3261,7 @@ static void cpuMoveSW(uint32_t ea, uint16_t extension)
       }
       else
       {
-	cpuSetAReg(regno, (uint32_t)(LON)(int16_t) data);
+	cpuSetAReg(regno, (uint32_t)(int32_t)(int16_t) data);
       }
     }
   }
@@ -3516,7 +3516,7 @@ static void cpuChkCmp2B(uint32_t ea, uint16_t extension)
   BOOLE is_chk2 = (extension & 0x0800);
   if (da == 1)
   {
-    cpuChk2Cmp2((uint32_t)(LON)(int8_t)memoryReadByte(ea), (uint32_t)(LON)(int8_t)memoryReadByte(ea + 1), cpuGetAReg(rn), is_chk2);
+    cpuChk2Cmp2((uint32_t)(int32_t)(int8_t)memoryReadByte(ea), (uint32_t)(int32_t)(int8_t)memoryReadByte(ea + 1), cpuGetAReg(rn), is_chk2);
   }
   else
   {
@@ -3534,7 +3534,7 @@ static void cpuChkCmp2W(uint32_t ea, uint16_t extension)
   BOOLE is_chk2 = (extension & 0x0800);
   if (da == 1)
   {
-    cpuChk2Cmp2((uint32_t)(LON)(int16_t)memoryReadWord(ea), (uint32_t)(LON)(int16_t)memoryReadWord(ea + 1), cpuGetAReg(rn), is_chk2);
+    cpuChk2Cmp2((uint32_t)(int32_t)(int16_t)memoryReadWord(ea), (uint32_t)(int32_t)(int16_t)memoryReadWord(ea + 1), cpuGetAReg(rn), is_chk2);
   }
   else
   {

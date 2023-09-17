@@ -18,9 +18,6 @@
 #define BOGOMEM 0x1c0000
 #define KICKMEM 0x080000
 
-/* Fellow types to ensure correct sizes */
-
-typedef signed int LON;
 typedef signed FELLOW_LONG_LONG LLO;
 typedef int BOOLE;
 

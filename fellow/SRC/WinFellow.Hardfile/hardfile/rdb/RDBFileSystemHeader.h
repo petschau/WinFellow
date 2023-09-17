@@ -11,7 +11,7 @@ namespace fellow::hardfile::rdb
   {
   public:
     uint32_t SizeInLongs;
-    LON CheckSum;
+    int32_t CheckSum;
     uint32_t HostID;
     uint32_t Next;
     uint32_t Flags;

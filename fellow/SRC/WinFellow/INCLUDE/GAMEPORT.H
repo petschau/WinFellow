@@ -45,8 +45,8 @@ extern gameport_inputs gameport_input[2];
 /*===========================================================================*/
 
 extern void gameportMouseHandler(gameport_inputs mousedev,
-								 LON x,
-								 LON y,
+								 int32_t x,
+								 int32_t y,
 								 BOOLE button1,
 								 BOOLE button2,
 								 BOOLE button3);

@@ -334,9 +334,9 @@ void wdsksync(uint16_t data, uint32_t address)
 
 /* Several drives can be selected, we simply return the first */
 
-LON floppySelectedGet(void)
+int32_t floppySelectedGet(void)
 {
-  LON i = 0;
+  int32_t i = 0;
   while (i < 4)
   {
     if (floppy[i].enabled && floppy[i].sel)
@@ -1615,7 +1615,7 @@ void floppyDMAReadInit(uint32_t drive)
 /* Do it all in one piece, and delay irq.   */
 /*==========================================*/
 
-uint32_t floppyFindNextSync(uint32_t pos, LON length)
+uint32_t floppyFindNextSync(uint32_t pos, int32_t length)
 {
   uint32_t offset = pos;
   BOOLE was_sync = FALSE;
@@ -1632,10 +1632,10 @@ uint32_t floppyFindNextSync(uint32_t pos, LON length)
   return chipsetMaskPtr(offset - pos - ((past_sync) ? 2 : 0));
 }
 
-void floppyDMAWriteInit(LON drive)
+void floppyDMAWriteInit(int32_t drive)
 {
-  LON total_length = (dsklen & 0x3fff) * 2;
-  LON length = total_length;
+  int32_t total_length = (dsklen & 0x3fff) * 2;
+  int32_t length = total_length;
   uint32_t pos = dskpt;
   uint32_t track_lin;
   BOOLE ended = FALSE;
@@ -1819,7 +1819,7 @@ void floppyNextByte(uint32_t sel_drv, uint32_t track)
 uint16_t prev_byte_under_head = 0;
 void floppyEndOfLine(void)
 {
-  LON sel_drv = floppySelectedGet();
+  int32_t sel_drv = floppySelectedGet();
   if (floppyDMAWriteStarted()) 
   {
     floppyDMAWrite(); 

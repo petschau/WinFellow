@@ -16,7 +16,7 @@ namespace fellow::hardfile::rdb
   {
   }
 
-  LON RDBLSegBlock::GetDataSize() const
+  int32_t RDBLSegBlock::GetDataSize() const
   {
     return 4 * (SizeInLongs - 5);
   }
@@ -30,10 +30,10 @@ namespace fellow::hardfile::rdb
   {
     Blocknumber = index / 512;
     ID = reader.ReadString(index, 4);
-    SizeInLongs = reader.ReadLON(index + 4);
-    CheckSum = reader.ReadLON(index + 8);
-    HostID = reader.ReadLON(index + 12);
-    Next = reader.ReadLON(index + 16);
+    SizeInLongs = reader.ReadInt32(index + 4);
+    CheckSum = reader.ReadInt32(index + 8);
+    HostID = reader.ReadInt32(index + 12);
+    Next = reader.ReadInt32(index + 16);
 
     HasValidCheckSum = (SizeInLongs >= 5 && SizeInLongs <= 128) && CheckSumCalculator::HasValidCheckSum(reader, SizeInLongs, index);
 
