@@ -113,7 +113,7 @@ BOOLE fileopsGetScreenshotFileName(char *szFilename)
     time_t rawtime;
     struct tm *timeinfo;
     char szTime[255] = "";
-    ULO i = 1;
+    uint32_t i = 1;
     bool done = false;
     
     time(&rawtime);
@@ -252,7 +252,7 @@ char *fileopsGetTemporaryFilename(void)
   return result;
 }
 
-bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, char *strDestFilename, const ULO strDestLen)
+bool fileopsGetKickstartByCRC32(const char *strSearchPath, const uint32_t lCRC32, char *strDestFilename, const uint32_t strDestLen)
 {
   STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
   WIN32_FIND_DATA ffd;
@@ -260,7 +260,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
   UBY memory_kick[0x080000 + 32];
   FILE *F = NULL;
   STR strFilename[CFG_FILENAME_LENGTH] = "";
-  ULO lCurrentCRC32 = 0;
+  uint32_t lCurrentCRC32 = 0;
 #ifdef FILEOPS_ROMSEARCH_RECURSIVE
   STR strSubDir[CFG_FILENAME_LENGTH] = "";
 #endif

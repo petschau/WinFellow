@@ -87,12 +87,12 @@ GraphicsEvent *GraphicsEventQueue::Pop(void)
   return tmp;
 }
 
-void GraphicsEventQueue::Run(ULO untilTime)
+void GraphicsEventQueue::Run(uint32_t untilTime)
 {
   while (_events->_arriveTime <= untilTime)
   {
     GraphicsEvent *graphics_event = Pop();
-    ULO arrive_time = graphics_event->_arriveTime;
+    uint32_t arrive_time = graphics_event->_arriveTime;
     graphics_event->Handler(arrive_time / GetCylindersPerLine(), arrive_time % GetCylindersPerLine());
   }
   GraphicsContext.PixelSerializer.OutputCylindersUntil(untilTime / GetCylindersPerLine(), untilTime % GetCylindersPerLine());

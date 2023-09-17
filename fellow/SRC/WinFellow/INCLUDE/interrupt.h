@@ -5,10 +5,10 @@ extern UWO intena;
 
 void interruptHandleEvent(void);
 void interruptRaisePending();
-STR *interruptGetInterruptName(ULO interrupt_number);
+STR *interruptGetInterruptName(uint32_t interrupt_number);
 BOOLE interruptIsRequested(UWO bitmask);
 
-void wintreq_direct(UWO data, ULO address, bool delayIRQ);
+void wintreq_direct(UWO data, uint32_t address, bool delayIRQ);
 
 // Fellow standard module events
 

@@ -3,17 +3,17 @@
 
 #include "DEFS.H"
 
-extern void wsprxpth(UWO data, ULO address);
-extern void wsprxptl(UWO data, ULO address);
-extern void wsprxpos(UWO data, ULO address);
-extern void wsprxctl(UWO data, ULO address);
-extern void wsprxdata(UWO data, ULO address);
-extern void wsprxdatb(UWO data, ULO address);
+extern void wsprxpth(UWO data, uint32_t address);
+extern void wsprxptl(UWO data, uint32_t address);
+extern void wsprxpos(UWO data, uint32_t address);
+extern void wsprxctl(UWO data, uint32_t address);
+extern void wsprxdata(UWO data, uint32_t address);
+extern void wsprxdatb(UWO data, uint32_t address);
 
 class SpriteRegisters
 {
 public:
-  ULO sprpt[8];
+  uint32_t sprpt[8];
   UWO sprpos[8];
   UWO sprctl[8];
   UWO sprdata[8];

@@ -42,24 +42,24 @@ private:
   bool _stopDDF;
   bool _hasBeenActive;
 
-  void Log(ULO line, ULO cylinder);
+  void Log(uint32_t line, uint32_t cylinder);
 
-  UWO ReadWord(ULO address);
-  void IncreaseBplPt(ULO *bplpt, ULO size);
-  UWO GetHold(ULO bplNo, ULO bplsEnabled, ULO *bplpt);
+  UWO ReadWord(uint32_t address);
+  void IncreaseBplPt(uint32_t *bplpt, uint32_t size);
+  UWO GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt);
   void AddModulo(void);
-  void SetState(BPLDMAStates newState, ULO cycle);
+  void SetState(BPLDMAStates newState, uint32_t cycle);
   void SetStateNone(void);
   void Restart(bool ddfIsActive);
   void FetchLores(void);
   void FetchHires(void);
 
 public:
-  void Start(ULO cycle);
+  void Start(uint32_t cycle);
   void Stop(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO cylinder);
+  virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
   void EndOfFrame(void);
 

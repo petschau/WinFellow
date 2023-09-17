@@ -46,7 +46,7 @@ typedef struct {
   BOOLE stereo;
   BOOLE bits8;
   BOOLE bits16;
-  ULO rates_max[2][2]; /* Maximum playback rate for [8/16 bits][mono/stereo] */
+  uint32_t rates_max[2][2]; /* Maximum playback rate for [8/16 bits][mono/stereo] */
 } sound_device;
 
 
@@ -55,7 +55,7 @@ extern sound_rates sound_rate;
 extern bool sound_stereo;
 extern bool sound_16bits;
 extern BOOLE sound_wav_capture;
-extern ULO sound_buffer_length;
+extern uint32_t sound_buffer_length;
 extern sound_filters sound_filter;
 extern sound_notifications sound_notification;
 
@@ -66,7 +66,7 @@ extern sound_notifications sound_notification;
 
 extern void soundSetRate(sound_rates rate);
 extern sound_rates soundGetRate(void);
-extern ULO soundGetRateReal(void);
+extern uint32_t soundGetRateReal(void);
 extern void soundSetStereo(bool stereo);
 extern bool soundGetStereo(void);
 extern void soundSet16Bits(bool bits16);
@@ -75,32 +75,32 @@ extern void soundSetEmulation(sound_emulations emulation);
 extern sound_emulations soundGetEmulation(void);
 extern void soundSetFilter(sound_filters filter);
 extern sound_filters soundGetFilter(void);
-extern void soundSetBufferLength(ULO ms);
-extern ULO soundGetBufferLength(void);
-extern void soundSetVolume(ULO volume);
-extern ULO soundGetVolume(void);
+extern void soundSetBufferLength(uint32_t ms);
+extern uint32_t soundGetBufferLength(void);
+extern void soundSetVolume(uint32_t volume);
+extern uint32_t soundGetVolume(void);
 extern void soundSetWAVDump(BOOLE wav_capture);
 extern BOOLE soundGetWAVDump(void);
 extern void soundSetNotification(sound_notifications notification);
 extern sound_notifications soundGetNotification(void);
 
 extern void soundEndOfLine(void); /* for bus.c */
-extern void soundChannelKill(ULO ch); /* for wdmacon */
-extern void soundChannelEnable(ULO ch); /* for wdmacon */
+extern void soundChannelKill(uint32_t ch); /* for wdmacon */
+extern void soundChannelEnable(uint32_t ch); /* for wdmacon */
 
-extern void soundState0(ULO ch); /* for wdbg.c */
-extern void soundState1(ULO ch);
-extern void soundState2(ULO ch);
-extern void soundState3(ULO ch);
-extern void soundState4(ULO ch);
-extern void soundState5(ULO ch);
+extern void soundState0(uint32_t ch); /* for wdbg.c */
+extern void soundState1(uint32_t ch);
+extern void soundState2(uint32_t ch);
+extern void soundState3(uint32_t ch);
+extern void soundState4(uint32_t ch);
+extern void soundState5(uint32_t ch);
 
 
 /*==================================*/
 /* Standard Fellow Module Functions */
 /*==================================*/
 
-typedef void (*soundStateFunc)(ULO);
+typedef void (*soundStateFunc)(uint32_t);
 
 extern void soundEndOfLine(void);
 extern void soundHardReset(void);

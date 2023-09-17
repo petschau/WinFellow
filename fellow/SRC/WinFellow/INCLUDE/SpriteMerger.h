@@ -14,9 +14,9 @@ private:
   static UBY sprite_translate[2][256][256];
 
 public:
-  static void MergeLores(ULO sprite_number, UBY *playfield, UBY *sprite, ULO pixel_count);
-  static void MergeHires(ULO sprite_number, UBY *playfield, UBY *sprite, ULO pixel_count);
-  static void MergeHam(ULO sprite_number, UBY *playfield, UBY *ham_sprites_playfield, UBY *sprite, ULO pixel_count);
+  static void MergeLores(uint32_t sprite_number, UBY *playfield, UBY *sprite, uint32_t pixel_count);
+  static void MergeHires(uint32_t sprite_number, UBY *playfield, UBY *sprite, uint32_t pixel_count);
+  static void MergeHam(uint32_t sprite_number, UBY *playfield, UBY *ham_sprites_playfield, UBY *sprite, uint32_t pixel_count);
 
   static void Initialize();
 };

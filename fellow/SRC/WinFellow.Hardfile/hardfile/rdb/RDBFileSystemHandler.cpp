@@ -15,7 +15,7 @@ namespace fellow::hardfile::rdb
   {
   }
 
-  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize)
+  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize)
   {
     vector<RDBLSegBlock> blocks;
     LON nextBlock = blockChainStart;
@@ -51,7 +51,7 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("Total filesystem size was %d bytes\n", Size);
 
     RawData.reset(new UBY[Size]);
-    ULO nextCopyPosition = 0;
+    uint32_t nextCopyPosition = 0;
     for (const RDBLSegBlock& block : blocks)
     {
       LON size = block.GetDataSize();

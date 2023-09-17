@@ -2,7 +2,7 @@
 
 #include "GraphicsEventQueue.h"
 
-ULO GraphicsEvent::MakeArriveTime(ULO rasterY, ULO cylinder)
+uint32_t GraphicsEvent::MakeArriveTime(uint32_t rasterY, uint32_t cylinder)
 {
   return rasterY*GraphicsEventQueue::GetCylindersPerLine() + cylinder;
 }

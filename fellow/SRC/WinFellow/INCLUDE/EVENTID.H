@@ -24,7 +24,7 @@
 #define EVSTOP        33
 #define EXFLINE       34       
 
-extern ULO logbuffer[EVENTCOUNT][16];
+extern uint32_t logbuffer[EVENTCOUNT][16];
 extern int logfirst;
 extern int loglast;
 

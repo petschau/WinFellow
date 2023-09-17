@@ -36,7 +36,7 @@ public:
   BitplaneDraw BitplaneDraw;
   Logger Logger;
 
-  void Commit(ULO untilRasterY, ULO untilRasterX);
+  void Commit(uint32_t untilRasterY, uint32_t untilRasterX);
 
   void EndOfFrame(void);
   void SoftReset(void);

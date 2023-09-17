@@ -46,8 +46,8 @@ typedef union SpriteDecodedUnion_
 typedef struct SpriteDMAStateMachine_
 {
   SpriteDMAStates state;
-  ULO y_first;
-  ULO y_last;
+  uint32_t y_first;
+  uint32_t y_last;
 } SpriteDMAStateMachine;
 
 typedef struct Sprite_
@@ -55,11 +55,11 @@ typedef struct Sprite_
   SpriteDMAStateMachine DMAState;
   bool armed;
   bool attached;
-  ULO x;
+  uint32_t x;
   ByteWordUnion dat_hold[4];		// Sprite image "armed" for output at x.
   SpriteDecodedUnion dat_decoded;	// The armed image, decoded
   bool serializing;
-  ULO pixels_output;
+  uint32_t pixels_output;
 } Sprite;
 
 class CycleExactSprites : public Sprites
@@ -67,29 +67,29 @@ class CycleExactSprites : public Sprites
 private:
   Sprite SpriteState[8];
 
-  void Arm(ULO spriteNo);
+  void Arm(uint32_t spriteNo);
 
-  void MergeLores(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
-  void MergeHires(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
-  void MergeHam(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
-  void Merge(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
-  bool InRange(ULO spriteNo, ULO startCylinder, ULO cylinderCount);
-  UWO ReadWord(ULO spriteNo);
-  void ReadControlWords(ULO spriteNo);
-  void ReadDataWords(ULO spriteNo);
-  bool IsFirstLine(ULO spriteNo, ULO rasterY);
-  bool IsAboveFirstLine(ULO spriteNo, ULO rasterY);
-  bool IsLastLine(ULO spriteNo, ULO rasterY);
-  bool Is16Color(ULO spriteNo);
+  void MergeLores(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count);
+  void MergeHires(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count);
+  void MergeHam(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count);
+  void Merge(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count);
+  bool InRange(uint32_t spriteNo, uint32_t startCylinder, uint32_t cylinderCount);
+  UWO ReadWord(uint32_t spriteNo);
+  void ReadControlWords(uint32_t spriteNo);
+  void ReadDataWords(uint32_t spriteNo);
+  bool IsFirstLine(uint32_t spriteNo, uint32_t rasterY);
+  bool IsAboveFirstLine(uint32_t spriteNo, uint32_t rasterY);
+  bool IsLastLine(uint32_t spriteNo, uint32_t rasterY);
+  bool Is16Color(uint32_t spriteNo);
 
-  void DMAReadControl(ULO spriteNo, ULO rasterY);
-  void DMAReadData(ULO spriteNo, ULO rasterY);
-  void DMAWaitingForFirstLine(ULO spriteNo, ULO rasterY);
-  void DMAHandler(ULO rasterY);
+  void DMAReadControl(uint32_t spriteNo, uint32_t rasterY);
+  void DMAReadData(uint32_t spriteNo, uint32_t rasterY);
+  void DMAWaitingForFirstLine(uint32_t spriteNo, uint32_t rasterY);
+  void DMAHandler(uint32_t rasterY);
 
   void ClearState();
 
-  void OutputSprite(ULO spriteNo, ULO startCylinder, ULO cylinderCount);
+  void OutputSprite(uint32_t spriteNo, uint32_t startCylinder, uint32_t cylinderCount);
 
 public:
   virtual void NotifySprpthChanged(UWO data, unsigned int sprite_number);
@@ -99,10 +99,10 @@ public:
   virtual void NotifySprdataChanged(UWO data, unsigned int sprite_number);
   virtual void NotifySprdatbChanged(UWO data, unsigned int sprite_number);
 
-  void OutputSprites(ULO startCylinder, ULO cylinderCount);
+  void OutputSprites(uint32_t startCylinder, uint32_t cylinderCount);
 
   virtual void HardReset();
-  virtual void EndOfLine(ULO rasterY);
+  virtual void EndOfLine(uint32_t rasterY);
   virtual void EndOfFrame();
   virtual void EmulationStart();
   virtual void EmulationStop();

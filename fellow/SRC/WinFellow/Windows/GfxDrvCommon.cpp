@@ -21,12 +21,12 @@
 
 #include "windowsx.h"
 
-void GfxDrvCommonDelayFlipTimerCallback(ULO timeMilliseconds)
+void GfxDrvCommonDelayFlipTimerCallback(uint32_t timeMilliseconds)
 {
   gfxDrvCommon->DelayFlipTimerCallback(timeMilliseconds);
 }
 
-void GfxDrvCommon::DelayFlipTimerCallback(ULO timeMilliseconds)
+void GfxDrvCommon::DelayFlipTimerCallback(uint32_t timeMilliseconds)
 {
   _time = timeMilliseconds;
 
@@ -458,8 +458,8 @@ void GfxDrvCommon::DisplayWindow()
   }
   else
   {
-    ULO x = iniGetEmulationWindowXPos(_ini);
-    ULO y = iniGetEmulationWindowYPos(_ini);
+    uint32_t x = iniGetEmulationWindowXPos(_ini);
+    uint32_t y = iniGetEmulationWindowYPos(_ini);
     RECT rc1;
     SetRect(&rc1, x, y, x + _current_draw_mode->width, y + _current_draw_mode->height);
     AdjustWindowRectEx(&rc1, GetWindowStyle(_hwnd), GetMenu(_hwnd) != nullptr, GetWindowExStyle(_hwnd));
@@ -502,8 +502,8 @@ bool GfxDrvCommon::InitializeWindow()
   char *versionstring = fellowGetVersionString();
 
   SizeChanged(_current_draw_mode->width, _current_draw_mode->height);
-  ULO width = _current_draw_mode->width;
-  ULO height = _current_draw_mode->height;
+  uint32_t width = _current_draw_mode->width;
+  uint32_t height = _current_draw_mode->height;
 
   if (GetOutputWindowed())
   {

@@ -7,13 +7,13 @@ namespace fellow::hardfile::hunks
 {
   struct HunkSize
   {
-    ULO SizeInLongwords;
-    ULO MemoryFlags;
-    ULO AdditionalFlags;
+    uint32_t SizeInLongwords;
+    uint32_t MemoryFlags;
+    uint32_t AdditionalFlags;
 
     const STR* GetMemoryFlagsToString();
 
-    HunkSize(ULO sizeInLongwords, ULO memoryFlags, ULO additionalFlags);
+    HunkSize(uint32_t sizeInLongwords, uint32_t memoryFlags, uint32_t additionalFlags);
   };
 }
 

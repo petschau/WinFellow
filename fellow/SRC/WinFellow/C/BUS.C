@@ -326,22 +326,22 @@ void busLogCpu(STR *s)
 
 #endif
 
-void busSetCycle(ULO cycle)
+void busSetCycle(uint32_t cycle)
 {
   bus.cycle = cycle;
 }
 
-ULO busGetCycle(void)
+uint32_t busGetCycle(void)
 {
   return bus.cycle;
 }
 
-ULO busGetRasterY(void)
+uint32_t busGetRasterY(void)
 {
   return bus.cycle / busGetCyclesInThisLine();
 }
 
-ULO busGetRasterX(void)
+uint32_t busGetRasterX(void)
 {
   return bus.cycle % busGetCyclesInThisLine();
 }
@@ -351,22 +351,22 @@ ULL busGetRasterFrameCount(void)
   return bus.frame_no;
 }
 
-ULO busGetCyclesInThisLine(void)
+uint32_t busGetCyclesInThisLine(void)
 {
   return bus.screen_limits->cycles_in_this_line;
 }
 
-ULO busGetLinesInThisFrame(void)
+uint32_t busGetLinesInThisFrame(void)
 {
   return bus.screen_limits->lines_in_this_frame;
 }
 
-ULO busGetMaxLinesInFrame(void)
+uint32_t busGetMaxLinesInFrame(void)
 {
   return bus.screen_limits->max_lines_in_frame;
 }
 
-ULO busGetCyclesInThisFrame(void)
+uint32_t busGetCyclesInThisFrame(void)
 {
   return bus.screen_limits->cycles_in_this_frame;
 }

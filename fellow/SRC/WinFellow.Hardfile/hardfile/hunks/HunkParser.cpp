@@ -10,7 +10,7 @@ namespace fellow::hardfile::hunks
 {
   HeaderHunk* HunkParser::ParseHeader()
   {
-    ULO type = _rawDataReader.GetNextByteswappedLong();
+    uint32_t type = _rawDataReader.GetNextByteswappedLong();
     if (type != HeaderHunkID)
     {
       Service->Log.AddLogDebug("fhfile: Header hunk in RDB Filesystem handler is not type %X - Found type %X\n", HeaderHunkID, type);
@@ -22,9 +22,9 @@ namespace fellow::hardfile::hunks
     return header;
   }
 
-  InitialHunk* HunkParser::ParseNextInitialHunk(ULO allocateSizeInLongwords)
+  InitialHunk* HunkParser::ParseNextInitialHunk(uint32_t allocateSizeInLongwords)
   {
-    ULO type = _rawDataReader.GetNextByteswappedLong();
+    uint32_t type = _rawDataReader.GetNextByteswappedLong();
     auto hunk = HunkFactory::CreateInitialHunk(type, allocateSizeInLongwords);
     if (hunk == nullptr)
     {
@@ -36,9 +36,9 @@ namespace fellow::hardfile::hunks
     return hunk;
   }
 
-  AdditionalHunk* HunkParser::ParseNextAdditionalHunk(ULO sourceHunkIndex)
+  AdditionalHunk* HunkParser::ParseNextAdditionalHunk(uint32_t sourceHunkIndex)
   {
-    ULO type = _rawDataReader.GetNextByteswappedLong();
+    uint32_t type = _rawDataReader.GetNextByteswappedLong();
     auto hunk = HunkFactory::CreateAdditionalHunk(type, sourceHunkIndex);
     if (hunk == nullptr)
     {
@@ -62,8 +62,8 @@ namespace fellow::hardfile::hunks
 
     _fileImage.SetHeader(header);
 
-    ULO hunkCount = header->GetHunkSizeCount();
-    for (ULO i = 0; i < hunkCount; i++)
+    uint32_t hunkCount = header->GetHunkSizeCount();
+    for (uint32_t i = 0; i < hunkCount; i++)
     {
       auto initialHunk = ParseNextInitialHunk(header->GetHunkSize(i).SizeInLongwords);
       if (initialHunk == nullptr)
@@ -88,7 +88,7 @@ namespace fellow::hardfile::hunks
     return true;
   }
 
-  HunkParser::HunkParser(UBY* rawData, ULO rawDataLength, FileImage& fileImage)
+  HunkParser::HunkParser(UBY* rawData, uint32_t rawDataLength, FileImage& fileImage)
     : _rawDataReader(rawData, rawDataLength), _fileImage(fileImage)
   {
   }

@@ -1,10 +1,10 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-typedef void(*timerCallbackFunction)(ULO millisecondTicks);
+typedef void(*timerCallbackFunction)(uint32_t millisecondTicks);
 
 extern void timerAddCallback(timerCallbackFunction callback);
-extern ULO timerGetTimeMs();
+extern uint32_t timerGetTimeMs();
 void timerEmulationStart();
 void timerEmulationStop();
 void timerStartup();

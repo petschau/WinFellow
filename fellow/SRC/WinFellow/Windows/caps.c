@@ -96,7 +96,7 @@ BOOLE capsShutdown(void) {
   return CapsExit();
 }
 
-BOOLE capsUnloadImage(ULO drive) {
+BOOLE capsUnloadImage(uint32_t drive) {
   if(!capsDriveIsLocked[drive])
     return FALSE;
 
@@ -107,7 +107,7 @@ BOOLE capsUnloadImage(ULO drive) {
   return TRUE;
 }
 
-static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive) {
+static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, uint32_t drive) {
   int i;
   char DateString[100], TypeString[100], PlatformString[100];
   struct CapsDateTimeExt *capsDateTimeExt;
@@ -162,9 +162,9 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive) {
   fellowAddTimelessLog("Intended platform(s):%s\n\n", PlatformString);
 }
 
-BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks) {
+BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
   struct CapsImageInfo capsImageInfo;
-  ULO ImageSize, ReturnCode;
+  uint32_t ImageSize, ReturnCode;
   UBY *ImageBuffer;
 
   /* make sure we're up and running beforehand */
@@ -204,8 +204,8 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks) {
   return TRUE;
 }
 
-BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *maxtracklength, ULO *timebuf, BOOLE *flakey) {
-  ULO i, len, type;
+BOOLE capsLoadTrack(uint32_t drive, uint32_t track, UBY *mfm_data, uint32_t *tracklength, uint32_t *maxtracklength, uint32_t *timebuf, BOOLE *flakey) {
+  uint32_t i, len, type;
   struct CapsTrackInfo capsTrackInfo;
 
   *timebuf = 0;
@@ -244,7 +244,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
 
   if (capsTrackInfo.timelen > 0)
     for(i = 0; i < capsTrackInfo.timelen; i++)
-      timebuf[i] = (ULO) capsTrackInfo.timebuf[i];
+      timebuf[i] = (uint32_t) capsTrackInfo.timebuf[i];
 
 #if TRACECAPS
   fellowAddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
@@ -259,9 +259,9 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
   return TRUE;
 }
 
-BOOLE capsLoadNextRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength) {
-  static ULO revolutioncount = 0;
-  ULO revolution, len;
+BOOLE capsLoadNextRevolution(uint32_t drive, uint32_t track, UBY *mfm_data, uint32_t *tracklength) {
+  static uint32_t revolutioncount = 0;
+  uint32_t revolution, len;
   struct CapsTrackInfo capsTrackInfo;
 
   revolutioncount++;

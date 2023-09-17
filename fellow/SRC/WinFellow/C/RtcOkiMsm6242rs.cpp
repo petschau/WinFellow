@@ -24,7 +24,7 @@
 #include "RtcOkiMsm6242rs.h"
 #include "FELLOW.H"
 
-int RtcOkiMsm6242rs::GetRegisterNumberFromAddress(ULO address)
+int RtcOkiMsm6242rs::GetRegisterNumberFromAddress(uint32_t address)
 {
   return (address >> 2) & 0xf;
 }
@@ -377,7 +377,7 @@ void RtcOkiMsm6242rs::SetControlRegisterF(UWO data)
   _restFlag = data & 1;
 }
 
-UWO RtcOkiMsm6242rs::read(ULO address)
+UWO RtcOkiMsm6242rs::read(uint32_t address)
 {
 #ifdef RTC_LOG
   logRtcTime("read");
@@ -387,7 +387,7 @@ UWO RtcOkiMsm6242rs::read(ULO address)
   return (this->*_registerGetters[register_number])();
 }
 
-void RtcOkiMsm6242rs::write(UWO data, ULO address)
+void RtcOkiMsm6242rs::write(UWO data, uint32_t address)
 {
 #ifdef RTC_LOG
   logRtcTime("Before write");

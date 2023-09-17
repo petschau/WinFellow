@@ -447,7 +447,7 @@ void mouseDrvMovementHandler(void)
 	
     if (res == DI_OK || res == DI_BUFFEROVERFLOW)
     {
-      ULO i = 0;
+      uint32_t i = 0;
       DWORD oldSequence = 0;
 	  
       /*

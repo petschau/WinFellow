@@ -14,13 +14,13 @@ private:
 
   UWO _transmitBuffer;
   UWO _transmitShiftRegister;
-  ULO _transmitDoneTime;
+  uint32_t _transmitDoneTime;
   bool _transmitBufferEmpty;
   bool _transmitShiftRegisterEmpty;
 
   UWO _receiveBuffer;
   UWO _receiveShiftRegister;
-  ULO _receiveDoneTime;
+  uint32_t _receiveDoneTime;
   bool _receiveBufferFull;
   bool _receiveBufferOverrun;
 
@@ -38,12 +38,12 @@ private:
 
   void CopyReceiveShiftRegisterToBuffer();
   void CopyTransmitBufferToShiftRegister();
-  ULO GetTransmitDoneTime();
+  uint32_t GetTransmitDoneTime();
 
 public:
-  static void wserper(UWO data, ULO address);
-  static void wserdat(UWO data, ULO address);
-  static UWO rserdat(ULO address);
+  static void wserper(UWO data, uint32_t address);
+  static void wserdat(UWO data, uint32_t address);
+  static UWO rserdat(uint32_t address);
 
   UWO ReadSerdatRegister();
   void WriteSerdatRegister(UWO data);

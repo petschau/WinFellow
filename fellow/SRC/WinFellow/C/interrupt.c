@@ -52,12 +52,12 @@
 
 UWO intena;
 UWO intreq;
-ULO interrupt_pending_cpu_level;
-ULO interrupt_pending_chip_interrupt_number;
+uint32_t interrupt_pending_cpu_level;
+uint32_t interrupt_pending_chip_interrupt_number;
 static unsigned int interrupt_cpu_level[16] = {1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7};
 
 
-STR *interruptGetInterruptName(ULO interrupt_number)
+STR *interruptGetInterruptName(uint32_t interrupt_number)
 {
   switch (interrupt_number)
   {
@@ -81,22 +81,22 @@ STR *interruptGetInterruptName(ULO interrupt_number)
   return "Illegal interrupt source!";
 }
 
-void interruptSetPendingChipInterruptNumber(ULO pending_chip_interrupt_number)
+void interruptSetPendingChipInterruptNumber(uint32_t pending_chip_interrupt_number)
 {
   interrupt_pending_chip_interrupt_number = pending_chip_interrupt_number;
 }
 
-ULO interruptGetPendingChipInterruptNumber(void)
+uint32_t interruptGetPendingChipInterruptNumber(void)
 {
   return interrupt_pending_chip_interrupt_number;
 }
 
-void interruptSetPendingCpuLevel(ULO pending_cpu_level)
+void interruptSetPendingCpuLevel(uint32_t pending_cpu_level)
 {
   interrupt_pending_cpu_level = pending_cpu_level;
 }
 
-ULO interruptGetPendingCpuLevel(void)
+uint32_t interruptGetPendingCpuLevel(void)
 {
   return interrupt_pending_cpu_level;
 }
@@ -194,7 +194,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
   }
 
   // Evaluate which interrupt is next
-  ULO current_cpu_level = cpuGetIrqLevel();
+  uint32_t current_cpu_level = cpuGetIrqLevel();
   if (current_cpu_level == 7)
   {
     return;
@@ -252,12 +252,12 @@ $dff09c (Write) / $dff01e (Read)
 Paula
 */
 
-UWO rintreqr(ULO address)
+UWO rintreqr(uint32_t address)
 {
   return intreq;
 }
 
-void wintreq_direct(UWO data, ULO address, bool delayIRQ)
+void wintreq_direct(UWO data, uint32_t address, bool delayIRQ)
 {
   if (interruptHasSetModeBit(data))
   {
@@ -275,7 +275,7 @@ void wintreq_direct(UWO data, ULO address, bool delayIRQ)
   }
 }
 
-void wintreq(UWO data, ULO address)
+void wintreq(UWO data, uint32_t address)
 {
   wintreq_direct(data, address, false);
 }
@@ -290,7 +290,7 @@ $dff09a (Write) / $dff01c (Read)
 Paula
 */
 
-UWO rintenar(ULO address)
+UWO rintenar(uint32_t address)
 {
   return intena;
 }
@@ -299,7 +299,7 @@ UWO rintenar(ULO address)
 // The master bit can not be read, the memory test in the kickstart
 // depends on this.
 
-void wintena(UWO data, ULO address)
+void wintena(UWO data, uint32_t address)
 {
   if (interruptHasSetModeBit(data))
   {

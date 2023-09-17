@@ -100,7 +100,7 @@ private:
 
   bool SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix, const XMMATRIX& projectionMatrix);
 
-  void CalculateDestinationRectangle(ULO output_width, ULO output_height, float& dstHalfWidth, float& dstHalfHeight);
+  void CalculateDestinationRectangle(uint32_t output_width, uint32_t output_height, float& dstHalfWidth, float& dstHalfHeight);
   void CalculateSourceRectangle(float& srcLeft, float& srcTop, float& srcRight, float& srcBottom);
 
 public:

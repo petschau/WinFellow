@@ -72,17 +72,17 @@ void ccwButtonEnable(HWND windowHandle, int controlIdentifier)
   ccwButtonEnableConditional(windowHandle, controlIdentifier, TRUE);
 }
 
-void ccwSliderSetRange(HWND windowHandle, int controlIdentifier, ULO minPos, ULO maxPos)
+void ccwSliderSetRange(HWND windowHandle, int controlIdentifier, uint32_t minPos, uint32_t maxPos)
 {
   SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETRANGE, TRUE, (LPARAM) MAKELONG(minPos, maxPos));
 }
 
-ULO ccwComboBoxGetCurrentSelection(HWND windowHandle, int controlIdentifier)
+uint32_t ccwComboBoxGetCurrentSelection(HWND windowHandle, int controlIdentifier)
 {
   return ComboBox_GetCurSel(GetDlgItem(windowHandle, controlIdentifier));
 }
 
-void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, ULO index)
+void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, uint32_t index)
 {
   ComboBox_SetCurSel(GetDlgItem(windowHandle, controlIdentifier), index);
 }
@@ -92,9 +92,9 @@ void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text)
   ComboBox_AddString(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-ULO ccwSliderGetPosition(HWND windowHandle, int controlIdentifier)
+uint32_t ccwSliderGetPosition(HWND windowHandle, int controlIdentifier)
 {
-  return (ULO) SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
+  return (uint32_t) SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
 }
 
 void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position)
@@ -117,7 +117,7 @@ void ccwEditSetText(HWND windowHandle, int controlIdentifier, STR *text)
   Edit_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, ULO n)
+void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, uint32_t n)
 {
   Edit_GetText(GetDlgItem(windowHandle, controlIdentifier), text, n);
 }

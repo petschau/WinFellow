@@ -48,19 +48,19 @@ sound_filters sound_filter;
 sound_notifications sound_notification;
 BOOLE sound_wav_capture;
 BOOLE sound_device_found;
-ULO sound_volume;
+uint32_t sound_volume;
 
 
 /*===========================================================================*/
 /* Buffer data                                                               */
 /*===========================================================================*/
 
-ULO sound_current_buffer;
+uint32_t sound_current_buffer;
 WOR sound_left[2][MAX_BUFFER_SAMPLES],
 sound_right[2][MAX_BUFFER_SAMPLES];         /* Samplebuffer, 16-b.signed */
-ULO sound_buffer_length;                      /* Current buffer length in ms */
-ULO sound_buffer_sample_count;    /* Current number of samples in the buffer */
-ULO sound_buffer_sample_count_max;         /* Maximum capacity of the buffer */
+uint32_t sound_buffer_length;                      /* Current buffer length in ms */
+uint32_t sound_buffer_sample_count;    /* Current number of samples in the buffer */
+uint32_t sound_buffer_sample_count_max;         /* Maximum capacity of the buffer */
 
 
 /*===========================================================================*/
@@ -74,10 +74,10 @@ sound_device sound_dev;
 /* Run-time data                                                             */
 /*===========================================================================*/
 
-ULO audiocounter;                   /* Used in 22050/44100 to decide samples */
-ULO audioodd;                          /* Used for skipping samples in 22050 */
-ULO sound_framecounter;                       /* Count frames, and then play */
-ULO sound_scale;
+uint32_t audiocounter;                   /* Used in 22050/44100 to decide samples */
+uint32_t audioodd;                          /* Used for skipping samples in 22050 */
+uint32_t sound_framecounter;                       /* Count frames, and then play */
+uint32_t sound_scale;
 
 double filter_value45 = 0.857270436755215389; // 7000 Hz at 45454 Hz samplingrate
 double filter_value33 = 0.809385175167476725; // 7000 Hz at 33100 Hz samplingrate
@@ -102,33 +102,33 @@ double last_left = 0.0000000000;
 /* Audio-registers                                                           */
 /*===========================================================================*/
 
-ULO audpt[4];                                          /* Sample-DMA pointer */
-ULO audlen[4];                                                     /* Length */
-ULO audper[4];                      /* Used directly, NOTE: translated value */ 
-ULO audvol[4];             /* Volume, possibly not reloaded by state-machine */
-ULO auddat[4];                           /* Last data word set by DMA or CPU */
+uint32_t audpt[4];                                          /* Sample-DMA pointer */
+uint32_t audlen[4];                                                     /* Length */
+uint32_t audper[4];                      /* Used directly, NOTE: translated value */ 
+uint32_t audvol[4];             /* Volume, possibly not reloaded by state-machine */
+uint32_t auddat[4];                           /* Last data word set by DMA or CPU */
 BOOLE auddat_set[4];	              /* Set TRUE whenever auddat is written */
 
 /*===========================================================================*/
 /* Internal variables used by state-machine                                  */
 /*===========================================================================*/
 
-ULO audlenw[4];                                            /* Length counter */
-ULO audpercounter[4];                                      /* Period counter */
-ULO auddatw[4];                    /* Sample currently output, 16-bit signed */
+uint32_t audlenw[4];                                            /* Length counter */
+uint32_t audpercounter[4];                                      /* Period counter */
+uint32_t auddatw[4];                    /* Sample currently output, 16-bit signed */
 soundStateFunc audstate[4];                 /* Current state for the channel */
-ULO audvolw[4];                   /* Current volume, reloaded at some points */
-ULO audptw[4];               /* Current dma-pointer, reloaded at some points */ 
+uint32_t audvolw[4];                   /* Current volume, reloaded at some points */
+uint32_t audptw[4];               /* Current dma-pointer, reloaded at some points */ 
 
 
 /*===========================================================================*/
 /* Translation tables                                                        */
 /*===========================================================================*/
 
-ULO periodtable[65536];
+uint32_t periodtable[65536];
 WOR volumes[256][64];
-ULO audioirqmask[4] = {0x0080, 0x0100, 0x0200, 0x0400};
-ULO audiodmaconmask[4] = {0x1, 0x2, 0x4, 0x8};
+uint32_t audioirqmask[4] = {0x0080, 0x0100, 0x0200, 0x0400};
+uint32_t audiodmaconmask[4] = {0x1, 0x2, 0x4, 0x8};
 
 
 /*==============================================================================
@@ -137,7 +137,7 @@ Audio IO Registers
 
 /* Extract channel number from the register address */
 
-ULO soundGetChannelNumber(ULO address)
+uint32_t soundGetChannelNumber(uint32_t address)
 {
   return ((address & 0x70) >> 4) - 2;
 }
@@ -150,15 +150,15 @@ AUDXPT
 $dff0a0,b0,c0,d0
 */
 
-void waudXpth(UWO data, ULO address)
+void waudXpth(UWO data, uint32_t address)
 {
-  ULO ch = soundGetChannelNumber(address);
+  uint32_t ch = soundGetChannelNumber(address);
   audpt[ch] = chipsetReplaceHighPtr(audpt[ch], data);
 }
 
-void waudXptl(UWO data, ULO address)
+void waudXptl(UWO data, uint32_t address)
 {
-  ULO ch = soundGetChannelNumber(address);
+  uint32_t ch = soundGetChannelNumber(address);
   audpt[ch] = chipsetReplaceLowPtr(audpt[ch], data);
 }
 
@@ -169,9 +169,9 @@ AUDXLEN
 $dff0a4,b4,c4,d4
 */
 
-void waudXlen(UWO data, ULO address)
+void waudXlen(UWO data, uint32_t address)
 {
-  ULO ch = soundGetChannelNumber(address);
+  uint32_t ch = soundGetChannelNumber(address);
   audlen[ch] = data;
 }
 
@@ -182,9 +182,9 @@ AUDXPER
 $dff0a6,b6,c6,d6
 */
 
-void waudXper(UWO data, ULO address)
+void waudXper(UWO data, uint32_t address)
 {
-  ULO ch = soundGetChannelNumber(address);
+  uint32_t ch = soundGetChannelNumber(address);
   audper[ch] = periodtable[data];
 }
 
@@ -196,9 +196,9 @@ $dff0a8,b8,c8,d8
 
 */
 
-void waudXvol(UWO data, ULO address)
+void waudXvol(UWO data, uint32_t address)
 {
-  ULO ch = soundGetChannelNumber(address);
+  uint32_t ch = soundGetChannelNumber(address);
   /*Replay routines sometimes access volume as a byte register at $dff0X9...*/
   if (((data & 0xff) == 0) && ((data & 0xff00) != 0)) data = (data >> 8) & 0xff;
   if ((data & 64) == 64) data = 63;
@@ -214,9 +214,9 @@ $dff0aa,ba,ca,da
 Not used right now.
 */
 
-void waudXdat(UWO data, ULO address)
+void waudXdat(UWO data, uint32_t address)
 {
-  ULO ch = soundGetChannelNumber(address);
+  uint32_t ch = soundGetChannelNumber(address);
   auddat[ch] = data & 0xff;
   auddat_set[ch] = TRUE;
 }
@@ -226,19 +226,19 @@ void waudXdat(UWO data, ULO address)
 Audio state machine
 ==============================================================================*/
 
-void soundState0(ULO ch);
-void soundState1(ULO ch);
-void soundState2(ULO ch);
-void soundState3(ULO ch);
-void soundState4(ULO ch);
-void soundState5(ULO ch);
-void soundState6(ULO ch);
+void soundState0(uint32_t ch);
+void soundState1(uint32_t ch);
+void soundState2(uint32_t ch);
+void soundState3(uint32_t ch);
+void soundState4(uint32_t ch);
+void soundState5(uint32_t ch);
+void soundState6(uint32_t ch);
 
 /*==============================================================================
 State 0
 ==============================================================================*/
 
-void soundState0(ULO ch)
+void soundState0(uint32_t ch)
 {
   /*-------------------
   Statechange 0 to 1
@@ -254,7 +254,7 @@ void soundState0(ULO ch)
 State 1
 ==============================================================================*/
 
-void soundState1(ULO ch)
+void soundState1(uint32_t ch)
 {
   /*-------------------
   Statechange 1 to 5
@@ -269,7 +269,7 @@ void soundState1(ULO ch)
 State 2
 ==============================================================================*/
 
-void soundState2(ULO ch)
+void soundState2(uint32_t ch)
 {
   if (audpercounter[ch] >= 0x10000)
   {
@@ -298,7 +298,7 @@ void soundState2(ULO ch)
 State 3
 ==============================================================================*/
 
-void soundState3(ULO ch)
+void soundState3(uint32_t ch)
 {
   if (audpercounter[ch] >= 0x10000)
   {
@@ -335,11 +335,11 @@ void soundState3(ULO ch)
 State 4 and State 6, no operation
 ==============================================================================*/
 
-void soundState4(ULO ch)
+void soundState4(uint32_t ch)
 {
 }
 
-void soundState6(ULO ch)
+void soundState6(uint32_t ch)
 {
 }
 
@@ -347,7 +347,7 @@ void soundState6(ULO ch)
 State 5
 ==============================================================================*/
 
-void soundState5(ULO ch)
+void soundState5(uint32_t ch)
 {
   /*-------------------
   Statechange 5 to 2
@@ -371,7 +371,7 @@ void soundState5(ULO ch)
 This is called by DMACON when DMA is turned off
 ==============================================================================*/
 
-void soundChannelKill(ULO ch)
+void soundChannelKill(uint32_t ch)
 {
   auddatw[ch] = 0;
   audstate[ch] = soundState0;
@@ -381,7 +381,7 @@ void soundChannelKill(ULO ch)
 This is called by DMACON when DMA is turned on
 ==============================================================================*/
 
-void soundChannelEnable(ULO ch)
+void soundChannelEnable(uint32_t ch)
 {
   soundState0(ch);
 }
@@ -399,9 +399,9 @@ and move the generated samples to a temporary buffer
 ; coded by Rainer Sinsch (sinsch@informatik.uni-frankfurt.de)
 ;==============================================================================*/
 
-void soundLowPass(ULO count, WOR *buffer_left, WOR *buffer_right)
+void soundLowPass(uint32_t count, WOR *buffer_left, WOR *buffer_right)
 {
-  ULO i;
+  uint32_t i;
   double amplitude_div;
   double filter_value;
   switch (soundGetRate())
@@ -433,10 +433,10 @@ void soundLowPass(ULO count, WOR *buffer_left, WOR *buffer_right)
   }
 }
 
-ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, BOOLE halfscale, BOOLE odd)
+uint32_t soundChannelUpdate(uint32_t ch, WOR *buffer_left, WOR *buffer_right, uint32_t count, BOOLE halfscale, BOOLE odd)
 {
-  ULO samples_added = 0;
-  ULO i;
+  uint32_t samples_added = 0;
+  uint32_t i;
 
   if (dmacon & audiodmaconmask[ch])
   {
@@ -487,10 +487,10 @@ void soundFrequencyHandler(void)
 {
   WOR *buffer_left = (WOR*) sound_left + sound_buffer_sample_count;
   WOR *buffer_right = (WOR*) sound_right + sound_buffer_sample_count;
-  ULO count = 0;
-  ULO samples_added;
+  uint32_t count = 0;
+  uint32_t samples_added;
   BOOLE halfscale = (soundGetRate() == SOUND_22050 || soundGetRate() == SOUND_15650);
-  ULO i;
+  uint32_t i;
   if (soundGetRate() == SOUND_44100 || soundGetRate() == SOUND_22050)
   {
     while (audiocounter <= 0x40000)
@@ -527,7 +527,7 @@ __inline sound_rates soundGetRate(void)
   return sound_rate;
 }
 
-__inline ULO soundGetRateReal(void)
+__inline uint32_t soundGetRateReal(void)
 {
   switch (soundGetRate()) {
     case SOUND_44100:	return 44100;
@@ -588,22 +588,22 @@ sound_notifications soundGetNotification(void)
   return sound_notification;
 }
 
-__inline void soundSetBufferLength(ULO ms)
+__inline void soundSetBufferLength(uint32_t ms)
 {
   sound_buffer_length = ms;
 }
 
-__inline ULO soundGetBufferLength(void)
+__inline uint32_t soundGetBufferLength(void)
 {
   return sound_buffer_length;
 }
 
-__inline ULO soundGetVolume(void)
+__inline uint32_t soundGetVolume(void)
 {
   return sound_volume;
 }
 
-__inline void soundSetVolume(const ULO volume)
+__inline void soundSetVolume(const uint32_t volume)
 {
   sound_volume = volume;
 }
@@ -618,22 +618,22 @@ __inline BOOLE soundGetWAVDump(void)
   return sound_wav_capture;
 }
 
-__inline void soundSetBufferSampleCount(ULO sample_count)
+__inline void soundSetBufferSampleCount(uint32_t sample_count)
 {
   sound_buffer_sample_count = sample_count;
 }
 
-__inline ULO soundGetBufferSampleCount(void)
+__inline uint32_t soundGetBufferSampleCount(void)
 {
   return sound_buffer_sample_count;
 }
 
-__inline void soundSetBufferSampleCountMax(ULO sample_count_max)
+__inline void soundSetBufferSampleCountMax(uint32_t sample_count_max)
 {
   sound_buffer_sample_count_max = sample_count_max;
 }
 
-__inline ULO soundGetBufferSampleCountMax(void)
+__inline uint32_t soundGetBufferSampleCountMax(void)
 {
   return sound_buffer_sample_count_max;
 }
@@ -648,12 +648,12 @@ __inline BOOLE soundGetDeviceFound(void)
   return sound_device_found;
 }
 
-__inline void soundSetScale(ULO scale)
+__inline void soundSetScale(uint32_t scale)
 {
   sound_scale = scale;
 }
 
-__inline ULO soundGetScale(void)
+__inline uint32_t soundGetScale(void)
 {
   return sound_scale;
 }
@@ -668,12 +668,12 @@ __inline WOR soundGetSampleVolume(BYT sample_in, UBY volume)
   return volumes[sample_in][volume];
 }
 
-__inline void soundSetPeriodValue(ULO period, ULO value)
+__inline void soundSetPeriodValue(uint32_t period, uint32_t value)
 {
   periodtable[period] = value;
 }
 
-__inline ULO soundGetPeriodValue(ULO period)
+__inline uint32_t soundGetPeriodValue(uint32_t period)
 {
   return periodtable[period];
 }
@@ -705,21 +705,21 @@ void soundVolumeTableInitialize(BOOLE stereo)
 /* Initializes the period table                                              */
 /*===========================================================================*/
 
-void soundPeriodTableInitialize(ULO outputrate)
+void soundPeriodTableInitialize(uint32_t outputrate)
 {
   double j;
   LON i, periodvalue;
 
   if (outputrate < 29000)
     outputrate *= 2;   /* Internally, can not run slower than max Amiga rate */
-  soundSetScale((ULO) (((double)(65536.0*2.0*31200.0))/((double) outputrate)));
+  soundSetScale((uint32_t) (((double)(65536.0*2.0*31200.0))/((double) outputrate)));
 
   soundSetPeriodValue(0, 0x10000);
   for (i = 1; i < 65536; i++)
   {
     //j = 3568200 / i;                                          /* Sample rate */
     j = 3546895 / i;                                          /* Sample rate */
-    periodvalue = (ULO) ((j*65536) / outputrate);
+    periodvalue = (uint32_t) ((j*65536) / outputrate);
     if (periodvalue > 0x10000)
       periodvalue = 0x10000;
     soundSetPeriodValue(i, periodvalue);
@@ -740,7 +740,7 @@ void soundPlaybackInitialize(void)
     soundVolumeTableInitialize(soundGetStereo());
     soundSetBufferSampleCount(0);
     sound_current_buffer = 0;
-    soundSetBufferSampleCountMax(static_cast<ULO>(static_cast<float>(soundGetRateReal()) / (1000.0f / static_cast<float>(soundGetBufferLength()))));
+    soundSetBufferSampleCountMax(static_cast<uint32_t>(static_cast<float>(soundGetRateReal()) / (1000.0f / static_cast<float>(soundGetBufferLength()))));
   }
 }
 
@@ -802,10 +802,10 @@ void soundIORegistersClear(void)
 }
 
 
-void soundCopyBufferOverrunToCurrentBuffer(ULO available_samples, ULO previous_buffer)
+void soundCopyBufferOverrunToCurrentBuffer(uint32_t available_samples, uint32_t previous_buffer)
 {
-  ULO pos = 0;
-  for (ULO i = soundGetBufferSampleCountMax(); i < available_samples; i++)
+  uint32_t pos = 0;
+  for (uint32_t i = soundGetBufferSampleCountMax(); i < available_samples; i++)
   {
     sound_left[sound_current_buffer][pos] = sound_left[previous_buffer][i];
     sound_right[sound_current_buffer][pos] = sound_right[previous_buffer][i];
@@ -823,7 +823,7 @@ void soundEndOfLine(void)
   if (soundGetEmulation() != SOUND_NONE)
   {
     soundFrequencyHandler();
-    ULO available_samples = soundGetBufferSampleCount() - sound_current_buffer*MAX_BUFFER_SAMPLES;
+    uint32_t available_samples = soundGetBufferSampleCount() - sound_current_buffer*MAX_BUFFER_SAMPLES;
     if (available_samples >= soundGetBufferSampleCountMax())
     {
       if (soundGetEmulation() == SOUND_PLAY)
@@ -863,7 +863,7 @@ void soundEmulationStart(void)
   if (soundGetEmulation() != SOUND_NONE && soundGetEmulation() != SOUND_EMULATE)
   {
     /* Allow sound driver to override buffer length */
-    ULO buffer_length = soundGetBufferSampleCountMax();
+    uint32_t buffer_length = soundGetBufferSampleCountMax();
     if (!soundDrvEmulationStart(soundGetRateReal(), soundGet16Bits(), soundGetStereo(), &buffer_length))
     {
       soundSetEmulation(SOUND_EMULATE); /* Driver failed, slient emulation */

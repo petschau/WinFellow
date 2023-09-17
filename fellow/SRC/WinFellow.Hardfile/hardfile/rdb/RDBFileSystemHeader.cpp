@@ -6,34 +6,34 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::rdb
 {
-  void RDBFileSystemHeader::ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize)
+  void RDBFileSystemHeader::ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize)
   {
-    ULO index = blockSize * blockChainStart;
+    uint32_t index = blockSize * blockChainStart;
 
-    SizeInLongs = reader.ReadULO(index + 4);
+    SizeInLongs = reader.ReadUint32(index + 4);
     CheckSum = reader.ReadLON(index + 8);
-    HostID = reader.ReadULO(index + 12);
-    Next = reader.ReadULO(index + 16);
-    Flags = reader.ReadULO(index + 20);
-    DOSType = reader.ReadULO(index + 32);
-    Version = reader.ReadULO(index + 36);
-    PatchFlags = reader.ReadULO(index + 40);
+    HostID = reader.ReadUint32(index + 12);
+    Next = reader.ReadUint32(index + 16);
+    Flags = reader.ReadUint32(index + 20);
+    DOSType = reader.ReadUint32(index + 32);
+    Version = reader.ReadUint32(index + 36);
+    PatchFlags = reader.ReadUint32(index + 40);
 
     // Device node
-    DnType = reader.ReadULO(index + 44);
-    DnTask = reader.ReadULO(index + 48);
-    DnLock = reader.ReadULO(index + 52);
-    DnHandler = reader.ReadULO(index + 56);
-    DnStackSize = reader.ReadULO(index + 60);
-    DnPriority = reader.ReadULO(index + 64);
-    DnStartup = reader.ReadULO(index + 68);
-    DnSegListBlock = reader.ReadULO(index + 72);
-    DnGlobalVec = reader.ReadULO(index + 76);
+    DnType = reader.ReadUint32(index + 44);
+    DnTask = reader.ReadUint32(index + 48);
+    DnLock = reader.ReadUint32(index + 52);
+    DnHandler = reader.ReadUint32(index + 56);
+    DnStackSize = reader.ReadUint32(index + 60);
+    DnPriority = reader.ReadUint32(index + 64);
+    DnStartup = reader.ReadUint32(index + 68);
+    DnSegListBlock = reader.ReadUint32(index + 72);
+    DnGlobalVec = reader.ReadUint32(index + 76);
 
     // Reserved for additional patchflags
     for (int i = 0; i < 23; i++)
     {
-      Reserved2[i] = reader.ReadULO(index + i + 80);
+      Reserved2[i] = reader.ReadUint32(index + i + 80);
     }
 
     HasValidCheckSum = (SizeInLongs == 64) && CheckSumCalculator::HasValidCheckSum(reader, 64, index);

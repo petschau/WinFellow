@@ -50,11 +50,11 @@
 
 typedef struct 
 {
-  ULO rate;
+  uint32_t rate;
   bool bits16;
   bool stereo;
-  ULO buffer_sample_count;
-  ULO buffer_block_align;
+  uint32_t buffer_sample_count;
+  uint32_t buffer_block_align;
 } sound_drv_dsound_mode;
 
 
@@ -72,12 +72,12 @@ typedef struct
   HANDLE mutex;
   UWO *pending_data_left;
   UWO *pending_data_right;
-  ULO pending_data_sample_count;
+  uint32_t pending_data_sample_count;
   HANDLE thread;
   DWORD thread_id;
   bool notification_supported;
-  ULO mmtimer;
-  ULO mmresolution;
+  uint32_t mmtimer;
+  uint32_t mmresolution;
   DWORD lastreadpos;
 } sound_drv_dsound_device;
 
@@ -155,7 +155,7 @@ void soundDrvDSoundRelease(void)
     IDirectSound_Release(sound_drv_dsound_device_current.lpDS);
   }
   sound_drv_dsound_device_current.lpDS = NULL;
-  for (ULO i = 0; i < 3; i++)
+  for (uint32_t i = 0; i < 3; i++)
   {
     if (sound_drv_dsound_device_current.notifications[i] != NULL)
     {
@@ -179,7 +179,7 @@ void soundDrvDSoundRelease(void)
 
 bool soundDrvDSoundInitialize(void)
 {
-  ULO i;
+  uint32_t i;
 
   sound_drv_dsound_device_current.modes = NULL;
   sound_drv_dsound_device_current.lpDS = NULL;
@@ -216,7 +216,7 @@ bool soundDrvDSoundInitialize(void)
 void soundDrvAddMode(sound_drv_dsound_device *dsound_device,
 		     bool stereo,
 		     bool bits16,
-		     ULO rate)
+		     uint32_t rate)
 {
   sound_drv_dsound_mode *dsound_mode = (sound_drv_dsound_mode *) malloc(sizeof(sound_drv_dsound_mode));
   dsound_mode->stereo = stereo;
@@ -234,7 +234,7 @@ void soundDrvAddMode(sound_drv_dsound_device *dsound_device,
 sound_drv_dsound_mode *soundDrvFindMode(sound_drv_dsound_device *dsound_device,
 					bool stereo,
 					bool bits16,
-					ULO rate)
+					uint32_t rate)
 {
   for (felist *fl = dsound_device->modes; fl != NULL; fl = listNext(fl))
   {
@@ -275,7 +275,7 @@ bool soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_dev
   bool stereo, mono, bits8, bits16;
   bool secondary_stereo, secondary_mono, secondary_bits8, secondary_bits16;
   bool continuous_rate, emulated_driver, certified_driver;
-  ULO minrate, maxrate;
+  uint32_t minrate, maxrate;
   char s[80];
 
   memset(&dscaps, 0, sizeof(dscaps));
@@ -783,9 +783,9 @@ bool soundDrvDSoundPlaybackInitialize(sound_drv_dsound_device *dsound_device)
 void soundDrvCopy16BitsStereo(UWO *audio_buffer,
 			      UWO *left, 
 			      UWO *right, 
-			      ULO sample_count)
+			      uint32_t sample_count)
 {
-  for (ULO i = 0; i < sample_count; i++)
+  for (uint32_t i = 0; i < sample_count; i++)
   {
     *audio_buffer++ = *left++;
     *audio_buffer++ = *right++;
@@ -795,9 +795,9 @@ void soundDrvCopy16BitsStereo(UWO *audio_buffer,
 void soundDrvCopy16BitsMono(UWO *audio_buffer,
 			    UWO *left, 
 			    UWO *right, 
-			    ULO sample_count)
+			    uint32_t sample_count)
 {
-  for (ULO i = 0; i < sample_count; i++)
+  for (uint32_t i = 0; i < sample_count; i++)
   {
     *audio_buffer++ = (*left++ + *right++);
   }
@@ -806,9 +806,9 @@ void soundDrvCopy16BitsMono(UWO *audio_buffer,
 void soundDrvCopy8BitsStereo(UBY *audio_buffer,
 			     UWO *left, 
 			     UWO *right, 
-			     ULO sample_count)
+			     uint32_t sample_count)
 {
-  for (ULO i = 0; i < sample_count; i++)
+  for (uint32_t i = 0; i < sample_count; i++)
   {
     *audio_buffer++ = ((*left++)>>8) + 128;
     *audio_buffer++ = ((*right++)>>8) + 128;
@@ -818,9 +818,9 @@ void soundDrvCopy8BitsStereo(UBY *audio_buffer,
 void soundDrvCopy8BitsMono(UBY *audio_buffer,
 			   UWO *left, 
 			   UWO *right, 
-			   ULO sample_count)
+			   uint32_t sample_count)
 {
-  for (ULO i = 0; i < sample_count; i++)
+  for (uint32_t i = 0; i < sample_count; i++)
   {
     *audio_buffer++ = (((*left++) + (*right++))>>8) + 128;
   }
@@ -829,8 +829,8 @@ void soundDrvCopy8BitsMono(UBY *audio_buffer,
 bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
 				UWO *left,
 				UWO *right,
-				ULO sample_count,
-				ULO buffer_half)
+				uint32_t sample_count,
+				uint32_t buffer_half)
 {
   LPVOID lpvAudio;
   DWORD dwBytes;
@@ -916,7 +916,7 @@ bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
 /* ready slows the emulator down to its original 50hz PAL speed.             */
 /*===========================================================================*/
 
-void soundDrvPlay(WOR *left, WOR *right, ULO sample_count)
+void soundDrvPlay(WOR *left, WOR *right, uint32_t sample_count)
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
   WaitForSingleObject(dsound_device->can_add_data, INFINITE);
@@ -953,14 +953,14 @@ void soundDrvReleaseMutex(sound_drv_dsound_device *dsound_device)
 /*===========================================================================*/
 
 bool soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
-			  ULO next_buffer_no,
+			  uint32_t next_buffer_no,
 			  bool &need_to_restart_playback)
 {
   HANDLE multi_events[3];
   DWORD evt;
   bool terminate_wait = false;
   bool terminate_thread = false;
-  ULO wait_for_x_events = 3;
+  uint32_t wait_for_x_events = 3;
 
   // No-wait test for data_available, return TRUE if data is available
   if (WaitForSingleObject(dsound_device->data_available, 0) == WAIT_OBJECT_0)
@@ -1067,8 +1067,8 @@ void soundDrvPollBufferPosition(void)
 /*===========================================================================*/
 
 bool soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
-				ULO current_buffer_no,
-				ULO next_buffer_no)
+				uint32_t current_buffer_no,
+				uint32_t next_buffer_no)
 {
   bool terminate_thread = false;
   bool need_to_restart_playback = false;
@@ -1186,10 +1186,10 @@ void soundDrvHardReset(void)
 /* Emulation Starting                                                        */
 /*===========================================================================*/
 
-bool soundDrvEmulationStart(ULO rate,
+bool soundDrvEmulationStart(uint32_t rate,
 			    bool bits16,
 			    bool stereo,
-			    ULO *sample_count_max)
+			    uint32_t *sample_count_max)
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
 
@@ -1197,7 +1197,7 @@ bool soundDrvEmulationStart(ULO rate,
 
   /* Set all events to their initial state */
   
-  for (ULO i = 0; i < 3; i++)
+  for (uint32_t i = 0; i < 3; i++)
   {
     ResetEvent(dsound_device->notifications[i]);
   }

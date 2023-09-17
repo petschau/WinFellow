@@ -4,7 +4,7 @@
 
 Graphics GraphicsContext;
 
-void Graphics::Commit(ULO untilRasterY, ULO untilRasterX)
+void Graphics::Commit(uint32_t untilRasterY, uint32_t untilRasterX)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {

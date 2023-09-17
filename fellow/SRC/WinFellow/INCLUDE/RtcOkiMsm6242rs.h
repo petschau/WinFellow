@@ -32,7 +32,7 @@ private:
   struct tm* GetCurrentOrHeldTime(void);
   void SetCurrentTime(struct tm *datetime);
 
-  int GetRegisterNumberFromAddress(ULO address);
+  int GetRegisterNumberFromAddress(uint32_t address);
 
   UWO GetFirstDigit(int value);
   void SetFirstDigit(struct tm& datetime, int& value, UWO data);
@@ -80,8 +80,8 @@ private:
   void InitializeRegisterSetters(void);
 
 public:
-  UWO read(ULO address);
-  void write(UWO data, ULO address);
+  UWO read(uint32_t address);
+  void write(UWO data, uint32_t address);
   void logRtcTime(STR *msg);
   RtcOkiMsm6242rs(void);
 };

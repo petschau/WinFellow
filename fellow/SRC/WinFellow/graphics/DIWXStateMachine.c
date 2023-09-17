@@ -29,7 +29,7 @@
 static STR *DIWXStateNames[2] = {"WAITING_FOR_START_POS",
 				 "WAITING_FOR_STOP_POS"};
 
-void DIWXStateMachine::Log(ULO line, ULO cylinder)
+void DIWXStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
@@ -39,17 +39,17 @@ void DIWXStateMachine::Log(ULO line, ULO cylinder)
   }
 }
 
-ULO DIWXStateMachine::GetStartPosition(void)
+uint32_t DIWXStateMachine::GetStartPosition(void)
 {
   return diwxleft;
 }
 
-ULO DIWXStateMachine::GetStopPosition(void)
+uint32_t DIWXStateMachine::GetStopPosition(void)
 {
   return diwxright;
 }
 
-void DIWXStateMachine::SetState(DIWXStates newState, ULO arriveTime)
+void DIWXStateMachine::SetState(DIWXStates newState, uint32_t arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
@@ -57,10 +57,10 @@ void DIWXStateMachine::SetState(DIWXStates newState, ULO arriveTime)
   _queue->Insert(this);
 }
 
-void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cylinder)
+void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(uint32_t rasterY, uint32_t cylinder)
 {
-  ULO previousCylinder = ((cylinder == 0) ? GraphicsEventQueue::GetCylindersPerLine() : cylinder) - 1;
-  ULO outputLine;
+  uint32_t previousCylinder = ((cylinder == 0) ? GraphicsEventQueue::GetCylindersPerLine() : cylinder) - 1;
+  uint32_t outputLine;
   
   if (cylinder != 0)
   {
@@ -76,11 +76,11 @@ void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cyl
 }
 
 
-void DIWXStateMachine::SetStateWaitingForStartPos(ULO rasterY, ULO cylinder)
+void DIWXStateMachine::SetStateWaitingForStartPos(uint32_t rasterY, uint32_t cylinder)
 {
   OutputCylindersUntilPreviousCylinder(rasterY, cylinder);
 
-  ULO start = GetStartPosition();
+  uint32_t start = GetStartPosition();
   if (start <= cylinder)
   {
     // Start is seen on the next line
@@ -89,7 +89,7 @@ void DIWXStateMachine::SetStateWaitingForStartPos(ULO rasterY, ULO cylinder)
   SetState(DIWX_STATE_WAITING_FOR_START_POS, MakeArriveTime(rasterY, start));
 }
 
-void DIWXStateMachine::SetStateWaitingForStopPos(ULO rasterY, ULO cylinder)
+void DIWXStateMachine::SetStateWaitingForStopPos(uint32_t rasterY, uint32_t cylinder)
 {
   OutputCylindersUntilPreviousCylinder(rasterY, cylinder);
 
@@ -109,12 +109,12 @@ void DIWXStateMachine::SetStateWaitingForStopPos(ULO rasterY, ULO cylinder)
   }
 }
 
-void DIWXStateMachine::DoStateWaitingForStartPos(ULO rasterY, ULO cylinder)
+void DIWXStateMachine::DoStateWaitingForStartPos(uint32_t rasterY, uint32_t cylinder)
 {
   SetStateWaitingForStopPos(rasterY, cylinder);
 }
 
-void DIWXStateMachine::DoStateWaitingForStopPos(ULO rasterY, ULO cylinder)
+void DIWXStateMachine::DoStateWaitingForStopPos(uint32_t rasterY, uint32_t cylinder)
 {
   SetStateWaitingForStartPos(rasterY, cylinder);
 }
@@ -145,7 +145,7 @@ void DIWXStateMachine::InitializeEvent(GraphicsEventQueue *queue)
   SetStateWaitingForStartPos(0, 0);
 }
 
-void DIWXStateMachine::Handler(ULO rasterY, ULO cylinder)
+void DIWXStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 {
   Log(rasterY, cylinder);
 

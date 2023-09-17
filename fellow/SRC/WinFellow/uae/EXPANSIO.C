@@ -228,7 +228,7 @@ addrbank filesys_bank = {
 
 /* FELLOW IN (START)----------------- */
 
-ULO filesys_lget(ULO addr)
+uint32_t filesys_lget(uint32_t addr)
 {
     uae_u8 *m;
     addr -= filesys_start & 65535;
@@ -237,7 +237,7 @@ ULO filesys_lget(ULO addr)
     return do_get_mem_long ((uae_u32 *)m);
 }
 
-UWO filesys_wget(ULO addr)
+UWO filesys_wget(uint32_t addr)
 {
     uae_u8 *m;
     addr -= filesys_start & 65535;
@@ -246,24 +246,24 @@ UWO filesys_wget(ULO addr)
     return (UWO) do_get_mem_word ((uae_u16 *)m);
 }
 
-UBY filesys_bget(ULO addr)
+UBY filesys_bget(uint32_t addr)
 {
     addr -= filesys_start & 65535;
     addr &= 65535;
     return filesysory[addr];
 }
 
-void filesys_lput(ULO l, ULO addr)
+void filesys_lput(uint32_t l, uint32_t addr)
 {
     write_log ("filesys_lput called\n");
 }
 
-void filesys_wput(UWO w, ULO addr)
+void filesys_wput(UWO w, uint32_t addr)
 {
     write_log ("filesys_wput called\n");
 }
 
-void filesys_bput(UBY b, ULO addr)
+void filesys_bput(UBY b, uint32_t addr)
 {
     write_log ("filesys_bput called. This usually means that you are using\n");
     /* FELLOW CHANGE (START)-------------
@@ -296,7 +296,7 @@ addrbank filesys_bank = {
 
 
 /* FELLOW CHANGE: static void expamem_map_filesys (void) */
-void expamem_map_filesys (ULO mapping)
+void expamem_map_filesys (uint32_t mapping)
 {
     uaecptr a;
     /* FELLOW IN (START) -------------------*/

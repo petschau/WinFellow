@@ -31,17 +31,17 @@ namespace fellow::hardfile::rdb
     return static_cast<UBY>(fgetc(_F));
   }
 
-  ULO RDBFileReader::ReadULO(off_t offset)
+  uint32_t RDBFileReader::ReadUint32(off_t offset)
   {
     UBY value[4];
     fseek(_F, offset, SEEK_SET);
     fread(&value, 1, 4, _F);
-    return static_cast<ULO>(value[0]) << 24 | static_cast<ULO>(value[1]) << 16 | static_cast<ULO>(value[2]) << 8 | static_cast<ULO>(value[3]);
+    return static_cast<uint32_t>(value[0]) << 24 | static_cast<uint32_t>(value[1]) << 16 | static_cast<uint32_t>(value[2]) << 8 | static_cast<uint32_t>(value[3]);
   }
 
   LON RDBFileReader::ReadLON(off_t offset)
   {
-    return static_cast<LON>(ReadULO(offset));
+    return static_cast<LON>(ReadUint32(offset));
   }
 
   UBY *RDBFileReader::ReadData(off_t offset, size_t byteCount)

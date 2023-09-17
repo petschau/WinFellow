@@ -8,8 +8,8 @@ namespace fellow::service
   class RetroPlatformWrapper : public fellow::api::service::IRetroPlatform
   {
   public:
-    bool SendHardDriveContent(const ULO lHardDriveNo, const STR *szImageName, const bool bWriteProtected) override;
-    bool PostHardDriveLED(const ULO lHardDriveNo, const bool bActive, const bool bWriteActivity) override;
+    bool SendHardDriveContent(const uint32_t lHardDriveNo, const STR *szImageName, const bool bWriteProtected) override;
+    bool PostHardDriveLED(const uint32_t lHardDriveNo, const bool bActive, const bool bWriteActivity) override;
   };
 }
 

@@ -2,22 +2,22 @@
 
 namespace fellow::hardfile::hunks
 {
-  ULO InitialHunk::GetAllocateSizeInLongwords()
+  uint32_t InitialHunk::GetAllocateSizeInLongwords()
   {
     return _allocateSizeInLongwords & 0x3fffffff;
   }
 
-  ULO InitialHunk::GetAllocateSizeInBytes()
+  uint32_t InitialHunk::GetAllocateSizeInBytes()
   {
     return GetAllocateSizeInLongwords() * 4;
   }
 
-  ULO InitialHunk::GetContentSizeInLongwords()
+  uint32_t InitialHunk::GetContentSizeInLongwords()
   {
     return _contentSizeInLongwords;
   }
 
-  ULO InitialHunk::GetContentSizeInBytes()
+  uint32_t InitialHunk::GetContentSizeInBytes()
   {
     return GetContentSizeInLongwords() * 4;
   }
@@ -27,17 +27,17 @@ namespace fellow::hardfile::hunks
     return _rawData.get();
   }
 
-  void InitialHunk::SetVMAddress(ULO vmAddress)
+  void InitialHunk::SetVMAddress(uint32_t vmAddress)
   {
     _vmAddress = vmAddress;
   }
 
-  ULO InitialHunk::GetVMAddress()
+  uint32_t InitialHunk::GetVMAddress()
   {
     return _vmAddress;
   }
 
-  InitialHunk::InitialHunk(ULO allocateSizeInLongwords)
+  InitialHunk::InitialHunk(uint32_t allocateSizeInLongwords)
     : _allocateSizeInLongwords(allocateSizeInLongwords), _contentSizeInLongwords(0), _vmAddress(0), _rawData(nullptr)
   {
   }

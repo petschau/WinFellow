@@ -11,11 +11,11 @@ extern void ciaShutdown(void);
 extern void ciaMemoryMap(void);
 extern void ciaHandleEvent(void);
 extern void ciaRaiseIndexIRQ(void); /* For the floppy loader */
-extern void ciaRaiseIRQ(ULO i, ULO req); /* For kbd.c */
-extern void ciaWritesp(ULO i, UBY data); /* For kbd.c */
-extern void ciaUpdateEventCounter(ULO);
+extern void ciaRaiseIRQ(uint32_t i, uint32_t req); /* For kbd.c */
+extern void ciaWritesp(uint32_t i, UBY data); /* For kbd.c */
+extern void ciaUpdateEventCounter(uint32_t);
 extern void ciaUpdateTimersEOF();
-extern void ciaUpdateIRQ(ULO i);
+extern void ciaUpdateIRQ(uint32_t i);
 extern void ciaRecheckIRQ();
 
 extern BOOLE ciaIsSoundFilterEnabled(void);

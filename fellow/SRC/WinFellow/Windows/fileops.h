@@ -34,6 +34,6 @@ extern BOOLE fileopsGetWinFellowPresetPath(char *, const DWORD);
 extern BOOLE fileopsGetScreenshotFileName(char *);
 extern char *fileopsGetTemporaryFilename(void);
 extern bool fileopsGetWinFellowInstallationPath(char *, const DWORD);
-extern bool fileopsGetKickstartByCRC32(const char *, const ULO, char *, const ULO);
+extern bool fileopsGetKickstartByCRC32(const char *, const uint32_t, char *, const uint32_t);
 
 #endif // FILEOPS_H

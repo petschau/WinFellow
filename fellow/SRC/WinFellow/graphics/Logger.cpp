@@ -4,7 +4,7 @@
 #include "fileops.h"
 #include "BUS.H"
 
-void Logger::Log(ULO line, ULO cylinder, STR *message)
+void Logger::Log(uint32_t line, uint32_t cylinder, STR *message)
 {
   if (_enableLog)
   {

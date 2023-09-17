@@ -67,7 +67,7 @@
 /*================*/
 
 extern char uaehf0[256];
-extern ULO hardfile_size;
+extern uint32_t hardfile_size;
 
 /*------------------------*/
 /* Access m68k registers  */
@@ -96,15 +96,15 @@ extern void m68k_do_rts(void);
 #define allocated_chipmem memory_chipsize
 extern uae_u8 filesysory[65536];
 extern void expamem_init_filesys (void);
-extern void expamem_map_filesys (ULO mapping);
+extern void expamem_map_filesys (uint32_t mapping);
 
 /*===========================================*/
 /* These access memory with a direct pointer */
 /*===========================================*/
 
-extern ULO do_get_mem_byte(uae_u8 *address);
-extern ULO do_get_mem_word(uae_u16 *address);
-extern ULO do_get_mem_long(uae_u32 *address);
+extern uint32_t do_get_mem_byte(uae_u8 *address);
+extern uint32_t do_get_mem_word(uae_u16 *address);
+extern uint32_t do_get_mem_long(uae_u32 *address);
 extern void do_put_mem_long(uae_u32 *address, uae_u32 data);
 extern void do_put_mem_word(uae_u16 *address, uae_u16 data);
 extern void do_put_mem_byte(uae_u8 *address, uae_u8 data);

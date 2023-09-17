@@ -136,7 +136,7 @@ bool gfxDrvEmulationStart(unsigned int maxbuffercount)
   return gfxDrvDDrawEmulationStart(maxbuffercount);
 }
 
-ULO gfxDrvEmulationStartPost()
+uint32_t gfxDrvEmulationStartPost()
 {
   gfxDrvCommon->EmulationStartPost();
 

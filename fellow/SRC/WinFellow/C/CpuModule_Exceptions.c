@@ -55,7 +55,7 @@ void cpuSetResetExceptionFunc(cpuResetExceptionFunc func)
   cpu_reset_exception_func = func;
 }
 
-static STR *cpuGetExceptionName(ULO vector_offset)
+static STR *cpuGetExceptionName(uint32_t vector_offset)
 {
   char *name;
 
@@ -106,9 +106,9 @@ void cpuExceptionFail(BOOLE executejmp)
   }
 }
 
-void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
+void cpuThrowException(uint32_t vector_offset, uint32_t pc, BOOLE executejmp)
 {
-  ULO vector_address;
+  uint32_t vector_address;
   BOOLE is_address_error_on_sub_020 = (cpuGetModelMajor() < 2 && vector_offset == 0xc);
   BOOLE stack_is_even = !(cpuGetAReg(7) & 1);
   BOOLE vbr_is_even = !(cpuGetVbr() & 1);
@@ -153,7 +153,7 @@ void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
 
     cpuInitializeFromNewPC(vector_address);
 
-    ULO exceptionCycles = 0;
+    uint32_t exceptionCycles = 0;
 
     switch (vector_offset)
     {
@@ -243,7 +243,7 @@ void cpuThrowDivisionByZeroException()
   cpuThrowException(0x14, cpuGetPC(), FALSE);
 }
 
-void cpuThrowTrapException(ULO vector_no)
+void cpuThrowTrapException(uint32_t vector_no)
 {
   // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x80 + vector_no*4, cpuGetPC(), FALSE);

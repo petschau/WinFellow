@@ -11,29 +11,29 @@
 
 /* Memory access functions */
 
-extern UBY memoryReadByte(ULO address);
-extern UWO memoryReadWord(ULO address);
-extern ULO memoryReadLong(ULO address);
-extern void memoryWriteByte(UBY data, ULO address);
-extern void memoryWriteWord(UWO data, ULO address);
-extern void memoryWriteLong(ULO data, ULO address);
+extern UBY memoryReadByte(uint32_t address);
+extern UWO memoryReadWord(uint32_t address);
+extern uint32_t memoryReadLong(uint32_t address);
+extern void memoryWriteByte(UBY data, uint32_t address);
+extern void memoryWriteWord(UWO data, uint32_t address);
+extern void memoryWriteLong(uint32_t data, uint32_t address);
 
-extern UWO memoryChipReadWord(ULO address);
-extern void memoryChipWriteWord(UWO data, ULO address);
+extern UWO memoryChipReadWord(uint32_t address);
+extern void memoryChipWriteWord(UWO data, uint32_t address);
 
 #define memoryReadByteFromPointer(address) (address[0])
 #define memoryReadWordFromPointer(address) ((address[0] << 8) | address[1])
 #define memoryReadLongFromPointer(address) ((address[0] << 24) | (address[1] << 16) | (address[2] << 8) | address[3])
 
-extern void memoryWriteLongToPointer(ULO data, UBY *address);
+extern void memoryWriteLongToPointer(uint32_t data, UBY *address);
 
 /* IO Bank functions */
 
-typedef UWO (*memoryIoReadFunc)(ULO address);
-typedef void (*memoryIoWriteFunc)(UWO data, ULO address);
+typedef UWO (*memoryIoReadFunc)(uint32_t address);
+typedef void (*memoryIoWriteFunc)(UWO data, uint32_t address);
 
-extern void memorySetIoReadStub(ULO index, memoryIoReadFunc ioreadfunction);
-extern void memorySetIoWriteStub(ULO index, memoryIoWriteFunc iowritefunction);
+extern void memorySetIoReadStub(uint32_t index, memoryIoReadFunc ioreadfunction);
+extern void memorySetIoWriteStub(uint32_t index, memoryIoWriteFunc iowritefunction);
 
 /* For the copper */
 extern memoryIoWriteFunc memory_iobank_write[257];
@@ -41,24 +41,24 @@ extern memoryIoWriteFunc memory_iobank_write[257];
 /* Expansion card functions */
 
 typedef void (*memoryEmemCardInitFunc)(void);
-typedef void (*memoryEmemCardMapFunc)(ULO);
+typedef void (*memoryEmemCardMapFunc)(uint32_t);
 
 extern void memoryEmemClear(void);
 extern void memoryEmemCardAdd(memoryEmemCardInitFunc cardinit,
 			      memoryEmemCardMapFunc cardmap);
-extern void memoryEmemSet(ULO index, ULO data);
-extern void memoryEmemMirror(ULO emem_offset, UBY *src, ULO size);
+extern void memoryEmemSet(uint32_t index, uint32_t data);
+extern void memoryEmemMirror(uint32_t emem_offset, UBY *src, uint32_t size);
 
 /* Device memory functions. fhfile is using these. */
 
 extern void memoryDmemSetByte(UBY data);
 extern void memoryDmemSetWord(UWO data);
-extern void memoryDmemSetLong(ULO data);
-extern void memoryDmemSetLongNoCounter(ULO data, ULO offset);
+extern void memoryDmemSetLong(uint32_t data);
+extern void memoryDmemSetLongNoCounter(uint32_t data, uint32_t offset);
 extern void memoryDmemSetString(const STR *data);
-extern void memoryDmemSetCounter(ULO val);
-extern ULO memoryDmemGetCounter(void);
-extern ULO memoryDmemGetCounterWithoutOffset();
+extern void memoryDmemSetCounter(uint32_t val);
+extern uint32_t memoryDmemGetCounter(void);
+extern uint32_t memoryDmemGetCounterWithoutOffset();
 extern void memoryDmemClear(void);
 
 /* Module management functions */
@@ -75,12 +75,12 @@ extern void memoryShutdown(void);
 
 /* Memory bank functions */
 
-typedef UBY (*memoryReadByteFunc)(ULO address);
-typedef UWO (*memoryReadWordFunc)(ULO address);
-typedef ULO (*memoryReadLongFunc)(ULO address);
-typedef void (*memoryWriteByteFunc)(UBY data, ULO address);
-typedef void (*memoryWriteWordFunc)(UWO data, ULO address);
-typedef void (*memoryWriteLongFunc)(ULO data, ULO address);
+typedef UBY (*memoryReadByteFunc)(uint32_t address);
+typedef UWO (*memoryReadWordFunc)(uint32_t address);
+typedef uint32_t (*memoryReadLongFunc)(uint32_t address);
+typedef void (*memoryWriteByteFunc)(UBY data, uint32_t address);
+typedef void (*memoryWriteWordFunc)(UWO data, uint32_t address);
+typedef void (*memoryWriteLongFunc)(uint32_t data, uint32_t address);
 
 extern memoryReadByteFunc memory_bank_readbyte[65536];
 extern memoryReadWordFunc memory_bank_readword[65536];
@@ -99,22 +99,22 @@ extern void memoryBankSet(memoryReadByteFunc rb,
 			  memoryWriteWordFunc ww,
 			  memoryWriteLongFunc wl,
 			  UBY *basep,
-			  ULO bank, 
-			  ULO basebank,
+			  uint32_t bank, 
+			  uint32_t basebank,
 			  BOOLE pointer_can_write);
-extern UBY *memoryAddressToPtr(ULO address);
+extern UBY *memoryAddressToPtr(uint32_t address);
 extern void memoryChipMap(bool overlay);
 
 /* Memory configuration properties */
 
-extern BOOLE memorySetChipSize(ULO chipsize);
-extern ULO memoryGetChipSize(void);
-extern BOOLE memorySetFastSize(ULO fastsize);
-extern ULO memoryGetFastSize(void);
-extern void memorySetFastAllocatedSize(ULO fastallocatedsize);
-extern ULO memoryGetFastAllocatedSize(void);
-extern BOOLE memorySetSlowSize(ULO bogosize);
-extern ULO memoryGetSlowSize(void);
+extern BOOLE memorySetChipSize(uint32_t chipsize);
+extern uint32_t memoryGetChipSize(void);
+extern BOOLE memorySetFastSize(uint32_t fastsize);
+extern uint32_t memoryGetFastSize(void);
+extern void memorySetFastAllocatedSize(uint32_t fastallocatedsize);
+extern uint32_t memoryGetFastAllocatedSize(void);
+extern BOOLE memorySetSlowSize(uint32_t bogosize);
+extern uint32_t memoryGetSlowSize(void);
 extern bool memorySetUseAutoconfig(bool useautoconfig);
 extern bool memoryGetUseAutoconfig();
 extern BOOLE memorySetAddress32Bit(BOOLE address32bit);
@@ -128,10 +128,10 @@ extern BOOLE memoryGetKickImageOK(void);
 
 /* Derived from memory configuration */
 
-extern ULO memoryGetKickImageBaseBank(void);
-extern ULO memoryGetKickImageVersion(void);
-extern ULO memoryInitialPC(void);
-extern ULO memoryInitialSP(void);
+extern uint32_t memoryGetKickImageBaseBank(void);
+extern uint32_t memoryGetKickImageVersion(void);
+extern uint32_t memoryInitialPC(void);
+extern uint32_t memoryInitialSP(void);
 
 /* Kickstart decryption */
 extern int memoryKickLoadAF2(STR *filename, FILE *F, UBY *memory_kick, const bool);
@@ -155,12 +155,12 @@ extern UBY memory_chip[];
 extern UBY *memory_fast;
 extern UBY memory_slow[];
 extern UBY memory_kick[];
-extern ULO memory_chipsize;
+extern uint32_t memory_chipsize;
 extern UBY memory_emem[];
 
-extern ULO potgor;
+extern uint32_t potgor;
 
-extern ULO memory_fault_address;
+extern uint32_t memory_fault_address;
 extern BOOLE memory_fault_read;
 
 #endif

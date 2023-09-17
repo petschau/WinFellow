@@ -7,19 +7,19 @@
 UART uart;
 
 /* SERDATR 0xdff018 */
-UWO UART::rserdat(ULO address)
+UWO UART::rserdat(uint32_t address)
 {
   return uart.ReadSerdatRegister();
 }
 
 /* SERDAT 0xdff030 */
-void UART::wserdat(UWO data, ULO address)
+void UART::wserdat(UWO data, uint32_t address)
 {
   uart.WriteSerdatRegister(data);
 }
 
 /* SERDAT 0xdff032 */
-void UART::wserper(UWO data, ULO address)
+void UART::wserper(UWO data, uint32_t address)
 {
   uart.WriteSerperRegister(data);
 }
@@ -54,10 +54,10 @@ void UART::WriteSerperRegister(UWO data)
   _serper = data;  
 }
 
-ULO UART::GetTransmitDoneTime()
+uint32_t UART::GetTransmitDoneTime()
 {
   int bitsToTransfer = 2 + (Is8BitMode() ? 8 : 9);
-  ULO cyclesPerBit = GetBitPeriod() + 1;
+  uint32_t cyclesPerBit = GetBitPeriod() + 1;
 
   return cyclesPerBit * bitsToTransfer;  
 }

@@ -1,11 +1,11 @@
 #ifndef CPUMODULE_DATA_H
 #define CPUMODULE_DATA_H
 
-typedef void (*cpuInstructionFunction)(ULO*);
+typedef void (*cpuInstructionFunction)(uint32_t*);
 typedef struct cpu_data_struct
 {
 	cpuInstructionFunction instruction_func;
-	ULO data[3];
+	uint32_t data[3];
 } cpuOpcodeData;
 
 cpuOpcodeData cpu_opcode_data[65536] = {

@@ -33,7 +33,7 @@ using namespace CustomChipset;
 
 extern UBY draw_dual_translate[2][256][256];
 
-void PixelSerializer::LogEndOfLine(ULO line, ULO cylinder)
+void PixelSerializer::LogEndOfLine(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
@@ -41,7 +41,7 @@ void PixelSerializer::LogEndOfLine(ULO line, ULO cylinder)
   }
 }
 
-void PixelSerializer::LogOutput(ULO line, ULO cylinder, ULO startCylinder, ULO untilCylinder)
+void PixelSerializer::LogOutput(uint32_t line, uint32_t cylinder, uint32_t startCylinder, uint32_t untilCylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
@@ -51,14 +51,14 @@ void PixelSerializer::LogOutput(ULO line, ULO cylinder, ULO startCylinder, ULO u
   }
 }
 
-void PixelSerializer::EventSetup(ULO arriveTime)
+void PixelSerializer::EventSetup(uint32_t arriveTime)
 {
   _queue->Remove(this);
   _arriveTime = arriveTime;
   _queue->Insert(this);
 }
 
-void PixelSerializer::ShiftActive(ULO pixelCount)
+void PixelSerializer::ShiftActive(uint32_t pixelCount)
 {
   _active[0].l <<= pixelCount;
   _active[1].l <<= pixelCount;
@@ -70,9 +70,9 @@ void PixelSerializer::ShiftActive(ULO pixelCount)
 
 void PixelSerializer::Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, UWO dat6)
 {
-  ULO scrollodd, scrolleven;
-  ULO oddmask, invoddmask;
-  ULO evenmask, invevenmask;
+  uint32_t scrollodd, scrolleven;
+  uint32_t oddmask, invoddmask;
+  uint32_t evenmask, invevenmask;
 
   _activated = true;
 
@@ -92,18 +92,18 @@ void PixelSerializer::Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, U
   invoddmask = ~oddmask;
   invevenmask = ~evenmask;
 
-  _active[0].l = (_active[0].l & invoddmask)  | ( ( ((ULO) dat1) << scrollodd)  & oddmask);
-  _active[1].l = (_active[1].l & invevenmask) | ( ( ((ULO) dat2) << scrolleven) & evenmask);
-  _active[2].l = (_active[2].l & invoddmask)  | ( ( ((ULO) dat3) << scrollodd)  & oddmask);
-  _active[3].l = (_active[3].l & invevenmask) | ( ( ((ULO) dat4) << scrolleven) & evenmask);
-  _active[4].l = (_active[4].l & invoddmask)  | ( ( ((ULO) dat5) << scrollodd)  & oddmask);
-  _active[5].l = (_active[5].l & invevenmask) | ( ( ((ULO) dat6) << scrolleven) & evenmask);
+  _active[0].l = (_active[0].l & invoddmask)  | ( ( ((uint32_t) dat1) << scrollodd)  & oddmask);
+  _active[1].l = (_active[1].l & invevenmask) | ( ( ((uint32_t) dat2) << scrolleven) & evenmask);
+  _active[2].l = (_active[2].l & invoddmask)  | ( ( ((uint32_t) dat3) << scrollodd)  & oddmask);
+  _active[3].l = (_active[3].l & invevenmask) | ( ( ((uint32_t) dat4) << scrolleven) & evenmask);
+  _active[4].l = (_active[4].l & invoddmask)  | ( ( ((uint32_t) dat5) << scrollodd)  & oddmask);
+  _active[5].l = (_active[5].l & invevenmask) | ( ( ((uint32_t) dat6) << scrolleven) & evenmask);
 }
 
-void PixelSerializer::SerializePixels(ULO pixelCount)
+void PixelSerializer::SerializePixels(uint32_t pixelCount)
 {
-  ULO pixelIterations8 = pixelCount >> 3;
-  for (ULO i = 0; i < pixelIterations8; ++i)
+  uint32_t pixelIterations8 = pixelCount >> 3;
+  for (uint32_t i = 0; i < pixelIterations8; ++i)
   {
     GraphicsContext.Planar2ChunkyDecoder.P2CNext8Pixels(_active[0].b[3],
 			                                _active[1].b[3],
@@ -124,7 +124,7 @@ void PixelSerializer::SerializePixels(ULO pixelCount)
     ShiftActive(4);
   }
   
-  ULO remainingPixels = pixelCount & 3;
+  uint32_t remainingPixels = pixelCount & 3;
   if (remainingPixels > 0)
   {
     GraphicsContext.Planar2ChunkyDecoder.P2CNextPixels(remainingPixels,
@@ -138,7 +138,7 @@ void PixelSerializer::SerializePixels(ULO pixelCount)
   }
 }
 
-void PixelSerializer::SerializeBatch(ULO cylinderCount)
+void PixelSerializer::SerializeBatch(uint32_t cylinderCount)
 {
   if (_core.RegisterUtility.IsLoresEnabled())
   {
@@ -150,7 +150,7 @@ void PixelSerializer::SerializeBatch(ULO cylinderCount)
   }
 }
 
-ULO PixelSerializer::GetOutputLine(ULO rasterY, ULO cylinder)
+uint32_t PixelSerializer::GetOutputLine(uint32_t rasterY, uint32_t cylinder)
 {
   if (cylinder <= LAST_CYLINDER)
   {
@@ -160,28 +160,28 @@ ULO PixelSerializer::GetOutputLine(ULO rasterY, ULO cylinder)
   return rasterY;
 }
 
-ULO PixelSerializer::GetOutputCylinder(ULO cylinder)
+uint32_t PixelSerializer::GetOutputCylinder(uint32_t cylinder)
 {
   if (cylinder <= LAST_CYLINDER && !_newLine) return cylinder + GraphicsEventQueue::GetCylindersPerLine();
   return cylinder;
 }
 
-void PixelSerializer::OutputCylindersUntil(ULO rasterY, ULO cylinder)
+void PixelSerializer::OutputCylindersUntil(uint32_t rasterY, uint32_t cylinder)
 {
-  ULO outputUntilCylinder = GetOutputCylinder(cylinder);
+  uint32_t outputUntilCylinder = GetOutputCylinder(cylinder);
   if (outputUntilCylinder <= _lastCylinderOutput)
   {
     // Multiple commits can happen on the same cycle
     return;
   }
-  ULO outputLine = GetOutputLine(rasterY, cylinder);
+  uint32_t outputLine = GetOutputLine(rasterY, cylinder);
   if (outputLine < 0x1a)
   {
     return;
   }
   _newLine = false;
 
-  ULO cylinderCount = outputUntilCylinder - _lastCylinderOutput;
+  uint32_t cylinderCount = outputUntilCylinder - _lastCylinderOutput;
 
   LogOutput(outputLine, outputUntilCylinder, _lastCylinderOutput + 1, outputUntilCylinder);
 
@@ -212,11 +212,11 @@ void PixelSerializer::OutputCylindersUntil(ULO rasterY, ULO cylinder)
   _lastCylinderOutput = outputUntilCylinder;
 }
 
-void PixelSerializer::Handler(ULO rasterY, ULO cylinder)
+void PixelSerializer::Handler(uint32_t rasterY, uint32_t cylinder)
 {
   LogEndOfLine(rasterY, cylinder);
 
-  ULO line = GetOutputLine(rasterY, cylinder);
+  uint32_t line = GetOutputLine(rasterY, cylinder);
   if (line < 0x1a)
   {
 //    sprites->EndOfLine(rasterY);
@@ -226,7 +226,7 @@ void PixelSerializer::Handler(ULO rasterY, ULO cylinder)
 
   OutputCylindersUntil(rasterY, cylinder);
 
-  for (ULO i = 0; i < 6; ++i)
+  for (uint32_t i = 0; i < 6; ++i)
   {
     _active[i].l = 0;
   }

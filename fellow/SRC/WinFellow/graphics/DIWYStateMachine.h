@@ -38,17 +38,17 @@ class DIWYStateMachine : public GraphicsEvent
 {
 private:
   DIWYStates _state;
-  ULO _minValidY;
-  ULO _maxValidY;
+  uint32_t _minValidY;
+  uint32_t _maxValidY;
 
-  void Log(ULO line, ULO cylinder);
-  ULO GetStartLine(void);
-  ULO GetStopLine(void);
-  void SetState(DIWYStates newState, ULO arriveTime);
-  void SetStateWaitingForStartLine(ULO rasterY);
-  void SetStateWaitingForStopLine(ULO rasterY);
-  void DoStateWaitingForStartLine(ULO rasterY);
-  void DoStateWaitingForStopLine(ULO rasterY);
+  void Log(uint32_t line, uint32_t cylinder);
+  uint32_t GetStartLine(void);
+  uint32_t GetStopLine(void);
+  void SetState(DIWYStates newState, uint32_t arriveTime);
+  void SetStateWaitingForStartLine(uint32_t rasterY);
+  void SetStateWaitingForStopLine(uint32_t rasterY);
+  void DoStateWaitingForStartLine(uint32_t rasterY);
+  void DoStateWaitingForStopLine(uint32_t rasterY);
 
 
 public:
@@ -56,7 +56,7 @@ public:
   void ChangedValue(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO cylinder);
+  virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
   void SoftReset(void);
   void HardReset(void);

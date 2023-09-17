@@ -66,8 +66,8 @@ typedef enum {
 
 typedef struct {
   UBY buffer[KBDBUFFERLENGTH];
-  ULO inpos;
-  ULO outpos;
+  uint32_t inpos;
+  uint32_t outpos;
 } kbd_buffer_type;
 
 typedef struct {

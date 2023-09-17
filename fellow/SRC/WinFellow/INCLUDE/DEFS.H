@@ -1,6 +1,8 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#include <cstdint>
+
 #include "portable.h"
 
 //#define DRAW_TSC_PROFILE
@@ -20,7 +22,6 @@
 
 typedef unsigned char UBY;
 typedef unsigned short int UWO;
-typedef unsigned int ULO;
 typedef unsigned FELLOW_LONG_LONG ULL;
 typedef signed char BYT;
 typedef signed short int WOR;
@@ -33,8 +34,8 @@ typedef int BOOLE;
 typedef char STR;
 
 #ifndef X64
-#define PTR_TO_INT(i) ((ULO)i)
-#define PTR_TO_INT_MASK_TYPE(i) ((ULO)i)
+#define PTR_TO_INT(i) ((uint32_t)i)
+#define PTR_TO_INT_MASK_TYPE(i) ((uint32_t)i)
 #endif
 #ifdef X64
 #define PTR_TO_INT(i) ((ULL)i)
@@ -49,15 +50,15 @@ typedef char STR;
 /* The decode routines have this type */
 /*------------------------------------*/
 
-typedef void (*decoderoutinetype)(ULO,ULO);
+typedef void (*decoderoutinetype)(uint32_t, uint32_t);
 
 extern UBY configromname[];
 
 typedef union {
-          ULO *lptr;
+          uint32_t *lptr;
           UWO *wptr;
           UBY *bptr;
-          ULO lval;
+          uint32_t lval;
           UWO wval[2];
           UBY bval[4];
           } ptunion;

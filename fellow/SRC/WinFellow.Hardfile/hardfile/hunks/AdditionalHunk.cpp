@@ -2,12 +2,12 @@
 
 namespace fellow::hardfile::hunks
 {
-  ULO AdditionalHunk::GetSourceHunkIndex()
+  uint32_t AdditionalHunk::GetSourceHunkIndex()
   {
     return _sourceHunkIndex;
   }
 
-  AdditionalHunk::AdditionalHunk(ULO sourceHunkIndex)
+  AdditionalHunk::AdditionalHunk(uint32_t sourceHunkIndex)
     : _sourceHunkIndex(sourceHunkIndex)
   {
   }

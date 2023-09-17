@@ -4,7 +4,7 @@
 #include "graph.h"
 
 extern void spriteInitializeFromEmulationMode();
-extern void spriteEndOfLine(ULO rasterY);
+extern void spriteEndOfLine(uint32_t rasterY);
 extern void spriteEndOfFrame();
 extern void spriteHardReset();
 extern void spriteEmulationStart();
@@ -22,7 +22,7 @@ public:
   virtual void NotifySprdataChanged(UWO data, unsigned int sprite_number) = 0;
   virtual void NotifySprdatbChanged(UWO data, unsigned int sprite_number) = 0;
 
-  virtual void EndOfLine(ULO rasterY) = 0;
+  virtual void EndOfLine(uint32_t rasterY) = 0;
   virtual void EndOfFrame() = 0;
   virtual void HardReset() = 0;
   virtual void EmulationStart() = 0;

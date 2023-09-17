@@ -49,7 +49,7 @@ public:
   bool GetOutputWindowed();
   void SizeChanged(unsigned int width, unsigned int height);
 
-  void DelayFlipTimerCallback(ULO timeMilliseconds);
+  void DelayFlipTimerCallback(uint32_t timeMilliseconds);
 
   bool InitializeRunEvent();
   void ReleaseRunEvent();

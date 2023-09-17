@@ -14,7 +14,7 @@ namespace fellow::hardfile::rdb
   public:
     std::string ReadString(off_t offset, size_t maxCount);
     UBY ReadUBY(off_t offset);
-    ULO ReadULO(off_t offset);
+    uint32_t ReadUint32(off_t offset);
     LON ReadLON(off_t offset);
     UBY *ReadData(off_t offset, size_t byteCount);
 

@@ -10,17 +10,17 @@ namespace fellow::hardfile::hunks
   class Reloc32OffsetTable
   {
   private:
-    ULO _relatedHunkIndex;
-    std::vector<ULO> _offsets;
+    uint32_t _relatedHunkIndex;
+    std::vector<uint32_t> _offsets;
 
   public:
-    ULO GetRelatedHunkIndex();
-    ULO GetOffsetCount();
-    ULO GetOffset(ULO index);
+    uint32_t GetRelatedHunkIndex();
+    uint32_t GetOffsetCount();
+    uint32_t GetOffset(uint32_t index);
 
-    void Parse(RawDataReader& rawDataReader, ULO offsetCount);
+    void Parse(RawDataReader& rawDataReader, uint32_t offsetCount);
 
-    Reloc32OffsetTable(ULO relatedHunkIndex);
+    Reloc32OffsetTable(uint32_t relatedHunkIndex);
   };
 }
 

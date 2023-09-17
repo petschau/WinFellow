@@ -19,7 +19,7 @@ namespace fellow::api::service
     std::string name;
     bool relative;
     bool writeable;
-    ULO size;
+    uint32_t size;
     fs_wrapper_file_types type;
   } fs_wrapper_point;
 

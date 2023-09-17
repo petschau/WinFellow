@@ -23,9 +23,9 @@ typedef struct {
 
 extern void ffilesysSetEnabled(bool enabled);
 extern bool ffilesysGetEnabled();
-extern void ffilesysSetFilesys(ffilesys_dev filesys, ULO index);
-extern BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index);
-extern BOOLE ffilesysRemoveFilesys(ULO index);
+extern void ffilesysSetFilesys(ffilesys_dev filesys, uint32_t index);
+extern BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, uint32_t index);
+extern BOOLE ffilesysRemoveFilesys(uint32_t index);
 extern void ffilesysClear(void);
 extern void ffilesysSetAutomountDrives(BOOLE automount_drives);
 extern BOOLE ffilesysGetAutomountDrives(void);

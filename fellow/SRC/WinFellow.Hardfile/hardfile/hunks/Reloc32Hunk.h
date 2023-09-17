@@ -11,18 +11,18 @@ namespace fellow::hardfile::hunks
   class Reloc32Hunk : public AdditionalHunk
   {
   private:
-    static const ULO ID = Reloc32HunkID;
+    static const uint32_t ID = Reloc32HunkID;
     std::vector<std::unique_ptr<Reloc32OffsetTable>> _offsetTables;
 
   public:
-    ULO GetID() override;
+    uint32_t GetID() override;
     
-    ULO GetOffsetTableCount();
-    Reloc32OffsetTable* GetOffsetTable(ULO index);
+    uint32_t GetOffsetTableCount();
+    Reloc32OffsetTable* GetOffsetTable(uint32_t index);
 
     void Parse(RawDataReader& rawDataReader) override;
 
-    Reloc32Hunk(ULO sourceHunkIndex);
+    Reloc32Hunk(uint32_t sourceHunkIndex);
   };
 }
 

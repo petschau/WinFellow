@@ -8,13 +8,13 @@ namespace fellow::hardfile::hunks
   class AdditionalHunk : public HunkBase
   {
   private:
-    ULO _sourceHunkIndex;
+    uint32_t _sourceHunkIndex;
 
   public:
-    ULO GetSourceHunkIndex();
+    uint32_t GetSourceHunkIndex();
     void Parse(RawDataReader& rawReader) override = 0;
 
-    AdditionalHunk(ULO sourceHunkIndex);
+    AdditionalHunk(uint32_t sourceHunkIndex);
   };
 }
 

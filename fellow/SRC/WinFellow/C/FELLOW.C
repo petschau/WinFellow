@@ -398,8 +398,8 @@ void fellowStepOver(void)
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
-    ULO current_pc = cpuGetPC();
-    ULO over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
+    uint32_t current_pc = cpuGetPC();
+    uint32_t over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
     while ((cpuGetPC() != over_pc) && !fellow_request_emulation_stop)
     {
       busDebugStepOneInstruction();
@@ -414,7 +414,7 @@ void fellowStepOver(void)
 /* Run until we crash or is exited in debug-mode                              */
 /*============================================================================*/
 
-void fellowRunDebug(ULO breakpoint) {
+void fellowRunDebug(uint32_t breakpoint) {
   fellowRequestEmulationStopClear();
   if (fellowGetPreStartReset()) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));

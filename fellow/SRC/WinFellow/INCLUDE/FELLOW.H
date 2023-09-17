@@ -21,7 +21,7 @@ extern BOOLE fellow_request_emulation_stop;
 extern void fellowRun(void);
 extern void fellowStepOne(void);
 extern void fellowStepOver(void);
-extern void fellowRunDebug(ULO breakpoint);
+extern void fellowRunDebug(uint32_t breakpoint);
 extern void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code);
 extern void fellowNastyExit(void);
 extern char *fellowGetVersionString(void);

@@ -28,18 +28,18 @@
 class BitplaneDraw
 {
 private:
-  ULO (*_tmpframe)[1024];
+  uint32_t (*_tmpframe)[1024];
 
-  void TempLores(ULO rasterY, ULO pixel_index, ULO pixel_count);
-  void TempLoresDual(ULO rasterY, ULO pixel_index, ULO pixel_count);
-  void TempLoresHam(ULO rasterY, ULO pixel_index, ULO pixel_count);
-  void TempHires(ULO rasterY, ULO pixel_index, ULO pixel_count);
-  void TempHiresDual(ULO rasterY, ULO pixel_index, ULO pixel_count);
-  void TempNothing(ULO rasterY, ULO pixel_index, ULO pixel_count);
+  void TempLores(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count);
+  void TempLoresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count);
+  void TempLoresHam(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count);
+  void TempHires(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count);
+  void TempHiresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count);
+  void TempNothing(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count);
 
 public:
-  void DrawBatch(ULO rasterY, ULO rasterX);
-  void TmpFrame(ULO next_line_offset);
+  void DrawBatch(uint32_t rasterY, uint32_t rasterX);
+  void TmpFrame(uint32_t next_line_offset);
 
   BitplaneDraw();
   ~BitplaneDraw();

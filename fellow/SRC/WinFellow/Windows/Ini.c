@@ -53,7 +53,7 @@ static void iniStripTrailingNewlines(STR *line) {
 /* These verify the options, or at least return a default value on error      */
 /*============================================================================*/
 
-static ULO iniGetULOFromString(STR *value) {
+static uint32_t iniGetUint32FromString(STR *value) {
   return atoi(value);
 }
 
@@ -77,11 +77,11 @@ STR *iniGetDescription(ini *initdata) {
   return initdata->m_description;
 }
 
-void iniSetConfigurationHistoryFilename(ini *initdata, ULO index, STR *cfgfilename) {
+void iniSetConfigurationHistoryFilename(ini *initdata, uint32_t index, STR *cfgfilename) {
   strncpy(initdata->m_configuration_history[index], cfgfilename, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO index) {
+STR *iniGetConfigurationHistoryFilename(ini *initdata, uint32_t index) {
   return initdata->m_configuration_history[index];
 }
 
@@ -117,12 +117,12 @@ int iniGetEmulationWindowYPos(ini *initdata) {
   return initdata->m_emulationwindowyposition;
 }
 
-void iniSetMainWindowPosition(ini *initdata, ULO mainwindowxpos, ULO mainwindowypos) {
+void iniSetMainWindowPosition(ini *initdata, uint32_t mainwindowxpos, uint32_t mainwindowypos) {
   iniSetMainWindowXPos(initdata, mainwindowxpos);
   iniSetMainWindowYPos(initdata, mainwindowypos);
 } 
 
-void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO emulationwindowypos) {
+void iniSetEmulationWindowPosition(ini *initdata, uint32_t emulationwindowxpos, uint32_t emulationwindowypos) {
   iniSetEmulationWindowXPos(initdata, emulationwindowxpos);
   iniSetEmulationWindowYPos(initdata, emulationwindowypos);
 }
@@ -143,11 +143,11 @@ STR *iniGetLastUsedCfgDir(ini *initdata) {
   return initdata->m_lastusedconfigurationdir;
 }
 
-void iniSetLastUsedCfgTab(ini *initdata, ULO cfgTab) {
+void iniSetLastUsedCfgTab(ini *initdata, uint32_t cfgTab) {
   initdata->m_lastusedconfigurationtab = cfgTab;
 }
 
-ULO iniGetLastUsedCfgTab(ini *initdata) {
+uint32_t iniGetLastUsedCfgTab(ini *initdata) {
   return initdata->m_lastusedconfigurationtab;
 }
 
@@ -242,7 +242,7 @@ ini *iniManagerGetDefaultInitdata(iniManager *inimanager) {
 /*============================================================================*/
 
 void iniSetDefaults(ini *initdata) {
-  ULO i;
+  uint32_t i;
 
   /*==========================================================================*/
   /* Default ini-file description                                             */
@@ -408,7 +408,7 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
       iniSetLastUsedModDir(initdata, value);
     }
     else if (stricmp(option, "last_used_cfg_tab") == 0) {
-      iniSetLastUsedCfgTab(initdata, iniGetULOFromString(value));
+      iniSetLastUsedCfgTab(initdata, iniGetUint32FromString(value));
     }
     else if (stricmp(option, "last_used_statefile_dir") == 0) {
       iniSetLastUsedStateFileDir(initdata, value);

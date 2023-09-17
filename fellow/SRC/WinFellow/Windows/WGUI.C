@@ -223,7 +223,7 @@ STR *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {
 
 // preset handling
 STR wgui_preset_path[CFG_FILENAME_LENGTH] = "";
-ULO wgui_num_presets = 0;
+uint32_t wgui_num_presets = 0;
 wgui_preset *wgui_presets = NULL;
 
 /*============================================================================*/
@@ -389,7 +389,7 @@ void wguiCheckMemorySettingsForChipset(void)
   }
 }
 
-wgui_drawmode_list& wguiGetFullScreenMatchingList(ULO colorbits) 
+wgui_drawmode_list& wguiGetFullScreenMatchingList(uint32_t colorbits) 
 {
   switch (colorbits)
   {
@@ -470,14 +470,14 @@ void wguiGetFrameSkippingStrWithIndex(LONG index, char char_buffer[]) {
 
 void wguiSetSliderTextAccordingToPosition(HWND windowHandle, int sliderIdentifier, int sliderTextIdentifier, void (*getSliderStrWithIndex)(LONG, char[])) {
   char buffer[255];
-  ULO pos;
+  uint32_t pos;
 
   pos = ccwSliderGetPosition(windowHandle, sliderIdentifier);
   getSliderStrWithIndex(pos, buffer);
   ccwStaticSetText(windowHandle, sliderTextIdentifier, buffer);
 }
 
-ULO wguiGetColorBitsFromComboboxIndex(LONG index)
+uint32_t wguiGetColorBitsFromComboboxIndex(LONG index)
 {
   if (wgui_dm.comboxbox16bitindex == index) { return 16; }
   if (wgui_dm.comboxbox24bitindex == index) { return 24; }
@@ -485,7 +485,7 @@ ULO wguiGetColorBitsFromComboboxIndex(LONG index)
   return 8;
 }
 
-LONG wguiGetComboboxIndexFromColorBits(ULO colorbits)
+LONG wguiGetComboboxIndexFromColorBits(uint32_t colorbits)
 {
   switch (colorbits)
   {
@@ -516,10 +516,10 @@ LONG wguiGetComboboxIndexFromDisplayDriver(DISPLAYDRIVER displaydriver) {
 
 void wguiConvertDrawModeListToGuiDrawModes()
 {
-  ULO i;
-  ULO id16bit		= 0;
-  ULO id24bit		= 0;
-  ULO id32bit		= 0;
+  uint32_t i;
+  uint32_t id16bit		= 0;
+  uint32_t id24bit		= 0;
+  uint32_t id32bit		= 0;
   wgui_dm.comboxbox16bitindex = -1;
   wgui_dm.comboxbox24bitindex = -1;
   wgui_dm.comboxbox32bitindex = -1;
@@ -594,9 +594,9 @@ void wguiFreeGuiDrawModesLists()
 
 wgui_drawmode* wguiMatchFullScreenResolution()
 {
-  ULO width = cfgGetScreenWidth(wgui_cfg);
-  ULO height = cfgGetScreenHeight(wgui_cfg);
-  ULO colorbits	= cfgGetScreenColorBits(wgui_cfg);
+  uint32_t width = cfgGetScreenWidth(wgui_cfg);
+  uint32_t height = cfgGetScreenHeight(wgui_cfg);
+  uint32_t colorbits	= cfgGetScreenColorBits(wgui_cfg);
 
   wgui_drawmode_list& reslist = wguiGetFullScreenMatchingList(colorbits);
 
@@ -679,7 +679,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   "State Files (.fst)\0\0\0"
 };
 
-BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, SelectFileFlags SelectFileType)
+BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, uint32_t filenamesize, STR *title, SelectFileFlags SelectFileType)
 {
   OPENFILENAME ofn;
   STR filters[CFG_FILENAME_LENGTH];
@@ -743,7 +743,7 @@ BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, 
   return GetOpenFileName(&ofn);
 }
 
-BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, SelectFileFlags SelectFileType)
+BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, uint32_t filenamesize, STR *title, SelectFileFlags SelectFileType)
 {
   OPENFILENAME ofn;
   STR filters[CFG_FILENAME_LENGTH];
@@ -814,7 +814,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, Se
   return GetSaveFileName(&ofn);
 }
 
-BOOLE wguiSelectDirectory(HWND hwndDlg, STR *szPath, STR *szDescription, ULO filenamesize, STR *szTitle)
+BOOLE wguiSelectDirectory(HWND hwndDlg, STR *szPath, STR *szDescription, uint32_t filenamesize, STR *szTitle)
 {
   BROWSEINFO bi =
   {
@@ -890,8 +890,8 @@ void wguiInstallHistoryIntoMenu(void) {
   }
 }
 
-void wguiPutCfgInHistoryOnTop(ULO cfgtotop) {
-  ULO i;
+void wguiPutCfgInHistoryOnTop(uint32_t cfgtotop) {
+  uint32_t i;
   STR cfgfilename[CFG_FILENAME_LENGTH];
 
   strncpy(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, cfgtotop), CFG_FILENAME_LENGTH);
@@ -904,7 +904,7 @@ void wguiPutCfgInHistoryOnTop(ULO cfgtotop) {
 
 void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert) {
   STR cfgfilename[CFG_FILENAME_LENGTH];
-  ULO i;
+  uint32_t i;
   BOOL exists;
 
   // first we need to check if the file is already in the history
@@ -930,8 +930,8 @@ void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert) {
   }
 }
 
-void wguiDeleteCfgFromHistory(ULO itemtodelete) {
-  ULO i;
+void wguiDeleteCfgFromHistory(uint32_t itemtodelete) {
+  uint32_t i;
 
   for (i=itemtodelete; i<3; i++) {
     iniSetConfigurationHistoryFilename(wgui_ini, i, iniGetConfigurationHistoryFilename(wgui_ini, i+1));
@@ -940,7 +940,7 @@ void wguiDeleteCfgFromHistory(ULO itemtodelete) {
   wguiInstallHistoryIntoMenu();
 }
 
-void wguiSwapCfgsInHistory(ULO itemA, ULO itemB) {
+void wguiSwapCfgsInHistory(uint32_t itemA, uint32_t itemB) {
   STR cfgfilename[CFG_FILENAME_LENGTH];
 
   strncpy(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, itemA), CFG_FILENAME_LENGTH);
@@ -1046,7 +1046,7 @@ void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf) {
 /* Extract CPU config */
 
 void wguiExtractCPUConfig(HWND hwndDlg, cfg *conf) {
-  ULO i;
+  uint32_t i;
 
   /* get CPU type */
   for (i=0; i<NUMBER_OF_CPUS; i++) {
@@ -1081,7 +1081,7 @@ void wguiExtractCPUConfig(HWND hwndDlg, cfg *conf) {
 /* install floppy config */
 
 void wguiInstallFloppyConfig(HWND hwndDlg, cfg *conf) {
-  ULO i;
+  uint32_t i;
 
   /* set floppy image names */
 
@@ -1099,7 +1099,7 @@ void wguiInstallFloppyConfig(HWND hwndDlg, cfg *conf) {
 /* set floppy images in main window */
 
 void wguiInstallFloppyMain(HWND hwndDlg, cfg *conf) {
-  ULO i;
+  uint32_t i;
 
   wguiLoadBitmaps();
   for (i=0; i<MAX_DISKDRIVES; i++) {
@@ -1115,7 +1115,7 @@ void wguiInstallFloppyMain(HWND hwndDlg, cfg *conf) {
 
 void wguiExtractFloppyConfig(HWND hwndDlg, cfg *conf) {
   char tmp[CFG_FILENAME_LENGTH];
-  ULO i;
+  uint32_t i;
 
   /* Get floppy disk image names */
 
@@ -1138,7 +1138,7 @@ void wguiExtractFloppyMain(HWND hwndDlg, cfg *conf)
   char tmp[CFG_FILENAME_LENGTH];
   char old_tmp[CFG_FILENAME_LENGTH];
   bool config_changed = false;
-  ULO i;
+  uint32_t i;
 
   /* Get floppy disk image names */
 
@@ -1165,8 +1165,8 @@ void wguiExtractFloppyMain(HWND hwndDlg, cfg *conf)
 /* Install memory config */
 
 void wguiInstallMemoryConfig(HWND hwndDlg, cfg *conf) {
-  ULO fastindex;
-  ULO i;
+  uint32_t fastindex;
+  uint32_t i;
 
   /* Add choice choices */
 
@@ -1216,8 +1216,8 @@ void wguiInstallMemoryConfig(HWND hwndDlg, cfg *conf) {
 
 void wguiExtractMemoryConfig(HWND hwndDlg, cfg *conf) {
   char tmp[CFG_FILENAME_LENGTH];
-  ULO cursel;
-  ULO sizes1[9] = {0,
+  uint32_t cursel;
+  uint32_t sizes1[9] = {0,
     0x40000,
     0x80000,
     0xc0000,
@@ -1226,7 +1226,7 @@ void wguiExtractMemoryConfig(HWND hwndDlg, cfg *conf) {
     0x180000,
     0x1c0000,
     0x200000};
-  ULO sizes2[5] = {0,
+  uint32_t sizes2[5] = {0,
     0x100000,
     0x200000,
     0x400000,
@@ -1346,7 +1346,7 @@ void wguiInstallSoundConfig(HWND hwndDlg, cfg *conf) {
 /* Extract sound config */
 
 void wguiExtractSoundConfig(HWND hwndDlg, cfg *conf) {
-  ULO i;
+  uint32_t i;
 
   /* get current sound volume */
   cfgSetSoundVolume(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SOUND_VOLUME));
@@ -1388,7 +1388,7 @@ void wguiExtractSoundConfig(HWND hwndDlg, cfg *conf) {
 /* Install gameport config */
 
 void wguiInstallGameportConfig(HWND hwndDlg, cfg *conf) {
-  ULO i, j;
+  uint32_t i, j;
 
   /* fill comboboxes with choices */
   for (i=0; i<NUMBER_OF_GAMEPORT_STRINGS; i++) {
@@ -1624,11 +1624,11 @@ void wguiExtractHardfileConfig(HWND hwndDlg, cfg *conf)
 /* Execute hardfile add or edit data */
 
 cfg_hardfile *wgui_current_hardfile_edit = nullptr;
-ULO wgui_current_hardfile_edit_index = 0;
+uint32_t wgui_current_hardfile_edit_index = 0;
 
 /* Run a hardfile edit or add dialog */
 
-bool wguiHardfileAdd(HWND hwndDlg, cfg *conf, bool add, ULO index, cfg_hardfile *target)
+bool wguiHardfileAdd(HWND hwndDlg, cfg *conf, bool add, uint32_t index, cfg_hardfile *target)
 {
   wgui_current_hardfile_edit = target;
   wgui_current_hardfile_edit_index = index;
@@ -1639,7 +1639,7 @@ bool wguiHardfileAdd(HWND hwndDlg, cfg *conf, bool add, ULO index, cfg_hardfile 
   return DialogBox(win_drv_hInstance, MAKEINTRESOURCE(IDD_HARDFILE_ADD), hwndDlg, wguiHardfileAddDialogProc) == IDOK;
 }
 
-bool wguiHardfileCreate(HWND hwndDlg, cfg *conf, ULO index, cfg_hardfile *target)
+bool wguiHardfileCreate(HWND hwndDlg, cfg *conf, uint32_t index, cfg_hardfile *target)
 {
   wgui_current_hardfile_edit = target;
   wgui_current_hardfile_edit_index = index;
@@ -1653,7 +1653,7 @@ bool wguiHardfileCreate(HWND hwndDlg, cfg *conf, ULO index, cfg_hardfile *target
 
 /* Update filesystem description in the list view box */
 
-void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, ULO i, BOOL add, STR* prefix)
+void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, uint32_t i, BOOL add, STR* prefix)
 {
   LV_ITEM lvi;
   STR stmp[48];
@@ -1696,9 +1696,9 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
   memset(&lvc, 0, sizeof(lvc));
   lvc.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
   lvc.fmt = LVCFMT_LEFT;
-  for (ULO i = 0; i < FILESYSTEM_COLS; i++)
+  for (uint32_t i = 0; i < FILESYSTEM_COLS; i++)
   {
-    ULO colwidth = ListView_GetStringWidth(lvHWND, colheads[i]);
+    uint32_t colwidth = ListView_GetStringWidth(lvHWND, colheads[i]);
     if (i == 0) colwidth += 32;
     else if (i == 2) colwidth += 164;
     else colwidth += 16;
@@ -1710,9 +1710,9 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
 
   /* Add current hardfiles to the list */
 
-  ULO fscount = cfgGetFilesystemCount(conf);
+  uint32_t fscount = cfgGetFilesystemCount(conf);
   ListView_SetItemCount(lvHWND, fscount);
-  for (ULO i = 0; i < fscount; i++)
+  for (uint32_t i = 0; i < fscount; i++)
   {
     cfg_filesys fs = cfgGetFilesystem(conf, i);
     wguiFilesystemUpdate(lvHWND, &fs, i, TRUE, cfgGetFilesystemDeviceNamePrefix(conf));
@@ -1752,11 +1752,11 @@ void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
 /* Execute filesystem add or edit data */
 
 cfg_filesys *wgui_current_filesystem_edit = NULL;
-ULO wgui_current_filesystem_edit_index = 0;
+uint32_t wgui_current_filesystem_edit_index = 0;
 
 /* Run a filesystem edit or add dialog */
 
-BOOLE wguiFilesystemAdd(HWND hwndDlg, cfg *conf, BOOLE add, ULO index, cfg_filesys *target)
+BOOLE wguiFilesystemAdd(HWND hwndDlg, cfg *conf, BOOLE add, uint32_t index, cfg_filesys *target)
 {
     wgui_current_filesystem_edit = target;
     if (add) cfgSetFilesystemUnitDefaults(target);
@@ -1813,8 +1813,8 @@ void wguiInstallDisplayScaleConfigInGUI(HWND hwndDlg, cfg *conf)
   ComboBox_AddString(borderComboboxHWND, "large overscan");
   ComboBox_AddString(borderComboboxHWND, "very large overscan");
 
-  ULO currentLeft = cfgGetClipLeft(conf);
-  ULO currentBorderSelectionIndex = 0;
+  uint32_t currentLeft = cfgGetClipLeft(conf);
+  uint32_t currentBorderSelectionIndex = 0;
   if (currentLeft <= 88)
   {
     currentBorderSelectionIndex = 3;
@@ -1837,7 +1837,7 @@ void wguiInstallDisplayScaleConfigInGUI(HWND hwndDlg, cfg *conf)
 
 void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf)
 {
-  ULO currentScaleSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAYSCALE);
+  uint32_t currentScaleSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAYSCALE);
   DISPLAYSCALE selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_1X;
 
   switch (currentScaleSelectionIndex)
@@ -1861,7 +1861,7 @@ void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf)
 
   cfgSetDisplayScale(conf, selectedDisplayScale);
 
-  ULO currentBorderSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_BORDER);
+  uint32_t currentBorderSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_BORDER);
 
   switch (currentBorderSelectionIndex)
   {
@@ -1898,7 +1898,7 @@ void wguiInstallColorBitsConfigInGUI(HWND hwndDlg, cfg *conf)
   bool isWindowed = cfgGetScreenWindowed(conf);
 
   ComboBox_ResetContent(colorBitsComboboxHWND);
-  ULO comboboxid = 0;
+  uint32_t comboboxid = 0;
   if (!wgui_dm.res16bit.empty())
   {
     ComboBox_AddString(colorBitsComboboxHWND, "high color (16 bit)");
@@ -1917,7 +1917,7 @@ void wguiInstallColorBitsConfigInGUI(HWND hwndDlg, cfg *conf)
 
   ComboBox_Enable(colorBitsComboboxHWND, !isWindowed);
 
-  ULO colorbits_cursel = pwgui_dm_match->colorbits;
+  uint32_t colorbits_cursel = pwgui_dm_match->colorbits;
   ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(colorbits_cursel));
 }
 
@@ -2097,10 +2097,10 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 /* List view selection investigate                                            */
 /*============================================================================*/
 
-LON wguiListViewNext(HWND ListHWND, ULO initialindex)
+LON wguiListViewNext(HWND ListHWND, uint32_t initialindex)
 {
-  ULO itemcount = ListView_GetItemCount(ListHWND);
-  ULO index = initialindex;
+  uint32_t itemcount = ListView_GetItemCount(ListHWND);
+  uint32_t index = initialindex;
 
   while (index < itemcount)
   {
@@ -2170,7 +2170,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         }
 
       if(wgui_presets != NULL) {
-        ULO i;          
+        uint32_t i;          
 
         for(i=0; i<wgui_num_presets; i++)
           ccwComboBoxAddString(hwndDlg, IDC_COMBO_PRESETS_MODEL, wgui_presets[i].strPresetDescription);
@@ -2194,7 +2194,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
           case IDC_BUTTON_PRESETS_APPLY:
             {
-              ULO lIndex = 0;
+              uint32_t lIndex = 0;
               STR strFilename[CFG_FILENAME_LENGTH] = "";
               STR strKickstart[CFG_FILENAME_LENGTH] = "";
               STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
@@ -2206,7 +2206,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
               fellowAddLog("Applying preset %s...\n", strFilename);
 
               if(cfgLoadFromFilename(wgui_cfg, strFilename, true)) {
-                ULO lCRC32 = 0;
+                uint32_t lCRC32 = 0;
 
                 if(lCRC32 = cfgGetKickCRC32(wgui_cfg)) {
                   ccwEditGetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strROMSearchPath, CFG_FILENAME_LENGTH);
@@ -2243,7 +2243,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
           switch (LOWORD(wParam)) {
           case IDC_COMBO_PRESETS_MODEL:
             {
-              ULO index = 0;
+              uint32_t index = 0;
               cfg *cfgTemp = NULL;
               STR strTemp[CFG_FILENAME_LENGTH] = "";
 
@@ -2264,7 +2264,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 if(cfgLoadFromFilename(cfgTemp, wgui_presets[index].strPresetFilename, true)) {
                   STR strKickstart[CFG_FILENAME_LENGTH] = "";
                   STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
-                  ULO lCRC32 = 0;
+                  uint32_t lCRC32 = 0;
 
                   ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPSET, cfgGetECS(cfgTemp) ? "ECS": "OCS");
 
@@ -2349,7 +2349,7 @@ INT_PTR CALLBACK wguiCPUDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 /* Dialog Procedure for the floppy property sheet                             */
 /*============================================================================*/
 
-void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, int editIdentifier, ULO index) {
+void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, int editIdentifier, uint32_t index) {
   STR filename[CFG_FILENAME_LENGTH];
 
   if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Diskimage", FSEL_ADF)) {
@@ -2362,7 +2362,7 @@ void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, int editIdentifier, ULO index)
   }
 }
 
-bool wguiCreateFloppyDiskImage(cfg *conf, HWND hwndDlg, ULO index) 
+bool wguiCreateFloppyDiskImage(cfg *conf, HWND hwndDlg, uint32_t index) 
 {
   char *filename = NULL;
     
@@ -2596,7 +2596,7 @@ INT_PTR CALLBACK wguiMemoryDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 /* dialog procedure for the display property sheet                            */
 /*============================================================================*/
 
-ULO wguiGetNumberOfScreenAreas(ULO colorbits)
+uint32_t wguiGetNumberOfScreenAreas(uint32_t colorbits)
 {
   switch (colorbits)
   {
@@ -2612,8 +2612,8 @@ ULO wguiGetNumberOfScreenAreas(ULO colorbits)
 
 INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-  ULO comboboxIndexColorBits;
-  ULO selectedColorBits;
+  uint32_t comboboxIndexColorBits;
+  uint32_t selectedColorBits;
 
   switch (uMsg)
   {
@@ -2673,7 +2673,7 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
           switch (HIWORD(wParam))
           {
           case CBN_SELCHANGE:
-            ULO comboboxIndexDisplayDriver = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
+            uint32_t comboboxIndexDisplayDriver = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
             DISPLAYDRIVER displaydriver = wguiGetDisplayDriverFromComboboxIndex(comboboxIndexDisplayDriver);
 
             if (displaydriver != cfgGetDisplayDriver(wgui_cfg))
@@ -2906,7 +2906,7 @@ INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
       break;
       case IDC_BUTTON_FILESYSTEM_EDIT:
       {
-        ULO sel = wguiListViewNext(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), 0);
+        uint32_t sel = wguiListViewNext(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), 0);
         if (sel != -1)
         {
           cfg_filesys fs = cfgGetFilesystem(wgui_cfg, sel);
@@ -2925,7 +2925,7 @@ INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
         {
           cfgFilesystemRemove(wgui_cfg, sel);
           ListView_DeleteItem(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), sel);
-          for (ULO i = sel; i < cfgGetFilesystemCount(wgui_cfg); i++)
+          for (uint32_t i = sel; i < cfgGetFilesystemCount(wgui_cfg); i++)
           {
             cfg_filesys fs = cfgGetFilesystem(wgui_cfg, i);
             wguiFilesystemUpdate(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), &fs, i, FALSE, cfgGetFilesystemDeviceNamePrefix(wgui_cfg));
@@ -2999,7 +2999,7 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
         }
 
         // creates the HDF file 
-        if (!HardfileHandler->Create(hfile, (ULO) size))
+        if (!HardfileHandler->Create(hfile, (uint32_t) size))
         {
           MessageBox(hwndDlg, "Failed to create file", "Create Hardfile", 0);
           break;
@@ -3185,10 +3185,10 @@ INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
         LPARAM sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
         if (sel != -1)
         {
-          cfg_hardfile fhd = cfgGetHardfile(wgui_cfg, (ULO) sel);
-          if (wguiHardfileAdd(hwndDlg, wgui_cfg, false, (ULO) sel, &fhd) == IDOK)
+          cfg_hardfile fhd = cfgGetHardfile(wgui_cfg, (uint32_t) sel);
+          if (wguiHardfileAdd(hwndDlg, wgui_cfg, false, (uint32_t) sel, &fhd) == IDOK)
           {
-            cfgHardfileChange(wgui_cfg, &fhd, (ULO) sel);
+            cfgHardfileChange(wgui_cfg, &fhd, (uint32_t) sel);
             wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
           }
         }
@@ -3199,7 +3199,7 @@ INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
         LPARAM sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
         if (sel != -1)
         {
-          cfgHardfileRemove(wgui_cfg, (ULO) sel);
+          cfgHardfileRemove(wgui_cfg, (uint32_t) sel);
           wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
         }
       }
@@ -3781,11 +3781,11 @@ BOOLE wguiEnter(void)
   return quit_emulator;
 }
 
-static bool wguiInitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_presets) {
+static bool wguiInitializePresets(wgui_preset **wgui_presets, uint32_t *wgui_num_presets) {
   STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
-  ULO i = 0;
+  uint32_t i = 0;
   cfg *cfgTemp = NULL;
   bool bResult = false;
   STR strFilename[CFG_FILENAME_LENGTH] = "";

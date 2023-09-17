@@ -73,44 +73,44 @@ HWND wdbg_hDialog;
 /*=======================================================*/
 
 /* floppy.c */
-extern ULO dsklen, dsksync, dskpt;
+extern uint32_t dsklen, dsksync, dskpt;
 
 /* sprite.c */
-extern ULO sprpt[8];
-extern ULO sprx[8];
-extern ULO spry[8];
-extern ULO sprly[8];
-extern ULO spratt[8];
-extern ULO sprite_state[8];
+extern uint32_t sprpt[8];
+extern uint32_t sprx[8];
+extern uint32_t spry[8];
+extern uint32_t sprly[8];
+extern uint32_t spratt[8];
+extern uint32_t sprite_state[8];
 
 /* sound.c */
 extern soundStateFunc audstate[4];
-extern ULO audlenw[4];
-extern ULO audper[4];
-extern ULO audvol[4];
-extern ULO audlen[4];
-extern ULO audpercounter[4];
+extern uint32_t audlenw[4];
+extern uint32_t audper[4];
+extern uint32_t audvol[4];
+extern uint32_t audlen[4];
+extern uint32_t audpercounter[4];
 
 /* cia.c */
 
 typedef struct cia_state_
 {
-  ULO ta;
-  ULO tb;
-  ULO ta_rem;
-  ULO tb_rem;
-  ULO talatch;
-  ULO tblatch;
+  uint32_t ta;
+  uint32_t tb;
+  uint32_t ta_rem;
+  uint32_t tb_rem;
+  uint32_t talatch;
+  uint32_t tblatch;
   LON taleft;
   LON tbleft;
-  ULO evalarm;
-  ULO evlatch;
-  ULO evlatching;
-  ULO evwritelatch;
-  ULO evwritelatching;
-  ULO evalarmlatch;
-  ULO evalarmlatching;
-  ULO ev;
+  uint32_t evalarm;
+  uint32_t evlatch;
+  uint32_t evlatching;
+  uint32_t evwritelatch;
+  uint32_t evwritelatching;
+  uint32_t evalarmlatch;
+  uint32_t evalarmlatching;
+  uint32_t ev;
   UBY icrreq;
   UBY icrmsk;
   UBY cra;
@@ -128,32 +128,32 @@ extern cia_state cia[2];
 
 typedef struct blitter_state_
 {
-  ULO bltcon;
-  ULO bltafwm;
-  ULO bltalwm;
-  ULO bltapt;
-  ULO bltbpt;
-  ULO bltcpt;
-  ULO bltdpt;
-  ULO bltamod;
-  ULO bltbmod;
-  ULO bltcmod;
-  ULO bltdmod;
-  ULO bltadat;
-  ULO bltbdat;
-  ULO bltbdat_original;
-  ULO bltcdat;
-  ULO bltzero;
-  ULO height;
-  ULO width;
-  ULO a_shift_asc;
-  ULO a_shift_desc;
-  ULO b_shift_asc;
-  ULO b_shift_desc;
+  uint32_t bltcon;
+  uint32_t bltafwm;
+  uint32_t bltalwm;
+  uint32_t bltapt;
+  uint32_t bltbpt;
+  uint32_t bltcpt;
+  uint32_t bltdpt;
+  uint32_t bltamod;
+  uint32_t bltbmod;
+  uint32_t bltcmod;
+  uint32_t bltdmod;
+  uint32_t bltadat;
+  uint32_t bltbdat;
+  uint32_t bltbdat_original;
+  uint32_t bltcdat;
+  uint32_t bltzero;
+  uint32_t height;
+  uint32_t width;
+  uint32_t a_shift_asc;
+  uint32_t a_shift_desc;
+  uint32_t b_shift_asc;
+  uint32_t b_shift_desc;
   BOOLE started;
   BOOLE dma_pending;
-  ULO cycle_length;
-  ULO cycle_free;
+  uint32_t cycle_length;
+  uint32_t cycle_free;
 } blitter_state;
 
 extern blitter_state blitter;
@@ -172,8 +172,8 @@ extern blitter_state blitter;
 /* private variables for this module */
 /*===================================*/
 
-static ULO memory_padd = WDBG_DISASSEMBLY_LINES * 32;
-static ULO memory_adress = 0;
+static uint32_t memory_padd = WDBG_DISASSEMBLY_LINES * 32;
+static uint32_t memory_adress = 0;
 static BOOLE memory_ascii = FALSE;
 
 static float g_DPIScaleX = 1, g_DPIScaleY = 1;
@@ -307,7 +307,7 @@ STR *wdbgGetSpecialRegistersStr(STR * s)
 
 void wdbgExtendStringTo80Columns(STR * s)
 {
-  ULO i;
+  uint32_t i;
   BOOLE zero_found = FALSE;
 
   for (i = 0; i < 79; i++) {
@@ -319,7 +319,7 @@ void wdbgExtendStringTo80Columns(STR * s)
   s[80] = '\0';
 }
 
-ULO wdbgLineOut(HDC hDC, STR * s, ULO x, ULO y)
+uint32_t wdbgLineOut(HDC hDC, STR * s, uint32_t x, uint32_t y)
 {
   struct tagSIZE text_size;
   SetBkMode(hDC, OPAQUE);
@@ -329,7 +329,7 @@ ULO wdbgLineOut(HDC hDC, STR * s, ULO x, ULO y)
   return y + text_size.cy;
 }
 
-STR *wdbgGetDisassemblyLineStr(STR * s, ULO * disasm_pc)
+STR *wdbgGetDisassemblyLineStr(STR * s, uint32_t * disasm_pc)
 {
   STR inst_address[256]  = "";
   STR inst_data[256]     = "";
@@ -353,12 +353,12 @@ void wdbgUpdateCPUState(HWND hwndDlg)
 
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    ULO disasm_pc;
-    ULO i;
-    HFONT myfont = CreateFont((ULO)(8*g_DPIScaleY),
-            (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    uint32_t disasm_pc;
+    uint32_t i;
+    HFONT myfont = CreateFont((uint32_t)(8*g_DPIScaleY),
+            (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -381,10 +381,10 @@ void wdbgUpdateCPUState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
     disasm_pc = cpuGetPC();
     for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++)
       y = wdbgLineOut(hDC, wdbgGetDisassemblyLineStr(s, &disasm_pc), x, y);
@@ -410,11 +410,11 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    ULO i, j;
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    uint32_t i, j;
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -438,10 +438,10 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(st), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(st), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(st), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++) {
       if (memory_ascii)
@@ -498,11 +498,11 @@ void wdbgUpdateCIAState(HWND hwndDlg)
 
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    ULO i;
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    uint32_t i;
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -526,10 +526,10 @@ void wdbgUpdateCIAState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     for (i = 0; i < 2; i++) {
       sprintf(s, "CIA %s Registers:", (i == 0) ? "A" : "B");
@@ -602,11 +602,11 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    ULO i;
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    uint32_t i;
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -630,10 +630,10 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     for (i = 0; i < 4; i++)
     {
@@ -700,10 +700,10 @@ void wdbgUpdateBlitterState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -727,10 +727,10 @@ void wdbgUpdateBlitterState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(s, "bltcon:  %08X bltafwm: %08X bltalwm: %08X", 
       blitter.bltcon, blitter.bltafwm, blitter.bltalwm);
@@ -771,11 +771,11 @@ void wdbgUpdateCopperState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    ULO i, list1, list2, atpc;
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    uint32_t i, list1, list2, atpc;
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -799,10 +799,10 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT* g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT* g_DPIScaleX);
 
     list1 = (copper_registers.cop1lc & 0xfffffe);
     list2 = (copper_registers.cop2lc & 0xfffffe);
@@ -852,10 +852,10 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -879,10 +879,10 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprite_registers.sprpt[0],
       sprite_registers.sprpt[1], sprite_registers.sprpt[2], sprite_registers.sprpt[3]);
@@ -892,7 +892,7 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
       sprite_registers.sprpt[5], sprite_registers.sprpt[6], sprite_registers.sprpt[7]);
     y = wdbgLineOut(hDC, s, x, y);
 
-    //for (ULO i = 0; i < 8; i++) {
+    //for (uint32_t i = 0; i < 8; i++) {
     //  sprintf(s,
 	   //   "Spr%uX-%u Spr%uStartY-%u Spr%uStopY-%u Spr%uAttached-%u Spr%ustate-%u",
 	   //   i, sprx[i], i, spry[i], i, sprly[i], i, spratt[i], i,
@@ -920,10 +920,10 @@ void wdbgUpdateScreenState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -947,10 +947,10 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(s, "DIWSTRT - %.4X DIWSTOP - %.4X DDFSTRT - %.4X DDFSTOP - %.4X LOF     - %.4X",
 	    diwstrt, diwstop, ddfstrt, ddfstop, lof);
@@ -1013,10 +1013,10 @@ void wdbgUpdateEventState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -1040,10 +1040,10 @@ void wdbgUpdateEventState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(s, "Next CPU      - %u", cpuEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
@@ -1080,11 +1080,11 @@ void wdbgUpdateSoundState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
-    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    ULO i;
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
-      (ULO)(8 * g_DPIScaleX),
+    uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    uint32_t i;
+    HFONT myfont = CreateFont((uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -1108,10 +1108,10 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
-    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    x = (uint32_t)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (uint32_t)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
+    x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(s, "A0: %X A1: %X A2: %X A3: %X A5: %X", soundState0, soundState1,
 	    soundState2, soundState3, soundState5);
@@ -1495,7 +1495,7 @@ void wdbgDebugSessionRun(HWND parent)
 #else
 
 HWND wdeb_hDialog = 0;
-ULO WDEB_DISASM_LINES = 42;
+uint32_t WDEB_DISASM_LINES = 42;
 
 enum wdeb_actions
 {
@@ -1508,7 +1508,7 @@ enum wdeb_actions wdeb_action;
 
 void wdebInitInstructionColumns()
 {
-  ULO i;
+  uint32_t i;
   LV_COLUMN lv_col;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INSTRUCTIONS);
@@ -1564,7 +1564,7 @@ STR *wdbg_registernames[] =
 
 void wdebInitRegisterColumns()
 {
-  ULO i;
+  uint32_t i;
   LV_COLUMN lv_col;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_REGISTERS);
@@ -1617,10 +1617,10 @@ void wdebInitInfoColumns()
 
 void wdebUpdateInstructionColumns()
 {
-  ULO i;
+  uint32_t i;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INSTRUCTIONS);
-  ULO disasm_pc = cpuGetPC();
+  uint32_t disasm_pc = cpuGetPC();
   STR inst_address[256];
   STR inst_data[256];
   STR inst_name[256];
@@ -1656,10 +1656,10 @@ void wdebUpdateInstructionColumns()
 
 void wdebUpdateRegisterColumns()
 {
-  ULO i, j, col;
+  uint32_t i, j, col;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_REGISTERS);
-  ULO disasm_pc = cpuGetPC();
+  uint32_t disasm_pc = cpuGetPC();
   STR tmp[16];
 
   memset(&lv_item, 0, sizeof(lv_item));

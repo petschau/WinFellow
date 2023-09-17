@@ -16,11 +16,11 @@ typedef enum {
 
 struct wgui_drawmode
 {
-  ULO id;
-  ULO width;
-  ULO height;
-  ULO refresh;
-  ULO colorbits;
+  uint32_t id;
+  uint32_t width;
+  uint32_t height;
+  uint32_t refresh;
+  uint32_t colorbits;
   STR name[32];
 
   bool operator<(const wgui_drawmode& dm)
@@ -49,9 +49,9 @@ struct wgui_drawmode
 typedef std::list<wgui_drawmode> wgui_drawmode_list;
 
 typedef struct {
-  ULO numberof16bit;
-  ULO numberof24bit;
-  ULO numberof32bit;
+  uint32_t numberof16bit;
+  uint32_t numberof24bit;
+  uint32_t numberof32bit;
   LON comboxbox16bitindex;
   LON comboxbox24bitindex;
   LON comboxbox32bitindex;
@@ -70,7 +70,7 @@ typedef struct {
 /* Fellow                                                                    */
 /*===========================================================================*/
 
-extern BOOLE wguiSaveFile(HWND, STR *, ULO, STR *, SelectFileFlags);
+extern BOOLE wguiSaveFile(HWND, STR *, uint32_t, STR *, SelectFileFlags);
 extern STR *wguiExtractPath(STR *);
 
 extern void wguiStartup(void);

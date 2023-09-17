@@ -59,7 +59,7 @@ void Automator::EndOfLine()
   if (!RecordScript)
   {
     ULL frameNumber = busGetRasterFrameCount();
-    ULO line = busGetRasterY();
+    uint32_t line = busGetRasterY();
     _script.ExecuteUntil(frameNumber, line);
   }
 }

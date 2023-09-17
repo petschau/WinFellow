@@ -22,7 +22,7 @@ namespace fellow::hardfile::rdb
 
     LON GetDataSize() const;
     const UBY* GetData() const;
-    void ReadFromFile(RDBFileReader& reader, ULO index);
+    void ReadFromFile(RDBFileReader& reader, uint32_t index);
     void Log();
 
     RDBLSegBlock();

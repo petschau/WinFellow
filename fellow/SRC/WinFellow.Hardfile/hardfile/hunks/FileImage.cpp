@@ -21,7 +21,7 @@ namespace fellow::hardfile::hunks
     return _header.get();
   }
 
-  InitialHunk* FileImage::GetInitialHunk(ULO hunkIndex)
+  InitialHunk* FileImage::GetInitialHunk(uint32_t hunkIndex)
   {
     return _initialHunks[hunkIndex].get();
   }
@@ -31,12 +31,12 @@ namespace fellow::hardfile::hunks
     _initialHunks.push_back(unique_ptr<InitialHunk>(hunk));
   }
 
-  ULO FileImage::GetInitialHunkCount()
+  uint32_t FileImage::GetInitialHunkCount()
   {
-    return (ULO) _initialHunks.size();
+    return (uint32_t) _initialHunks.size();
   }
 
-  AdditionalHunk* FileImage::GetAdditionalHunk(ULO hunkIndex)
+  AdditionalHunk* FileImage::GetAdditionalHunk(uint32_t hunkIndex)
   {
     return _additionalHunks[hunkIndex].get();
   }
@@ -46,8 +46,8 @@ namespace fellow::hardfile::hunks
     _additionalHunks.push_back(unique_ptr<AdditionalHunk>(hunk));
   }
 
-  ULO FileImage::GetAdditionalHunkCount()
+  uint32_t FileImage::GetAdditionalHunkCount()
   {
-    return (ULO) _additionalHunks.size();
+    return (uint32_t) _additionalHunks.size();
   }
 }

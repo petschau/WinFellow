@@ -7,7 +7,7 @@
 #include "BLIT.H"
 #include "CoreHost.h"
 
-ULO LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
+uint32_t LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
 
 void LineExactCopper::YTableInit()
 {
@@ -28,7 +28,7 @@ void LineExactCopper::RemoveEvent()
   }
 }
 
-void LineExactCopper::InsertEvent(ULO cycle)
+void LineExactCopper::InsertEvent(uint32_t cycle)
 {
   if (cycle != BUS_CYCLE_DISABLE)
   {
@@ -37,7 +37,7 @@ void LineExactCopper::InsertEvent(ULO cycle)
   }
 }
 
-void LineExactCopper::Load(ULO new_copper_pc)
+void LineExactCopper::Load(uint32_t new_copper_pc)
 {
   copper_registers.copper_pc = new_copper_pc;
 
@@ -56,7 +56,7 @@ void LineExactCopper::Load(ULO new_copper_pc)
   }
 }
 
-ULO LineExactCopper::GetCheckedWaitCycle(ULO waitCycle)
+uint32_t LineExactCopper::GetCheckedWaitCycle(uint32_t waitCycle)
 {
   if (waitCycle <= bus.cycle)
   {
@@ -129,14 +129,14 @@ void LineExactCopper::NotifyCop1lcChanged()
 
 void LineExactCopper::EventHandler()
 {
-  ULO bswapRegC;
-  ULO bswapRegD;
+  uint32_t bswapRegC;
+  uint32_t bswapRegD;
   bool correctLine;
-  ULO maskedY;
-  ULO maskedX;
-  ULO waitY;
-  ULO currentY = busGetRasterY();
-  ULO currentX = busGetRasterX();
+  uint32_t maskedY;
+  uint32_t maskedX;
+  uint32_t waitY;
+  uint32_t currentY = busGetRasterY();
+  uint32_t currentX = busGetRasterX();
 
   copperEvent.cycle = BUS_CYCLE_DISABLE;
   if (cpuEvent.cycle != BUS_CYCLE_DISABLE)

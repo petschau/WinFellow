@@ -40,38 +40,38 @@ typedef union ByteLongArrayUnion_
 class Planar2ChunkyDecoder
 {
 private:
-  ULO _batch_size;
+  uint32_t _batch_size;
   ByteLongArrayUnion _playfield_odd;
   ByteLongArrayUnion _playfield_even;
   ByteLongArrayUnion _playfield_ham_sprites;
 
-  ULO *GetEvenPlayfieldULOPtr(void);
-  ULO *GetOddPlayfieldULOPtr(void);
+  uint32_t *GetEvenPlayfieldUint32Ptr(void);
+  uint32_t *GetOddPlayfieldUint32Ptr(void);
 
-  ULO P2COdd1(ULO dat1, ULO dat3, ULO dat5);
-  ULO P2COdd2(ULO dat1, ULO dat3, ULO dat5);
-  ULO P2CEven1(ULO dat2, ULO dat4, ULO dat6);
-  ULO P2CEven2(ULO dat2, ULO dat4, ULO dat6);
-  ULO P2CDual1(ULO dat1, ULO dat2, ULO dat3);
-  ULO P2CDual2(ULO dat1, ULO dat2, ULO dat3);
+  uint32_t P2COdd1(uint32_t dat1, uint32_t dat3, uint32_t dat5);
+  uint32_t P2COdd2(uint32_t dat1, uint32_t dat3, uint32_t dat5);
+  uint32_t P2CEven1(uint32_t dat2, uint32_t dat4, uint32_t dat6);
+  uint32_t P2CEven2(uint32_t dat2, uint32_t dat4, uint32_t dat6);
+  uint32_t P2CDual1(uint32_t dat1, uint32_t dat2, uint32_t dat3);
+  uint32_t P2CDual2(uint32_t dat1, uint32_t dat2, uint32_t dat3);
 
-  void P2CNextPixelsNormal(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
-  void P2CNextPixelsDual(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
-  void P2CNext4PixelsNormal(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
-  void P2CNext4PixelsDual(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
-  void P2CNext8PixelsNormal(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
-  void P2CNext8PixelsDual(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
+  void P2CNextPixelsNormal(uint32_t pixelCount, uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
+  void P2CNextPixelsDual(uint32_t pixelCount, uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
+  void P2CNext4PixelsNormal(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
+  void P2CNext4PixelsDual(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
+  void P2CNext8PixelsNormal(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
+  void P2CNext8PixelsDual(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
 
 public:
   UBY *GetOddPlayfield(void);
   UBY *GetEvenPlayfield(void);
   UBY *GetHamSpritesPlayfield(void);
-  ULO GetBatchSize(void);
+  uint32_t GetBatchSize(void);
 
   void NewBatch(void);
-  void P2CNextPixels(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
-  void P2CNext4Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
-  void P2CNext8Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
+  void P2CNextPixels(uint32_t pixelCount, uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
+  void P2CNext4Pixels(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
+  void P2CNext8Pixels(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
 };
 
 #endif

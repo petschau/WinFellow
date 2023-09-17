@@ -5,7 +5,7 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::hunks
 {
-  ULO EndHunk::GetID()
+  uint32_t EndHunk::GetID()
   {
     return ID;
   }

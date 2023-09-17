@@ -27,7 +27,7 @@
 bool rtc_enabled = false;
 RtcOkiMsm6242rs rtc;
 
-UBY rtcReadByte(ULO address)
+UBY rtcReadByte(uint32_t address)
 {
   UWO result = rtc.read(address);
   UBY byte_result = (UBY) ((address & 1) ? result : (result>>8));
@@ -39,7 +39,7 @@ UBY rtcReadByte(ULO address)
   return byte_result;
 }
 
-UWO rtcReadWord(ULO address)
+UWO rtcReadWord(uint32_t address)
 {
   UWO result = rtc.read(address);
 
@@ -50,11 +50,11 @@ UWO rtcReadWord(ULO address)
   return result;
 }
 
-ULO rtcReadLong(ULO address)
+uint32_t rtcReadLong(uint32_t address)
 {
-  ULO w1 = (ULO) rtc.read(address);
-  ULO w2 = (ULO) rtc.read(address+2);
-  ULO result = (w1 << 16) | w2;
+  uint32_t w1 = (uint32_t) rtc.read(address);
+  uint32_t w2 = (uint32_t) rtc.read(address+2);
+  uint32_t result = (w1 << 16) | w2;
 
 #ifdef RTC_LOG
   fellowAddLog("RTC Long Read: %.8X, returned %.8X\n", address, result);
@@ -63,7 +63,7 @@ ULO rtcReadLong(ULO address)
   return result;
 }
 
-void rtcWriteByte(UBY data, ULO address)
+void rtcWriteByte(UBY data, uint32_t address)
 {
   rtc.write(data, address);
 
@@ -72,7 +72,7 @@ void rtcWriteByte(UBY data, ULO address)
 #endif
 }
 
-void rtcWriteWord(UWO data, ULO address)
+void rtcWriteWord(UWO data, uint32_t address)
 {
   rtc.write(data, address);
 
@@ -81,7 +81,7 @@ void rtcWriteWord(UWO data, ULO address)
 #endif
 }
 
-void rtcWriteLong(ULO data, ULO address)
+void rtcWriteLong(uint32_t data, uint32_t address)
 {
   rtc.write(data, address);
   rtc.write(data, address + 2);

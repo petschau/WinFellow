@@ -43,7 +43,7 @@ Tuesday, September 19, 2000
 /* IO-Registers                                                              */
 /*===========================================================================*/
 
-ULO potgor, potdat[2];
+uint32_t potgor, potdat[2];
 
 
 /*===========================================================================*/
@@ -63,14 +63,14 @@ BOOLE gameport_mouse_first_time[2];
 
 gameport_inputs gameport_input[2];
 
-void gameportSetInput(ULO index, gameport_inputs gameportinput) {
+void gameportSetInput(uint32_t index, gameport_inputs gameportinput) {
   gameport_input[index] = gameportinput;
 }
 
 BOOLE gameportGetAnalogJoystickInUse(void)
 {
   BOOLE result = FALSE;
-  ULO i;
+  uint32_t i;
 
   for(i = 0; i < 2; i++)
   {
@@ -90,7 +90,7 @@ BOOLE gameportGetAnalogJoystickInUse(void)
 /* This routine will try to avoid overflow in the mouse counters             */
 /*===========================================================================*/
 
-static ULO rjoydat(ULO i) {
+static uint32_t rjoydat(uint32_t i) {
   if (gameport_input[i] == GP_MOUSE0) { /* Gameport input is mouse */
     LON diffx, diffy;
 
@@ -110,7 +110,7 @@ static ULO rjoydat(ULO i) {
     return ((gameport_y_last_read[i] & 0xff)<<8) | (gameport_x_last_read[i] & 0xff);
   }
   else { /* Gameport input is of joystick type */
-    ULO retval = 0;
+    uint32_t retval = 0;
 
     if (gameport_right[i])
       retval |= 3;
@@ -130,35 +130,35 @@ static ULO rjoydat(ULO i) {
 
 /* JOY0DATR - $A */
 
-UWO rjoy0dat(ULO address)
+UWO rjoy0dat(uint32_t address)
 {
   return (UWO) rjoydat(0);
 }
 
 /* JOY1DATR - $C */
 
-UWO rjoy1dat(ULO address)
+UWO rjoy1dat(uint32_t address)
 {
   return (UWO) rjoydat(1);
 }
 
 /* POT0DATR - $12 */
 
-UWO rpot0dat(ULO address)
+UWO rpot0dat(uint32_t address)
 {
   return (UWO) potdat[0];
 }
 
 /* POT1DATR - $14 */
 
-UWO rpot1dat(ULO address)
+UWO rpot1dat(uint32_t address)
 {
   return (UWO) potdat[1];
 }
 
 /* POTGOR - $16 */
 
-UWO rpotgor(ULO address)
+UWO rpotgor(uint32_t address)
 {
   UWO val = potgor & 0xbbff;
 
@@ -176,9 +176,9 @@ UWO rpotgor(ULO address)
 
 /* JOYTEST $36 */
 
-void wjoytest(UWO data, ULO address)
+void wjoytest(UWO data, uint32_t address)
 {
-  ULO i;
+  uint32_t i;
 
   for (i = 0; i < 2; i++) {
     gameport_x[i] = gameport_x_last_read[i] = (BYT) (data & 0xff);
@@ -203,7 +203,7 @@ void gameportMouseHandler(gameport_inputs mousedev,
 			  BOOLE button1,
 			  BOOLE button2,
 			  BOOLE button3) {
-  ULO i;
+  uint32_t i;
 
   automator.RecordMouse(mousedev, x, y, button1, button2, button3);
 
@@ -235,7 +235,7 @@ void gameportJoystickHandler(gameport_inputs joydev,
 	BOOLE down,
 	BOOLE button1,
 	BOOLE button2) {
-  ULO i;
+  uint32_t i;
 
   automator.RecordJoystick(joydev, left, up, right, down, button1, button2);
 
@@ -256,7 +256,7 @@ void gameportJoystickHandler(gameport_inputs joydev,
 #ifndef FELLOW_SUPPORT_RP_API_VERSION_71
       if(RP.GetHeadlessMode())
       {
-        ULO lMask = 0;
+        uint32_t lMask = 0;
         if(button1) lMask |= RP_JOYSTICK_BUTTON1;
         if(button2) lMask |= RP_JOYSTICK_BUTTON2;
         if(left)    lMask |= RP_JOYSTICK_LEFT;
@@ -290,7 +290,7 @@ void gameportIOHandlersInstall(void)
 /*===========================================================================*/
 
 void gameportIORegistersClear(BOOLE clear_pot) {
-  ULO i;
+  uint32_t i;
 
   if (clear_pot) potgor = 0xffff;
   for (i = 0; i < 2; i++) {

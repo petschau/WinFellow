@@ -63,7 +63,7 @@
 #define RIPLOG3(x)
 #endif
 
-static ULO modripModsFound;
+static uint32_t modripModsFound;
 
 /*==============================================*/
 /* macros for accessing big endian style values */
@@ -80,7 +80,7 @@ static ULO modripModsFound;
 
 BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 {
-  ULO i;
+  uint32_t i;
   FILE *modfile;
 
   if(info == NULL) return FALSE;
@@ -153,9 +153,9 @@ static void modripModuleInfoInitialize(struct ModuleInfo *info)
 /* games: SWIV, Lotus II, First Samurai */
 /*======================================*/
 
-static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
+static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
 {
-  ULO i;
+  uint32_t i;
   int type;
   struct { char *ID; char *Desc; int channels; } formats[9] = {
     {"M.K.", "Noisetracker",  4},
@@ -271,10 +271,10 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 /* Future Wars, Rolling Ronny */
 /*============================*/
 
-static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
+static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
 {
   BOOLE match = FALSE;
-  ULO i, size, offset;
+  uint32_t i, size, offset;
   unsigned patterns;
   struct ModuleInfo info;
 
@@ -365,13 +365,13 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 /*   ProjectX (+SE)          */
 /*===========================*/
 
-static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
+static void modripDetectSoundMon(uint32_t address, MemoryAccessFunc func)
 {
   BOOLE FoundHeader = FALSE, ScratchyName;
   struct ModuleInfo info;
   int version = 0;
-  ULO offset = 0, patterns = 0;
-  ULO temp = 0, i = 0;
+  uint32_t offset = 0, patterns = 0;
+  uint32_t temp = 0, i = 0;
 
   if( ((*func)(address + 0) == 'B')
     && ((*func)(address + 1) == 'P')
@@ -486,9 +486,9 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
 /* games: Fuzzball, Ilyad           */
 /*==================================*/
 
-static void modripDetectFred(ULO address, MemoryAccessFunc func)
+static void modripDetectFred(uint32_t address, MemoryAccessFunc func)
 {
-  ULO offset = 0, i, j;
+  uint32_t offset = 0, i, j;
   BOOLE match = FALSE;
   struct ModuleInfo info;
   long instData = 0, instDataOffset = 0, instNo = 0, instMax = 0;
@@ -497,9 +497,9 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
   long ModuleStart = 0;
 
   /* 68k instructions to search for in the header */
-  const ULO jmp_68k = 0x4efa; 
-  const ULO mov_68k = 0x123a; 
-  const ULO cmp_68k = 0xb0016200;
+  const uint32_t jmp_68k = 0x4efa; 
+  const uint32_t mov_68k = 0x123a; 
+  const uint32_t cmp_68k = 0xb0016200;
 
   /* Fred files start with a jump table */
   if(
@@ -581,13 +581,13 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 
   songNo = (*func)(address + instDataOffset - 13) + 1;
 
-  for (i = songData; i < (ULO) instData; i++) {
+  for (i = songData; i < (uint32_t) instData; i++) {
     if ((*func)(address + i) == 0x83)
-      instMax = max((*func)(address + i + 1), (ULO)instMax);
+      instMax = max((*func)(address + i + 1), (uint32_t)instMax);
   }
   instMax++;
 
-  for(i = 0; i < (ULO) instMax; i++) {
+  for(i = 0; i < (uint32_t) instMax; i++) {
     sampDataOffset = BEDWORD(address + instData + i*64);
     if (
       (BEWORD(address + instData + i*64 + 4) == 0)
@@ -617,10 +617,10 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 /* games: Pinball Illusions */
 /*==========================*/
 
-static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
+static void modripDetectProRunner2(uint32_t address, MemoryAccessFunc func)
 {
-  ULO i;
-  ULO sampSize = 0, sampPtr = 0;
+  uint32_t i;
+  uint32_t sampSize = 0, sampPtr = 0;
   struct ModuleInfo info;
 
   if(
@@ -674,13 +674,13 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
 /* some Alien Breed titles */
 /*=========================*/
 
-static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
+static void modripDetectThePlayer4(uint32_t address, MemoryAccessFunc func)
 {
   struct ModuleInfo info;
-  ULO pattNo = 0, sampNo = 0, sampSize = 0;
-  ULO sampDataPtr = 0, sampDataCurr = 0;
-  ULO sampSizeCurr, loopSizeCurr;
-  ULO i;
+  uint32_t pattNo = 0, sampNo = 0, sampSize = 0;
+  uint32_t sampDataPtr = 0, sampDataCurr = 0;
+  uint32_t sampSizeCurr, loopSizeCurr;
+  uint32_t i;
   BOOLE match = FALSE;;
 
   if(
@@ -783,8 +783,8 @@ static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
 
 static void modripScanFellowMemory(void)
 {
-  ULO i, j;
-  ULO ChipSize = 0, BogoSize = 0, FastSize = 0;
+  uint32_t i, j;
+  uint32_t ChipSize = 0, BogoSize = 0, FastSize = 0;
 
   if(modripGuiRipMemory()) {
     ChipSize = memoryGetChipSize();
@@ -835,7 +835,7 @@ static void modripScanFellowMemory(void)
 /* meant to hold the read floppy cache */
 static char *modripCurrentFloppyCache = NULL;
 
-static UBY modripFloppyCacheRead(ULO address)
+static UBY modripFloppyCacheRead(uint32_t address)
 {
   return(modripCurrentFloppyCache[address & MODRIP_FLOPCACHE]);
 }
@@ -875,7 +875,7 @@ static BOOLE modripReadFloppyImage(char *filename, char *cache)
 static void modripScanFellowFloppies(void)
 {
   int driveNo, j;
-  ULO i;
+  uint32_t i;
   char cache[MODRIP_FLOPCACHE];
   BOOLE Read;
 

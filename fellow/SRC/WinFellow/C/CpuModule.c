@@ -29,7 +29,7 @@
 
 void cpuClearEverything(void)
 {
-  ULO i,j;
+  uint32_t i,j;
 
   for (j = 0; j < 2; j++)
     for (i = 0; i < 8; i++)

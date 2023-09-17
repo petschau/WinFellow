@@ -13,13 +13,13 @@ namespace fellow::hardfile::hunks
     FileImage& _fileImage;
 
     HeaderHunk* ParseHeader();
-    InitialHunk* ParseNextInitialHunk(ULO allocateSizeInLongwords);
-    AdditionalHunk* ParseNextAdditionalHunk(ULO sourceHunkIndex);
+    InitialHunk* ParseNextInitialHunk(uint32_t allocateSizeInLongwords);
+    AdditionalHunk* ParseNextAdditionalHunk(uint32_t sourceHunkIndex);
 
   public:
     bool Parse();
 
-    HunkParser(UBY *rawData, ULO rawDataLength, FileImage& fileImage);
+    HunkParser(UBY *rawData, uint32_t rawDataLength, FileImage& fileImage);
   };
 }
 

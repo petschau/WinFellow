@@ -20,13 +20,13 @@ namespace fellow::hardfile::hunks
     void SetHeader(HeaderHunk* header);
     HeaderHunk* GetHeader();
 
-    InitialHunk* GetInitialHunk(ULO hunkIndex);
+    InitialHunk* GetInitialHunk(uint32_t hunkIndex);
     void AddInitialHunk(InitialHunk* hunk);
-    ULO GetInitialHunkCount();
+    uint32_t GetInitialHunkCount();
 
-    AdditionalHunk* GetAdditionalHunk(ULO hunkIndex);
+    AdditionalHunk* GetAdditionalHunk(uint32_t hunkIndex);
     void AddAdditionalHunk(AdditionalHunk* hunk);
-    ULO GetAdditionalHunkCount();
+    uint32_t GetAdditionalHunkCount();
 
     void Clear();
   };

@@ -57,12 +57,12 @@ planar2chunkyroutine graph_decode_line_dual_tab[16];
 /* Planar to chunky lookuptables for data                                    */
 /*===========================================================================*/
 
-ULO graph_deco1[256][2];
-ULO graph_deco2[256][2];
-ULO graph_deco3[256][2];
-ULO graph_deco4[256][2];
-ULO graph_deco5[256][2];
-ULO graph_deco6[256][2];
+uint32_t graph_deco1[256][2];
+uint32_t graph_deco2[256][2];
+uint32_t graph_deco3[256][2];
+uint32_t graph_deco4[256][2];
+uint32_t graph_deco5[256][2];
+uint32_t graph_deco6[256][2];
 
 UBY graph_line1_tmp[1024];
 UBY graph_line2_tmp[1024];
@@ -72,17 +72,17 @@ UBY graph_line2_tmp[1024];
 /* Line description registers and data                                       */
 /*===========================================================================*/
 
-ULO graph_DDF_start;
-ULO graph_DDF_word_count;
-ULO graph_DIW_first_visible;
-ULO graph_DIW_last_visible;
+uint32_t graph_DDF_start;
+uint32_t graph_DDF_word_count;
+uint32_t graph_DIW_first_visible;
+uint32_t graph_DIW_last_visible;
 
 
 /*===========================================================================*/
 /* Translation tables for colors                                             */
 /*===========================================================================*/
 
-ULO graph_color_shadow[64];  /* Colors corresponding to the different Amiga- */
+uint32_t graph_color_shadow[64];  /* Colors corresponding to the different Amiga- */
 /* registers. Initialized from draw_color_table */
 /* whenever WCOLORXX is written.                */
 
@@ -94,12 +94,12 @@ BOOLE graph_playfield_on;
 /* IO-registers                                                              */
 /*===========================================================================*/
 
-ULO bpl1pt, bpl2pt, bpl3pt, bpl4pt, bpl5pt, bpl6pt;
-ULO lof, ddfstrt, ddfstop, bplcon1, bpl1mod, bpl2mod;
-ULO evenscroll, evenhiscroll, oddscroll, oddhiscroll;
-ULO diwstrt, diwstop; 
-ULO diwxleft, diwxright, diwytop, diwybottom;
-ULO dmacon;
+uint32_t bpl1pt, bpl2pt, bpl3pt, bpl4pt, bpl5pt, bpl6pt;
+uint32_t lof, ddfstrt, ddfstop, bplcon1, bpl1mod, bpl2mod;
+uint32_t evenscroll, evenhiscroll, oddscroll, oddhiscroll;
+uint32_t diwstrt, diwstop; 
+uint32_t diwxleft, diwxright, diwytop, diwybottom;
+uint32_t dmacon;
 
 /*===========================================================================*/
 /* Framebuffer data about each line, max triple buffering                    */
@@ -151,7 +151,7 @@ graph_line* graphGetLineDesc(int buffer_no, int currentY)
 /*===========================================================================*/
 
 void graphInitializeShadowColors(void) {
-  ULO i;
+  uint32_t i;
 
   for (i = 0; i < 64; i++)
     graph_color_shadow[i] = draw_color_table[graph_color[i] & 0xfff];
@@ -163,7 +163,7 @@ void graphInitializeShadowColors(void) {
 /*===========================================================================*/
 
 static void graphIORegistersClear(void) {
-  ULO i;
+  uint32_t i;
 
   for (i = 0; i < 64; i++) graph_color_shadow[i] = graph_color[i] = 0;
   graph_playfield_on = FALSE;
@@ -207,7 +207,7 @@ static void graphIORegistersClear(void) {
 /* DMACONR - $dff002 Read                                                    */
 /*===========================================================================*/
 
-UWO rdmaconr(ULO address)
+UWO rdmaconr(uint32_t address)
 {
   if (blitterGetZeroFlag())
   {
@@ -220,7 +220,7 @@ UWO rdmaconr(ULO address)
 /* VPOSR - $dff004 Read vpos and chipset ID bits                             */
 /*===========================================================================*/
 
-ULO graphAdjustVPosY(ULO y, ULO x)
+uint32_t graphAdjustVPosY(uint32_t y, uint32_t x)
 {
   if (x <= 1 && y > 0)
   {
@@ -229,9 +229,9 @@ ULO graphAdjustVPosY(ULO y, ULO x)
   return y;
 }
 
-UWO rvposr(ULO address)
+UWO rvposr(uint32_t address)
 {
-  ULO y = graphAdjustVPosY(busGetRasterY(), busGetRasterX());
+  uint32_t y = graphAdjustVPosY(busGetRasterY(), busGetRasterX());
 
   if (chipsetGetECS())
   {
@@ -244,10 +244,10 @@ UWO rvposr(ULO address)
 /* VHPOSR - $dff006 Read                                                     */
 /*===========================================================================*/
 
-UWO rvhposr(ULO address)
+UWO rvhposr(uint32_t address)
 {
-  ULO x = busGetRasterX();
-  ULO y = graphAdjustVPosY(busGetRasterY(), x);
+  uint32_t x = busGetRasterX();
+  uint32_t y = graphAdjustVPosY(busGetRasterY(), x);
   return (UWO)(x | ((y & 0xFF) << 8));
 }
 
@@ -257,7 +257,7 @@ UWO rvhposr(ULO address)
 /* return 0xffff                                                             */
 /*===========================================================================*/
 
-UWO rid(ULO address)
+UWO rid(uint32_t address)
 {
   return 0xFFFF;
 }
@@ -268,9 +268,9 @@ UWO rid(ULO address)
 /* lof = data & 0x8000;                                                      */
 /*===========================================================================*/
 
-void wvpos(UWO data, ULO address)
+void wvpos(UWO data, uint32_t address)
 {
-  lof = (ULO) (data & 0x8000);
+  lof = (uint32_t) (data & 0x8000);
 
   //fellowAddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 
@@ -282,12 +282,12 @@ void wvpos(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wdiwstrt(UWO data, ULO address)
+void wdiwstrt(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-    ULO diwstrt_old = diwstrt;
+    uint32_t diwstrt_old = diwstrt;
     diwstrt = data;
     if (diwstrt_old != diwstrt)
     {
@@ -314,12 +314,12 @@ void wdiwstrt(UWO data, ULO address)
 /* DIWSTOP - $dff090 Write                                                   */
 /*===========================================================================*/
 
-void wdiwstop(UWO data, ULO address)
+void wdiwstop(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) 
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-    ULO diwstop_old = diwstop;
+    uint32_t diwstop_old = diwstop;
     diwstop = data;
     if (diwstop_old != diwstop)
     {
@@ -360,9 +360,9 @@ void wdiwstop(UWO data, ULO address)
 /* _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here             */                                                           
 /*==============================================================================*/
 
-void wddfstrt(UWO data, ULO address)
+void wddfstrt(UWO data, uint32_t address)
 {
-  ULO ddfstrt_old;
+  uint32_t ddfstrt_old;
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -397,9 +397,9 @@ void wddfstrt(UWO data, ULO address)
 /* (quote from 'Amiga Hardware Reference Manual')                               */
 /*==============================================================================*/
 
-void wddfstop(UWO data, ULO address)
+void wddfstop(UWO data, uint32_t address)
 {
-  ULO ddfstop_old;
+  uint32_t ddfstop_old;
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -434,10 +434,10 @@ void wddfstop(UWO data, ULO address)
 /* dmaconr - is always correct.                                              */
 /*===========================================================================*/
 
-void wdmacon(UWO data, ULO address)
+void wdmacon(UWO data, uint32_t address)
 {
-  ULO local_data;
-  ULO prev_dmacon;
+  uint32_t local_data;
+  uint32_t prev_dmacon;
 
   // check SET/CLR bit is 1 or 0
   if ((data & 0x8000) != 0x0)
@@ -556,7 +556,7 @@ void wdmacon(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1pth(UWO data, ULO address)
+void wbpl1pth(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -572,7 +572,7 @@ void wbpl1pth(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1ptl(UWO data, ULO address)
+void wbpl1ptl(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -587,7 +587,7 @@ void wbpl1ptl(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2pth(UWO data, ULO address)
+void wbpl2pth(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -600,7 +600,7 @@ void wbpl2pth(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2ptl(UWO data, ULO address)
+void wbpl2ptl(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -613,7 +613,7 @@ void wbpl2ptl(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl3pth(UWO data, ULO address)
+void wbpl3pth(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -625,7 +625,7 @@ void wbpl3pth(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl3ptl(UWO data, ULO address)
+void wbpl3ptl(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -638,7 +638,7 @@ void wbpl3ptl(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl4pth(UWO data, ULO address)
+void wbpl4pth(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -651,7 +651,7 @@ void wbpl4pth(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl4ptl(UWO data, ULO address)
+void wbpl4ptl(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -664,7 +664,7 @@ void wbpl4ptl(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl5pth(UWO data, ULO address)
+void wbpl5pth(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -677,7 +677,7 @@ void wbpl5pth(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl5ptl(UWO data, ULO address)
+void wbpl5ptl(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -690,7 +690,7 @@ void wbpl5ptl(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl6pth(UWO data, ULO address)
+void wbpl6pth(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -703,7 +703,7 @@ void wbpl6pth(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl6ptl(UWO data, ULO address)
+void wbpl6ptl(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -715,7 +715,7 @@ void wbpl6ptl(UWO data, ULO address)
 /* BPLCON0 - $dff100 Write                                                   */
 /*===========================================================================*/
 
-void wbplcon0(UWO data, ULO address)
+void wbplcon0(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -725,7 +725,7 @@ void wbplcon0(UWO data, ULO address)
     }
   }
 
-  ULO local_data;
+  uint32_t local_data;
 
   _core.Registers.BplCon0 = data;
   local_data = (data >> 12) & 0x0f;
@@ -793,7 +793,7 @@ void wbplcon0(UWO data, ULO address)
 /* evenhiscroll - dword with the even hires scrollvalue                      */
 /*===========================================================================*/
 
-void wbplcon1(UWO data, ULO address)
+void wbplcon1(UWO data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -852,7 +852,7 @@ void wbplcon1(UWO data, ULO address)
 /* BPLCON2 - $dff104 Write                                                   */
 /*===========================================================================*/
 
-void wbplcon2(UWO data, ULO address)
+void wbplcon2(UWO data, uint32_t address)
 {
   _core.Registers.BplCon2 = data;
 }
@@ -862,9 +862,9 @@ void wbplcon2(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1mod(UWO data, ULO address)
+void wbpl1mod(UWO data, uint32_t address)
 {
-  ULO new_value = (ULO)(LON)(WOR)(data & 0xfffe);
+  uint32_t new_value = (uint32_t)(LON)(WOR)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl1mod != new_value)
@@ -880,9 +880,9 @@ void wbpl1mod(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2mod(UWO data, ULO address)
+void wbpl2mod(UWO data, uint32_t address)
 {
-  ULO new_value = (ULO)(LON)(WOR)(data & 0xfffe);
+  uint32_t new_value = (uint32_t)(LON)(WOR)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl2mod != new_value)
@@ -898,9 +898,9 @@ void wbpl2mod(UWO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wcolor(UWO data, ULO address)
+void wcolor(UWO data, uint32_t address)
 {
-  ULO color_index = ((address & 0x1ff) - 0x180) >> 1;
+  uint32_t color_index = ((address & 0x1ff) - 0x180) >> 1;
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -924,7 +924,7 @@ void wcolor(UWO data, ULO address)
 
 void graphIOHandlersInstall(void)
 {
-  ULO i;
+  uint32_t i;
 
   memorySetIoReadStub(0x002, rdmaconr);
   memorySetIoReadStub(0x004, rvposr);
@@ -961,7 +961,7 @@ void graphIOHandlersInstall(void)
 /*===========================================================================*/
 
 // Decode the odd part of the first 4 pixels
-static __inline ULO graphDecodeOdd1(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
+static __inline uint32_t graphDecodeOdd1(int bitplanes, uint32_t dat1, uint32_t dat3, uint32_t dat5)
 {
   switch (bitplanes)
   {
@@ -976,7 +976,7 @@ static __inline ULO graphDecodeOdd1(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
 }
 
 // Decode the odd part of the last 4 pixels
-static __inline ULO graphDecodeOdd2(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
+static __inline uint32_t graphDecodeOdd2(int bitplanes, uint32_t dat1, uint32_t dat3, uint32_t dat5)
 {
   switch (bitplanes)
   {
@@ -991,7 +991,7 @@ static __inline ULO graphDecodeOdd2(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
 }
 
 // Decode the even part of the first 4 pixels
-static __inline ULO graphDecodeEven1(int bitplanes, ULO dat2, ULO dat4, ULO dat6)
+static __inline uint32_t graphDecodeEven1(int bitplanes, uint32_t dat2, uint32_t dat4, uint32_t dat6)
 {
   switch (bitplanes)
   {
@@ -1006,7 +1006,7 @@ static __inline ULO graphDecodeEven1(int bitplanes, ULO dat2, ULO dat4, ULO dat6
 }
 
 // Decode the even part of the last 4 pixels
-static __inline ULO graphDecodeEven2(int bitplanes, ULO dat2, ULO dat4, ULO dat6)
+static __inline uint32_t graphDecodeEven2(int bitplanes, uint32_t dat2, uint32_t dat4, uint32_t dat6)
 {
   switch (bitplanes)
   {
@@ -1021,7 +1021,7 @@ static __inline ULO graphDecodeEven2(int bitplanes, ULO dat2, ULO dat4, ULO dat6
 }
 
 // Decode the even part of the first 4 pixels
-static __inline ULO graphDecodeDualOdd1(int bitplanes, ULO datA, ULO datB, ULO datC)
+static __inline uint32_t graphDecodeDualOdd1(int bitplanes, uint32_t datA, uint32_t datB, uint32_t datC)
 {
   switch (bitplanes)
   {
@@ -1036,7 +1036,7 @@ static __inline ULO graphDecodeDualOdd1(int bitplanes, ULO datA, ULO datB, ULO d
 }
 
 // Decode the even part of the last 4 pixels
-static __inline ULO graphDecodeDualOdd2(int bitplanes, ULO datA, ULO datB, ULO datC)
+static __inline uint32_t graphDecodeDualOdd2(int bitplanes, uint32_t datA, uint32_t datB, uint32_t datC)
 {
   switch (bitplanes)
   {
@@ -1051,7 +1051,7 @@ static __inline ULO graphDecodeDualOdd2(int bitplanes, ULO datA, ULO datB, ULO d
 }
 
 // Decode the even part of the first 4 pixels
-static __inline ULO graphDecodeDualEven1(int bitplanes, ULO datA, ULO datB, ULO datC)
+static __inline uint32_t graphDecodeDualEven1(int bitplanes, uint32_t datA, uint32_t datB, uint32_t datC)
 {
   switch (bitplanes)
   {
@@ -1066,7 +1066,7 @@ static __inline ULO graphDecodeDualEven1(int bitplanes, ULO datA, ULO datB, ULO 
 }
 
 // Decode the even part of the last 4 pixels
-static __inline ULO graphDecodeDualEven2(int bitplanes, ULO datA, ULO datB, ULO datC)
+static __inline uint32_t graphDecodeDualEven2(int bitplanes, uint32_t datA, uint32_t datB, uint32_t datC)
 {
   switch (bitplanes)
   {
@@ -1081,7 +1081,7 @@ static __inline ULO graphDecodeDualEven2(int bitplanes, ULO datA, ULO datB, ULO 
 }
 
 // Add modulo to the bitplane ptrs
-static __inline void graphDecodeModulo(int bitplanes, ULO bpl_length_in_bytes)
+static __inline void graphDecodeModulo(int bitplanes, uint32_t bpl_length_in_bytes)
 {
   switch (bitplanes)
   {
@@ -1104,20 +1104,20 @@ static void graphSetLinePointers(UBY **line1, UBY **line2)
 
 static __inline void graphDecodeGeneric(int bitplanes)
 {
-  ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
+  uint32_t bpl_length_in_bytes = graph_DDF_word_count * 2;
 
   if (bitplanes == 0) return;
   if (bpl_length_in_bytes != 0) 
   {
-    ULO *dest_odd;
-    ULO *dest_even;
-    ULO *dest_tmp;
-    ULO *end_odd;
-    ULO *end_even;
+    uint32_t *dest_odd;
+    uint32_t *dest_even;
+    uint32_t *dest_tmp;
+    uint32_t *end_odd;
+    uint32_t *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
-    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+    uint32_t dat1, dat2, dat3, dat4, dat5, dat6; 
     int maxscroll;
-    ULO temp = 0;
+    uint32_t temp = 0;
     UBY *line1;
     UBY *line2;
 
@@ -1128,7 +1128,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
     if (_core.RegisterUtility.IsHiresEnabled()) // check if hires bit is set (bit 15 of register BPLCON0)
     {
       // high resolution
-      dest_odd = (ULO*) (line1 + graph_DDF_start + oddhiscroll);		
+      dest_odd = (uint32_t*) (line1 + graph_DDF_start + oddhiscroll);		
 
       // Find out how many pixels the bitplane is scrolled
       // the first pixels must then be zeroed to avoid garbage.
@@ -1136,7 +1136,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
     } 
     else 
     {
-      dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
+      dest_odd = (uint32_t*) (line1 + graph_DDF_start + oddscroll);			
 
       // Find out how many pixels the bitplane is scrolled
       // the first pixels must then be zeroed to avoid garbage.
@@ -1160,12 +1160,12 @@ static __inline void graphDecodeGeneric(int bitplanes)
       if (_core.RegisterUtility.IsHiresEnabled()) // check if hires bit is set (bit 15 of register BPLCON0)
       {
 	// high resolution
-	dest_even = (ULO*) (line1 + graph_DDF_start + evenhiscroll);
+	dest_even = (uint32_t*) (line1 + graph_DDF_start + evenhiscroll);
       }
       else
       {
 	// low resolution
-	dest_even = (ULO*) (line1 + graph_DDF_start + evenscroll);
+	dest_even = (uint32_t*) (line1 + graph_DDF_start + evenscroll);
       }
       end_even = dest_even + bpl_length_in_bytes * 2; 
     }
@@ -1217,20 +1217,20 @@ static __inline void graphDecodeGeneric(int bitplanes)
 
 static __inline void graphDecodeDualGeneric(int bitplanes)
 {
-  ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
+  uint32_t bpl_length_in_bytes = graph_DDF_word_count * 2;
   if (bitplanes == 0) return;
   if (bpl_length_in_bytes != 0) 
   {
-    ULO *dest_odd;
-    ULO *dest_even;
-    ULO *dest_tmp;
-    ULO *end_odd;
-    ULO *end_even;
+    uint32_t *dest_odd;
+    uint32_t *dest_even;
+    uint32_t *dest_tmp;
+    uint32_t *end_odd;
+    uint32_t *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
-    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+    uint32_t dat1, dat2, dat3, dat4, dat5, dat6; 
 
     int maxscroll;
-    ULO temp;
+    uint32_t temp;
     UBY *line1;
     UBY *line2;
 
@@ -1253,13 +1253,13 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     }
 
     // setup loop
-    dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
+    dest_odd = (uint32_t*) (line1 + graph_DDF_start + oddscroll);			
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
 
     if (bitplanes > 1)
     {
       // low resolution
-      dest_even = (ULO*) (line2 + graph_DDF_start + evenscroll);
+      dest_even = (uint32_t*) (line2 + graph_DDF_start + evenscroll);
       end_even = dest_even + bpl_length_in_bytes * 2; 
     }
 
@@ -1425,7 +1425,7 @@ void graphDecode6Dual(void)
 
 void graphCalculateWindow(void) 
 {
-  ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
+  uint32_t ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
 
   if (_core.RegisterUtility.IsHiresEnabled()) // check if Hires bit is set (bit 15 of BPLCON0)
   {
@@ -1515,7 +1515,7 @@ void graphCalculateWindow(void)
 
 void graphCalculateWindowHires(void)
 {
-  ULO last_position_in_line;
+  uint32_t last_position_in_line;
 
   if (ddfstrt > ddfstop)
   {
@@ -1542,7 +1542,7 @@ void graphCalculateWindowHires(void)
     graph_DDF_start = graph_DDF_word_count = 0;
     graph_DIW_first_visible = graph_DIW_last_visible = 256;
   }
-  ULO clip_left = drawGetInternalClip().left << 1;
+  uint32_t clip_left = drawGetInternalClip().left << 1;
   if ((diwxleft << 1) < graph_DDF_start) 
   {
     if (graph_DDF_start > clip_left)
@@ -1576,7 +1576,7 @@ void graphCalculateWindowHires(void)
     last_position_in_line += evenhiscroll;
   }
 
-  ULO clip_right = drawGetInternalClip().right << 1;
+  uint32_t clip_right = drawGetInternalClip().right << 1;
   if (last_position_in_line < (diwxright << 1)) 
   {
     if (last_position_in_line < clip_right)
@@ -1603,7 +1603,7 @@ void graphCalculateWindowHires(void)
 
 void graphPlayfieldOnOff(void)
 {
-  ULO currentY = busGetRasterY();
+  uint32_t currentY = busGetRasterY();
   if (graph_playfield_on != 0) 
   {
     // Playfield on, check if top has moved below graph_raster_y
@@ -1657,7 +1657,7 @@ void graphDecodeNOP(void)
 
 void graphLinedescColors(graph_line* current_graph_line)
 {
-  ULO color;
+  uint32_t color;
 
   color = 0;
   while (color < 64)
@@ -1689,12 +1689,12 @@ void graphLinedescRoutines(graph_line* current_graph_line)
 
 void graphLinedescGeometry(graph_line* current_graph_line)
 {
-  ULO local_graph_DIW_first_visible;
+  uint32_t local_graph_DIW_first_visible;
   LON local_graph_DIW_last_visible;
-  ULO local_graph_DDF_start;
-  ULO local_draw_left;
-  ULO local_draw_right;
-  ULO shift;
+  uint32_t local_graph_DDF_start;
+  uint32_t local_draw_left;
+  uint32_t local_draw_right;
+  uint32_t shift;
 
   local_graph_DIW_first_visible = graph_DIW_first_visible;
   local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
@@ -1786,12 +1786,12 @@ BOOLE graphLinedescRoutinesSmart(graph_line* current_graph_line)
 /*-------------------------------------------------------------------------------*/
 BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
 {
-  ULO local_graph_DIW_first_visible;
+  uint32_t local_graph_DIW_first_visible;
   LON local_graph_DIW_last_visible;
-  ULO local_graph_DDF_start;
-  ULO local_draw_left;
-  ULO local_draw_right;
-  ULO shift;
+  uint32_t local_graph_DDF_start;
+  uint32_t local_draw_left;
+  uint32_t local_draw_right;
+  uint32_t shift;
   BOOLE line_desc_changed;
 
   local_graph_DIW_first_visible = graph_DIW_first_visible;
@@ -1886,7 +1886,7 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
 BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
 {
   BOOLE result = FALSE;
-  ULO i;
+  uint32_t i;
 
   // check full brightness colors
   for (i = 0; i < 32; i++)
@@ -1906,7 +1906,7 @@ BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
 /* Return TRUE = not equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopyRest(ULO first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
+static BOOLE graphCompareCopyRest(uint32_t first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
 {
   // line has changed, copy the rest
   while ((first_pixel & 0x3) != 0)
@@ -1922,7 +1922,7 @@ static BOOLE graphCompareCopyRest(ULO first_pixel, LON pixel_count, UBY* dest_li
 
   while (pixel_count >= 4)
   {
-    *((ULO *) (dest_line + first_pixel)) = *((ULO *) (source_line + first_pixel));
+    *((uint32_t *) (dest_line + first_pixel)) = *((uint32_t *) (source_line + first_pixel));
     first_pixel += 4;
     pixel_count -= 4;
   }
@@ -1941,7 +1941,7 @@ static BOOLE graphCompareCopyRest(ULO first_pixel, LON pixel_count, UBY* dest_li
 /* Return TRUE = not equal FALSE = equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopy(ULO first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
+static BOOLE graphCompareCopy(uint32_t first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
 {
   BOOLE result = FALSE;
 
@@ -1969,7 +1969,7 @@ static BOOLE graphCompareCopy(ULO first_pixel, LON pixel_count, UBY* dest_line, 
     // compare dword aligned values
     while (pixel_count >= 4)
     {
-      if (*((ULO *) (source_line + first_pixel)) == *((ULO *) (dest_line + first_pixel)))
+      if (*((uint32_t *) (source_line + first_pixel)) == *((uint32_t *) (dest_line + first_pixel)))
       {
 	first_pixel += 4;
 	pixel_count -= 4;
@@ -2147,17 +2147,17 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
 
 void graphP2CTablesInit(void)
 {
-  ULO d[2];
+  uint32_t d[2];
 
-  for (ULO i = 0; i < 256; i++)
+  for (uint32_t i = 0; i < 256; i++)
   {
     d[0] = d[1] = 0;
-    for (ULO j = 0; j < 4; j++)
+    for (uint32_t j = 0; j < 4; j++)
     {
       d[0] |= ((i & (0x80>>j))>>(4 + 3 - j))<<(j*8);
       d[1] |= ((i & (0x8>>j))>>(3 - j))<<(j*8);
     }
-    for (ULO j = 0; j < 2; j++)
+    for (uint32_t j = 0; j < 2; j++)
     {
       graph_deco1[i][j] = d[j]<<2;
       graph_deco2[i][j] = d[j]<<3;
@@ -2228,7 +2228,7 @@ void graphEndOfLine(void)
   // skip this frame?
   if (draw_frame_skip == 0) 
   {
-    ULO currentY = busGetRasterY();
+    uint32_t currentY = busGetRasterY();
     // update diw state
     graphPlayfieldOnOff();
 
@@ -2280,7 +2280,7 @@ void graphEndOfLine(void)
       {
         // In the case when the display has more lines than the frame (AF or short frames)
         // this routine pads the remaining lines with background color
-        for (ULO y = currentY + 1; y < drawGetInternalClip().bottom; ++y)
+        for (uint32_t y = currentY + 1; y < drawGetInternalClip().bottom; ++y)
         {
           graph_line* graph_line_y = graphGetLineDesc(draw_buffer_draw, y);
           graphLinedescSetBackgroundLine(graph_line_y);

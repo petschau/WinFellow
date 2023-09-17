@@ -4,14 +4,14 @@
 #include "KBD.H"
 #include "GAMEPORT.H"
 
-ScriptLine::ScriptLine(ULL frameNumber, ULO lineNumber, const string& command, const string& parameters)
+ScriptLine::ScriptLine(ULL frameNumber, uint32_t lineNumber, const string& command, const string& parameters)
   : FrameNumber(frameNumber), LineNumber(lineNumber), Command(command), Parameters(parameters)
 {
 }
 
 void Script::ExecuteMouseCommand(const string& parameters)
 {
-  ULO port;
+  uint32_t port;
   LON x, y;
   BOOLE button1, button2, button3;
 
@@ -27,7 +27,7 @@ void Script::ExecuteKeyCommand(const string& parameters)
 
 void Script::ExecuteJoystickCommand(const string& parameters)
 {
-  ULO port;
+  uint32_t port;
   BOOLE left, up, right, down, button1, button2;
   sscanf(parameters.c_str(), "%d %d %d %d %d %d %d", &port, &left, &up, &right, &down, &button1, &button2);
   gameportJoystickHandler((port == 0) ? GP_JOYKEY0 : GP_JOYKEY1, left, up, right, down, button1, button2);
@@ -62,7 +62,7 @@ void Script::Execute(const ScriptLine& line)
   }
 }
 
-void Script::ExecuteUntil(ULL frameNumber, ULO lineNumber)
+void Script::ExecuteUntil(ULL frameNumber, uint32_t lineNumber)
 {
   if (_lines.size() == 0)
   {
@@ -78,13 +78,13 @@ void Script::ExecuteUntil(ULL frameNumber, ULO lineNumber)
 void Script::RecordKey(UBY keyCode)
 {
   char parameters[32];
-  sprintf(parameters, "%u", (ULO)keyCode);
+  sprintf(parameters, "%u", (uint32_t)keyCode);
   _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), KeyCommand, parameters));
 }
 
 void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
 {
-  ULO port = (mousedev == GP_MOUSE0) ? 0 : 1;
+  uint32_t port = (mousedev == GP_MOUSE0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %d %d %u %u %u", port, x, y, button1, button2, button3);
   _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), MouseCommand, parameters));
@@ -92,7 +92,7 @@ void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, 
 
 void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
 {
-  ULO port = (joydev == GP_JOYKEY0 || joydev == GP_ANALOG0) ? 0 : 1;
+  uint32_t port = (joydev == GP_JOYKEY0 || joydev == GP_ANALOG0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %u %u %u %u %u %u", port, left, up, right, down, button1, button2);
   _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), JoystickCommand, parameters));

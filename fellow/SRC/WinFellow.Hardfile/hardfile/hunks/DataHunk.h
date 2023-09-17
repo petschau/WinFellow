@@ -8,13 +8,13 @@ namespace fellow::hardfile::hunks
   class DataHunk : public InitialHunk
   {
   private:
-    static const ULO ID = DataHunkID;
+    static const uint32_t ID = DataHunkID;
 
   public:
-    ULO GetID() override;
+    uint32_t GetID() override;
     void Parse(RawDataReader& rawDataReader) override;
 
-    DataHunk(ULO allocateSizeInLongwords);
+    DataHunk(uint32_t allocateSizeInLongwords);
   };
 }
 

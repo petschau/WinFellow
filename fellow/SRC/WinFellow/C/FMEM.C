@@ -110,11 +110,11 @@ using namespace fellow::api::module;
 
 
 
-ULO memory_chipsize;
+uint32_t memory_chipsize;
 
-ULO memory_fastsize;
+uint32_t memory_fastsize;
 
-ULO memory_slowsize;
+uint32_t memory_slowsize;
 
 bool memory_useautoconfig;
 
@@ -152,9 +152,9 @@ UBY *memory_kick_ext = NULL;
 
 UBY *memory_fast = NULL;
 
-ULO memory_fast_baseaddress;
+uint32_t memory_fast_baseaddress;
 
-ULO memory_fastallocatedsize;
+uint32_t memory_fastallocatedsize;
 
 UBY *memory_slow_base;
 
@@ -178,9 +178,9 @@ memoryEmemCardInitFunc memory_ememard_initfunc[EMEM_MAXARDS];
 
 memoryEmemCardMapFunc memory_ememard_mapfunc[EMEM_MAXARDS];
 
-ULO memory_ememardcount;                                /* Number of cards */
+uint32_t memory_ememardcount;                                /* Number of cards */
 
-ULO memory_ememards_finishedcount;                         /* Current card */
+uint32_t memory_ememards_finishedcount;                         /* Current card */
 
 
 
@@ -200,7 +200,7 @@ ULO memory_ememards_finishedcount;                         /* Current card */
 
 UBY memory_dmem[65536];
 
-ULO memory_dmemcounter;
+uint32_t memory_dmemcounter;
 
 
 
@@ -214,23 +214,23 @@ ULO memory_dmemcounter;
 
 
 
-ULO memory_initial_PC;
+uint32_t memory_initial_PC;
 
-ULO memory_initial_SP;
+uint32_t memory_initial_SP;
 
 BOOLE memory_kickimage_none;
 
-ULO memory_kickimage_size;
+uint32_t memory_kickimage_size;
 
-ULO memory_kickimage_version;
+uint32_t memory_kickimage_version;
 
 STR memory_kickimage_versionstr[80];
 
-ULO memory_kickimage_basebank;
+uint32_t memory_kickimage_basebank;
 
-ULO memory_kickimage_ext_size = 0;
+uint32_t memory_kickimage_ext_size = 0;
 
-ULO memory_kickimage_ext_basebank = 0;
+uint32_t memory_kickimage_ext_basebank = 0;
 
 const STR *memory_kickimage_versionstrings[14] = {
 
@@ -278,7 +278,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   BOOLE memory_fault_read;                       /* TRUE - read / FALSE - write */
 
-  ULO memory_fault_address;
+  uint32_t memory_fault_address;
 
 
 
@@ -318,7 +318,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryWriteLongToPointer(ULO data, UBY *address)
+  void memoryWriteLongToPointer(uint32_t data, UBY *address)
 
   {
 
@@ -350,7 +350,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO rdefault(ULO address)
+  UWO rdefault(uint32_t address)
 
   {
 
@@ -360,7 +360,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void wdefault(UWO data, ULO address)
+  void wdefault(UWO data, uint32_t address)
 
   {
 
@@ -446,15 +446,15 @@ const STR *memory_kickimage_versionstrings[14] = {
 
                      UBY *basep, 
 
-                     ULO bank,
+                     uint32_t bank,
 
-                     ULO basebank,
+                     uint32_t basebank,
 
                      BOOLE pointer_can_write)
 
   {
 
-    ULO i, j;
+    uint32_t i, j;
 
 
 
@@ -522,7 +522,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   static UBY memory_previous_unmapped_byte = 0;
 
-  UBY memoryUnmappedReadByte(ULO address)
+  UBY memoryUnmappedReadByte(uint32_t address)
 
   {
 
@@ -550,7 +550,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   static UWO memory_previous_unmapped_word = 0;
 
-  UWO memoryUnmappedReadWord(ULO address)
+  UWO memoryUnmappedReadWord(uint32_t address)
 
   {
 
@@ -574,13 +574,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  static ULO memory_previous_unmapped_long = 0;
+  static uint32_t memory_previous_unmapped_long = 0;
 
-  ULO memoryUnmappedReadLong(ULO address)
+  uint32_t memoryUnmappedReadLong(uint32_t address)
 
   {
 
-    ULO val;
+    uint32_t val;
 
     do
 
@@ -600,7 +600,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryUnmappedWriteByte(UBY data, ULO address)
+  void memoryUnmappedWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -610,7 +610,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryUnmappedWriteWord(UWO data, ULO address)
+  void memoryUnmappedWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -620,7 +620,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryUnmappedWriteLong(ULO data, ULO address)
+  void memoryUnmappedWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -630,7 +630,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryBankClear(ULO bank)
+  void memoryBankClear(uint32_t bank)
 
   {
 
@@ -670,9 +670,9 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO hilim = (memoryGetAddress32Bit()) ? 65536 : 256;
+    uint32_t hilim = (memoryGetAddress32Bit()) ? 65536 : 256;
 
-    for (ULO bank = 0; bank < hilim; bank++)
+    for (uint32_t bank = 0; bank < hilim; bank++)
 
     {
 
@@ -796,7 +796,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemCardMap(ULO mapping)
+  void memoryEmemCardMap(uint32_t mapping)
 
   {
 
@@ -860,7 +860,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemSet(ULO index, ULO value)
+  void memoryEmemSet(uint32_t index, uint32_t value)
 
   {
 
@@ -906,7 +906,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemMirror(ULO emem_offset, UBY *src, ULO size)
+  void memoryEmemMirror(uint32_t emem_offset, UBY *src, uint32_t size)
 
   {
 
@@ -924,7 +924,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryEmemReadByte(ULO address)
+  UBY memoryEmemReadByte(uint32_t address)
 
   {
 
@@ -936,7 +936,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryEmemReadWord(ULO address)
+  UWO memoryEmemReadWord(uint32_t address)
 
   {
 
@@ -948,7 +948,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryEmemReadLong(ULO address)
+  uint32_t memoryEmemReadLong(uint32_t address)
 
   {
 
@@ -960,11 +960,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemWriteByte(UBY data, ULO address)
+  void memoryEmemWriteByte(UBY data, uint32_t address)
 
   {
 
-    static ULO mapping;
+    static uint32_t mapping;
 
 
 
@@ -980,7 +980,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     case 0x48:
 
-      mapping = (mapping & 0xff) | (((ULO)data) << 8);
+      mapping = (mapping & 0xff) | (((uint32_t)data) << 8);
 
       memoryEmemCardMap(mapping);
 
@@ -992,7 +992,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     case 0x4a:
 
-      mapping = (mapping & 0xff00) | ((ULO)data);
+      mapping = (mapping & 0xff00) | ((uint32_t)data);
 
       break;
 
@@ -1010,7 +1010,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemWriteWord(UWO data, ULO address)
+  void memoryEmemWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -1018,7 +1018,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemWriteLong(ULO data, ULO address)
+  void memoryEmemWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -1098,7 +1098,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryDmemReadByte(ULO address)
+  UBY memoryDmemReadByte(uint32_t address)
 
   {
 
@@ -1110,7 +1110,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryDmemReadWord(ULO address)
+  UWO memoryDmemReadWord(uint32_t address)
 
   {
 
@@ -1122,7 +1122,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryDmemReadLong(ULO address)
+  uint32_t memoryDmemReadLong(uint32_t address)
 
   {
 
@@ -1134,7 +1134,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemWriteByte(UBY data, ULO address)
+  void memoryDmemWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -1144,7 +1144,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemWriteWord(UWO data, ULO address)
+  void memoryDmemWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -1162,7 +1162,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemWriteLong(ULO data, ULO address)
+  void memoryDmemWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -1188,7 +1188,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemSetCounter(ULO c)
+  void memoryDmemSetCounter(uint32_t c)
 
   {
 
@@ -1198,7 +1198,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryDmemGetCounterWithoutOffset()
+  uint32_t memoryDmemGetCounterWithoutOffset()
 
   {
 
@@ -1208,7 +1208,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryDmemGetCounter(void)
+  uint32_t memoryDmemGetCounter(void)
 
   {
 
@@ -1224,7 +1224,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     strcpy((STR *) (memory_dmem + memory_dmemcounter), st);
 
-    memory_dmemcounter += (ULO) strlen(st) + 1;
+    memory_dmemcounter += (uint32_t) strlen(st) + 1;
 
     if (memory_dmemcounter & 1) memory_dmemcounter++;
 
@@ -1254,7 +1254,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemSetLong(ULO data)
+  void memoryDmemSetLong(uint32_t data)
 
   {
 
@@ -1266,7 +1266,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemSetLongNoCounter(ULO data, ULO offset)
+  void memoryDmemSetLongNoCounter(uint32_t data, uint32_t offset)
 
   {
 
@@ -1280,7 +1280,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO bank = 0xf40000>>16;
+    uint32_t bank = 0xf40000>>16;
 
 
 
@@ -1322,7 +1322,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY *memoryAddressToPtr(ULO address)
+  UBY *memoryAddressToPtr(uint32_t address)
 
   {
 
@@ -1352,7 +1352,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryChipReadByte(ULO address)
+  UBY memoryChipReadByte(uint32_t address)
 
   {
 
@@ -1364,7 +1364,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryChipReadWord(ULO address)
+  UWO memoryChipReadWord(uint32_t address)
 
   {
 
@@ -1376,7 +1376,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryChipReadLong(ULO address)
+  uint32_t memoryChipReadLong(uint32_t address)
 
   {
 
@@ -1388,7 +1388,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryChipWriteByte(UBY data, ULO address)
+  void memoryChipWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -1400,7 +1400,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryChipWriteWord(UWO data, ULO address)
+  void memoryChipWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -1412,7 +1412,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryChipWriteLong(ULO data, ULO address)
+  void memoryChipWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -1434,7 +1434,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryOverlayReadByte(ULO address)
+  UBY memoryOverlayReadByte(uint32_t address)
 
   {
 
@@ -1446,7 +1446,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryOverlayReadWord(ULO address)
+  UWO memoryOverlayReadWord(uint32_t address)
 
   {
 
@@ -1458,7 +1458,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryOverlayReadLong(ULO address)
+  uint32_t memoryOverlayReadLong(uint32_t address)
 
   {
 
@@ -1470,7 +1470,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryOverlayWriteByte(UBY data, ULO address)
+  void memoryOverlayWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -1480,7 +1480,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryOverlayWriteWord(UWO data, ULO address)
+  void memoryOverlayWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -1490,7 +1490,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryOverlayWriteLong(ULO data, ULO address)
+  void memoryOverlayWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -1500,11 +1500,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryChipGetLastBank(void)
+  uint32_t memoryChipGetLastBank(void)
 
   {
 
-    ULO lastbank = memoryGetChipSize()>>16;
+    uint32_t lastbank = memoryGetChipSize()>>16;
 
 
 
@@ -1530,7 +1530,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO bank;
+    uint32_t bank;
 
 
 
@@ -1576,7 +1576,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     // Map 512k to 2MB of chip memory, possibly skipping the overlay area
 
-    ULO lastbank = memoryChipGetLastBank();
+    uint32_t lastbank = memoryChipGetLastBank();
 
     for (bank = (overlay) ? 8 : 0; bank < lastbank; bank++)
 
@@ -1632,13 +1632,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
       // OCS: Make 3 more copies of the chipram at $80000, $100000 and $180000
 
-      for (ULO i = 1; i < 4; ++i)
+      for (uint32_t i = 1; i < 4; ++i)
 
       {
 
-        ULO bank_start = 8*i;
+        uint32_t bank_start = 8*i;
 
-        ULO bank_end = bank_start + lastbank;
+        uint32_t bank_end = bank_start + lastbank;
 
         for (bank = bank_start; bank < bank_end; bank++)
 
@@ -1682,7 +1682,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryFastReadByte(ULO address)
+  UBY memoryFastReadByte(uint32_t address)
 
   {
 
@@ -1694,7 +1694,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryFastReadWord(ULO address)
+  UWO memoryFastReadWord(uint32_t address)
 
   {
 
@@ -1706,7 +1706,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryFastReadLong(ULO address)
+  uint32_t memoryFastReadLong(uint32_t address)
 
   {
 
@@ -1718,7 +1718,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastWriteByte(UBY data, ULO address)
+  void memoryFastWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -1730,7 +1730,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastWriteWord(UWO data, ULO address)
+  void memoryFastWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -1742,7 +1742,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastWriteLong(ULO data, ULO address)
+  void memoryFastWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -1874,11 +1874,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastCardMap(ULO mapping)
+  void memoryFastCardMap(uint32_t mapping)
 
   {
 
-    ULO bank, lastbank;
+    uint32_t bank, lastbank;
 
 
 
@@ -1952,7 +1952,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memorySlowReadByte(ULO address)
+  UBY memorySlowReadByte(uint32_t address)
 
   {
 
@@ -1964,7 +1964,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memorySlowReadWord(ULO address)
+  UWO memorySlowReadWord(uint32_t address)
 
   {
 
@@ -1976,7 +1976,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memorySlowReadLong(ULO address)
+  uint32_t memorySlowReadLong(uint32_t address)
 
   {
 
@@ -1988,7 +1988,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySlowWriteByte(UBY data, ULO address)
+  void memorySlowWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -2000,7 +2000,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySlowWriteWord(UWO data, ULO address)
+  void memorySlowWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -2012,7 +2012,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySlowWriteLong(ULO data, ULO address)
+  void memorySlowWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -2056,7 +2056,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO lastbank;
+    uint32_t lastbank;
 
 
 
@@ -2084,7 +2084,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-    for (ULO bank = 0xc00000>>16; bank < lastbank; bank++)
+    for (uint32_t bank = 0xc00000>>16; bank < lastbank; bank++)
 
     {
 
@@ -2124,7 +2124,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryMysteryReadByte(ULO address)
+  UBY memoryMysteryReadByte(uint32_t address)
 
   {
 
@@ -2134,7 +2134,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryMysteryReadWord(ULO address)
+  UWO memoryMysteryReadWord(uint32_t address)
 
   {
 
@@ -2144,7 +2144,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryMysteryReadLong(ULO address)
+  uint32_t memoryMysteryReadLong(uint32_t address)
 
   {
 
@@ -2154,7 +2154,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryMysteryWriteByte(UBY data, ULO address)
+  void memoryMysteryWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -2162,7 +2162,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryMysteryWriteWord(UWO data, ULO address)
+  void memoryMysteryWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -2170,7 +2170,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryMysteryWriteLong(ULO data, ULO address)
+  void memoryMysteryWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -2234,11 +2234,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryIoReadByte(ULO address)
+  UBY memoryIoReadByte(uint32_t address)
 
   {
 
-    ULO adr = address & 0x1fe;
+    uint32_t adr = address & 0x1fe;
 
     if (address & 0x1)
 
@@ -2260,7 +2260,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryIoReadWord(ULO address)
+  UWO memoryIoReadWord(uint32_t address)
 
   {
 
@@ -2270,15 +2270,15 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryIoReadLong(ULO address)
+  uint32_t memoryIoReadLong(uint32_t address)
 
   {
 
-    ULO adr = address & 0x1fe;
+    uint32_t adr = address & 0x1fe;
 
-    ULO r1 = (ULO)memory_iobank_read[adr >> 1](adr);
+    uint32_t r1 = (uint32_t)memory_iobank_read[adr >> 1](adr);
 
-    ULO r2 = (ULO)memory_iobank_read[(adr + 2) >> 1](adr + 2);
+    uint32_t r2 = (uint32_t)memory_iobank_read[(adr + 2) >> 1](adr + 2);
 
     return (r1 << 16) | r2;
 
@@ -2286,11 +2286,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryIoWriteByte(UBY data, ULO address)
+  void memoryIoWriteByte(UBY data, uint32_t address)
 
   {
 
-    ULO adr = address & 0x1fe;
+    uint32_t adr = address & 0x1fe;
 
     if (address & 0x1)
 
@@ -2312,11 +2312,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryIoWriteWord(UWO data, ULO address)
+  void memoryIoWriteWord(UWO data, uint32_t address)
 
   {
 
-    ULO adr = address & 0x1fe;
+    uint32_t adr = address & 0x1fe;
 
     memory_iobank_write[adr >> 1](data, adr);
 
@@ -2324,11 +2324,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryIoWriteLong(ULO data, ULO address)
+  void memoryIoWriteLong(uint32_t data, uint32_t address)
 
   {
 
-    ULO adr = address & 0x1fe;
+    uint32_t adr = address & 0x1fe;
 
     memory_iobank_write[adr >> 1]((UWO)(data >> 16), adr);
 
@@ -2342,7 +2342,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO lastbank;
+    uint32_t lastbank;
 
 
 
@@ -2362,7 +2362,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     }
 
-    for (ULO bank = lastbank; bank < 0xe00000>>16; bank++)
+    for (uint32_t bank = lastbank; bank < 0xe00000>>16; bank++)
 
     {
 
@@ -2400,7 +2400,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySetIoReadStub(ULO index, memoryIoReadFunc ioreadfunction)
+  void memorySetIoReadStub(uint32_t index, memoryIoReadFunc ioreadfunction)
 
   {
 
@@ -2410,7 +2410,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySetIoWriteStub(ULO index, memoryIoWriteFunc iowritefunction)
+  void memorySetIoWriteStub(uint32_t index, memoryIoWriteFunc iowritefunction)
 
   {
 
@@ -2432,7 +2432,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO i;
+    uint32_t i;
 
 
 
@@ -2466,7 +2466,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryKickReadByte(ULO address)
+  UBY memoryKickReadByte(uint32_t address)
 
   {
 
@@ -2478,7 +2478,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryKickExtendedReadByte(ULO address)
+  UBY memoryKickExtendedReadByte(uint32_t address)
 
   {
 
@@ -2490,7 +2490,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryKickReadWord(ULO address)
+  UWO memoryKickReadWord(uint32_t address)
 
   {
 
@@ -2502,7 +2502,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryKickExtendedReadWord(ULO address)
+  UWO memoryKickExtendedReadWord(uint32_t address)
 
   {
 
@@ -2514,7 +2514,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryKickReadLong(ULO address)
+  uint32_t memoryKickReadLong(uint32_t address)
 
   {
 
@@ -2526,7 +2526,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryKickExtendedReadLong(ULO address)
+  uint32_t memoryKickExtendedReadLong(uint32_t address)
 
   {
 
@@ -2538,7 +2538,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteByte(UBY data, ULO address)
+  void memoryKickWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -2548,7 +2548,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedWriteByte(UBY data, ULO address)
+  void memoryKickExtendedWriteByte(UBY data, uint32_t address)
 
   {
 
@@ -2558,7 +2558,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteWord(UWO data, ULO address)
+  void memoryKickWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -2568,7 +2568,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedWriteWord(UWO data, ULO address)
+  void memoryKickExtendedWriteWord(UWO data, uint32_t address)
 
   {
 
@@ -2578,7 +2578,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteLong(ULO data, ULO address)
+  void memoryKickWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -2588,7 +2588,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedWriteLong(ULO data, ULO address)
+  void memoryKickExtendedWriteLong(uint32_t data, uint32_t address)
 
   {
 
@@ -2598,7 +2598,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteByteA1000WCS(UBY data, ULO address)
+  void memoryKickWriteByteA1000WCS(UBY data, uint32_t address)
 
   {
 
@@ -2622,7 +2622,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteWordA1000WCS(UWO data, ULO address)
+  void memoryKickWriteWordA1000WCS(UWO data, uint32_t address)
 
   {
 
@@ -2646,7 +2646,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteLongA1000WCS(ULO data, ULO address)
+  void memoryKickWriteLongA1000WCS(uint32_t data, uint32_t address)
 
   {
 
@@ -2674,9 +2674,9 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO basebank = memory_kickimage_basebank & 0xf8;
+    uint32_t basebank = memory_kickimage_basebank & 0xf8;
 
-    for (ULO bank = basebank; bank < (basebank + 8); bank++)
+    for (uint32_t bank = basebank; bank < (basebank + 8); bank++)
 
     {
 
@@ -2740,13 +2740,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-    ULO basebank = memory_kickimage_ext_basebank;
+    uint32_t basebank = memory_kickimage_ext_basebank;
 
-    ULO numbanks = memory_kickimage_ext_size / 65536;
+    uint32_t numbanks = memory_kickimage_ext_size / 65536;
 
 
 
-    for (ULO bank = basebank; bank < (basebank + numbanks); bank++)
+    for (uint32_t bank = basebank; bank < (basebank + numbanks); bank++)
 
     {
 
@@ -2852,7 +2852,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickError(ULO errorcode, ULO data)
+  void memoryKickError(uint32_t errorcode, uint32_t data)
 
   {
 
@@ -2962,11 +2962,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  ULO memoryKickChksum(void)
+  uint32_t memoryKickChksum(void)
 
   {
 
-    ULO sum, lastsum, i;
+    uint32_t sum, lastsum, i;
 
 
 
@@ -3004,7 +3004,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     UBY *rom = memory_kick;
 
-    ULO ver, rev;
+    uint32_t ver, rev;
 
 
 
@@ -3048,7 +3048,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO chksum, basebank;
+    uint32_t chksum, basebank;
 
     bool bVerifyChecksum = !memory_a1000_wcs;
 
@@ -3102,7 +3102,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     STR *keybuffer = NULL;
 
-    ULO keysize, filesize = 0, keypos = 0, c;
+    uint32_t keysize, filesize = 0, keypos = 0, c;
 
     FILE *KF, *RF;
 
@@ -3330,7 +3330,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   {
 
-    ULO version;
+    uint32_t version;
 
     STR IDString[12];
 
@@ -3366,7 +3366,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
       { /* Seems to be a file we can handle */
 
-	ULO size;
+	uint32_t size;
 
 
 
@@ -3420,7 +3420,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
           if(memory_a1000_bootstrap) {
 
-            ULO lCRC32 = 0;
+            uint32_t lCRC32 = 0;
 
             memset(memory_a1000_bootstrap, 0xff, 262144);
 
@@ -3670,7 +3670,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
           if(memory_a1000_bootstrap) {
 
-            ULO lCRC32 = 0;
+            uint32_t lCRC32 = 0;
 
             memset(memory_a1000_bootstrap, 0xff, 262144);
 
@@ -3800,7 +3800,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     fs_navig_point *fsnp;
 
-    ULO size = 0;
+    uint32_t size = 0;
 
 
 
@@ -3864,7 +3864,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
         // Amiga Forever - encrypted ROM?
 
-        ULO version;
+        uint32_t version;
 
         STR IDString[12];
 
@@ -3968,7 +3968,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  static void memoryOddRead(ULO address)
+  static void memoryOddRead(uint32_t address)
 
   {
 
@@ -3994,7 +3994,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  static void memoryOddWrite(ULO address)
+  static void memoryOddWrite(uint32_t address)
 
   {
 
@@ -4020,7 +4020,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UBY memoryReadByteViaBankHandler(ULO address)
+  UBY memoryReadByteViaBankHandler(uint32_t address)
 
   {
 
@@ -4030,7 +4030,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-__inline  UBY memoryReadByte(ULO address)
+__inline  UBY memoryReadByte(uint32_t address)
 
   {
 
@@ -4052,7 +4052,7 @@ __inline  UBY memoryReadByte(ULO address)
 
 
 
-  UWO memoryReadWordViaBankHandler(ULO address)
+  UWO memoryReadWordViaBankHandler(uint32_t address)
 
   {
 
@@ -4064,7 +4064,7 @@ __inline  UBY memoryReadByte(ULO address)
 
 
 
-__inline  UWO memoryReadWord(ULO address)
+__inline  UWO memoryReadWord(uint32_t address)
 
   {
 
@@ -4086,21 +4086,21 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  __inline ULO memoryReadLong(ULO address)
+  __inline uint32_t memoryReadLong(uint32_t address)
 
   {
 
-    return ((ULO)memoryReadWord(address) << 16) | ((ULO)memoryReadWord(address + 2));
+    return ((uint32_t)memoryReadWord(address) << 16) | ((uint32_t)memoryReadWord(address + 2));
 
   }
 
 
 
-  void memoryWriteByte(UBY data, ULO address)
+  void memoryWriteByte(UBY data, uint32_t address)
 
   {
 
-    ULO bank = address>>16;
+    uint32_t bank = address>>16;
 
     if (memory_bank_pointer_can_write[bank])
 
@@ -4122,7 +4122,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  void memoryWriteWordViaBankHandler(UWO data, ULO address)
+  void memoryWriteWordViaBankHandler(UWO data, uint32_t address)
 
   {
 
@@ -4134,11 +4134,11 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  void memoryWriteWord(UWO data, ULO address)
+  void memoryWriteWord(UWO data, uint32_t address)
 
   {
 
-    ULO bank = address>>16;
+    uint32_t bank = address>>16;
 
     if (memory_bank_pointer_can_write[bank] && !(address & 1))
 
@@ -4160,7 +4160,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  void memoryWriteLongViaBankHandler(ULO data, ULO address)
+  void memoryWriteLongViaBankHandler(uint32_t data, uint32_t address)
 
   {
 
@@ -4172,11 +4172,11 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  void memoryWriteLong(ULO data, ULO address)
+  void memoryWriteLong(uint32_t data, uint32_t address)
 
   {
 
-    ULO bank = address>>16;
+    uint32_t bank = address>>16;
 
     if (memory_bank_pointer_can_write[bank] && !(address & 1))
 
@@ -4206,7 +4206,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  BOOLE memorySetChipSize(ULO chipsize)
+  BOOLE memorySetChipSize(uint32_t chipsize)
 
   {
 
@@ -4220,7 +4220,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryGetChipSize(void)
+  uint32_t memoryGetChipSize(void)
 
   {
 
@@ -4230,7 +4230,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  BOOLE memorySetFastSize(ULO fastsize)
+  BOOLE memorySetFastSize(uint32_t fastsize)
 
   {
 
@@ -4246,7 +4246,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryGetFastSize(void)
+  uint32_t memoryGetFastSize(void)
 
   {
 
@@ -4256,7 +4256,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  void memorySetFastAllocatedSize(ULO fastallocatedsize)
+  void memorySetFastAllocatedSize(uint32_t fastallocatedsize)
 
   {
 
@@ -4266,7 +4266,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryGetFastAllocatedSize(void)
+  uint32_t memoryGetFastAllocatedSize(void)
 
   {
 
@@ -4276,7 +4276,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  BOOLE memorySetSlowSize(ULO slowsize)
+  BOOLE memorySetSlowSize(uint32_t slowsize)
 
   {
 
@@ -4290,7 +4290,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryGetSlowSize(void)
+  uint32_t memoryGetSlowSize(void)
 
   {
 
@@ -4414,7 +4414,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryGetKickImageBaseBank(void)
+  uint32_t memoryGetKickImageBaseBank(void)
 
   {
 
@@ -4424,7 +4424,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryGetKickImageVersion(void)
+  uint32_t memoryGetKickImageVersion(void)
 
   {
 
@@ -4444,7 +4444,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryInitialPC(void)
+  uint32_t memoryInitialPC(void)
 
   {
 
@@ -4454,7 +4454,7 @@ __inline  UWO memoryReadWord(ULO address)
 
 
 
-  ULO memoryInitialSP(void)
+  uint32_t memoryInitialSP(void)
 
   {
 

@@ -26,7 +26,7 @@ namespace fellow::hardfile::rdb
     return Data.get();
   }
 
-  void RDBLSegBlock::ReadFromFile(RDBFileReader& reader, ULO index)
+  void RDBLSegBlock::ReadFromFile(RDBFileReader& reader, uint32_t index)
   {
     Blocknumber = index / 512;
     ID = reader.ReadString(index, 4);

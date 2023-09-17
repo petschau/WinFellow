@@ -332,23 +332,23 @@ char *set_filesys_unit (struct uaedev_mount_info *mountinfo, int nr,
 }
 
 /* FELLOW IN (START) Added some get functions */
-ULO getNumUnits(void) {
+uint32_t getNumUnits(void) {
   return mountinfo.num_units;
 }
 
-STR *getVolName(ULO index) {
+STR *getVolName(uint32_t index) {
   return mountinfo.ui[index].volname;
 }
 
-STR *getRootDir(ULO index) {
+STR *getRootDir(uint32_t index) {
   return mountinfo.ui[index].rootdir;
 }
 
-BOOLE getVFSModule(ULO index) {
+BOOLE getVFSModule(uint32_t index) {
   return FALSE;
 }
 
-BOOLE getReadOnly(ULO index) {
+BOOLE getReadOnly(uint32_t index) {
   return mountinfo.ui[index].readonly;
 }
 /* FELLOW IN (END) */

@@ -8,9 +8,9 @@ namespace fellow::api::vm
   class IM68K
   {
   public:
-    virtual void SetDReg(ULO registerNumber, ULO value) = 0;
-    virtual ULO GetDReg(ULO registerNumber) = 0;
-    virtual ULO GetAReg(ULO registerNumber) = 0;
+    virtual void SetDReg(uint32_t registerNumber, uint32_t value) = 0;
+    virtual uint32_t GetDReg(uint32_t registerNumber) = 0;
+    virtual uint32_t GetAReg(uint32_t registerNumber) = 0;
   };
 }
 

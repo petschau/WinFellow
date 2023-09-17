@@ -6,12 +6,12 @@
 class CopperRegisters
 {
 public:
-  ULO copcon;
-  ULO cop1lc;
-  ULO cop2lc;
-  ULO copper_pc;
+  uint32_t copcon;
+  uint32_t cop1lc;
+  uint32_t cop2lc;
+  uint32_t copper_pc;
   bool copper_dma;                                    /* Mirrors DMACON */
-  ULO copper_suspended_wait;/* Position the copper should have been waiting for */
+  uint32_t copper_suspended_wait;/* Position the copper should have been waiting for */
                             /* if copper DMA had been turned on */
 
   void InstallIOHandlers();

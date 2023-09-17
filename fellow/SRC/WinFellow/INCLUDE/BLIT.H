@@ -13,7 +13,7 @@ extern BOOLE blitterGetOperationLog(void);
 
 extern BOOLE blitterGetDMAPending(void);
 extern BOOLE blitterGetZeroFlag(void);
-extern ULO blitterGetFreeCycles(void);
+extern uint32_t blitterGetFreeCycles(void);
 extern BOOLE blitterIsStarted(void);
 
 /*===========================================================================*/

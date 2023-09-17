@@ -18,10 +18,10 @@ using namespace fellow::api::module;
 typedef struct {
   STR   filename[CFG_FILENAME_LENGTH];
   BOOLE readonly;
-  ULO   bytespersector;
-  ULO   sectorspertrack;
-  ULO   surfaces;
-  ULO   reservedblocks;
+  uint32_t   bytespersector;
+  uint32_t   sectorspertrack;
+  uint32_t   surfaces;
+  uint32_t   reservedblocks;
   rdb_status rdbstatus;
 } cfg_hardfile;
 
@@ -69,7 +69,7 @@ typedef enum {
 
 typedef struct {
 
-  ULO   m_configfileversion;
+  uint32_t   m_configfileversion;
   STR	m_description[CFG_FILENAME_LENGTH];
 
 
@@ -88,13 +88,13 @@ typedef struct {
   /* Memory configuration                                                     */
   /*==========================================================================*/
 
-  ULO    m_chipsize;
-  ULO    m_fastsize;
-  ULO    m_bogosize;
+  uint32_t    m_chipsize;
+  uint32_t    m_fastsize;
+  uint32_t    m_bogosize;
   STR    m_kickimage[CFG_FILENAME_LENGTH];
   STR    m_kickimage_ext[CFG_FILENAME_LENGTH];
   STR    m_kickdescription[CFG_FILENAME_LENGTH];
-  ULO    m_kickcrc32;
+  uint32_t    m_kickcrc32;
   STR    m_key[CFG_FILENAME_LENGTH];
   bool   m_useautoconfig;
   bool   m_rtc;
@@ -104,19 +104,19 @@ typedef struct {
   /* Screen configuration                                                     */
   /*==========================================================================*/
 
-  ULO	m_screenwidth;
-  ULO	m_screenheight;
-  ULO   m_screencolorbits;
-  ULO   m_screenrefresh;
+  uint32_t	m_screenwidth;
+  uint32_t	m_screenheight;
+  uint32_t   m_screencolorbits;
+  uint32_t   m_screenrefresh;
   bool  m_screenwindowed;
 
   bool  m_screendrawleds;
-  ULO   m_frameskipratio;
+  uint32_t   m_frameskipratio;
 
-  ULO m_clipleft;
-  ULO m_cliptop;
-  ULO m_clipright;
-  ULO m_clipbottom;
+  uint32_t m_clipleft;
+  uint32_t m_cliptop;
+  uint32_t m_clipright;
+  uint32_t m_clipbottom;
 
   DISPLAYSCALE  m_displayscale;
   DISPLAYSCALE_STRATEGY m_displayscalestrategy;
@@ -142,10 +142,10 @@ typedef struct {
   bool                 m_soundstereo;
   bool                 m_sound16bits;
   sound_filters        m_soundfilter;
-  ULO                  m_soundvolume;
+  uint32_t                  m_soundvolume;
   BOOLE                m_soundWAVdump;
   sound_notifications  m_notification;
-  ULO                  m_bufferlength;
+  uint32_t                  m_bufferlength;
 
 
   /*==========================================================================*/
@@ -153,7 +153,7 @@ typedef struct {
   /*==========================================================================*/
 
   cpu_integration_models m_CPUtype;
-  ULO m_CPUspeed;
+  uint32_t m_CPUspeed;
 
 
   /*==========================================================================*/
@@ -216,12 +216,12 @@ extern STR *cfgGetDescription(cfg *config);
 /* Floppy disk configuration property access                                  */
 /*============================================================================*/
 
-extern void cfgSetDiskImage(cfg *config, ULO index, STR *diskimage);
-extern STR *cfgGetDiskImage(cfg *config, ULO index);
-extern void cfgSetDiskEnabled(cfg *config, ULO index, BOOLE enabled);
-extern BOOLE cfgGetDiskEnabled(cfg *config, ULO index);
-extern void cfgSetDiskReadOnly(cfg *config, ULO index, BOOLE readonly);
-extern BOOLE cfgGetDiskReadOnly(cfg *config, ULO index);
+extern void cfgSetDiskImage(cfg *config, uint32_t index, STR *diskimage);
+extern STR *cfgGetDiskImage(cfg *config, uint32_t index);
+extern void cfgSetDiskEnabled(cfg *config, uint32_t index, BOOLE enabled);
+extern BOOLE cfgGetDiskEnabled(cfg *config, uint32_t index);
+extern void cfgSetDiskReadOnly(cfg *config, uint32_t index, BOOLE readonly);
+extern BOOLE cfgGetDiskReadOnly(cfg *config, uint32_t index);
 extern void cfgSetDiskFast(cfg *config, BOOLE fast);
 extern BOOLE cfgGetDiskFast(cfg *config);  
 extern void cfgSetLastUsedDiskDir(cfg *config, STR *directory);
@@ -231,20 +231,20 @@ extern STR *cfgGetLastUsedDiskDir(cfg *config);
 /* Memory configuration property access                                       */
 /*============================================================================*/
 
-extern void cfgSetChipSize(cfg *config, ULO chipsize);
-extern ULO cfgGetChipSize(cfg *config);
-extern void cfgSetFastSize(cfg *config, ULO fastsize);
-extern ULO cfgGetFastSize(cfg *config);
-extern void cfgSetBogoSize(cfg *config, ULO bogosize);
-extern ULO cfgGetBogoSize(cfg *config);
+extern void cfgSetChipSize(cfg *config, uint32_t chipsize);
+extern uint32_t cfgGetChipSize(cfg *config);
+extern void cfgSetFastSize(cfg *config, uint32_t fastsize);
+extern uint32_t cfgGetFastSize(cfg *config);
+extern void cfgSetBogoSize(cfg *config, uint32_t bogosize);
+extern uint32_t cfgGetBogoSize(cfg *config);
 extern void cfgSetKickImage(cfg *config, STR *kickimage);
 extern STR *cfgGetKickImage(cfg *config);
 extern void cfgSetKickImageExtended(cfg *config, STR *kickimageext);
 extern STR *cfgGetKickImageExtended(cfg *config);
 extern void cfgSetKickDescription(cfg *config, STR *kickdescription);
 extern STR *cfgGetKickDescription(cfg *config);
-extern void cfgSetKickCRC32(cfg *config, ULO kickcrc32);
-extern ULO  cfgGetKickCRC32(cfg *config);
+extern void cfgSetKickCRC32(cfg *config, uint32_t kickcrc32);
+extern uint32_t  cfgGetKickCRC32(cfg *config);
 extern void cfgSetKey(cfg *config, STR *key);
 extern STR *cfgGetKey(cfg *config);
 extern void cfgSetUseAutoconfig(cfg *config, bool useautoconfig);
@@ -257,14 +257,14 @@ extern bool cfgGetRtc(cfg *config);
 /* Host screen configuration property access                                 */
 /*===========================================================================*/
 
-extern void cfgSetScreenWidth(cfg *config, ULO screenwidth);
-extern ULO cfgGetScreenWidth(cfg *config);
-extern void cfgSetScreenHeight(cfg *config, ULO screenheight);
-extern ULO cfgGetScreenHeight(cfg *config);
-extern void cfgSetScreenColorBits(cfg *config, ULO screencolorbits);
-extern ULO cfgGetScreenColorBits(cfg *config);
-extern void cfgSetScreenRefresh(cfg *config, ULO screenrefresh);
-extern ULO cfgGetScreenRefresh(cfg *config);
+extern void cfgSetScreenWidth(cfg *config, uint32_t screenwidth);
+extern uint32_t cfgGetScreenWidth(cfg *config);
+extern void cfgSetScreenHeight(cfg *config, uint32_t screenheight);
+extern uint32_t cfgGetScreenHeight(cfg *config);
+extern void cfgSetScreenColorBits(cfg *config, uint32_t screencolorbits);
+extern uint32_t cfgGetScreenColorBits(cfg *config);
+extern void cfgSetScreenRefresh(cfg *config, uint32_t screenrefresh);
+extern uint32_t cfgGetScreenRefresh(cfg *config);
 extern void cfgSetScreenWindowed(cfg *config, bool screenwindowed);
 extern bool cfgGetScreenWindowed(cfg *config);
 
@@ -279,17 +279,17 @@ extern DISPLAYDRIVER cfgGetDisplayDriver(cfg *config);
 /* Graphics emulation configuration property access                          */
 /*===========================================================================*/
 
-extern void  cfgSetFrameskipRatio (cfg *config, ULO frameskipratio);
-extern ULO   cfgGetFrameskipRatio (cfg *config);
+extern void  cfgSetFrameskipRatio (cfg *config, uint32_t frameskipratio);
+extern uint32_t   cfgGetFrameskipRatio (cfg *config);
 
-extern void cfgSetClipLeft(cfg *config, ULO left);
-extern ULO cfgGetClipLeft(cfg *config);
-extern void cfgSetClipTop(cfg *config, ULO top);
-extern ULO cfgGetClipTop(cfg *config);
-extern void cfgSetClipRight(cfg *config, ULO right);
-extern ULO cfgGetClipRight(cfg *config);
-extern void cfgSetClipBottom(cfg *config, ULO bottom);
-extern ULO cfgGetClipBottom(cfg *config);
+extern void cfgSetClipLeft(cfg *config, uint32_t left);
+extern uint32_t cfgGetClipLeft(cfg *config);
+extern void cfgSetClipTop(cfg *config, uint32_t top);
+extern uint32_t cfgGetClipTop(cfg *config);
+extern void cfgSetClipRight(cfg *config, uint32_t right);
+extern uint32_t cfgGetClipRight(cfg *config);
+extern void cfgSetClipBottom(cfg *config, uint32_t bottom);
+extern uint32_t cfgGetClipBottom(cfg *config);
 
 extern void  cfgSetDisplayScale(cfg *config, DISPLAYSCALE displayscale);
 extern DISPLAYSCALE cfgGetDisplayScale(cfg *config);
@@ -314,14 +314,14 @@ extern void cfgSetSound16Bits(cfg *config, bool soundbit);
 extern bool cfgGetSound16Bits(cfg *config);
 extern void cfgSetSoundFilter(cfg *config, sound_filters soundfilter);
 extern sound_filters cfgGetSoundFilter(cfg *config);
-extern void cfgSetSoundVolume(cfg *config, const ULO soundvolume);
-extern ULO cfgGetSoundVolume(cfg *config);
+extern void cfgSetSoundVolume(cfg *config, const uint32_t soundvolume);
+extern uint32_t cfgGetSoundVolume(cfg *config);
 extern void cfgSetSoundWAVDump(cfg *config, BOOLE soundWAVdump);
 extern BOOLE cfgGetSoundWAVDump(cfg *config);
 extern void cfgSetSoundNotification(cfg *config, sound_notifications soundnotification);
 extern sound_notifications cfgGetSoundNotification(cfg *config);
-extern void cfgSetSoundBufferLength(cfg *config, ULO buffer_length);
-extern ULO cfgGetSoundBufferLength(cfg *config);
+extern void cfgSetSoundBufferLength(cfg *config, uint32_t buffer_length);
+extern uint32_t cfgGetSoundBufferLength(cfg *config);
 
 
 /*============================================================================*/
@@ -330,8 +330,8 @@ extern ULO cfgGetSoundBufferLength(cfg *config);
 
 extern void cfgSetCPUType(cfg *config, cpu_integration_models CPUtype);
 extern cpu_integration_models cfgGetCPUType(cfg *config);
-extern void cfgSetCPUSpeed(cfg *config, ULO CPUspeed);
-extern ULO cfgGetCPUSpeed(cfg *config);
+extern void cfgSetCPUSpeed(cfg *config, uint32_t CPUspeed);
+extern uint32_t cfgGetCPUSpeed(cfg *config);
 
 
 /*============================================================================*/
@@ -348,28 +348,28 @@ extern bool cfgGetECS(cfg *config);
 /* Hardfile configuration property access                                     */
 /*============================================================================*/
 
-extern ULO cfgGetHardfileCount(cfg *config);
-extern cfg_hardfile cfgGetHardfile(cfg *config, ULO index);
+extern uint32_t cfgGetHardfileCount(cfg *config);
+extern cfg_hardfile cfgGetHardfile(cfg *config, uint32_t index);
 extern void cfgHardfileAdd(cfg *config, cfg_hardfile *hardfile);
-extern void cfgHardfileRemove(cfg *config, ULO index);
+extern void cfgHardfileRemove(cfg *config, uint32_t index);
 extern void cfgHardfilesFree(cfg *config);
 extern void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile);
-extern void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index);
+extern void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, uint32_t index);
 
 
 /*============================================================================*/
 /* Filesystem configuration property access                                   */
 /*============================================================================*/
 
-extern ULO cfgGetFilesystemCount(cfg *config);
-extern cfg_filesys cfgGetFilesystem(cfg *config, ULO index);
+extern uint32_t cfgGetFilesystemCount(cfg *config);
+extern cfg_filesys cfgGetFilesystem(cfg *config, uint32_t index);
 extern void cfgFilesystemAdd(cfg *config, cfg_filesys *filesystem);
-extern void cfgFilesystemRemove(cfg *config, ULO index);
+extern void cfgFilesystemRemove(cfg *config, uint32_t index);
 extern void cfgFilesystemsFree(cfg *config);
 extern void cfgSetFilesystemUnitDefaults(cfg_filesys *filesystem);
 extern void cfgFilesystemChange(cfg *config,
 				cfg_filesys *filesystem, 
-				ULO index);
+				uint32_t index);
 extern void cfgSetFilesystemAutomountDrives(cfg *config,
 					    BOOLE automount_drives);
 extern BOOLE cfgGetFilesystemAutomountDrives(cfg *config);
@@ -382,8 +382,8 @@ extern STR* cfgGetFilesystemDeviceNamePrefix(cfg* config);
 /* Game port configuration property access                                    */
 /*============================================================================*/
 
-extern void cfgSetGameport(cfg *config, ULO index, gameport_inputs gameport);
-extern gameport_inputs cfgGetGameport(cfg *config, ULO index);
+extern void cfgSetGameport(cfg *config, uint32_t index, gameport_inputs gameport);
+extern gameport_inputs cfgGetGameport(cfg *config, uint32_t index);
 
 
 /*============================================================================*/

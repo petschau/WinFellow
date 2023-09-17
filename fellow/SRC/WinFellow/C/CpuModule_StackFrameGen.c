@@ -27,10 +27,10 @@
 #include "CpuModule_Internal.h"
 
 /* Exception stack frame jmptables */
-typedef void(*cpuStackFrameGenFunc)(UWO, ULO);
+typedef void(*cpuStackFrameGenFunc)(UWO, uint32_t);
 static cpuStackFrameGenFunc cpu_stack_frame_gen_func[64];
 
-static void cpuSetStackFrameGenFunc(ULO vector_no, cpuStackFrameGenFunc func)
+static void cpuSetStackFrameGenFunc(uint32_t vector_no, cpuStackFrameGenFunc func)
 {
   cpu_stack_frame_gen_func[vector_no] = func;
 }
@@ -41,7 +41,7 @@ static void cpuSetStackFrameGenFunc(ULO vector_no, cpuStackFrameGenFunc func)
   000:	All, except bus and address error
   ========================================================================*/
 
-static void cpuFrameGroup1(UWO vector_offset, ULO pcPtr)
+static void cpuFrameGroup1(UWO vector_offset, uint32_t pcPtr)
 {
   // save PC
   cpuSetAReg(7, cpuGetAReg(7) - 4);
@@ -61,7 +61,7 @@ static void cpuFrameGroup1(UWO vector_offset, ULO pcPtr)
   memory_fault_read is TRUE if the access was a read
  ========================================================================*/
 	
-static void cpuFrameGroup2(UWO vector_offset, ULO pcPtr)
+static void cpuFrameGroup2(UWO vector_offset, uint32_t pcPtr)
 {
   // save PC
   cpuSetAReg(7, cpuGetAReg(7) - 4);
@@ -79,7 +79,7 @@ static void cpuFrameGroup2(UWO vector_offset, ULO pcPtr)
   memoryWriteLong(memory_fault_read << 4, cpuGetAReg(7));
 }
 
-static void cpuFrame4Words(UWO frame_code, UWO vector_offset, ULO pc)
+static void cpuFrame4Words(UWO frame_code, UWO vector_offset, uint32_t pc)
 {
   // save vector_offset word
   cpuSetAReg(7, cpuGetAReg(7) - 2);
@@ -111,7 +111,7 @@ static void cpuFrame4Words(UWO frame_code, UWO vector_offset, ULO pc)
   030:	Same as for 020
   ========================================================================*/
 
-static void cpuFrame0(UWO vector_offset, ULO pc)
+static void cpuFrame0(UWO vector_offset, uint32_t pc)
 {
   cpuFrame4Words(0x0000, vector_offset, pc);
 }
@@ -131,7 +131,7 @@ static void cpuFrame0(UWO vector_offset, ULO pc)
   040:	Same as for 020
   ========================================================================*/
 
-void cpuFrame1(UWO vector_offset, ULO pc)
+void cpuFrame1(UWO vector_offset, uint32_t pc)
 {
   cpuFrame4Words(0x1000, vector_offset, pc);
 }
@@ -147,7 +147,7 @@ void cpuFrame1(UWO vector_offset, ULO pc)
   060:	Same as for 040
   ========================================================================*/
 
-static void cpuFrame2(UWO vector_offset, ULO pc)
+static void cpuFrame2(UWO vector_offset, uint32_t pc)
 {
   // save inst address
   cpuSetAReg(7, cpuGetAReg(7) - 4);
@@ -162,7 +162,7 @@ static void cpuFrame2(UWO vector_offset, ULO pc)
  
   ========================================================================*/
 
-static void cpuFrame8(UWO vector_offset, ULO pc)
+static void cpuFrame8(UWO vector_offset, uint32_t pc)
 {
   cpuSetAReg(7, cpuGetAReg(7) - 50);
   cpuFrame4Words(0x8000, vector_offset, pc);
@@ -178,14 +178,14 @@ static void cpuFrame8(UWO vector_offset, ULO pc)
   Fellow will always generate this frame for bus/address errors
   ========================================================================*/
 
-static void cpuFrameA(UWO vector_offset, ULO pc)
+static void cpuFrameA(UWO vector_offset, uint32_t pc)
 {
   // save vector_offset offset
   cpuSetAReg(7, cpuGetAReg(7) - 24);
   cpuFrame4Words(0xa000, vector_offset, pc);
 }
 
-void cpuStackFrameGenerate(UWO vector_offset, ULO pc)
+void cpuStackFrameGenerate(UWO vector_offset, uint32_t pc)
 {
   cpu_stack_frame_gen_func[vector_offset>>2](vector_offset, pc);
 }
@@ -196,7 +196,7 @@ void cpuStackFrameGenerate(UWO vector_offset, ULO pc)
 
 static void cpuStackFrameInitSetDefaultFunc(cpuStackFrameGenFunc default_func)
 {
-  ULO i;
+  uint32_t i;
   for (i = 0; i < 64; i++)
     cpuSetStackFrameGenFunc(i, default_func);
 }

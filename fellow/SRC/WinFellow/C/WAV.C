@@ -31,13 +31,13 @@
 
 FILE *wav_FILE;
 STR wav_filename[MAX_PATH];
-ULO wav_serial;
+uint32_t wav_serial;
 sound_rates wav_rate;
-ULO wav_rate_real;
+uint32_t wav_rate_real;
 BOOLE wav_stereo;
 BOOLE wav_16bits;
-ULO wav_filelength;
-ULO wav_samplecount;
+uint32_t wav_filelength;
+uint32_t wav_samplecount;
 LON wav_samplesum;
 
 
@@ -48,8 +48,8 @@ LON wav_samplesum;
 /* anything we can do on our own.                             */
 /*============================================================*/
 
-void wav8BitsMonoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
+void wav8BitsMonoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+  uint32_t i;
 
   if (wav_FILE) {
     for (i = 0; i < sample_count; i++) {
@@ -60,8 +60,8 @@ void wav8BitsMonoAdd(WOR *left, WOR *right, ULO sample_count) {
   }
 }
 
-void wav8BitsStereoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
+void wav8BitsStereoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+  uint32_t i;
 
   if (wav_FILE) {
     for (i = 0; i < sample_count; i++) {
@@ -74,8 +74,8 @@ void wav8BitsStereoAdd(WOR *left, WOR *right, ULO sample_count) {
   }
 }
 
-void wav16BitsMonoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
+void wav16BitsMonoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+  uint32_t i;
 
   if (wav_FILE) {
     for (i = 0; i < sample_count; i++) {
@@ -86,8 +86,8 @@ void wav16BitsMonoAdd(WOR *left, WOR *right, ULO sample_count) {
   }
 }
 
-void wav16BitsStereoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
+void wav16BitsStereoAdd(WOR *left, WOR *right, uint32_t sample_count) {
+  uint32_t i;
 
   if (wav_FILE) {
     for (i = 0; i < sample_count; i++) {
@@ -106,11 +106,11 @@ void wav16BitsStereoAdd(WOR *left, WOR *right, ULO sample_count) {
 void wavHeaderWrite(void) {
   static STR *wav_RIFF = {"RIFF"};
   static STR *wav_WAVEfmt = {"WAVEfmt "};
-  static ULO wav_fmtchunklength = 16;
+  static uint32_t wav_fmtchunklength = 16;
   static STR *wav_data = {"data"};
-  ULO bytespersecond=wav_rate_real*(wav_stereo+1)*(wav_16bits+1);
-  ULO bits = (wav_16bits + 1)*8;
-  ULO blockalign = (wav_stereo + 1)*(wav_16bits + 1);
+  uint32_t bytespersecond=wav_rate_real*(wav_stereo+1)*(wav_16bits+1);
+  uint32_t bits = (wav_16bits + 1)*8;
+  uint32_t blockalign = (wav_stereo + 1)*(wav_16bits + 1);
 
   /* This must still be wrong since wav-editors only reluctantly reads it */
 
@@ -184,7 +184,7 @@ void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo)
 /* Play samples, or in this case, save it                                    */
 /*===========================================================================*/
 
-void wavPlay(WOR *left, WOR *right, ULO sample_count) {
+void wavPlay(WOR *left, WOR *right, uint32_t sample_count) {
   if (wav_stereo && wav_16bits)
     wav16BitsStereoAdd(left, right, sample_count);
   else if (!wav_stereo && wav_16bits)
@@ -207,7 +207,7 @@ void wavPlay(WOR *left, WOR *right, ULO sample_count) {
 void wavEmulationStart(sound_rates rate,
 		       BOOLE bits16,
 		       BOOLE stereo,
-		       ULO buffersamplecountmax) {
+		       uint32_t buffersamplecountmax) {
 			 wavFileInit(rate, bits16, stereo);
 }
 

@@ -312,33 +312,33 @@ FELLOW OUT (END)-------------------------------------*/
 /* Had to change these a bit since the cpuemu assumes that addr survives */
 /* The memory access stubs is called from assembler counterparts */
 
-UWO rtarea_wget(ULO addr)
+UWO rtarea_wget(uint32_t addr)
 {
-  ULO maskedAddress = addr & 0xffffff;
+  uint32_t maskedAddress = addr & 0xffffff;
   return (UWO) (rtarea[maskedAddress - RTAREA_BASE]<<8) + rtarea[maskedAddress -RTAREA_BASE+1];
 }
 
 
-ULO rtarea_lget(ULO addr)
+uint32_t rtarea_lget(uint32_t addr)
 {
-  ULO maskedAddress = addr & 0xffffff;
-  return (ULO) (rtarea[maskedAddress - RTAREA_BASE]<<24) |
+  uint32_t maskedAddress = addr & 0xffffff;
+  return (uint32_t) (rtarea[maskedAddress - RTAREA_BASE]<<24) |
            (rtarea[maskedAddress -RTAREA_BASE+1]<<16) |
            (rtarea[maskedAddress -RTAREA_BASE+2]<<8) |
            rtarea[maskedAddress -RTAREA_BASE+3];
 }
 
-UBY rtarea_bget(ULO addr)
+UBY rtarea_bget(uint32_t addr)
 {
-  ULO maskedAddress = addr & 0xffffff;
+  uint32_t maskedAddress = addr & 0xffffff;
   return rtarea[maskedAddress - RTAREA_BASE];
 }
 
 /* Swapped parameter order */
 
-void rtarea_lput(ULO value, ULO addr) { }
-void rtarea_wput(UWO value, ULO addr) { }
-void rtarea_bput(UBY value, ULO addr) { }
+void rtarea_lput(uint32_t value, uint32_t addr) { }
+void rtarea_wput(UWO value, uint32_t addr) { }
+void rtarea_bput(UBY value, uint32_t addr) { }
 
 /* FELLOW IN (END)---------------------------------*/
 
