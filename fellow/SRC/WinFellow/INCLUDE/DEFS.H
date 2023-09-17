@@ -1,5 +1,4 @@
-#ifndef DEFS_H
-#define DEFS_H
+#pragma once
 
 #include <cstdint>
 
@@ -18,7 +17,6 @@
 #define BOGOMEM 0x1c0000
 #define KICKMEM 0x080000
 
-typedef signed FELLOW_LONG_LONG LLO;
 typedef int BOOLE;
 
 #define FALSE 0
@@ -62,5 +60,3 @@ typedef void (*sound_before_emu_routine)(void);
 typedef void (*sound_after_emu_routine)(void);
 
 typedef void (*buseventfunc)(void);
-
-#endif

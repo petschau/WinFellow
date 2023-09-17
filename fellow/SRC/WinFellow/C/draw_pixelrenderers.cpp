@@ -43,339 +43,339 @@ It can be imported into excel for better viewing
 
 // variables for holding profile data on background lines
 
-LLO dlsbg2x1_16bit_tmp = 0;
-LLO dlsbg2x1_16bit = 0;
+int64_t dlsbg2x1_16bit_tmp = 0;
+int64_t dlsbg2x1_16bit = 0;
 int32_t dlsbg2x1_16bit_times = 0;
 int32_t dlsbg2x1_16bit_pixels = 0;
 
-LLO dlsbg2x2_16bit_tmp = 0;
-LLO dlsbg2x2_16bit = 0;
+int64_t dlsbg2x2_16bit_tmp = 0;
+int64_t dlsbg2x2_16bit = 0;
 int32_t dlsbg2x2_16bit_times = 0;
 int32_t dlsbg2x2_16bit_pixels = 0;
 
-LLO dlsbg4x2_16bit_tmp = 0;
-LLO dlsbg4x2_16bit = 0;
+int64_t dlsbg4x2_16bit_tmp = 0;
+int64_t dlsbg4x2_16bit = 0;
 int32_t dlsbg4x2_16bit_times = 0;
 int32_t dlsbg4x2_16bit_pixels = 0;
 
-LLO dlsbg4x4_16bit_tmp = 0;
-LLO dlsbg4x4_16bit = 0;
+int64_t dlsbg4x4_16bit_tmp = 0;
+int64_t dlsbg4x4_16bit = 0;
 int32_t dlsbg4x4_16bit_times = 0;
 int32_t dlsbg4x4_16bit_pixels = 0;
 
-LLO dlsbg2x1_24bit_tmp = 0;
-LLO dlsbg2x1_24bit = 0;
+int64_t dlsbg2x1_24bit_tmp = 0;
+int64_t dlsbg2x1_24bit = 0;
 int32_t dlsbg2x1_24bit_times = 0;
 int32_t dlsbg2x1_24bit_pixels = 0;
 
-LLO dlsbg2x2_24bit_tmp = 0;
-LLO dlsbg2x2_24bit = 0;
+int64_t dlsbg2x2_24bit_tmp = 0;
+int64_t dlsbg2x2_24bit = 0;
 int32_t dlsbg2x2_24bit_times = 0;
 int32_t dlsbg2x2_24bit_pixels = 0;
 
-LLO dlsbg4x2_24bit_tmp = 0;
-LLO dlsbg4x2_24bit = 0;
+int64_t dlsbg4x2_24bit_tmp = 0;
+int64_t dlsbg4x2_24bit = 0;
 int32_t dlsbg4x2_24bit_times = 0;
 int32_t dlsbg4x2_24bit_pixels = 0;
 
-LLO dlsbg4x4_24bit_tmp = 0;
-LLO dlsbg4x4_24bit = 0;
+int64_t dlsbg4x4_24bit_tmp = 0;
+int64_t dlsbg4x4_24bit = 0;
 int32_t dlsbg4x4_24bit_times = 0;
 int32_t dlsbg4x4_24bit_pixels = 0;
 
-LLO dlsbg2x1_32bit_tmp = 0;
-LLO dlsbg2x1_32bit = 0;
+int64_t dlsbg2x1_32bit_tmp = 0;
+int64_t dlsbg2x1_32bit = 0;
 int32_t dlsbg2x1_32bit_times = 0;
 int32_t dlsbg2x1_32bit_pixels = 0;
 
-LLO dlsbg2x2_32bit_tmp = 0;
-LLO dlsbg2x2_32bit = 0;
+int64_t dlsbg2x2_32bit_tmp = 0;
+int64_t dlsbg2x2_32bit = 0;
 int32_t dlsbg2x2_32bit_times = 0;
 int32_t dlsbg2x2_32bit_pixels = 0;
 
-LLO dlsbg4x2_32bit_tmp = 0;
-LLO dlsbg4x2_32bit = 0;
+int64_t dlsbg4x2_32bit_tmp = 0;
+int64_t dlsbg4x2_32bit = 0;
 int32_t dlsbg4x2_32bit_times = 0;
 int32_t dlsbg4x2_32bit_pixels = 0;
 
-LLO dlsbg4x4_32bit_tmp = 0;
-LLO dlsbg4x4_32bit = 0;
+int64_t dlsbg4x4_32bit_tmp = 0;
+int64_t dlsbg4x4_32bit = 0;
 int32_t dlsbg4x4_32bit_times = 0;
 int32_t dlsbg4x4_32bit_pixels = 0;
 
 // variables for holding profile data on normal line drawing
 
-LLO dln1x1_16bit_tmp = 0;
-LLO dln1x1_16bit = 0;
+int64_t dln1x1_16bit_tmp = 0;
+int64_t dln1x1_16bit = 0;
 int32_t dln1x1_16bit_times = 0;
 int32_t dln1x1_16bit_pixels = 0;
 
-LLO dln2x1_16bit_tmp = 0;
-LLO dln2x1_16bit = 0;
+int64_t dln2x1_16bit_tmp = 0;
+int64_t dln2x1_16bit = 0;
 int32_t dln2x1_16bit_times = 0;
 int32_t dln2x1_16bit_pixels = 0;
 
-LLO dln1x2_16bit_tmp = 0;
-LLO dln1x2_16bit = 0;
+int64_t dln1x2_16bit_tmp = 0;
+int64_t dln1x2_16bit = 0;
 int32_t dln1x2_16bit_times = 0;
 int32_t dln1x2_16bit_pixels = 0;
 
-LLO dln2x2_16bit_tmp = 0;
-LLO dln2x2_16bit = 0;
+int64_t dln2x2_16bit_tmp = 0;
+int64_t dln2x2_16bit = 0;
 int32_t dln2x2_16bit_times = 0;
 int32_t dln2x2_16bit_pixels = 0;
 
-LLO dln2x4_16bit_tmp = 0;
-LLO dln2x4_16bit = 0;
+int64_t dln2x4_16bit_tmp = 0;
+int64_t dln2x4_16bit = 0;
 int32_t dln2x4_16bit_times = 0;
 int32_t dln2x4_16bit_pixels = 0;
 
-LLO dln4x2_16bit_tmp = 0;
-LLO dln4x2_16bit = 0;
+int64_t dln4x2_16bit_tmp = 0;
+int64_t dln4x2_16bit = 0;
 int32_t dln4x2_16bit_times = 0;
 int32_t dln4x2_16bit_pixels = 0;
 
-LLO dln4x4_16bit_tmp = 0;
-LLO dln4x4_16bit = 0;
+int64_t dln4x4_16bit_tmp = 0;
+int64_t dln4x4_16bit = 0;
 int32_t dln4x4_16bit_times = 0;
 int32_t dln4x4_16bit_pixels = 0;
 
-LLO dln1x1_24bit_tmp = 0;
-LLO dln1x1_24bit = 0;
+int64_t dln1x1_24bit_tmp = 0;
+int64_t dln1x1_24bit = 0;
 int32_t dln1x1_24bit_times = 0;
 int32_t dln1x1_24bit_pixels = 0;
 
-LLO dln2x1_24bit_tmp = 0;
-LLO dln2x1_24bit = 0;
+int64_t dln2x1_24bit_tmp = 0;
+int64_t dln2x1_24bit = 0;
 int32_t dln2x1_24bit_times = 0;
 Lint32_tON dln2x1_24bit_pixels = 0;
 
-LLO dln1x2_24bit_tmp = 0;
-LLO dln1x2_24bit = 0;
+int64_t dln1x2_24bit_tmp = 0;
+int64_t dln1x2_24bit = 0;
 int32_t dln1x2_24bit_times = 0;
 int32_t dln1x2_24bit_pixels = 0;
 
-LLO dln2x2_24bit_tmp = 0;
-LLO dln2x2_24bit = 0;
+int64_t dln2x2_24bit_tmp = 0;
+int64_t dln2x2_24bit = 0;
 int32_t dln2x2_24bit_times = 0;
 int32_t dln2x2_24bit_pixels = 0;
 
-LLO dln2x4_24bit_tmp = 0;
-LLO dln2x4_24bit = 0;
+int64_t dln2x4_24bit_tmp = 0;
+int64_t dln2x4_24bit = 0;
 int32_t dln2x4_24bit_times = 0;
 int32_t dln2x4_24bit_pixels = 0;
 
-LLO dln4x2_24bit_tmp = 0;
-LLO dln4x2_24bit = 0;
+int64_t dln4x2_24bit_tmp = 0;
+int64_t dln4x2_24bit = 0;
 int32_t dln4x2_24bit_times = 0;
 Lint32_tON dln4x2_24bit_pixels = 0;
 
-LLO dln4x4_24bit_tmp = 0;
-LLO dln4x4_24bit = 0;
+int64_t dln4x4_24bit_tmp = 0;
+int64_t dln4x4_24bit = 0;
 int32_t dln4x4_24bit_times = 0;
 int32_t dln4x4_24bit_pixels = 0;
 
-LLO dln1x1_32bit_tmp = 0;
-LLO dln1x1_32bit = 0;
+int64_t dln1x1_32bit_tmp = 0;
+int64_t dln1x1_32bit = 0;
 int32_t dln1x1_32bit_times = 0;
 int32_t dln1x1_32bit_pixels = 0;
 
-LLO dln2x1_32bit_tmp = 0;
-LLO dln2x1_32bit = 0;
+int64_t dln2x1_32bit_tmp = 0;
+int64_t dln2x1_32bit = 0;
 int32_t dln2x1_32bit_times = 0;
 int32_t dln2x1_32bit_pixels = 0;
 
-LLO dln1x2_32bit_tmp = 0;
-LLO dln1x2_32bit = 0;
+int64_t dln1x2_32bit_tmp = 0;
+int64_t dln1x2_32bit = 0;
 int32_t dln1x2_32bit_times = 0;
 int32_t dln1x2_32bit_pixels = 0;
 
-LLO dln2x2_32bit_tmp = 0;
-LLO dln2x2_32bit = 0;
+int64_t dln2x2_32bit_tmp = 0;
+int64_t dln2x2_32bit = 0;
 int32_t dln2x2_32bit_times = 0;
 int32_t dln2x2_32bit_pixels = 0;
 
-LLO dln2x4_32bit_tmp = 0;
-LLO dln2x4_32bit = 0;
+int64_t dln2x4_32bit_tmp = 0;
+int64_t dln2x4_32bit = 0;
 int32_t dln2x4_32bit_times = 0;
 int32_t dln2x4_32bit_pixels = 0;
 
-LLO dln4x2_32bit_tmp = 0;
-LLO dln4x2_32bit = 0;
+int64_t dln4x2_32bit_tmp = 0;
+int64_t dln4x2_32bit = 0;
 int32_t dln4x2_32bit_times = 0;
 int32_t dln4x2_32bit_pixels = 0;
 
-LLO dln4x4_32bit_tmp = 0;
-LLO dln4x4_32bit = 0;
+int64_t dln4x4_32bit_tmp = 0;
+int64_t dln4x4_32bit = 0;
 int32_t dln4x4_32bit_times = 0;
 int32_t dln4x4_32bit_pixels = 0;
 
 // variables for holding profile data on dual playfield line drawing
 
-LLO dld1x1_16bit_tmp = 0;
-LLO dld1x1_16bit = 0;
+int64_t dld1x1_16bit_tmp = 0;
+int64_t dld1x1_16bit = 0;
 int32_t dld1x1_16bit_times = 0;
 int32_t dld1x1_16bit_pixels = 0;
 
-LLO dld2x1_16bit_tmp = 0;
-LLO dld2x1_16bit = 0;
+int64_t dld2x1_16bit_tmp = 0;
+int64_t dld2x1_16bit = 0;
 int32_t dld2x1_16bit_times = 0;
 int32_t dld2x1_16bit_pixels = 0;
 
-LLO dld1x2_16bit_tmp = 0;
-LLO dld1x2_16bit = 0;
+int64_t dld1x2_16bit_tmp = 0;
+int64_t dld1x2_16bit = 0;
 int32_t dld1x2_16bit_times = 0;
 Lint32_tON dld1x2_16bit_pixels = 0;
 
-LLO dld2x2_16bit_tmp = 0;
-LLO dld2x2_16bit = 0;
+int64_t dld2x2_16bit_tmp = 0;
+int64_t dld2x2_16bit = 0;
 int32_t dld2x2_16bit_times = 0;
 int32_t dld2x2_16bit_pixels = 0;
 
-LLO dld2x4_16bit_tmp = 0;
-LLO dld2x4_16bit = 0;
+int64_t dld2x4_16bit_tmp = 0;
+int64_t dld2x4_16bit = 0;
 int32_t dld2x4_16bit_times = 0;
 int32_t dld2x4_16bit_pixels = 0;
 
-LLO dld4x2_16bit_tmp = 0;
-LLO dld4x2_16bit = 0;
+int64_t dld4x2_16bit_tmp = 0;
+int64_t dld4x2_16bit = 0;
 int32_t dld4x2_16bit_times = 0;
 int32_t dld4x2_16bit_pixels = 0;
 
-LLO dld4x4_16bit_tmp = 0;
-LLO dld4x4_16bit = 0;
+int64_t dld4x4_16bit_tmp = 0;
+int64_t dld4x4_16bit = 0;
 int32_t dld4x4_16bit_times = 0;
 int32_t dld4x4_16bit_pixels = 0;
 
-LLO dld1x1_24bit_tmp = 0;
-LLO dld1x1_24bit = 0;
+int64_t dld1x1_24bit_tmp = 0;
+int64_t dld1x1_24bit = 0;
 int32_t dld1x1_24bit_times = 0;
 int32_t dld1x1_24bit_pixels = 0;
 
-LLO dld2x1_24bit_tmp = 0;
-LLO dld2x1_24bit = 0;
+int64_t dld2x1_24bit_tmp = 0;
+int64_t dld2x1_24bit = 0;
 int32_t dld2x1_24bit_times = 0;
 int32_t dld2x1_24bit_pixels = 0;
 
-LLO dld1x2_24bit_tmp = 0;
-LLO dld1x2_24bit = 0;
+int64_t dld1x2_24bit_tmp = 0;
+int64_t dld1x2_24bit = 0;
 int32_t dld1x2_24bit_times = 0;
 int32_t dld1x2_24bit_pixels = 0;
 
-LLO dld2x2_24bit_tmp = 0;
-LLO dld2x2_24bit = 0;
+int64_t dld2x2_24bit_tmp = 0;
+int64_t dld2x2_24bit = 0;
 int32_t dld2x2_24bit_times = 0;
 int32_t dld2x2_24bit_pixels = 0;
 
-LLO dld2x4_24bit_tmp = 0;
-LLO dld2x4_24bit = 0;
+int64_t dld2x4_24bit_tmp = 0;
+int64_t dld2x4_24bit = 0;
 int32_t dld2x4_24bit_times = 0;
 int32_t dld2x4_24bit_pixels = 0;
 
-LLO dld4x2_24bit_tmp = 0;
-LLO dld4x2_24bit = 0;
+int64_t dld4x2_24bit_tmp = 0;
+int64_t dld4x2_24bit = 0;
 int32_t dld4x2_24bit_times = 0;
 int32_t dld4x2_24bit_pixels = 0;
 
-LLO dld4x4_24bit_tmp = 0;
-LLO dld4x4_24bit = 0;
+int64_t dld4x4_24bit_tmp = 0;
+int64_t dld4x4_24bit = 0;
 int32_t dld4x4_24bit_times = 0;
 int32_t dld4x4_24bit_pixels = 0;
 
-LLO dld1x1_32bit_tmp = 0;
-LLO dld1x1_32bit = 0;
+int64_t dld1x1_32bit_tmp = 0;
+int64_t dld1x1_32bit = 0;
 int32_t dld1x1_32bit_times = 0;
 int32_t dld1x1_32bit_pixels = 0;
 
-LLO dld2x1_32bit_tmp = 0;
-LLO dld2x1_32bit = 0;
+int64_t dld2x1_32bit_tmp = 0;
+int64_t dld2x1_32bit = 0;
 int32_t dld2x1_32bit_times = 0;
 int32_t dld2x1_32bit_pixels = 0;
 
-LLO dld1x2_32bit_tmp = 0;
-LLO dld1x2_32bit = 0;
+int64_t dld1x2_32bit_tmp = 0;
+int64_t dld1x2_32bit = 0;
 int32_t dld1x2_32bit_times = 0;
 int32_t dld1x2_32bit_pixels = 0;
 
-LLO dld2x2_32bit_tmp = 0;
-LLO dld2x2_32bit = 0;
+int64_t dld2x2_32bit_tmp = 0;
+int64_t dld2x2_32bit = 0;
 int32_t dld2x2_32bit_times = 0;
 int32_t dld2x2_32bit_pixels = 0;
 
-LLO dld2x4_32bit_tmp = 0;
-LLO dld2x4_32bit = 0;
+int64_t dld2x4_32bit_tmp = 0;
+int64_t dld2x4_32bit = 0;
 int32_t dld2x4_32bit_times = 0;
 int32_t dld2x4_32bit_pixels = 0;
 
-LLO dld4x2_32bit_tmp = 0;
-LLO dld4x2_32bit = 0;
+int64_t dld4x2_32bit_tmp = 0;
+int64_t dld4x2_32bit = 0;
 int32_t dld4x2_32bit_times = 0;
 int32_t dld4x2_32bit_pixels = 0;
 
-LLO dld4x4_32bit_tmp = 0;
-LLO dld4x4_32bit = 0;
+int64_t dld4x4_32bit_tmp = 0;
+int64_t dld4x4_32bit = 0;
 int32_t dld4x4_32bit_times = 0;
 int32_t dld4x4_32bit_pixels = 0;
 
 // variables for holding profile data on HAM line drawing
 
-LLO dlh2x1_16bit_tmp = 0;
-LLO dlh2x1_16bit = 0;
+int64_t dlh2x1_16bit_tmp = 0;
+int64_t dlh2x1_16bit = 0;
 int32_t dlh2x1_16bit_times = 0;
 int32_t dlh2x1_16bit_pixels = 0;
 
-LLO dlh2x2_16bit_tmp = 0;
-LLO dlh2x2_16bit = 0;
+int64_t dlh2x2_16bit_tmp = 0;
+int64_t dlh2x2_16bit = 0;
 int32_t dlh2x2_16bit_times = 0;
 int32_t dlh2x2_16bit_pixels = 0;
 
-LLO dlh4x2_16bit_tmp = 0;
-LLO dlh4x2_16bit = 0;
+int64_t dlh4x2_16bit_tmp = 0;
+int64_t dlh4x2_16bit = 0;
 int32_t dlh4x2_16bit_times = 0;
 int32_t dlh4x2_16bit_pixels = 0;
 
-LLO dlh4x4_16bit_tmp = 0;
-LLO dlh4x4_16bit = 0;
+int64_t dlh4x4_16bit_tmp = 0;
+int64_t dlh4x4_16bit = 0;
 int32_t dlh4x4_16bit_times = 0;
 int32_t dlh4x4_16bit_pixels = 0;
 
-LLO dlh2x1_24bit_tmp = 0;
-LLO dlh2x1_24bit = 0;
+int64_t dlh2x1_24bit_tmp = 0;
+int64_t dlh2x1_24bit = 0;
 int32_t dlh2x1_24bit_times = 0;
 int32_t dlh2x1_24bit_pixels = 0;
 
-LLO dlh2x2_24bit_tmp = 0;
-LLO dlh2x2_24bit = 0;
+int64_t dlh2x2_24bit_tmp = 0;
+int64_t dlh2x2_24bit = 0;
 int32_t dlh2x2_24bit_times = 0;
 int32_t dlh2x2_24bit_pixels = 0;
 
-LLO dlh4x2_24bit_tmp = 0;
-LLO dlh4x2_24bit = 0;
+int64_t dlh4x2_24bit_tmp = 0;
+int64_t dlh4x2_24bit = 0;
 int32_t dlh4x2_24bit_times = 0;
 int32_t dlh4x2_24bit_pixels = 0;
 
-LLO dlh4x4_24bit_tmp = 0;
-LLO dlh4x4_24bit = 0;
+int64_t dlh4x4_24bit_tmp = 0;
+int64_t dlh4x4_24bit = 0;
 int32_t dlh4x4_24bit_times = 0;
 int32_t dlh4x4_24bit_pixels = 0;
 
-LLO dlh2x1_32bit_tmp = 0;
-LLO dlh2x1_32bit = 0;
+int64_t dlh2x1_32bit_tmp = 0;
+int64_t dlh2x1_32bit = 0;
 int32_t dlh2x1_32bit_times = 0;
 int32_t dlh2x1_32bit_pixels = 0;
 
-LLO dlh2x2_32bit_tmp = 0;
-LLO dlh2x2_32bit = 0;
+int64_t dlh2x2_32bit_tmp = 0;
+int64_t dlh2x2_32bit = 0;
 int32_t dlh2x2_32bit_times = 0;
 int32_t dlh2x2_32bit_pixels = 0;
 
-LLO dlh4x2_32bit_tmp = 0;
-LLO dlh4x2_32bit = 0;
+int64_t dlh4x2_32bit_tmp = 0;
+int64_t dlh4x2_32bit = 0;
 int32_t dlh4x2_32bit_times = 0;
 int32_t dlh4x2_32bit_pixels = 0;
 
-LLO dlh4x4_32bit_tmp = 0;
-LLO dlh4x4_32bit = 0;
+int64_t dlh4x4_32bit_tmp = 0;
+int64_t dlh4x4_32bit = 0;
 int32_t dlh4x4_32bit_times = 0;
 int32_t dlh4x4_32bit_pixels = 0;
 
@@ -383,9 +383,9 @@ int32_t dlh4x4_32bit_pixels = 0;
 /* profiling help functions                                                   */
 /*============================================================================*/
 
-static __inline void drawTscBefore(LLO* a)
+static __inline void drawTscBefore(int64_t* a)
 {
-  LLO local_a = *a;
+  int64_t local_a = *a;
   __asm 
   {
     push    eax
@@ -402,10 +402,10 @@ static __inline void drawTscBefore(LLO* a)
   *a = local_a;
 }
 
-static __inline void drawTscAfter(LLO* a, LLO* b, int32_t* c)
+static __inline void drawTscAfter(int64_t* a, int64_t* b, int32_t* c)
 {
-  LLO local_a = *a;
-  LLO local_b = *b;
+  int64_t local_a = *a;
+  int64_t local_b = *b;
   int32_t local_c = *c;
 
   __asm 

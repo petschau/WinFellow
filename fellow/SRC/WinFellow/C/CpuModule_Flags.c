@@ -447,7 +447,7 @@ void cpuSetFlagsNZ00NewL(uint32_t res)
 /// <summary>
 /// Set the flags (ZN00).
 /// </summary>
-void cpuSetFlagsNZ00New64(LLO res)
+void cpuSetFlagsNZ00New64(int64_t res)
 {
   uint32_t flag = cpu_sr & 0xfff0;
   if (res < 0) flag |= 0x8;

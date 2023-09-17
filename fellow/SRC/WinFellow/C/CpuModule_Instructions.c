@@ -32,9 +32,9 @@
 /*============================================================================*/
 
 #ifndef X64
-static __inline void cpuTscBefore(LLO* a)
+static __inline void cpuTscBefore(int64_t* a)
 {
-  LLO local_a = *a;
+  int64_t local_a = *a;
   __asm 
   {
       push    eax
@@ -51,10 +51,10 @@ static __inline void cpuTscBefore(LLO* a)
   *a = local_a;
 }
 
-static __inline void cpuTscAfter(LLO* a, LLO* b, int32_t* c)
+static __inline void cpuTscAfter(int64_t* a, int64_t* b, int32_t* c)
 {
-  LLO local_a = *a;
-  LLO local_b = *b;
+  int64_t local_a = *a;
+  int64_t local_b = *b;
   uint32_t local_c = *c;
 
   __asm 
@@ -1019,7 +1019,7 @@ static void cpuMulL(uint32_t src1, uint16_t extension)
   uint32_t dl = (extension >> 12) & 7;
   if (extension & 0x0800) // muls.l
   {
-    LLO result = ((LLO)(int32_t) src1) * ((LLO)(int32_t)cpuGetDReg(dl));
+    int64_t result = ((int64_t)(int32_t) src1) * ((int64_t)(int32_t)cpuGetDReg(dl));
     if (extension & 0x0400) // 32bx32b=64b
     {  
       uint32_t dh = extension & 7;
@@ -1193,13 +1193,13 @@ static void cpuDivL(uint32_t divisor, uint32_t ext, uint32_t instruction_time)
     BOOLE resultsigned = FALSE, restsigned = FALSE;
     uint64_t result, rest;
     uint64_t x, y;
-    LLO x_signed, y_signed; 
+    int64_t x_signed, y_signed; 
 
     if (sign)
     { 
-      if (size64) x_signed = (LLO) ((uint64_t) cpuGetDReg(dq_reg)) | (((LLO) cpuGetDReg(dr_reg))<<32);
-      else x_signed = (LLO) (int32_t) cpuGetDReg(dq_reg);
-      y_signed = (LLO) (int32_t) divisor;
+      if (size64) x_signed = (int64_t) ((uint64_t) cpuGetDReg(dq_reg)) | (((int64_t) cpuGetDReg(dr_reg))<<32);
+      else x_signed = (int64_t) (int32_t) cpuGetDReg(dq_reg);
+      y_signed = (int64_t) (int32_t) divisor;
 
       if (y_signed < 0)
       {
@@ -1234,8 +1234,8 @@ static void cpuDivL(uint32_t divisor, uint32_t ext, uint32_t instruction_time)
       }
       else
       {
-	LLO result_signed = (resultsigned) ? (-(LLO)result) : ((LLO)result);
-	LLO rest_signed = (restsigned) ? (-(LLO)rest) : ((LLO)rest);
+	int64_t result_signed = (resultsigned) ? (-(int64_t)result) : ((int64_t)result);
+	int64_t rest_signed = (restsigned) ? (-(int64_t)rest) : ((int64_t)rest);
 	cpuSetDReg(dr_reg, (uint32_t) rest_signed);
 	cpuSetDReg(dq_reg, (uint32_t) result_signed);
 	cpuSetFlagsNZ00NewL((uint32_t) result_signed);

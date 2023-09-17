@@ -107,7 +107,7 @@ extern void cpuSetZFlagBitOpsL(uint32_t res);
 extern void cpuSetFlagsNZ00NewB(uint8_t res);
 extern void cpuSetFlagsNZ00NewW(uint16_t res);
 extern void cpuSetFlagsNZ00NewL(uint32_t res);
-extern void cpuSetFlagsNZ00New64(LLO res);
+extern void cpuSetFlagsNZ00New64(int64_t res);
 
 extern void cpuSetFlagZ(BOOLE f);
 extern void cpuSetFlagN(BOOLE f);

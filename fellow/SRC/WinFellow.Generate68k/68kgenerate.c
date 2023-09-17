@@ -164,8 +164,8 @@ void cgProfileLogFooter()
 
 void cgProfileDeclare(char *name)
 {
-  fprintf(dataf, "LLO %s_profile_tmp = 0;\n", name);
-  fprintf(dataf, "LLO %s_profile = 0;\n", name);
+  fprintf(dataf, "int64_t %s_profile_tmp = 0;\n", name);
+  fprintf(dataf, "int64_t %s_profile = 0;\n", name);
   fprintf(dataf, "int32_t %s_profile_times = 0;\n", name);
 }
 
