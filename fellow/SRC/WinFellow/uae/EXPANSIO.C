@@ -237,13 +237,13 @@ uint32_t filesys_lget(uint32_t addr)
     return do_get_mem_long ((uae_u32 *)m);
 }
 
-UWO filesys_wget(uint32_t addr)
+uint16_t filesys_wget(uint32_t addr)
 {
     uae_u8 *m;
     addr -= filesys_start & 65535;
     addr &= 65535;
     m = filesysory + addr;
-    return (UWO) do_get_mem_word ((uae_u16 *)m);
+    return (uint16_t) do_get_mem_word ((uae_u16 *)m);
 }
 
 uint8_t filesys_bget(uint32_t addr)
@@ -258,7 +258,7 @@ void filesys_lput(uint32_t l, uint32_t addr)
     write_log ("filesys_lput called\n");
 }
 
-void filesys_wput(UWO w, uint32_t addr)
+void filesys_wput(uint16_t w, uint32_t addr)
 {
     write_log ("filesys_wput called\n");
 }

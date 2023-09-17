@@ -70,8 +70,8 @@ typedef struct
   HANDLE data_available;
   HANDLE can_add_data;
   HANDLE mutex;
-  UWO *pending_data_left;
-  UWO *pending_data_right;
+  uint16_t *pending_data_left;
+  uint16_t *pending_data_right;
   uint32_t pending_data_sample_count;
   HANDLE thread;
   DWORD thread_id;
@@ -780,9 +780,9 @@ bool soundDrvDSoundPlaybackInitialize(sound_drv_dsound_device *dsound_device)
 /* Copy data to a buffer                                                     */
 /*===========================================================================*/
 
-void soundDrvCopy16BitsStereo(UWO *audio_buffer,
-			      UWO *left, 
-			      UWO *right, 
+void soundDrvCopy16BitsStereo(uint16_t *audio_buffer,
+			      uint16_t *left, 
+			      uint16_t *right, 
 			      uint32_t sample_count)
 {
   for (uint32_t i = 0; i < sample_count; i++)
@@ -792,9 +792,9 @@ void soundDrvCopy16BitsStereo(UWO *audio_buffer,
   }
 }
 
-void soundDrvCopy16BitsMono(UWO *audio_buffer,
-			    UWO *left, 
-			    UWO *right, 
+void soundDrvCopy16BitsMono(uint16_t *audio_buffer,
+			    uint16_t *left, 
+			    uint16_t *right, 
 			    uint32_t sample_count)
 {
   for (uint32_t i = 0; i < sample_count; i++)
@@ -804,8 +804,8 @@ void soundDrvCopy16BitsMono(UWO *audio_buffer,
 }
 
 void soundDrvCopy8BitsStereo(uint8_t *audio_buffer,
-			     UWO *left, 
-			     UWO *right, 
+			     uint16_t *left, 
+			     uint16_t *right, 
 			     uint32_t sample_count)
 {
   for (uint32_t i = 0; i < sample_count; i++)
@@ -816,8 +816,8 @@ void soundDrvCopy8BitsStereo(uint8_t *audio_buffer,
 }
 
 void soundDrvCopy8BitsMono(uint8_t *audio_buffer,
-			   UWO *left, 
-			   UWO *right, 
+			   uint16_t *left, 
+			   uint16_t *right, 
 			   uint32_t sample_count)
 {
   for (uint32_t i = 0; i < sample_count; i++)
@@ -827,8 +827,8 @@ void soundDrvCopy8BitsMono(uint8_t *audio_buffer,
 }
 
 bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
-				UWO *left,
-				UWO *right,
+				uint16_t *left,
+				uint16_t *right,
 				uint32_t sample_count,
 				uint32_t buffer_half)
 {
@@ -881,7 +881,7 @@ bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
   {
     if (soundGet16Bits())
     {
-      soundDrvCopy16BitsStereo((UWO*)lpvAudio, left, right, sample_count);
+      soundDrvCopy16BitsStereo((uint16_t*)lpvAudio, left, right, sample_count);
     }
     else
     {
@@ -892,7 +892,7 @@ bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
   {
     if (soundGet16Bits())
     {
-      soundDrvCopy16BitsMono((UWO*)lpvAudio, left, right, sample_count);
+      soundDrvCopy16BitsMono((uint16_t*)lpvAudio, left, right, sample_count);
     }
     else
     {
@@ -920,8 +920,8 @@ void soundDrvPlay(WOR *left, WOR *right, uint32_t sample_count)
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
   WaitForSingleObject(dsound_device->can_add_data, INFINITE);
-  dsound_device->pending_data_left = (UWO*)left;
-  dsound_device->pending_data_right = (UWO*)right;
+  dsound_device->pending_data_left = (uint16_t*)left;
+  dsound_device->pending_data_right = (uint16_t*)right;
   dsound_device->pending_data_sample_count = sample_count;
   ResetEvent(dsound_device->can_add_data);
   SetEvent(dsound_device->data_available);

@@ -9,24 +9,24 @@ namespace fellow::api::vm
   typedef void(*EmemCardMapFunc)(uint32_t);
 
   typedef uint8_t(*ReadByteFunc)(uint32_t);
-  typedef UWO(*ReadWordFunc)(uint32_t);
+  typedef uint16_t(*ReadWordFunc)(uint32_t);
   typedef uint32_t(*ReadLongFunc)(uint32_t);
   typedef void(*WriteByteFunc)(uint8_t, uint32_t);
-  typedef void(*WriteWordFunc)(UWO, uint32_t);
+  typedef void(*WriteWordFunc)(uint16_t, uint32_t);
   typedef void(*WriteLongFunc)(uint32_t, uint32_t);
 
   class IMemorySystem
   {
   public:
     virtual uint8_t ReadByte(uint32_t address) = 0;
-    virtual UWO ReadWord(uint32_t address) = 0;
+    virtual uint16_t ReadWord(uint32_t address) = 0;
     virtual uint32_t ReadLong(uint32_t address) = 0;
     virtual void WriteByte(uint8_t data, uint32_t address) = 0;
-    virtual void WriteWord(UWO data, uint32_t address) = 0;
+    virtual void WriteWord(uint16_t data, uint32_t address) = 0;
     virtual void WriteLong(uint32_t data, uint32_t address) = 0;
 
     virtual void DmemSetByte(uint8_t data) = 0;
-    virtual void DmemSetWord(UWO data) = 0;
+    virtual void DmemSetWord(uint16_t data) = 0;
     virtual void DmemSetLong(uint32_t data) = 0;
     virtual void DmemSetLongNoCounter(uint32_t data, uint32_t offset) = 0;
     virtual void DmemSetString(const STR *data) = 0;

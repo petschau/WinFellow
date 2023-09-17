@@ -7,26 +7,26 @@
 UART uart;
 
 /* SERDATR 0xdff018 */
-UWO UART::rserdat(uint32_t address)
+uint16_t UART::rserdat(uint32_t address)
 {
   return uart.ReadSerdatRegister();
 }
 
 /* SERDAT 0xdff030 */
-void UART::wserdat(UWO data, uint32_t address)
+void UART::wserdat(uint16_t data, uint32_t address)
 {
   uart.WriteSerdatRegister(data);
 }
 
 /* SERDAT 0xdff032 */
-void UART::wserper(UWO data, uint32_t address)
+void UART::wserper(uint16_t data, uint32_t address)
 {
   uart.WriteSerperRegister(data);
 }
 
-UWO UART::ReadSerdatRegister()
+uint16_t UART::ReadSerdatRegister()
 {
-  UWO data = _receiveBuffer & 0x3ff;
+  uint16_t data = _receiveBuffer & 0x3ff;
 
   // Bit 11 is RXD live
 
@@ -38,7 +38,7 @@ UWO UART::ReadSerdatRegister()
   return data;
 }
 
-void UART::WriteSerdatRegister(UWO data)
+void UART::WriteSerdatRegister(uint16_t data)
 {
   _transmitBuffer = data & 0x3ff;
   _transmitBufferEmpty = false;
@@ -49,7 +49,7 @@ void UART::WriteSerdatRegister(UWO data)
   }
 }
 
-void UART::WriteSerperRegister(UWO data)
+void UART::WriteSerperRegister(uint16_t data)
 {
   _serper = data;  
 }
@@ -87,7 +87,7 @@ void UART::CopyReceiveShiftRegisterToBuffer()
   wintreq_direct(0x8400, 0xdff09c, true); // RBF interrupt
 }
 
-void UART::NotifyInterruptRequestBitsChanged(UWO intreq)
+void UART::NotifyInterruptRequestBitsChanged(uint16_t intreq)
 {
   // Clear only, or is it directly wired?
   // HRM says overrun is also mirrored from intreq? How?
@@ -157,7 +157,7 @@ bool UART::Is8BitMode()
   return (_serper & 0x8000) == 0;
 }
 
-UWO UART::GetBitPeriod()
+uint16_t UART::GetBitPeriod()
 {
   return _serper & 0x3fff;
 }

@@ -16,8 +16,8 @@ private:
   static void P2CTablesInitialize();
 
 public:
-  static void Decode4(unsigned int sprite_number, uint32_t *chunky_destination, UWO data1, UWO data2);
-  static void Decode16(uint32_t *chunky_destination, UWO data1, UWO data2, UWO data3, UWO data4);
+  static void Decode4(unsigned int sprite_number, uint32_t *chunky_destination, uint16_t data1, uint16_t data2);
+  static void Decode16(uint32_t *chunky_destination, uint16_t data1, uint16_t data2, uint16_t data3, uint16_t data4);
 
   static void Initialize();
 };

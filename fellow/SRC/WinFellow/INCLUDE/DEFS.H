@@ -20,7 +20,6 @@
 
 /* Fellow types to ensure correct sizes */
 
-typedef unsigned short int UWO;
 typedef unsigned FELLOW_LONG_LONG ULL;
 typedef signed short int WOR;
 typedef signed int LON;
@@ -54,10 +53,10 @@ extern uint8_t configromname[];
 
 typedef union {
           uint32_t *lptr;
-          UWO *wptr;
+          uint16_t *wptr;
           uint8_t *bptr;
           uint32_t lval;
-          UWO wval[2];
+          uint16_t wval[2];
           uint8_t bval[4];
           } ptunion;
 

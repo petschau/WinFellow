@@ -306,7 +306,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryWriteWordToPointer(UWO data, uint8_t *address)
+  void memoryWriteWordToPointer(uint16_t data, uint8_t *address)
 
   {
 
@@ -350,17 +350,17 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO rdefault(uint32_t address)
+  uint16_t rdefault(uint32_t address)
 
   {
 
-    return (UWO)(rand() % 65536);
+    return (uint16_t)(rand() % 65536);
 
   }
 
 
 
-  void wdefault(UWO data, uint32_t address)
+  void wdefault(uint16_t data, uint32_t address)
 
   {
 
@@ -548,13 +548,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  static UWO memory_previous_unmapped_word = 0;
+  static uint16_t memory_previous_unmapped_word = 0;
 
-  UWO memoryUnmappedReadWord(uint32_t address)
+  uint16_t memoryUnmappedReadWord(uint32_t address)
 
   {
 
-    UWO val;
+    uint16_t val;
 
     do
 
@@ -610,7 +610,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryUnmappedWriteWord(UWO data, uint32_t address)
+  void memoryUnmappedWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -936,7 +936,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryEmemReadWord(uint32_t address)
+  uint16_t memoryEmemReadWord(uint32_t address)
 
   {
 
@@ -1010,7 +1010,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemWriteWord(UWO data, uint32_t address)
+  void memoryEmemWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -1110,7 +1110,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryDmemReadWord(uint32_t address)
+  uint16_t memoryDmemReadWord(uint32_t address)
 
   {
 
@@ -1144,7 +1144,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemWriteWord(UWO data, uint32_t address)
+  void memoryDmemWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -1242,7 +1242,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemSetWord(UWO data)
+  void memoryDmemSetWord(uint16_t data)
 
   {
 
@@ -1364,7 +1364,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryChipReadWord(uint32_t address)
+  uint16_t memoryChipReadWord(uint32_t address)
 
   {
 
@@ -1400,7 +1400,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryChipWriteWord(UWO data, uint32_t address)
+  void memoryChipWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -1446,7 +1446,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryOverlayReadWord(uint32_t address)
+  uint16_t memoryOverlayReadWord(uint32_t address)
 
   {
 
@@ -1480,7 +1480,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryOverlayWriteWord(UWO data, uint32_t address)
+  void memoryOverlayWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -1694,7 +1694,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryFastReadWord(uint32_t address)
+  uint16_t memoryFastReadWord(uint32_t address)
 
   {
 
@@ -1730,7 +1730,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastWriteWord(UWO data, uint32_t address)
+  void memoryFastWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -1964,7 +1964,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memorySlowReadWord(uint32_t address)
+  uint16_t memorySlowReadWord(uint32_t address)
 
   {
 
@@ -2000,7 +2000,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySlowWriteWord(UWO data, uint32_t address)
+  void memorySlowWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -2134,7 +2134,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryMysteryReadWord(uint32_t address)
+  uint16_t memoryMysteryReadWord(uint32_t address)
 
   {
 
@@ -2162,7 +2162,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryMysteryWriteWord(UWO data, uint32_t address)
+  void memoryMysteryWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -2260,7 +2260,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryIoReadWord(uint32_t address)
+  uint16_t memoryIoReadWord(uint32_t address)
 
   {
 
@@ -2296,7 +2296,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     { // Odd address
 
-      memory_iobank_write[adr >> 1]((UWO) data, adr);
+      memory_iobank_write[adr >> 1]((uint16_t) data, adr);
 
     }
 
@@ -2304,7 +2304,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     { // Even address
 
-      memory_iobank_write[adr >> 1](((UWO) data) << 8, adr);
+      memory_iobank_write[adr >> 1](((uint16_t) data) << 8, adr);
 
     }
 
@@ -2312,7 +2312,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryIoWriteWord(UWO data, uint32_t address)
+  void memoryIoWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -2330,9 +2330,9 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     uint32_t adr = address & 0x1fe;
 
-    memory_iobank_write[adr >> 1]((UWO)(data >> 16), adr);
+    memory_iobank_write[adr >> 1]((uint16_t)(data >> 16), adr);
 
-    memory_iobank_write[(adr + 2) >> 1]((UWO)data, adr + 2);
+    memory_iobank_write[(adr + 2) >> 1]((uint16_t)data, adr + 2);
 
   }
 
@@ -2490,7 +2490,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryKickReadWord(uint32_t address)
+  uint16_t memoryKickReadWord(uint32_t address)
 
   {
 
@@ -2502,7 +2502,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  UWO memoryKickExtendedReadWord(uint32_t address)
+  uint16_t memoryKickExtendedReadWord(uint32_t address)
 
   {
 
@@ -2558,7 +2558,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteWord(UWO data, uint32_t address)
+  void memoryKickWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -2568,7 +2568,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedWriteWord(UWO data, uint32_t address)
+  void memoryKickExtendedWriteWord(uint16_t data, uint32_t address)
 
   {
 
@@ -2622,7 +2622,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickWriteWordA1000WCS(UWO data, uint32_t address)
+  void memoryKickWriteWordA1000WCS(uint16_t data, uint32_t address)
 
   {
 
@@ -4052,7 +4052,7 @@ __inline  uint8_t memoryReadByte(uint32_t address)
 
 
 
-  UWO memoryReadWordViaBankHandler(uint32_t address)
+  uint16_t memoryReadWordViaBankHandler(uint32_t address)
 
   {
 
@@ -4064,7 +4064,7 @@ __inline  uint8_t memoryReadByte(uint32_t address)
 
 
 
-__inline  UWO memoryReadWord(uint32_t address)
+__inline  uint16_t memoryReadWord(uint32_t address)
 
   {
 
@@ -4122,7 +4122,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
 
 
-  void memoryWriteWordViaBankHandler(UWO data, uint32_t address)
+  void memoryWriteWordViaBankHandler(uint16_t data, uint32_t address)
 
   {
 
@@ -4134,7 +4134,7 @@ __inline  UWO memoryReadWord(uint32_t address)
 
 
 
-  void memoryWriteWord(UWO data, uint32_t address)
+  void memoryWriteWord(uint16_t data, uint32_t address)
 
   {
 

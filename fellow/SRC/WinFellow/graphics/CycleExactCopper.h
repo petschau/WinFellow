@@ -16,11 +16,11 @@ class CycleExactCopper : public Copper
 {
 private:
   CopperStates _state;
-  UWO _first;
-  UWO _second;
+  uint16_t _first;
+  uint16_t _second;
   bool _skip_next;
 
-  UWO ReadWord();
+  uint16_t ReadWord();
   void IncreasePtr();
 
   void SetState(CopperStates newState, uint32_t cycle);

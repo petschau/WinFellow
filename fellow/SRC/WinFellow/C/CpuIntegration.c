@@ -241,7 +241,7 @@ void cpuIntegrationInstructionLogging(void)
   fprintf(CPUINSTRUCTIONLOG, "SSP:%.6X USP:%.6X SP:%.4X %s %s\t%s\t%s\n", cpuGetSspDirect(), cpuGetUspDirect(), cpuGetSR(), saddress, sdata, sinstruction, soperands);
 }
 
-void cpuIntegrationExceptionLogging(STR *description, uint32_t original_pc, UWO opcode)
+void cpuIntegrationExceptionLogging(STR *description, uint32_t original_pc, uint16_t opcode)
 {
   if (cpu_disable_instruction_log) return;
   cpuInstructionLogOpen();

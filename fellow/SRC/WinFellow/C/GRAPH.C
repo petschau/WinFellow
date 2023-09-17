@@ -86,7 +86,7 @@ uint32_t graph_color_shadow[64];  /* Colors corresponding to the different Amiga
 /* registers. Initialized from draw_color_table */
 /* whenever WCOLORXX is written.                */
 
-UWO graph_color[64];         /* Copy of Amiga version of colors */
+uint16_t graph_color[64];         /* Copy of Amiga version of colors */
 BOOLE graph_playfield_on;
 
 
@@ -207,13 +207,13 @@ static void graphIORegistersClear(void) {
 /* DMACONR - $dff002 Read                                                    */
 /*===========================================================================*/
 
-UWO rdmaconr(uint32_t address)
+uint16_t rdmaconr(uint32_t address)
 {
   if (blitterGetZeroFlag())
   {
-    return (UWO) (_core.Registers.DmaConR | 0x00002000);
+    return (uint16_t) (_core.Registers.DmaConR | 0x00002000);
   }
-  return (UWO)_core.Registers.DmaConR;
+  return (uint16_t)_core.Registers.DmaConR;
 }
 
 /*===========================================================================*/
@@ -229,26 +229,26 @@ uint32_t graphAdjustVPosY(uint32_t y, uint32_t x)
   return y;
 }
 
-UWO rvposr(uint32_t address)
+uint16_t rvposr(uint32_t address)
 {
   uint32_t y = graphAdjustVPosY(busGetRasterY(), busGetRasterX());
 
   if (chipsetGetECS())
   {
-    return (UWO) ((lof | (y >> 8)) | 0x2000);
+    return (uint16_t) ((lof | (y >> 8)) | 0x2000);
   }
-  return (UWO) (lof | (y >> 8));  
+  return (uint16_t) (lof | (y >> 8));  
 }
 
 /*===========================================================================*/
 /* VHPOSR - $dff006 Read                                                     */
 /*===========================================================================*/
 
-UWO rvhposr(uint32_t address)
+uint16_t rvhposr(uint32_t address)
 {
   uint32_t x = busGetRasterX();
   uint32_t y = graphAdjustVPosY(busGetRasterY(), x);
-  return (UWO)(x | ((y & 0xFF) << 8));
+  return (uint16_t)(x | ((y & 0xFF) << 8));
 }
 
 /*===========================================================================*/
@@ -257,7 +257,7 @@ UWO rvhposr(uint32_t address)
 /* return 0xffff                                                             */
 /*===========================================================================*/
 
-UWO rid(uint32_t address)
+uint16_t rid(uint32_t address)
 {
   return 0xFFFF;
 }
@@ -268,7 +268,7 @@ UWO rid(uint32_t address)
 /* lof = data & 0x8000;                                                      */
 /*===========================================================================*/
 
-void wvpos(UWO data, uint32_t address)
+void wvpos(uint16_t data, uint32_t address)
 {
   lof = (uint32_t) (data & 0x8000);
 
@@ -282,7 +282,7 @@ void wvpos(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wdiwstrt(UWO data, uint32_t address)
+void wdiwstrt(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -314,7 +314,7 @@ void wdiwstrt(UWO data, uint32_t address)
 /* DIWSTOP - $dff090 Write                                                   */
 /*===========================================================================*/
 
-void wdiwstop(UWO data, uint32_t address)
+void wdiwstop(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) 
   {
@@ -360,7 +360,7 @@ void wdiwstop(UWO data, uint32_t address)
 /* _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here             */                                                           
 /*==============================================================================*/
 
-void wddfstrt(UWO data, uint32_t address)
+void wddfstrt(uint16_t data, uint32_t address)
 {
   uint32_t ddfstrt_old;
 
@@ -378,7 +378,7 @@ void wddfstrt(UWO data, uint32_t address)
   {
     ddfstrt = data & 0xfc;
   }
-  wbplcon1((UWO)bplcon1, address);
+  wbplcon1((uint16_t)bplcon1, address);
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -397,7 +397,7 @@ void wddfstrt(UWO data, uint32_t address)
 /* (quote from 'Amiga Hardware Reference Manual')                               */
 /*==============================================================================*/
 
-void wddfstop(UWO data, uint32_t address)
+void wddfstop(uint16_t data, uint32_t address)
 {
   uint32_t ddfstop_old;
 
@@ -434,7 +434,7 @@ void wddfstop(UWO data, uint32_t address)
 /* dmaconr - is always correct.                                              */
 /*===========================================================================*/
 
-void wdmacon(UWO data, uint32_t address)
+void wdmacon(uint16_t data, uint32_t address)
 {
   uint32_t local_data;
   uint32_t prev_dmacon;
@@ -556,7 +556,7 @@ void wdmacon(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1pth(UWO data, uint32_t address)
+void wbpl1pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -572,7 +572,7 @@ void wbpl1pth(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1ptl(UWO data, uint32_t address)
+void wbpl1ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -587,7 +587,7 @@ void wbpl1ptl(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2pth(UWO data, uint32_t address)
+void wbpl2pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -600,7 +600,7 @@ void wbpl2pth(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2ptl(UWO data, uint32_t address)
+void wbpl2ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -613,7 +613,7 @@ void wbpl2ptl(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl3pth(UWO data, uint32_t address)
+void wbpl3pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -625,7 +625,7 @@ void wbpl3pth(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl3ptl(UWO data, uint32_t address)
+void wbpl3ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -638,7 +638,7 @@ void wbpl3ptl(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl4pth(UWO data, uint32_t address)
+void wbpl4pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -651,7 +651,7 @@ void wbpl4pth(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl4ptl(UWO data, uint32_t address)
+void wbpl4ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -664,7 +664,7 @@ void wbpl4ptl(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl5pth(UWO data, uint32_t address)
+void wbpl5pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -677,7 +677,7 @@ void wbpl5pth(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl5ptl(UWO data, uint32_t address)
+void wbpl5ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -690,7 +690,7 @@ void wbpl5ptl(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl6pth(UWO data, uint32_t address)
+void wbpl6pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -703,7 +703,7 @@ void wbpl6pth(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl6ptl(UWO data, uint32_t address)
+void wbpl6ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
@@ -715,7 +715,7 @@ void wbpl6ptl(UWO data, uint32_t address)
 /* BPLCON0 - $dff100 Write                                                   */
 /*===========================================================================*/
 
-void wbplcon0(UWO data, uint32_t address)
+void wbplcon0(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -793,7 +793,7 @@ void wbplcon0(UWO data, uint32_t address)
 /* evenhiscroll - dword with the even hires scrollvalue                      */
 /*===========================================================================*/
 
-void wbplcon1(UWO data, uint32_t address)
+void wbplcon1(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
@@ -852,7 +852,7 @@ void wbplcon1(UWO data, uint32_t address)
 /* BPLCON2 - $dff104 Write                                                   */
 /*===========================================================================*/
 
-void wbplcon2(UWO data, uint32_t address)
+void wbplcon2(uint16_t data, uint32_t address)
 {
   _core.Registers.BplCon2 = data;
 }
@@ -862,7 +862,7 @@ void wbplcon2(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1mod(UWO data, uint32_t address)
+void wbpl1mod(uint16_t data, uint32_t address)
 {
   uint32_t new_value = (uint32_t)(LON)(WOR)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
@@ -880,7 +880,7 @@ void wbpl1mod(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2mod(UWO data, uint32_t address)
+void wbpl2mod(uint16_t data, uint32_t address)
 {
   uint32_t new_value = (uint32_t)(LON)(WOR)(data & 0xfffe);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
@@ -898,7 +898,7 @@ void wbpl2mod(UWO data, uint32_t address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wcolor(UWO data, uint32_t address)
+void wcolor(uint16_t data, uint32_t address)
 {
   uint32_t color_index = ((address & 0x1ff) - 0x180) >> 1;
 
@@ -911,10 +911,10 @@ void wcolor(UWO data, uint32_t address)
   }
 
   // normal mode
-  graph_color[color_index] = (UWO) (data & 0x0fff);
+  graph_color[color_index] = (uint16_t) (data & 0x0fff);
   graph_color_shadow[color_index] = draw_color_table[data & 0xfff];
   // half bright mode
-  graph_color[color_index + 32] = (UWO) (((data & 0xfff) & 0xeee) >> 1);
+  graph_color[color_index + 32] = (uint16_t) (((data & 0xfff) & 0xeee) >> 1);
   graph_color_shadow[color_index + 32] = draw_color_table[(((data & 0xfff) & 0xeee) >> 1)];
 }
 

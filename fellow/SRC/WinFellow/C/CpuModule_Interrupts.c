@@ -85,7 +85,7 @@ BOOLE cpuSetIrqLevel(uint32_t new_interrupt_level)
 
 void cpuSetUpInterrupt(uint32_t new_interrupt_level)
 {
-  UWO vector_offset = (UWO) (0x60 + new_interrupt_level*4);
+  uint16_t vector_offset = (uint16_t) (0x60 + new_interrupt_level*4);
   uint32_t vector_address = memoryReadLong(cpuGetVbr() + vector_offset);
 
   cpuActivateSSP(); // Switch to using ssp or msp. Loads a7 and preserves usp if we came from user-mode.
@@ -94,7 +94,7 @@ void cpuSetUpInterrupt(uint32_t new_interrupt_level)
 
   cpuSetSR(cpuGetSR() & 0x38ff);  // Clear interrupt level
   cpuSetSR(cpuGetSR() | 0x2000);  // Set supervisor mode
-  cpuSetSR(cpuGetSR() | (UWO)(new_interrupt_level << 8)); // Set interrupt level
+  cpuSetSR(cpuGetSR() | (uint16_t)(new_interrupt_level << 8)); // Set interrupt level
 
 #ifdef CPU_INSTRUCTION_LOGGING
   cpuCallInterruptLoggingFunc(new_interrupt_level, vector_address);

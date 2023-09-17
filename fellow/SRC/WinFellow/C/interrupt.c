@@ -50,8 +50,8 @@
  *    This hook points to interruptRaisePending(). Continues as Case 1.
  */
 
-UWO intena;
-UWO intreq;
+uint16_t intena;
+uint16_t intreq;
 uint32_t interrupt_pending_cpu_level;
 uint32_t interrupt_pending_chip_interrupt_number;
 static unsigned int interrupt_cpu_level[16] = {1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7};
@@ -121,27 +121,27 @@ bool interruptMasterSwitchIsEnabled(void)
   return !!(intena & 0x4000);
 }
 
-bool interruptHasSetModeBit(UWO interrupt_bitmask)
+bool interruptHasSetModeBit(uint16_t interrupt_bitmask)
 {
   return !!(interrupt_bitmask & 0x8000);
 }
 
-UWO interruptGetPendingBitMask(void)
+uint16_t interruptGetPendingBitMask(void)
 {
   return intena & intreq;
 }
 
-UWO interruptSetBits(UWO original, UWO set_bitmask)
+uint16_t interruptSetBits(uint16_t original, uint16_t set_bitmask)
 {
   return original | (set_bitmask & 0x7fff);
 }
 
-UWO interruptClearBits(UWO original, UWO clear_bitmask)
+uint16_t interruptClearBits(uint16_t original, uint16_t clear_bitmask)
 {
   return original & ~(clear_bitmask & 0x7fff);
 }
 
-BOOLE interruptIsRequested(UWO bitmask)
+BOOLE interruptIsRequested(uint16_t bitmask)
 {
   return !!(intreq & bitmask);
 }
@@ -165,7 +165,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
     return;
   }
 
-  UWO pending_chip_interrupts = interruptGetPendingBitMask();
+  uint16_t pending_chip_interrupts = interruptGetPendingBitMask();
   if (pending_chip_interrupts == 0)
   {
     return;
@@ -252,12 +252,12 @@ $dff09c (Write) / $dff01e (Read)
 Paula
 */
 
-UWO rintreqr(uint32_t address)
+uint16_t rintreqr(uint32_t address)
 {
   return intreq;
 }
 
-void wintreq_direct(UWO data, uint32_t address, bool delayIRQ)
+void wintreq_direct(uint16_t data, uint32_t address, bool delayIRQ)
 {
   if (interruptHasSetModeBit(data))
   {
@@ -275,7 +275,7 @@ void wintreq_direct(UWO data, uint32_t address, bool delayIRQ)
   }
 }
 
-void wintreq(UWO data, uint32_t address)
+void wintreq(uint16_t data, uint32_t address)
 {
   wintreq_direct(data, address, false);
 }
@@ -290,7 +290,7 @@ $dff09a (Write) / $dff01c (Read)
 Paula
 */
 
-UWO rintenar(uint32_t address)
+uint16_t rintenar(uint32_t address)
 {
   return intena;
 }
@@ -299,7 +299,7 @@ UWO rintenar(uint32_t address)
 // The master bit can not be read, the memory test in the kickstart
 // depends on this.
 
-void wintena(UWO data, uint32_t address)
+void wintena(uint16_t data, uint32_t address)
 {
   if (interruptHasSetModeBit(data))
   {

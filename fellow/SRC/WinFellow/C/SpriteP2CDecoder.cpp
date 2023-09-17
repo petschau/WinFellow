@@ -4,7 +4,7 @@
 sprite_deco SpriteP2CDecoder::sprite_deco4[4][2][256];
 sprite_deco SpriteP2CDecoder::sprite_deco16[4][256];
 
-void SpriteP2CDecoder::Decode4(unsigned int sprite_number, uint32_t *chunky_destination, UWO data1, UWO data2)
+void SpriteP2CDecoder::Decode4(unsigned int sprite_number, uint32_t *chunky_destination, uint16_t data1, uint16_t data2)
 {
   uint32_t sprite_class = sprite_number >> 1;
   uint8_t* word[2] =
@@ -29,7 +29,7 @@ void SpriteP2CDecoder::Decode4(unsigned int sprite_number, uint32_t *chunky_dest
   chunky_destination[1] |= sprite_deco4[sprite_class][1][planardata].i32[1];
 }
 
-void SpriteP2CDecoder::Decode16(uint32_t *chunky_destination, UWO data1, UWO data2, UWO data3, UWO data4)
+void SpriteP2CDecoder::Decode16(uint32_t *chunky_destination, uint16_t data1, uint16_t data2, uint16_t data3, uint16_t data4)
 {
   uint8_t *word[4] =
   {

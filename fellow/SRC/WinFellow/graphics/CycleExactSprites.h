@@ -74,7 +74,7 @@ private:
   void MergeHam(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count);
   void Merge(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count);
   bool InRange(uint32_t spriteNo, uint32_t startCylinder, uint32_t cylinderCount);
-  UWO ReadWord(uint32_t spriteNo);
+  uint16_t ReadWord(uint32_t spriteNo);
   void ReadControlWords(uint32_t spriteNo);
   void ReadDataWords(uint32_t spriteNo);
   bool IsFirstLine(uint32_t spriteNo, uint32_t rasterY);
@@ -92,12 +92,12 @@ private:
   void OutputSprite(uint32_t spriteNo, uint32_t startCylinder, uint32_t cylinderCount);
 
 public:
-  virtual void NotifySprpthChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprptlChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprposChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprctlChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprdataChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprdatbChanged(UWO data, unsigned int sprite_number);
+  virtual void NotifySprpthChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprptlChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprposChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprctlChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprdataChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprdatbChanged(uint16_t data, unsigned int sprite_number);
 
   void OutputSprites(uint32_t startCylinder, uint32_t cylinderCount);
 

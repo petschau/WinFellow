@@ -6,7 +6,7 @@ extern void cpuMakeOpcodeTableForModel(void);
 extern void cpuCreateMulTimeTables(void);
 
 // StackFrameGen
-extern void cpuStackFrameGenerate(UWO vector_no, uint32_t pc);
+extern void cpuStackFrameGenerate(uint16_t vector_no, uint32_t pc);
 extern void cpuStackFrameInit(void);
 
 // Registers
@@ -56,8 +56,8 @@ extern bool cpuGetInstructionAborted();
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
-extern void cpuSetCurrentOpcode(UWO opcode);
-extern UWO cpuGetCurrentOpcode(void);
+extern void cpuSetCurrentOpcode(uint16_t opcode);
+extern uint16_t cpuGetCurrentOpcode(void);
 
 #endif
 
@@ -65,18 +65,18 @@ extern void cpuProfileWrite(void);
 
 extern void cpuSetModelMask(uint8_t model_mask);
 extern uint8_t cpuGetModelMask(void);
-extern void cpuSetDRegWord(uint32_t regno, UWO val);
+extern void cpuSetDRegWord(uint32_t regno, uint16_t val);
 extern void cpuSetDRegByte(uint32_t regno, uint8_t val);
-extern UWO cpuGetRegWord(uint32_t i, uint32_t regno);
-extern UWO cpuGetDRegWord(uint32_t regno);
+extern uint16_t cpuGetRegWord(uint32_t i, uint32_t regno);
+extern uint16_t cpuGetDRegWord(uint32_t regno);
 extern uint8_t cpuGetDRegByte(uint32_t regno);
 extern uint32_t cpuGetDRegWordSignExtLong(uint32_t regno);
-extern UWO cpuGetDRegByteSignExtWord(uint32_t regno);
+extern uint16_t cpuGetDRegByteSignExtWord(uint32_t regno);
 extern uint32_t cpuGetDRegByteSignExtLong(uint32_t regno);
-extern UWO cpuGetARegWord(uint32_t regno);
+extern uint16_t cpuGetARegWord(uint32_t regno);
 extern uint8_t cpuGetARegByte(uint32_t regno);
 
-extern UWO cpuGetNextWord(void);
+extern uint16_t cpuGetNextWord(void);
 extern uint32_t cpuGetNextWordSignExt(void);
 extern uint32_t cpuGetNextLong(void);
 extern void cpuSkipNextWord(void);
@@ -105,7 +105,7 @@ extern void cpuSetZFlagBitOpsB(uint8_t res);
 extern void cpuSetZFlagBitOpsL(uint32_t res);
 
 extern void cpuSetFlagsNZ00NewB(uint8_t res);
-extern void cpuSetFlagsNZ00NewW(UWO res);
+extern void cpuSetFlagsNZ00NewW(uint16_t res);
 extern void cpuSetFlagsNZ00NewL(uint32_t res);
 extern void cpuSetFlagsNZ00New64(LLO res);
 
@@ -124,16 +124,16 @@ extern void cpuSetFlagsVC(BOOLE v, BOOLE c);
 extern void cpuSetFlagsShiftZero(BOOLE z, BOOLE rm);
 extern void cpuSetFlagsShift(BOOLE z, BOOLE rm, BOOLE c, BOOLE v);
 extern void cpuSetFlagsRotate(BOOLE z, BOOLE rm, BOOLE c);
-extern void cpuSetFlagsRotateX(UWO z, UWO rm, UWO x);
+extern void cpuSetFlagsRotateX(uint16_t z, uint16_t rm, uint16_t x);
 extern void cpuSetFlagsAddX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm);
 extern void cpuSetFlagsSubX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm);
-extern void cpuSetFlagsAbs(UWO f);
-extern UWO cpuGetZFlagB(uint8_t res);
-extern UWO cpuGetZFlagW(UWO res);
-extern UWO cpuGetZFlagL(uint32_t res);
-extern UWO cpuGetNFlagB(uint8_t res);
-extern UWO cpuGetNFlagW(UWO res);
-extern UWO cpuGetNFlagL(uint32_t res);
+extern void cpuSetFlagsAbs(uint16_t f);
+extern uint16_t cpuGetZFlagB(uint8_t res);
+extern uint16_t cpuGetZFlagW(uint16_t res);
+extern uint16_t cpuGetZFlagL(uint32_t res);
+extern uint16_t cpuGetNFlagB(uint8_t res);
+extern uint16_t cpuGetNFlagW(uint16_t res);
+extern uint16_t cpuGetNFlagL(uint32_t res);
 extern void cpuClearFlagsVC(void);
 
 extern BOOLE cpuCalculateConditionCode0(void);
@@ -157,7 +157,7 @@ extern BOOLE cpuCalculateConditionCode(uint32_t cc);
 // Logging
 #ifdef CPU_INSTRUCTION_LOGGING
 extern void cpuCallInstructionLoggingFunc(void);
-extern void cpuCallExceptionLoggingFunc(STR *description, uint32_t original_pc, UWO opcode);
+extern void cpuCallExceptionLoggingFunc(STR *description, uint32_t original_pc, uint16_t opcode);
 extern void cpuCallInterruptLoggingFunc(uint32_t level, uint32_t vector_address);
 #endif
 
@@ -181,20 +181,20 @@ extern void cpuThrowChkException(void);
 extern void cpuThrowTraceException(void);
 extern void cpuThrowResetException(void);
 extern void cpuCallResetExceptionFunc(void);
-extern void cpuFrame1(UWO vector_offset, uint32_t pc);
+extern void cpuFrame1(uint16_t vector_offset, uint32_t pc);
 
 // Private help functions
 static uint32_t cpuSignExtByteToLong(uint8_t v) {return (uint32_t)(LON)(int8_t) v;}
-static UWO cpuSignExtByteToWord(uint8_t v) {return (UWO)(WOR)(int8_t) v;}
-static uint32_t cpuSignExtWordToLong(UWO v) {return (uint32_t)(LON)(WOR) v;}
-static uint32_t cpuJoinWordToLong(UWO upper, UWO lower) {return (((uint32_t)upper) << 16) | ((uint32_t)lower);}
+static uint16_t cpuSignExtByteToWord(uint8_t v) {return (uint16_t)(WOR)(int8_t) v;}
+static uint32_t cpuSignExtWordToLong(uint16_t v) {return (uint32_t)(LON)(WOR) v;}
+static uint32_t cpuJoinWordToLong(uint16_t upper, uint16_t lower) {return (((uint32_t)upper) << 16) | ((uint32_t)lower);}
 static uint32_t cpuJoinByteToLong(uint8_t upper, uint8_t midh, uint8_t midl, uint8_t lower) {return (((uint32_t)upper) << 24) | (((uint32_t)midh) << 16) | (((uint32_t)midl) << 8) | ((uint32_t)lower);}
-static UWO cpuJoinByteToWord(uint8_t upper, uint8_t lower) {return (((UWO)upper) << 8) | ((UWO)lower);}
+static uint16_t cpuJoinByteToWord(uint8_t upper, uint8_t lower) {return (((uint16_t)upper) << 8) | ((uint16_t)lower);}
 static BOOLE cpuMsbB(uint8_t v) {return v>>7;}
-static BOOLE cpuMsbW(UWO v) {return v>>15;}
+static BOOLE cpuMsbW(uint16_t v) {return v>>15;}
 static BOOLE cpuMsbL(uint32_t v) {return v>>31;}
 static BOOLE cpuIsZeroB(uint8_t v) {return v == 0;}
-static BOOLE cpuIsZeroW(UWO v) {return v == 0;}
+static BOOLE cpuIsZeroW(uint16_t v) {return v == 0;}
 static BOOLE cpuIsZeroL(uint32_t v) {return v == 0;}
 
 

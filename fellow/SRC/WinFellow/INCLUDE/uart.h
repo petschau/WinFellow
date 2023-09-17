@@ -10,16 +10,16 @@ private:
   std::string _outputFileName;
   FILE *_outputFile;
 
-  UWO _serper;
+  uint16_t _serper;
 
-  UWO _transmitBuffer;
-  UWO _transmitShiftRegister;
+  uint16_t _transmitBuffer;
+  uint16_t _transmitShiftRegister;
   uint32_t _transmitDoneTime;
   bool _transmitBufferEmpty;
   bool _transmitShiftRegisterEmpty;
 
-  UWO _receiveBuffer;
-  UWO _receiveShiftRegister;
+  uint16_t _receiveBuffer;
+  uint16_t _receiveShiftRegister;
   uint32_t _receiveDoneTime;
   bool _receiveBufferFull;
   bool _receiveBufferOverrun;
@@ -34,22 +34,22 @@ private:
   void CloseOutputFile();
 
   bool Is8BitMode();
-  UWO GetBitPeriod();
+  uint16_t GetBitPeriod();
 
   void CopyReceiveShiftRegisterToBuffer();
   void CopyTransmitBufferToShiftRegister();
   uint32_t GetTransmitDoneTime();
 
 public:
-  static void wserper(UWO data, uint32_t address);
-  static void wserdat(UWO data, uint32_t address);
-  static UWO rserdat(uint32_t address);
+  static void wserper(uint16_t data, uint32_t address);
+  static void wserdat(uint16_t data, uint32_t address);
+  static uint16_t rserdat(uint32_t address);
 
-  UWO ReadSerdatRegister();
-  void WriteSerdatRegister(UWO data);
-  void WriteSerperRegister(UWO data);
+  uint16_t ReadSerdatRegister();
+  void WriteSerdatRegister(uint16_t data);
+  void WriteSerperRegister(uint16_t data);
 
-  void NotifyInterruptRequestBitsChanged(UWO intreq);
+  void NotifyInterruptRequestBitsChanged(uint16_t intreq);
 
   void EndOfLine();
   void EndOfFrame();

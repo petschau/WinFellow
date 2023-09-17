@@ -54,7 +54,7 @@ private:
   void SerializeBatch(uint32_t cylinderCount);
 
 public:
-  void Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, UWO dat6);
+  void Commit(uint16_t dat1, uint16_t dat2, uint16_t dat3, uint16_t dat4, uint16_t dat5, uint16_t dat6);
 
   void OutputCylindersUntil(uint32_t rasterY, uint32_t cylinder);
 

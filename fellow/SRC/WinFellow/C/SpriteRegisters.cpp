@@ -18,7 +18,7 @@ static unsigned int GetSpriteNumberForPointer(uint32_t address)
   return (unsigned int)((address >> 2) & 7);
 }
 
-void wsprxpth(UWO data, uint32_t address)
+void wsprxpth(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForPointer(address);
 
@@ -29,7 +29,7 @@ void wsprxpth(UWO data, uint32_t address)
   sprites->NotifySprpthChanged(data, sprite_number);
 }
 
-void wsprxptl(UWO data, uint32_t address)
+void wsprxptl(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForPointer(address);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
@@ -41,7 +41,7 @@ void wsprxptl(UWO data, uint32_t address)
 
 /* SPRXPOS - $dff140 to $dff178 */
 
-void wsprxpos(UWO data, uint32_t address)
+void wsprxpos(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
@@ -53,7 +53,7 @@ void wsprxpos(UWO data, uint32_t address)
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void wsprxctl(UWO data, uint32_t address)
+void wsprxctl(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
@@ -65,7 +65,7 @@ void wsprxctl(UWO data, uint32_t address)
 
 /* SPRXDATA $dff144 to $dff17c */
 
-void wsprxdata(UWO data, uint32_t address)
+void wsprxdata(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
@@ -77,7 +77,7 @@ void wsprxdata(UWO data, uint32_t address)
 
 /* SPRXDATB $dff146 to $dff17e */
 
-void wsprxdatb(UWO data, uint32_t address)
+void wsprxdatb(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)

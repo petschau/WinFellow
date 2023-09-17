@@ -33,78 +33,78 @@ spr_register_func LineExactSprites::sprxpth_functions[8] =
   &LineExactSprites::aspr7pth
 };
 
-void LineExactSprites::aspr0pth(UWO data, uint32_t address)
+void LineExactSprites::aspr0pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[0] = chipsetReplaceHighPtr(sprite_registers.sprpt[0], data);
 }
-void LineExactSprites::aspr0ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr0ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[0] = chipsetReplaceLowPtr(sprite_registers.sprpt[0], data);
 }
 
-void LineExactSprites::aspr1pth(UWO data, uint32_t address)
+void LineExactSprites::aspr1pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[1] = chipsetReplaceHighPtr(sprite_registers.sprpt[1], data);
 }
-void LineExactSprites::aspr1ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr1ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[1] = chipsetReplaceLowPtr(sprite_registers.sprpt[1], data);
 }
 
-void LineExactSprites::aspr2pth(UWO data, uint32_t address)
+void LineExactSprites::aspr2pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[2] = chipsetReplaceHighPtr(sprite_registers.sprpt[2], data);
 }
-void LineExactSprites::aspr2ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr2ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[2] = chipsetReplaceLowPtr(sprite_registers.sprpt[2], data);
 }
 
-void LineExactSprites::aspr3pth(UWO data, uint32_t address)
+void LineExactSprites::aspr3pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[3] = chipsetReplaceHighPtr(sprite_registers.sprpt[3], data);
 }
-void LineExactSprites::aspr3ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr3ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[3] = chipsetReplaceLowPtr(sprite_registers.sprpt[3], data);
 }
 
-void LineExactSprites::aspr4pth(UWO data, uint32_t address)
+void LineExactSprites::aspr4pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[4] = chipsetReplaceHighPtr(sprite_registers.sprpt[4], data);
 }
-void LineExactSprites::aspr4ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr4ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[4] = chipsetReplaceLowPtr(sprite_registers.sprpt[4], data);
 }
 
-void LineExactSprites::aspr5pth(UWO data, uint32_t address)
+void LineExactSprites::aspr5pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[5] = chipsetReplaceHighPtr(sprite_registers.sprpt[5], data);
 }
-void LineExactSprites::aspr5ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr5ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[5] = chipsetReplaceLowPtr(sprite_registers.sprpt[5], data);
 }
-void LineExactSprites::aspr6pth(UWO data, uint32_t address)
+void LineExactSprites::aspr6pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[6] = chipsetReplaceHighPtr(sprite_registers.sprpt[6], data);
 }
-void LineExactSprites::aspr6ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr6ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[6] = chipsetReplaceLowPtr(sprite_registers.sprpt[6], data);
 }
 
-void LineExactSprites::aspr7pth(UWO data, uint32_t address)
+void LineExactSprites::aspr7pth(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[7] = chipsetReplaceHighPtr(sprite_registers.sprpt[7], data);
 }
-void LineExactSprites::aspr7ptl(UWO data, uint32_t address)
+void LineExactSprites::aspr7ptl(uint16_t data, uint32_t address)
 {
   sprite_registers.sprpt[7] = chipsetReplaceLowPtr(sprite_registers.sprpt[7], data);
 }
 
-void LineExactSprites::asprxpos(UWO data, uint32_t address)
+void LineExactSprites::asprxpos(uint16_t data, uint32_t address)
 {
   uint32_t sprnr = (address >> 3) & 7;
 
@@ -113,7 +113,7 @@ void LineExactSprites::asprxpos(UWO data, uint32_t address)
   spry[sprnr] = (spry[sprnr] & 0x100) | ((data & 0xff00) >> 8);
 }
 
-void LineExactSprites::asprxctl(UWO data, uint32_t address)
+void LineExactSprites::asprxctl(uint16_t data, uint32_t address)
 {
   uint32_t sprnr = (address >> 3) & 7;
 
@@ -132,19 +132,19 @@ void LineExactSprites::asprxctl(UWO data, uint32_t address)
   spr_arm_data[sprnr] = FALSE;
 }
 
-void LineExactSprites::asprxdata(UWO data, uint32_t address)
+void LineExactSprites::asprxdata(uint16_t data, uint32_t address)
 {
   uint32_t sprnr = (address >> 3) & 7;
 
-  *((UWO *)&sprdat[sprnr]) = (UWO)data;
+  *((uint16_t *)&sprdat[sprnr]) = (uint16_t)data;
 
   spr_arm_data[sprnr] = TRUE;
 }
 
-void LineExactSprites::asprxdatb(UWO data, uint32_t address)
+void LineExactSprites::asprxdatb(uint16_t data, uint32_t address)
 {
   uint32_t sprnr = (address >> 3) & 7;
-  *(((UWO *)&sprdat[sprnr]) + 1) = data;
+  *(((uint16_t *)&sprdat[sprnr]) + 1) = data;
 }
 
 #ifdef _DEBUG
@@ -1105,7 +1105,7 @@ bool LineExactSprites::HasSpritesOnLine()
 }
 
 /* Makes a log of the writes to the sprpt registers */
-void LineExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprpthChanged(uint16_t data, unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_dma_action_list[sprite_number]);
   BuildItem(&item);
@@ -1115,7 +1115,7 @@ void LineExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
 
   if (output_sprite_log == TRUE)
   {
-    *((UWO *)((uint8_t *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
+    *((uint16_t *)((uint8_t *)sprpt_debug + sprite_number * 4 + 2)) = (uint16_t)data & 0x01f;
     sprintf(buffer,
       "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
       busGetRasterY(),
@@ -1129,7 +1129,7 @@ void LineExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
 }
 
 /* Makes a log of the writes to the sprpt registers */
-void LineExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprptlChanged(uint16_t data, unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_dma_action_list[sprite_number]);
   BuildItem(&item);
@@ -1139,7 +1139,7 @@ void LineExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
 
   if (output_sprite_log == TRUE)
   {
-    *((UWO *)((uint8_t *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
+    *((uint16_t *)((uint8_t *)sprpt_debug + sprite_number * 4 + 2)) = (uint16_t)data & 0x01f;
     sprintf(buffer,
       "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
       busGetRasterY(),
@@ -1154,7 +1154,7 @@ void LineExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
 
 /* SPRXPOS - $dff140 to $dff178 */
 
-void LineExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprposChanged(uint16_t data, unsigned int sprite_number)
 {
   spr_action_list_item * item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);
@@ -1174,7 +1174,7 @@ void LineExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number)
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void LineExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprctlChanged(uint16_t data, unsigned int sprite_number)
 {
   spr_action_list_item * item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);
@@ -1195,7 +1195,7 @@ void LineExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number)
 
 /* SPRXDATA $dff144 to $dff17c */
 
-void LineExactSprites::NotifySprdataChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprdataChanged(uint16_t data, unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);
@@ -1211,7 +1211,7 @@ void LineExactSprites::NotifySprdataChanged(UWO data, unsigned int sprite_number
   }
 }
 
-void LineExactSprites::NotifySprdatbChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);

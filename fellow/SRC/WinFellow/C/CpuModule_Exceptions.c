@@ -133,7 +133,7 @@ void cpuThrowException(uint32_t vector_offset, uint32_t pc, BOOLE executejmp)
     return;
   }
 
-  cpuStackFrameGenerate((UWO) vector_offset, pc);
+  cpuStackFrameGenerate((uint16_t) vector_offset, pc);
 
   // read a memory position
   vector_address = memoryReadLong(cpuGetVbr() + vector_offset);

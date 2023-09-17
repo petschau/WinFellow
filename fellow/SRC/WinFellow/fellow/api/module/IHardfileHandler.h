@@ -91,7 +91,7 @@ namespace fellow::api::module
     virtual void CardInit() = 0;
     virtual void CardMap(uint32_t mapping) = 0;
     virtual uint8_t ReadByte(uint32_t address) = 0;
-    virtual UWO ReadWord(uint32_t address) = 0;
+    virtual uint16_t ReadWord(uint32_t address) = 0;
     virtual uint32_t ReadLong(uint32_t address) = 0;
 
     // Native callback

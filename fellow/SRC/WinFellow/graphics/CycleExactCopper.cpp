@@ -7,7 +7,7 @@
 #include "CycleExactCopper.h"
 #include "GRAPH.H"
 
-UWO CycleExactCopper::ReadWord()
+uint16_t CycleExactCopper::ReadWord()
 {
   return chipmemReadWord(copper_registers.copper_pc);
 }
@@ -61,7 +61,7 @@ bool CycleExactCopper::IsRegisterAllowed(uint32_t regno)
 void CycleExactCopper::Move()
 {
   uint32_t regno = (uint32_t) (_first & 0x1fe);
-  UWO value = _second;
+  uint16_t value = _second;
 
   if (IsRegisterAllowed(regno))
   {

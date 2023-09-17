@@ -312,10 +312,10 @@ FELLOW OUT (END)-------------------------------------*/
 /* Had to change these a bit since the cpuemu assumes that addr survives */
 /* The memory access stubs is called from assembler counterparts */
 
-UWO rtarea_wget(uint32_t addr)
+uint16_t rtarea_wget(uint32_t addr)
 {
   uint32_t maskedAddress = addr & 0xffffff;
-  return (UWO) (rtarea[maskedAddress - RTAREA_BASE]<<8) + rtarea[maskedAddress -RTAREA_BASE+1];
+  return (uint16_t) (rtarea[maskedAddress - RTAREA_BASE]<<8) + rtarea[maskedAddress -RTAREA_BASE+1];
 }
 
 
@@ -337,7 +337,7 @@ uint8_t rtarea_bget(uint32_t addr)
 /* Swapped parameter order */
 
 void rtarea_lput(uint32_t value, uint32_t addr) { }
-void rtarea_wput(UWO value, uint32_t addr) { }
+void rtarea_wput(uint16_t value, uint32_t addr) { }
 void rtarea_bput(uint8_t value, uint32_t addr) { }
 
 /* FELLOW IN (END)---------------------------------*/

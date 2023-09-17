@@ -183,7 +183,7 @@ void ciaUpdateIRQ(uint32_t i)
 #endif
 
     cia[i].icrreq |= 0x80;
-    UWO mask = (i == 0) ? 0x0008 : 0x2000;
+    uint16_t mask = (i == 0) ? 0x0008 : 0x2000;
     if (!interruptIsRequested(mask))
     {
       wintreq_direct(mask | 0x8000, 0xdff09c, true);
@@ -870,9 +870,9 @@ ciaWriteFunc cia_write[16] =
     return 0xff;
   }
 
-  UWO ciaReadWord(uint32_t address)
+  uint16_t ciaReadWord(uint32_t address)
   {
-    return (((UWO)ciaReadByte(address))<<8) | ((UWO)ciaReadByte(address + 1));
+    return (((uint16_t)ciaReadByte(address))<<8) | ((uint16_t)ciaReadByte(address + 1));
   }
 
   uint32_t ciaReadLong(uint32_t address)
@@ -889,7 +889,7 @@ ciaWriteFunc cia_write[16] =
       cia_write[(address & 0xf00)>>8](1, data);
   }
 
-  void ciaWriteWord(UWO data, uint32_t address)
+  void ciaWriteWord(uint16_t data, uint32_t address)
   {
     ciaWriteByte((uint8_t) (data>>8), address);
     ciaWriteByte((uint8_t) data, address + 1);

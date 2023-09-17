@@ -8,13 +8,13 @@
 
 class LineExactSprites;
 
-typedef void(LineExactSprites::*spr_register_func)(UWO data, uint32_t address);
+typedef void(LineExactSprites::*spr_register_func)(uint16_t data, uint32_t address);
 
 typedef struct {
   uint32_t raster_y;
   uint32_t raster_x;
   spr_register_func called_function;
-  UWO data;
+  uint16_t data;
   uint32_t address;
 } spr_action_list_item;
 
@@ -37,26 +37,26 @@ typedef struct {
 class LineExactSprites : public Sprites
 {
 private:
-  void aspr0pth(UWO data, uint32_t address);
-  void aspr0ptl(UWO data, uint32_t address);
-  void aspr1pth(UWO data, uint32_t address);
-  void aspr1ptl(UWO data, uint32_t address);
-  void aspr2pth(UWO data, uint32_t address);
-  void aspr2ptl(UWO data, uint32_t address);
-  void aspr3pth(UWO data, uint32_t address);
-  void aspr3ptl(UWO data, uint32_t address);
-  void aspr4pth(UWO data, uint32_t address);
-  void aspr4ptl(UWO data, uint32_t address);
-  void aspr5pth(UWO data, uint32_t address);
-  void aspr5ptl(UWO data, uint32_t address);
-  void aspr6pth(UWO data, uint32_t address);
-  void aspr6ptl(UWO data, uint32_t address);
-  void aspr7pth(UWO data, uint32_t address);
-  void aspr7ptl(UWO data, uint32_t address);
-  void asprxpos(UWO data, uint32_t address);
-  void asprxctl(UWO data, uint32_t address);
-  void asprxdata(UWO data, uint32_t address);
-  void asprxdatb(UWO data, uint32_t address);
+  void aspr0pth(uint16_t data, uint32_t address);
+  void aspr0ptl(uint16_t data, uint32_t address);
+  void aspr1pth(uint16_t data, uint32_t address);
+  void aspr1ptl(uint16_t data, uint32_t address);
+  void aspr2pth(uint16_t data, uint32_t address);
+  void aspr2ptl(uint16_t data, uint32_t address);
+  void aspr3pth(uint16_t data, uint32_t address);
+  void aspr3ptl(uint16_t data, uint32_t address);
+  void aspr4pth(uint16_t data, uint32_t address);
+  void aspr4ptl(uint16_t data, uint32_t address);
+  void aspr5pth(uint16_t data, uint32_t address);
+  void aspr5ptl(uint16_t data, uint32_t address);
+  void aspr6pth(uint16_t data, uint32_t address);
+  void aspr6ptl(uint16_t data, uint32_t address);
+  void aspr7pth(uint16_t data, uint32_t address);
+  void aspr7ptl(uint16_t data, uint32_t address);
+  void asprxpos(uint16_t data, uint32_t address);
+  void asprxctl(uint16_t data, uint32_t address);
+  void asprxdata(uint16_t data, uint32_t address);
+  void asprxdatb(uint16_t data, uint32_t address);
 
   uint32_t sprite_to_block;
   BOOLE output_sprite_log;
@@ -72,7 +72,7 @@ private:
   uint32_t sprly[8];
   uint32_t sprly_debug[8];
   uint32_t spratt[8];
-  UWO sprdat[8][2];
+  uint16_t sprdat[8][2];
   BOOLE spr_arm_data[8];
   BOOLE spr_arm_comparator[8];
 
@@ -167,12 +167,12 @@ public:
   void MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
   void MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription, uint32_t nextlineoffset, uint32_t nextlineoffset2, uint32_t nextlineoffset3);
 
-  virtual void NotifySprpthChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprptlChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprposChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprctlChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprdataChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprdatbChanged(UWO data, unsigned int sprite_number);
+  virtual void NotifySprpthChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprptlChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprposChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprctlChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprdataChanged(uint16_t data, unsigned int sprite_number);
+  virtual void NotifySprdatbChanged(uint16_t data, unsigned int sprite_number);
 
   virtual void HardReset();
   virtual void EndOfLine(uint32_t rasterY);

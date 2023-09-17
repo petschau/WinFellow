@@ -309,7 +309,7 @@ unsigned int cgEAReg2(unsigned int eano, unsigned int eareg)
 char *cgSize(unsigned int size)
 {
   if (size == 1) return "uint8_t";
-  else if (size == 2) return "UWO";
+  else if (size == 2) return "uint16_t";
   else if (size == 4) return "uint32_t";
   return "ERROR_cgSize()";
 }
@@ -317,7 +317,7 @@ char *cgSize(unsigned int size)
 char *cgCastSize(unsigned int size)
 {
   if (size == 1) return "(uint8_t)";
-  else if (size == 2) return "(UWO)";
+  else if (size == 2) return "(uint16_t)";
   else if (size == 4) return "(uint32_t)";
   return "ERROR_cgCastSize()";
 }
@@ -800,7 +800,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
+	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\uint16_t ext = cpuGetNextWord();\n");
 	    cgFetchSrc(eano, eareg_cpu_data_index, size, regtype, reg_cpu_data_index);
 	    if (stricmp(i.instruction_name, "DIVL") != 0) cgFetchDst((regtype=='A') ? 1:0, reg_cpu_data_index, (regtype == 'V') ? 4 : size);
 	  }
@@ -1138,7 +1138,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 
       if (stricmp(i.instruction_name, "MOVEM") == 0)
       {
-	fprintf(codef, "\tUWO regs = cpuGetNextWord();\n");
+	fprintf(codef, "\uint16_t regs = cpuGetNextWord();\n");
       }
       else if ((stricmp(i.instruction_name, "MULL") == 0)
 	       || (stricmp(i.instruction_name, "MOVES") == 0)
@@ -1149,7 +1149,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	       || (strnicmp(i.instruction_name, "BF", 2) == 0))
       {
 	// Read extension word _before_ ea calculation.
-	  fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
+	  fprintf(codef, "\uint16_t ext = cpuGetNextWord();\n");
       }
 
       // Generate fetch
@@ -1197,7 +1197,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	if (stricmp(i.instruction_name, "TST") == 0 && size == 2 && eano == 1)
 	{
 	  // Special case, TST.W Ax
-	  fprintf(codef, "\tUWO dst = (UWO)cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
+	  fprintf(codef, "\uint16_t dst = (uint16_t)cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
 	}
 	else
 	{
@@ -1389,7 +1389,7 @@ unsigned int cgMoveQ(cpu_data *cpudata, cpu_instruction_info i)
   cgMakeFunctionHeader(fname, templ_name);
 
   fprintf(codef, "\tcpuSetDReg(opc_data[%d], opc_data[%d]);\n", reg_cpu_data_index, imm_cpu_data_index);
-  fprintf(codef, "\tcpuSetFlagsAbs((UWO)opc_data[%d]);\n", flags_cpu_data_index);
+  fprintf(codef, "\tcpuSetFlagsAbs((uint16_t)opc_data[%d]);\n", flags_cpu_data_index);
   cgMakeInstructionTimeAbs(4);
   cgMakeFunctionFooter(fname, templ_name);
 

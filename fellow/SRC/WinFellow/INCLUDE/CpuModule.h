@@ -19,7 +19,7 @@ extern void cpuInitializeFromNewPC(uint32_t new_pc);
 
 typedef void (*cpuInstructionLoggingFunc)(void);
 extern void cpuSetInstructionLoggingFunc(cpuInstructionLoggingFunc func);
-typedef void (*cpuExceptionLoggingFunc)(STR *description, uint32_t original_pc, UWO opcode);
+typedef void (*cpuExceptionLoggingFunc)(STR *description, uint32_t original_pc, uint16_t opcode);
 extern void cpuSetExceptionLoggingFunc(cpuExceptionLoggingFunc func);
 typedef void (*cpuInterruptLoggingFunc)(uint32_t level, uint32_t vector_address);
 extern void cpuSetInterruptLoggingFunc(cpuInterruptLoggingFunc func);

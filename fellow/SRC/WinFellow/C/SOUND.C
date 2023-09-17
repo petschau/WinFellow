@@ -150,13 +150,13 @@ AUDXPT
 $dff0a0,b0,c0,d0
 */
 
-void waudXpth(UWO data, uint32_t address)
+void waudXpth(uint16_t data, uint32_t address)
 {
   uint32_t ch = soundGetChannelNumber(address);
   audpt[ch] = chipsetReplaceHighPtr(audpt[ch], data);
 }
 
-void waudXptl(UWO data, uint32_t address)
+void waudXptl(uint16_t data, uint32_t address)
 {
   uint32_t ch = soundGetChannelNumber(address);
   audpt[ch] = chipsetReplaceLowPtr(audpt[ch], data);
@@ -169,7 +169,7 @@ AUDXLEN
 $dff0a4,b4,c4,d4
 */
 
-void waudXlen(UWO data, uint32_t address)
+void waudXlen(uint16_t data, uint32_t address)
 {
   uint32_t ch = soundGetChannelNumber(address);
   audlen[ch] = data;
@@ -182,7 +182,7 @@ AUDXPER
 $dff0a6,b6,c6,d6
 */
 
-void waudXper(UWO data, uint32_t address)
+void waudXper(uint16_t data, uint32_t address)
 {
   uint32_t ch = soundGetChannelNumber(address);
   audper[ch] = periodtable[data];
@@ -196,7 +196,7 @@ $dff0a8,b8,c8,d8
 
 */
 
-void waudXvol(UWO data, uint32_t address)
+void waudXvol(uint16_t data, uint32_t address)
 {
   uint32_t ch = soundGetChannelNumber(address);
   /*Replay routines sometimes access volume as a byte register at $dff0X9...*/
@@ -214,7 +214,7 @@ $dff0aa,ba,ca,da
 Not used right now.
 */
 
-void waudXdat(UWO data, uint32_t address)
+void waudXdat(uint16_t data, uint32_t address)
 {
   uint32_t ch = soundGetChannelNumber(address);
   auddat[ch] = data & 0xff;
@@ -262,7 +262,7 @@ void soundState1(uint32_t ch)
 
   if (audlenw[ch] != 1) audlenw[ch]--; 
   audstate[ch] = soundState5;
-  wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
+  wintreq_direct((uint16_t) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
 }
 
 /*==============================================================================
@@ -318,7 +318,7 @@ void soundState3(uint32_t ch)
     {
       audlenw[ch] = audlen[ch];
       audptw[ch] = audpt[ch];
-      wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
+      wintreq_direct((uint16_t) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
     }
   }
   else
@@ -363,7 +363,7 @@ void soundState5(uint32_t ch)
   {
     audlenw[ch] = audlen[ch];
     audptw[ch] = audpt[ch];
-    wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
+    wintreq_direct((uint16_t) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
   }
 }
 
@@ -462,7 +462,7 @@ uint32_t soundChannelUpdate(uint32_t ch, WOR *buffer_left, WOR *buffer_right, ui
     if (!interruptIsRequested(audioirqmask[ch]) && auddat_set[ch])
     {
       auddat_set[ch] = FALSE;
-      wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
+      wintreq_direct((uint16_t) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
     }
     if (!halfscale)
     {

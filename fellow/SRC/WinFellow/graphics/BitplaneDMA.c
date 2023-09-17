@@ -46,7 +46,7 @@ void BitplaneDMA::Log(uint32_t line, uint32_t cylinder)
   }
 }
 
-UWO BitplaneDMA::ReadWord(uint32_t address)
+uint16_t BitplaneDMA::ReadWord(uint32_t address)
 {
   return chipmemReadWord(address);
 }
@@ -56,11 +56,11 @@ void BitplaneDMA::IncreaseBplPt(uint32_t *bplpt, uint32_t size)
   *bplpt = chipsetMaskPtr((*bplpt) + size);
 }
 
-UWO BitplaneDMA::GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt)
+uint16_t BitplaneDMA::GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt)
 {
   if (bplNo <= bplsEnabled)
   {
-    UWO hold = ReadWord(*bplpt);
+    uint16_t hold = ReadWord(*bplpt);
     IncreaseBplPt(bplpt, 2);
     return hold;
   }

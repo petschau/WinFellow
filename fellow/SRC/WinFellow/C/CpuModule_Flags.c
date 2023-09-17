@@ -199,13 +199,13 @@ void cpuClearFlagsVC(void)
   cpu_sr = cpu_sr & 0xfffc;
 }
 
-UWO cpuGetZFlagB(uint8_t res) {return (UWO)((res) ? 0 : 4);}
-UWO cpuGetZFlagW(UWO res) {return (UWO)((res) ? 0 : 4);}
-UWO cpuGetZFlagL(uint32_t res) {return (UWO)((res) ? 0 : 4);}
+uint16_t cpuGetZFlagB(uint8_t res) {return (uint16_t)((res) ? 0 : 4);}
+uint16_t cpuGetZFlagW(uint16_t res) {return (uint16_t)((res) ? 0 : 4);}
+uint16_t cpuGetZFlagL(uint32_t res) {return (uint16_t)((res) ? 0 : 4);}
 
-UWO cpuGetNFlagB(uint8_t res) {return (UWO)((res & 0x80) >> 4);}
-UWO cpuGetNFlagW(UWO res) {return (UWO)((res & 0x8000) >> 12);}
-UWO cpuGetNFlagL(uint32_t res) {return (UWO)((res & 0x80000000) >> 28);}
+uint16_t cpuGetNFlagB(uint8_t res) {return (uint16_t)((res & 0x80) >> 4);}
+uint16_t cpuGetNFlagW(uint16_t res) {return (uint16_t)((res & 0x8000) >> 12);}
+uint16_t cpuGetNFlagL(uint32_t res) {return (uint16_t)((res & 0x80000000) >> 28);}
 
 /// <summary>
 /// Set the flags NZVC.
@@ -406,7 +406,7 @@ void cpuSetFlagsRotate(BOOLE z, BOOLE rm, BOOLE c)
 /// <param name="z">The Z flag.</param>        
 /// <param name="rm">The MSB of the result.</param>        
 /// <param name="c">The extend bit and carry of the result.</param>        
-void cpuSetFlagsRotateX(UWO z, UWO rm, UWO x)
+void cpuSetFlagsRotateX(uint16_t z, uint16_t rm, uint16_t x)
 {
   cpu_sr = (cpu_sr & 0xffe0) | z | rm | x;
 }
@@ -425,7 +425,7 @@ void cpuSetFlagsNZ00NewB(uint8_t res)
 /// <summary>
 /// Set the flags (ZN00).
 /// </summary>
-void cpuSetFlagsNZ00NewW(UWO res)
+void cpuSetFlagsNZ00NewW(uint16_t res)
 {
   uint32_t flag = cpu_sr & 0xfff0;
   if (res & 0x8000) flag |= 0x8;
@@ -459,7 +459,7 @@ void cpuSetFlagsNZ00New64(LLO res)
 /// Set the 4 flags absolute.
 /// </summary>
 /// <param name="f">flags</param>        
-void cpuSetFlagsAbs(UWO f)
+void cpuSetFlagsAbs(uint16_t f)
 {
   cpu_sr = (cpu_sr & 0xfff0) | f;
 }

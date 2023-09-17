@@ -68,7 +68,7 @@ void PixelSerializer::ShiftActive(uint32_t pixelCount)
   _active[5].l <<= pixelCount;
 }
 
-void PixelSerializer::Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, UWO dat6)
+void PixelSerializer::Commit(uint16_t dat1, uint16_t dat2, uint16_t dat3, uint16_t dat4, uint16_t dat5, uint16_t dat6)
 {
   uint32_t scrollodd, scrolleven;
   uint32_t oddmask, invoddmask;

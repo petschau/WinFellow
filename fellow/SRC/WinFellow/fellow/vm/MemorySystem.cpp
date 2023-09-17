@@ -10,7 +10,7 @@ namespace fellow::vm
     return memoryReadByte(address);
   }
 
-  UWO MemorySystem::ReadWord(uint32_t address)
+  uint16_t MemorySystem::ReadWord(uint32_t address)
   {
     return memoryReadWord(address);
   }
@@ -25,7 +25,7 @@ namespace fellow::vm
     memoryWriteByte(data, address);
   }
 
-  void MemorySystem::WriteWord(UWO data, uint32_t address)
+  void MemorySystem::WriteWord(uint16_t data, uint32_t address)
   {
     memoryWriteWord(data, address);
   }
@@ -40,7 +40,7 @@ namespace fellow::vm
     memoryDmemSetByte(data);
   }
 
-  void MemorySystem::DmemSetWord(UWO data)
+  void MemorySystem::DmemSetWord(uint16_t data)
   {
     memoryDmemSetWord(data);
   }

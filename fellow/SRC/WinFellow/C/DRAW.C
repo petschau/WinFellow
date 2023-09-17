@@ -307,8 +307,8 @@ bool draw_LEDs_state[DRAW_LED_COUNT];
 
 static void drawLED16(int x, int y, int width, int height, uint32_t color)
 {
-  UWO *bufw = ((UWO *) (draw_buffer_info.top_ptr + draw_buffer_info.pitch*y)) + x;
-  UWO color16 = (UWO) draw_color_table[((color & 0xf00000) >> 12) |
+  uint16_t *bufw = ((uint16_t *) (draw_buffer_info.top_ptr + draw_buffer_info.pitch*y)) + x;
+  uint16_t color16 = (uint16_t) draw_color_table[((color & 0xf00000) >> 12) |
 		      ((color & 0x00f000) >> 8) |
 		      ((color & 0x0000f0) >> 4)];
   for (int y1 = 0; y1 < height; y1++)
@@ -317,7 +317,7 @@ static void drawLED16(int x, int y, int width, int height, uint32_t color)
     {
       *(bufw + x1) = color16;
     }
-    bufw = (UWO *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
+    bufw = (uint16_t *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
   }
 }
 
@@ -483,14 +483,14 @@ static void drawFpsText(STR *text)
 
 static void drawFpsToFramebuffer16(void)
 {
-  UWO *bufw = ((UWO *) draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
+  uint16_t *bufw = ((uint16_t *) draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
     {
       *(bufw + x) = draw_fps_buffer[y][x] ? 0xffff : 0;
     }
-    bufw = (UWO *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
+    bufw = (uint16_t *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
   }
 }
 

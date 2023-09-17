@@ -654,13 +654,13 @@ static uint8_t *drawGetDualTranslatePtr(graph_line *linedescription)
   return draw_dual_translate_ptr;
 }
 
-static uint32_t drawMake32BitColorFrom16Bit(UWO color)
+static uint32_t drawMake32BitColorFrom16Bit(uint16_t color)
 {
   uint32_t color32 = ((uint32_t) color) | ((uint32_t) color) << 16;
   return color32;
 }
 
-static ULL drawMake64BitColorFrom16Bit(UWO color)
+static ULL drawMake64BitColorFrom16Bit(uint16_t color)
 {
   ULL color64 = ((ULL) color) | ((ULL) color) << 16 | ((ULL) color) << 32 | ((ULL) color) << 48;
   return color64;
@@ -672,9 +672,9 @@ ULL drawMake64BitColorFrom32Bit(uint32_t color)
   return color64;
 }
 
-static UWO drawGetColorUWO(uint32_t *colors, uint8_t color_index)
+static uint16_t drawGetColorUint16(uint32_t *colors, uint8_t color_index)
 {
-  return *((UWO *) ((uint8_t *) colors + color_index));
+  return *((uint16_t *) ((uint8_t *) colors + color_index));
 }
 
 static uint32_t drawGetColorUint32(uint32_t *colors, uint8_t color_index)
@@ -693,10 +693,10 @@ static uint8_t drawGetDualColorIndex(uint8_t *dual_translate_ptr, uint8_t playfi
   return *(dual_translate_ptr + ((playfield1_value << 8) + playfield2_value));
 }
 
-static UWO drawGetDualColorUWO(uint32_t *colors, uint8_t *dual_translate_ptr, uint8_t playfield1_value, uint8_t playfield2_value)
+static uint16_t drawGetDualColorUint16(uint32_t *colors, uint8_t *dual_translate_ptr, uint8_t playfield1_value, uint8_t playfield2_value)
 {
   uint8_t color_index = drawGetDualColorIndex(dual_translate_ptr, playfield1_value, playfield2_value);
-  return drawGetColorUWO(colors, color_index);
+  return drawGetColorUint16(colors, color_index);
 }
 
 static uint32_t drawGetDualColorUint32(uint32_t *colors, uint8_t *dual_translate_ptr, uint8_t playfield1_value, uint8_t playfield2_value)
@@ -740,12 +740,12 @@ static uint32_t drawProcessNonVisibleHAMPixels(graph_line *linedescription, LON 
   return hampixel;
 }
 
-static void drawSetPixel1x1_16Bit(UWO *framebuffer, UWO pixel_color)
+static void drawSetPixel1x1_16Bit(uint16_t *framebuffer, uint16_t pixel_color)
 {
   framebuffer[0] = pixel_color;
 }
 
-static void drawSetPixel1x2_16Bit(UWO *framebuffer, uint32_t nextlineoffset, UWO pixel_color)
+static void drawSetPixel1x2_16Bit(uint16_t *framebuffer, uint32_t nextlineoffset, uint16_t pixel_color)
 {
   framebuffer[0] = pixel_color;
   framebuffer[nextlineoffset] = pixel_color;
@@ -804,13 +804,13 @@ static void drawLineNormal1x1_16Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln1x1_16bit_tmp);
 #endif
 
-  UWO *framebuffer = (UWO *) draw_buffer_info.current_ptr;
-  UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
+  uint16_t *framebuffer = (uint16_t *) draw_buffer_info.current_ptr;
+  uint16_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
   uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 
   while (framebuffer != framebuffer_end)
   {
-    UWO pixel_color = drawGetColorUWO(linedescription->colors, *source_ptr++);
+    uint16_t pixel_color = drawGetColorUint16(linedescription->colors, *source_ptr++);
     drawSetPixel1x1_16Bit(framebuffer++, pixel_color);
   }
 
@@ -836,14 +836,14 @@ static void drawLineNormal1x2_16Bit(graph_line *linedescription, uint32_t nextli
   drawTscBefore(&dln1x2_16bit_tmp);
 #endif
 
-  UWO *framebuffer = (UWO *) draw_buffer_info.current_ptr;
-  UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
+  uint16_t *framebuffer = (uint16_t *) draw_buffer_info.current_ptr;
+  uint16_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
   uint8_t *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint32_t nextlineoffset1 = nextlineoffset / 2;
 
   while (framebuffer != framebuffer_end)
   {
-    UWO pixel_color = drawGetColorUWO(linedescription->colors, *source_ptr++);
+    uint16_t pixel_color = drawGetColorUint16(linedescription->colors, *source_ptr++);
     drawSetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 
@@ -1037,15 +1037,15 @@ static void drawLineDual1x1_16Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld1x1_16bit_tmp);
 #endif
 
-  UWO *framebuffer = (UWO *)draw_buffer_info.current_ptr;
-  UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
+  uint16_t *framebuffer = (uint16_t *)draw_buffer_info.current_ptr;
+  uint16_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
   uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
   
   while (framebuffer != framebuffer_end)
   {
-    UWO pixel_color = drawGetDualColorUWO(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
+    uint16_t pixel_color = drawGetDualColorUint16(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
     drawSetPixel1x1_16Bit(framebuffer++, pixel_color);
   }
 
@@ -1071,8 +1071,8 @@ static void drawLineDual1x2_16Bit(graph_line *linedescription, uint32_t nextline
   drawTscBefore(&dld1x2_16bit_tmp);
 #endif
 
-  UWO *framebuffer = (UWO *)draw_buffer_info.current_ptr;
-  UWO *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
+  uint16_t *framebuffer = (uint16_t *)draw_buffer_info.current_ptr;
+  uint16_t *framebuffer_end = framebuffer + linedescription->DIW_pixel_count;
   uint8_t *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   uint8_t *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   uint8_t *dual_translate_ptr = drawGetDualTranslatePtr(linedescription);
@@ -1080,7 +1080,7 @@ static void drawLineDual1x2_16Bit(graph_line *linedescription, uint32_t nextline
 
   while (framebuffer != framebuffer_end)
   {
-    UWO pixel_color = drawGetDualColorUWO(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
+    uint16_t pixel_color = drawGetDualColorUint16(linedescription->colors, dual_translate_ptr, *source_line1_ptr++, *source_line2_ptr++);
     drawSetPixel1x2_16Bit(framebuffer++, nextlineoffset1, pixel_color);
   }
 

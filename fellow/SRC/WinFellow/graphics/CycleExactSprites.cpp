@@ -163,19 +163,19 @@ void CycleExactSprites::OutputSprites(uint32_t startCylinder, uint32_t cylinderC
 
 /* SPRXPT - $dff120 to $dff13e */
 
-void CycleExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprpthChanged(uint16_t data, unsigned int sprite_number)
 {
   // Nothing
 }
 
-void CycleExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprptlChanged(uint16_t data, unsigned int sprite_number)
 {
   SpriteState[sprite_number].DMAState.state = SPRITE_DMA_STATE_READ_CONTROL;
 }
 
 /* SPRXPOS - $dff140 to $dff178 */
 
-void CycleExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprposChanged(uint16_t data, unsigned int sprite_number)
 {
   SpriteState[sprite_number].x = (SpriteState[sprite_number].x & 1) | ((data & 0xff) << 1);
   SpriteState[sprite_number].DMAState.y_first = (SpriteState[sprite_number].DMAState.y_first & 0x100) | ((data & 0xff00) >> 8);
@@ -184,7 +184,7 @@ void CycleExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void CycleExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprctlChanged(uint16_t data, unsigned int sprite_number)
 {
   // retrieve the rest of the horizontal and vertical position bits
   SpriteState[sprite_number].x = (SpriteState[sprite_number].x & 0x1fe) | (data & 0x1);
@@ -202,31 +202,31 @@ void CycleExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number
 
 /* SPRXDATA $dff144 to $dff17c */
 
-void CycleExactSprites::NotifySprdataChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprdataChanged(uint16_t data, unsigned int sprite_number)
 {
   Arm(sprite_number);
 }
 
 /* SPRXDATB $dff146 to $dff17e */
 
-void CycleExactSprites::NotifySprdatbChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_number)
 {
   SpriteState[sprite_number].armed = false;
 }
 
 /* Sprite State Machine */
 
-UWO CycleExactSprites::ReadWord(uint32_t spriteNo)
+uint16_t CycleExactSprites::ReadWord(uint32_t spriteNo)
 {
-  UWO data = chipmemReadWord(sprite_registers.sprpt[spriteNo]);
+  uint16_t data = chipmemReadWord(sprite_registers.sprpt[spriteNo]);
   sprite_registers.sprpt[spriteNo] = chipsetMaskPtr(sprite_registers.sprpt[spriteNo] + 2);
   return data;
 }
 
 void CycleExactSprites::ReadControlWords(uint32_t spriteNo)
 {
-  UWO pos = ReadWord(spriteNo);
-  UWO ctl = ReadWord(spriteNo);
+  uint16_t pos = ReadWord(spriteNo);
+  uint16_t ctl = ReadWord(spriteNo);
   wsprxpos(pos, 0x140 + spriteNo*8);
   wsprxctl(ctl, 0x142 + spriteNo*8);
 }

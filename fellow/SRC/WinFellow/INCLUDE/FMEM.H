@@ -4,7 +4,7 @@
 /* Access for chipset emulation that already have validated addresses */
 
 #define chipmemReadByte(address) (memory_chip[address])
-#define chipmemReadWord(address) ((((UWO) memory_chip[address]) << 8) | ((UWO) memory_chip[address + 1]))
+#define chipmemReadWord(address) ((((uint16_t) memory_chip[address]) << 8) | ((uint16_t) memory_chip[address + 1]))
 #define chipmemWriteWord(data, address) \
   memory_chip[address] = (uint8_t) (data >> 8); \
   memory_chip[address + 1] = (uint8_t) data
@@ -12,14 +12,14 @@
 /* Memory access functions */
 
 extern uint8_t memoryReadByte(uint32_t address);
-extern UWO memoryReadWord(uint32_t address);
+extern uint16_t memoryReadWord(uint32_t address);
 extern uint32_t memoryReadLong(uint32_t address);
 extern void memoryWriteByte(uint8_t data, uint32_t address);
-extern void memoryWriteWord(UWO data, uint32_t address);
+extern void memoryWriteWord(uint16_t data, uint32_t address);
 extern void memoryWriteLong(uint32_t data, uint32_t address);
 
-extern UWO memoryChipReadWord(uint32_t address);
-extern void memoryChipWriteWord(UWO data, uint32_t address);
+extern uint16_t memoryChipReadWord(uint32_t address);
+extern void memoryChipWriteWord(uint16_t data, uint32_t address);
 
 #define memoryReadByteFromPointer(address) (address[0])
 #define memoryReadWordFromPointer(address) ((address[0] << 8) | address[1])
@@ -29,8 +29,8 @@ extern void memoryWriteLongToPointer(uint32_t data, uint8_t *address);
 
 /* IO Bank functions */
 
-typedef UWO (*memoryIoReadFunc)(uint32_t address);
-typedef void (*memoryIoWriteFunc)(UWO data, uint32_t address);
+typedef uint16_t (*memoryIoReadFunc)(uint32_t address);
+typedef void (*memoryIoWriteFunc)(uint16_t data, uint32_t address);
 
 extern void memorySetIoReadStub(uint32_t index, memoryIoReadFunc ioreadfunction);
 extern void memorySetIoWriteStub(uint32_t index, memoryIoWriteFunc iowritefunction);
@@ -52,7 +52,7 @@ extern void memoryEmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size);
 /* Device memory functions. fhfile is using these. */
 
 extern void memoryDmemSetByte(uint8_t data);
-extern void memoryDmemSetWord(UWO data);
+extern void memoryDmemSetWord(uint16_t data);
 extern void memoryDmemSetLong(uint32_t data);
 extern void memoryDmemSetLongNoCounter(uint32_t data, uint32_t offset);
 extern void memoryDmemSetString(const STR *data);
@@ -76,10 +76,10 @@ extern void memoryShutdown(void);
 /* Memory bank functions */
 
 typedef uint8_t (*memoryReadByteFunc)(uint32_t address);
-typedef UWO (*memoryReadWordFunc)(uint32_t address);
+typedef uint16_t (*memoryReadWordFunc)(uint32_t address);
 typedef uint32_t (*memoryReadLongFunc)(uint32_t address);
 typedef void (*memoryWriteByteFunc)(uint8_t data, uint32_t address);
-typedef void (*memoryWriteWordFunc)(UWO data, uint32_t address);
+typedef void (*memoryWriteWordFunc)(uint16_t data, uint32_t address);
 typedef void (*memoryWriteLongFunc)(uint32_t data, uint32_t address);
 
 extern memoryReadByteFunc memory_bank_readbyte[65536];

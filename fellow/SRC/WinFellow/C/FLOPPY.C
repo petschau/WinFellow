@@ -110,9 +110,9 @@ BOOLE floppy_has_sync;
 /*-----------------------------------*/
 
 uint32_t dsklen, dsksync, dskpt, dskbytr;       /* Registers */
-UWO adcon;
+uint16_t adcon;
 uint32_t diskDMAen;                           /* Write counter for dsklen */
-UWO dskbyt_tmp = 0;
+uint16_t dskbyt_tmp = 0;
 BOOLE dskbyt1_read = FALSE;
 BOOLE dskbyt2_read = FALSE;
 
@@ -204,12 +204,12 @@ $dff09e - Read from $dff010
 Paula
 */
 
-UWO radcon(uint32_t address)
+uint16_t radcon(uint32_t address)
 {
   return adcon;
 }
 
-void wadcon(UWO data, uint32_t address)
+void wadcon(uint16_t data, uint32_t address)
 {
   if (data & 0x8000)
   {
@@ -233,9 +233,9 @@ void wadcon(UWO data, uint32_t address)
 /* $dff01a  */
 /*----------*/
 
-UWO rdskbytr(uint32_t address)
+uint16_t rdskbytr(uint32_t address)
 {
-  UWO tmp = (UWO)(floppy_DMA_started<<14);
+  uint16_t tmp = (uint16_t)(floppy_DMA_started<<14);
   uint32_t currentX = busGetRasterX();
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
@@ -257,7 +257,7 @@ UWO rdskbytr(uint32_t address)
 /* $dff020  */
 /*----------*/
 
-void wdskpth(UWO data, uint32_t address)
+void wdskpth(uint16_t data, uint32_t address)
 {
   dskpt = chipsetReplaceHighPtr(dskpt, data);
 
@@ -271,7 +271,7 @@ void wdskpth(UWO data, uint32_t address)
 /* $dff022  */
 /*----------*/
 
-void wdskptl(UWO data, uint32_t address)
+void wdskptl(uint16_t data, uint32_t address)
 {
   dskpt = chipsetReplaceLowPtr(dskpt, data);
 
@@ -285,7 +285,7 @@ void wdskptl(UWO data, uint32_t address)
 /* $dff024  */
 /*----------*/
 void floppyClearDMAState();
-void wdsklen(UWO data, uint32_t address)
+void wdsklen(uint16_t data, uint32_t address)
 {
   dsklen = data;
 
@@ -319,7 +319,7 @@ void wdsklen(UWO data, uint32_t address)
 /* $dff07e  */
 /*----------*/
 
-void wdsksync(UWO data, uint32_t address)
+void wdsksync(uint16_t data, uint32_t address)
 {
   dsksync = data;
 
@@ -1714,7 +1714,7 @@ void floppyDMAWrite(void)
 }
 
 /* Returns TRUE is sync is seen for the first time */
-BOOLE floppyCheckSync(UWO word_under_head)
+BOOLE floppyCheckSync(uint16_t word_under_head)
 {
   if (adcon & 0x0400)
   {
@@ -1737,7 +1737,7 @@ BOOLE floppyCheckSync(UWO word_under_head)
   return FALSE;  // Not using sync.
 }
 
-void floppyReadWord(UWO word_under_head, BOOLE found_sync)
+void floppyReadWord(uint16_t word_under_head, BOOLE found_sync)
 {
   // This skips the first sync word
   if (found_sync && (floppy_DMA.wait_for_sync && !floppy_DMA.sync_found))
@@ -1766,7 +1766,7 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync)
   }
 }
 
-UWO floppyGetByteUnderHead(uint32_t sel_drv, uint32_t track)
+uint16_t floppyGetByteUnderHead(uint32_t sel_drv, uint32_t track)
 {
   if ((track / 2) >= floppy[sel_drv].tracks)
   {
@@ -1816,7 +1816,7 @@ void floppyNextByte(uint32_t sel_drv, uint32_t track)
 #endif
 }
 
-UWO prev_byte_under_head = 0;
+uint16_t prev_byte_under_head = 0;
 void floppyEndOfLine(void)
 {
   LON sel_drv = floppySelectedGet();
@@ -1838,9 +1838,9 @@ void floppyEndOfLine(void)
     uint32_t words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
     for (i = 0; i < words; i++) 
     {
-      UWO tmpb1 = floppyGetByteUnderHead(sel_drv, track);
-      UWO tmpb2;
-      UWO word_under_head = (prev_byte_under_head << 8) | tmpb1;
+      uint16_t tmpb1 = floppyGetByteUnderHead(sel_drv, track);
+      uint16_t tmpb2;
+      uint16_t word_under_head = (prev_byte_under_head << 8) | tmpb1;
       BOOLE found_sync = floppyCheckSync(word_under_head);
       floppyNextByte(sel_drv, track);
 

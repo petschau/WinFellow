@@ -47,7 +47,7 @@ namespace fellow::hardfile
     void SetIOError(int8_t errorCode);
     void SetIOActual(uint32_t ioActual);
     uint32_t GetUnitNumber();
-    UWO GetCommand();
+    uint16_t GetCommand();
     unsigned int GetIndexFromUnitNumber(uint32_t unit);
     uint32_t GetUnitNumberFromIndex(unsigned int index);
 
@@ -95,7 +95,7 @@ namespace fellow::hardfile
     void CardInit() override;
     void CardMap(uint32_t mapping) override;
     uint8_t ReadByte(uint32_t address) override;
-    UWO ReadWord(uint32_t address) override;
+    uint16_t ReadWord(uint32_t address) override;
     uint32_t ReadLong(uint32_t address) override;
 
     // Native callback

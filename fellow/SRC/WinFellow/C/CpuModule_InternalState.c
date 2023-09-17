@@ -35,7 +35,7 @@ static uint32_t cpu_sfc;
 static uint32_t cpu_dfc;
 uint32_t cpu_sr; // Not static because flags calculation use it extensively
 static uint32_t cpu_vbr;
-static UWO cpu_prefetch_word;
+static uint16_t cpu_prefetch_word;
 static uint32_t cpu_cacr;
 static uint32_t cpu_caar;
 
@@ -58,7 +58,7 @@ static uint8_t cpu_model_mask;
 /* For exception handling */
 #ifdef CPU_INSTRUCTION_LOGGING
 
-static UWO cpu_current_opcode;
+static uint16_t cpu_current_opcode;
 
 #endif
 
@@ -195,8 +195,8 @@ bool cpuGetInstructionAborted() {return cpu_instruction_aborted;}
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
-void cpuSetCurrentOpcode(UWO opcode) {cpu_current_opcode = opcode;}
-UWO cpuGetCurrentOpcode(void) {return cpu_current_opcode;}
+void cpuSetCurrentOpcode(uint16_t opcode) {cpu_current_opcode = opcode;}
+uint16_t cpuGetCurrentOpcode(void) {return cpu_current_opcode;}
 
 #endif
 
@@ -248,26 +248,26 @@ void cpuSetModel(uint32_t major, uint32_t minor)
   if (makeOpcodeTable) cpuMakeOpcodeTableForModel();
 }
 
-void cpuSetDRegWord(uint32_t regno, UWO val) {*((WOR*)&cpu_regs[0][regno]) = val;}
+void cpuSetDRegWord(uint32_t regno, uint16_t val) {*((WOR*)&cpu_regs[0][regno]) = val;}
 void cpuSetDRegByte(uint32_t regno, uint8_t val) {*((uint8_t*)&cpu_regs[0][regno]) = val;}
-UWO cpuGetRegWord(uint32_t i, uint32_t regno) {return (UWO)cpu_regs[i][regno];}
+uint16_t cpuGetRegWord(uint32_t i, uint32_t regno) {return (uint16_t)cpu_regs[i][regno];}
 
-UWO cpuGetDRegWord(uint32_t regno) {return (UWO)cpu_regs[0][regno];}
+uint16_t cpuGetDRegWord(uint32_t regno) {return (uint16_t)cpu_regs[0][regno];}
 uint8_t cpuGetDRegByte(uint32_t regno) {return (uint8_t)cpu_regs[0][regno];}
 
 uint32_t cpuGetDRegWordSignExtLong(uint32_t regno) {return cpuSignExtWordToLong(cpuGetDRegWord(regno));}
-UWO cpuGetDRegByteSignExtWord(uint32_t regno) {return cpuSignExtByteToWord(cpuGetDRegByte(regno));}
+uint16_t cpuGetDRegByteSignExtWord(uint32_t regno) {return cpuSignExtByteToWord(cpuGetDRegByte(regno));}
 uint32_t cpuGetDRegByteSignExtLong(uint32_t regno) {return cpuSignExtByteToLong(cpuGetDRegByte(regno));}
 
-UWO cpuGetARegWord(uint32_t regno) {return (UWO)cpu_regs[1][regno];}
+uint16_t cpuGetARegWord(uint32_t regno) {return (uint16_t)cpu_regs[1][regno];}
 uint8_t cpuGetARegByte(uint32_t regno) {return (uint8_t)cpu_regs[1][regno];}
 
-typedef UWO (*cpuGetWordFunc)(void);
+typedef uint16_t (*cpuGetWordFunc)(void);
 typedef uint32_t (*cpuGetLongFunc)(void);
 
-static UWO cpuGetNextWordInternal(void)
+static uint16_t cpuGetNextWordInternal(void)
 {
-  UWO data = memoryReadWord(cpuGetPC() + 2);
+  uint16_t data = memoryReadWord(cpuGetPC() + 2);
   return data;
 }
 
@@ -277,9 +277,9 @@ static uint32_t cpuGetNextLongInternal(void)
   return data;
 }
 
-UWO cpuGetNextWord(void)
+uint16_t cpuGetNextWord(void)
 {
-  UWO tmp = cpu_prefetch_word;
+  uint16_t tmp = cpu_prefetch_word;
   cpu_prefetch_word = cpuGetNextWordInternal();
   cpuSetPC(cpuGetPC() + 2);
   return tmp;
@@ -294,7 +294,7 @@ uint32_t cpuGetNextLong(void)
 {
   uint32_t tmp = cpu_prefetch_word << 16;
   uint32_t data = cpuGetNextLongInternal();
-  cpu_prefetch_word = (UWO) data;
+  cpu_prefetch_word = (uint16_t) data;
   cpuSetPC(cpuGetPC() + 4);
   return tmp | (data >> 16);
 }

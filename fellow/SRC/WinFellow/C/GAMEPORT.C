@@ -130,37 +130,37 @@ static uint32_t rjoydat(uint32_t i) {
 
 /* JOY0DATR - $A */
 
-UWO rjoy0dat(uint32_t address)
+uint16_t rjoy0dat(uint32_t address)
 {
-  return (UWO) rjoydat(0);
+  return (uint16_t) rjoydat(0);
 }
 
 /* JOY1DATR - $C */
 
-UWO rjoy1dat(uint32_t address)
+uint16_t rjoy1dat(uint32_t address)
 {
-  return (UWO) rjoydat(1);
+  return (uint16_t) rjoydat(1);
 }
 
 /* POT0DATR - $12 */
 
-UWO rpot0dat(uint32_t address)
+uint16_t rpot0dat(uint32_t address)
 {
-  return (UWO) potdat[0];
+  return (uint16_t) potdat[0];
 }
 
 /* POT1DATR - $14 */
 
-UWO rpot1dat(uint32_t address)
+uint16_t rpot1dat(uint32_t address)
 {
-  return (UWO) potdat[1];
+  return (uint16_t) potdat[1];
 }
 
 /* POTGOR - $16 */
 
-UWO rpotgor(uint32_t address)
+uint16_t rpotgor(uint32_t address)
 {
-  UWO val = potgor & 0xbbff;
+  uint16_t val = potgor & 0xbbff;
 
   if( gameport_autofire1[0] )
     gameport_fire1[0] = !gameport_fire1[0];
@@ -176,7 +176,7 @@ UWO rpotgor(uint32_t address)
 
 /* JOYTEST $36 */
 
-void wjoytest(UWO data, uint32_t address)
+void wjoytest(uint16_t data, uint32_t address)
 {
   uint32_t i;
 

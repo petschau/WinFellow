@@ -44,9 +44,9 @@ private:
 
   void Log(uint32_t line, uint32_t cylinder);
 
-  UWO ReadWord(uint32_t address);
+  uint16_t ReadWord(uint32_t address);
   void IncreaseBplPt(uint32_t *bplpt, uint32_t size);
-  UWO GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt);
+  uint16_t GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt);
   void AddModulo(void);
   void SetState(BPLDMAStates newState, uint32_t cycle);
   void SetStateNone(void);

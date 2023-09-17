@@ -77,7 +77,7 @@ namespace fellow::hardfile
     return fellow::api::module::HardfileHandler->ReadByte(address);
   }
 
-  UWO HardfileHandler_ReadWord(uint32_t address)
+  uint16_t HardfileHandler_ReadWord(uint32_t address)
   {
     return fellow::api::module::HardfileHandler->ReadWord(address);
   }
@@ -92,7 +92,7 @@ namespace fellow::hardfile
     // Deliberately left blank
   }
 
-  void HardfileHandler_WriteWord(UWO data, uint32_t address)
+  void HardfileHandler_WriteWord(uint16_t data, uint32_t address)
   {
     // Deliberately left blank
   }
@@ -154,10 +154,10 @@ namespace fellow::hardfile
     return _rom[address & 0xffff];
   }
 
-  UWO HardfileHandler::ReadWord(uint32_t address)
+  uint16_t HardfileHandler::ReadWord(uint32_t address)
   {
     uint8_t *p = _rom + (address & 0xffff);
-    return (static_cast<UWO>(p[0]) << 8) | static_cast<UWO>(p[1]);
+    return (static_cast<uint16_t>(p[0]) << 8) | static_cast<uint16_t>(p[1]);
   }
 
   uint32_t HardfileHandler::ReadLong(uint32_t address)
@@ -550,7 +550,7 @@ namespace fellow::hardfile
     return VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 24);
   }
 
-  UWO HardfileHandler::GetCommand()
+  uint16_t HardfileHandler::GetCommand()
   {
     return VM->Memory.ReadWord(VM->CPU.GetAReg(1) + 28);
   }
@@ -666,7 +666,7 @@ namespace fellow::hardfile
     Service->Log.AddLogDebug("HD_SCSICMD Unit %d (%d) ScsiCmd at %.8X\n", GetUnitNumberFromIndex(index), index, scsiCmdStruct);
 
     uint32_t scsiCommand = VM->Memory.ReadLong(scsiCmdStruct + 12);
-    UWO scsiCommandLength = VM->Memory.ReadWord(scsiCmdStruct + 16);
+    uint16_t scsiCommandLength = VM->Memory.ReadWord(scsiCmdStruct + 16);
 
     Service->Log.AddLogDebug("HD_SCSICMD Command length %d, data", scsiCommandLength);
 
@@ -782,14 +782,14 @@ namespace fellow::hardfile
       {
         // Show values for debug
         uint32_t senseData = VM->Memory.ReadLong(scsiCmdStruct + 22); // senseData and related fields are only used for autosensing error condition when the command fail
-        UWO senseLengthAllocated = VM->Memory.ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
+        uint16_t senseLengthAllocated = VM->Memory.ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
         uint8_t scsciCommandFlags = VM->Memory.ReadByte(scsiCmdStruct + 20);
 
         uint8_t pageCode = VM->Memory.ReadByte(scsiCommand + 2) & 0x3f;
         if (pageCode == 3)
         {
-          UWO sectorsPerTrack = _devices[index].Configuration.Geometry.SectorsPerTrack;
-          UWO bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
+          uint16_t sectorsPerTrack = _devices[index].Configuration.Geometry.SectorsPerTrack;
+          uint16_t bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
 
           // Header
           VM->Memory.WriteByte(24 + 3, returnData);
@@ -969,7 +969,7 @@ namespace fellow::hardfile
     int8_t error = 0;
     uint32_t unit = GetUnitNumber();
     unsigned int index = GetIndexFromUnitNumber(unit);
-    UWO cmd = GetCommand();
+    uint16_t cmd = GetCommand();
 
     switch (cmd)
     {

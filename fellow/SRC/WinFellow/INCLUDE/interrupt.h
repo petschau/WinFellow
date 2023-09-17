@@ -1,14 +1,14 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-extern UWO intena;
+extern uint16_t intena;
 
 void interruptHandleEvent(void);
 void interruptRaisePending();
 STR *interruptGetInterruptName(uint32_t interrupt_number);
-BOOLE interruptIsRequested(UWO bitmask);
+BOOLE interruptIsRequested(uint16_t bitmask);
 
-void wintreq_direct(UWO data, uint32_t address, bool delayIRQ);
+void wintreq_direct(uint16_t data, uint32_t address, bool delayIRQ);
 
 // Fellow standard module events
 

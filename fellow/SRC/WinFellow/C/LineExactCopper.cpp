@@ -163,7 +163,7 @@ void LineExactCopper::EventHandler()
       {
         // move data to Blitter register
         InsertEvent(cycletable[(_core.Registers.BplCon0 >> 12) & 0xf] + bus.cycle);
-        memory_iobank_write[bswapRegC >> 1]((UWO)bswapRegD, bswapRegC);
+        memory_iobank_write[bswapRegC >> 1]((uint16_t)bswapRegD, bswapRegC);
       }
     }
     else

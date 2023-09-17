@@ -1092,7 +1092,7 @@ void blitterLineMode(void)
   uint32_t bltbdat_local;
   uint32_t bltcdat_local = blitter.bltcdat;
   uint32_t bltddat_local;
-  UWO mask = (UWO)((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
+  uint16_t mask = (uint16_t)((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
   BOOLE a_enabled = blitter.bltcon & 0x08000000;
   BOOLE c_enabled = blitter.bltcon & 0x02000000;
 
@@ -1370,7 +1370,7 @@ void blitterCopy(void)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltcon0(UWO data, uint32_t address)
+void wbltcon0(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcon = (blitter.bltcon & 0x0000FFFF) | (((uint32_t)data) << 16);
@@ -1388,7 +1388,7 @@ void wbltcon0(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltcon1(UWO data, uint32_t address)
+void wbltcon1(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcon = (blitter.bltcon & 0xFFFF0000) | ((uint32_t)data);
@@ -1406,7 +1406,7 @@ void wbltcon1(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltafwm(UWO data, uint32_t address)
+void wbltafwm(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltafwm = data;
@@ -1422,7 +1422,7 @@ void wbltafwm(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltalwm(UWO data, uint32_t address)
+void wbltalwm(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltalwm = data;
@@ -1438,7 +1438,7 @@ void wbltalwm(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltcpth(UWO data, uint32_t address)
+void wbltcpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcpt = chipsetReplaceHighPtr(blitter.bltcpt, data);
@@ -1454,7 +1454,7 @@ void wbltcpth(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)     */
 /*=========================================================*/
 
-void wbltcptl(UWO data, uint32_t address)
+void wbltcptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcpt = chipsetReplaceLowPtr(blitter.bltcpt, data);
@@ -1470,7 +1470,7 @@ void wbltcptl(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltbpth(UWO data, uint32_t address)
+void wbltbpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltbpt = chipsetReplaceHighPtr(blitter.bltbpt, data);
@@ -1486,7 +1486,7 @@ void wbltbpth(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)     */
 /*=========================================================*/
 
-void wbltbptl(UWO data, uint32_t address)
+void wbltbptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltbpt = chipsetReplaceLowPtr(blitter.bltbpt, data);
@@ -1502,7 +1502,7 @@ void wbltbptl(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltapth(UWO data, uint32_t address)
+void wbltapth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltapt = chipsetReplaceHighPtr(blitter.bltapt, data);
@@ -1518,7 +1518,7 @@ void wbltapth(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)     */
 /*=========================================================*/
 
-void wbltaptl(UWO data, uint32_t address)
+void wbltaptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltapt = chipsetReplaceLowPtr(blitter.bltapt, data);
@@ -1534,7 +1534,7 @@ void wbltaptl(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)       */
 /*===========================================================*/
 
-void wbltdpth(UWO data, uint32_t address)
+void wbltdpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltdpt = chipsetReplaceHighPtr(blitter.bltdpt, data);
@@ -1550,7 +1550,7 @@ void wbltdpth(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltdptl(UWO data, uint32_t address)
+void wbltdptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltdpt = chipsetReplaceLowPtr(blitter.bltdpt, data);
@@ -1566,7 +1566,7 @@ void wbltdptl(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltsize(UWO data, uint32_t address)
+void wbltsize(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   if ((data & 0x003F) != 0)
@@ -1606,7 +1606,7 @@ void wbltsize(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltcon0l(UWO data, uint32_t address)
+void wbltcon0l(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcon = (blitter.bltcon & 0xFF00FFFF) | ((((uint32_t)data) << 16) & 0x00FF0000);
@@ -1622,7 +1622,7 @@ void wbltcon0l(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltsizv(UWO data, uint32_t address)
+void wbltsizv(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   if ((data & 0x00007FFF) != 0)
@@ -1647,7 +1647,7 @@ void wbltsizv(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltsizh(UWO data, uint32_t address)
+void wbltsizh(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   if ((data & 0x000007FF) != 0)
@@ -1681,7 +1681,7 @@ void wbltsizh(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltcmod(UWO data, uint32_t address)
+void wbltcmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcmod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
@@ -1697,7 +1697,7 @@ void wbltcmod(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltbmod(UWO data, uint32_t address)
+void wbltbmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltbmod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
@@ -1713,7 +1713,7 @@ void wbltbmod(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltamod(UWO data, uint32_t address)
+void wbltamod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltamod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
@@ -1729,7 +1729,7 @@ void wbltamod(UWO data, uint32_t address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltdmod(UWO data, uint32_t address)
+void wbltdmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltdmod = (uint32_t)(LON)(WOR)(data & 0x0000FFFE);
@@ -1745,7 +1745,7 @@ void wbltdmod(UWO data, uint32_t address)
 /* only used by DMA controller (not by CPU or blitter)          */
 /*==============================================================*/
 
-void wbltcdat(UWO data, uint32_t address)
+void wbltcdat(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcdat = data;
@@ -1761,7 +1761,7 @@ void wbltcdat(UWO data, uint32_t address)
 /* only used by DMA controller (not by CPU or blitter)          */
 /*==============================================================*/
 
-void wbltbdat(UWO data, uint32_t address)
+void wbltbdat(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltbdat_original = (uint32_t)(data & 0x0000FFFF);
@@ -1785,7 +1785,7 @@ void wbltbdat(UWO data, uint32_t address)
 /* only used by DMA controller (not by CPU or blitter)          */
 /*==============================================================*/
 
-void wbltadat(UWO data, uint32_t address)
+void wbltadat(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltadat = data;

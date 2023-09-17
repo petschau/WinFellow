@@ -29,7 +29,7 @@ RtcOkiMsm6242rs rtc;
 
 uint8_t rtcReadByte(uint32_t address)
 {
-  UWO result = rtc.read(address);
+  uint16_t result = rtc.read(address);
   uint8_t byte_result = (uint8_t) ((address & 1) ? result : (result>>8));
 
 #ifdef RTC_LOG
@@ -39,9 +39,9 @@ uint8_t rtcReadByte(uint32_t address)
   return byte_result;
 }
 
-UWO rtcReadWord(uint32_t address)
+uint16_t rtcReadWord(uint32_t address)
 {
-  UWO result = rtc.read(address);
+  uint16_t result = rtc.read(address);
 
 #ifdef RTC_LOG
   fellowAddLog("RTC Word Read: %.8X, returned %.4X\n", address, result);
@@ -72,7 +72,7 @@ void rtcWriteByte(uint8_t data, uint32_t address)
 #endif
 }
 
-void rtcWriteWord(UWO data, uint32_t address)
+void rtcWriteWord(uint16_t data, uint32_t address)
 {
   rtc.write(data, address);
 

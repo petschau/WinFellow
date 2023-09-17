@@ -59,7 +59,7 @@ uint32_t cpuEA05(uint32_t regno)
 }
 
 /* Calculates EA for disp8(Ax,Ri.size) with 68020 extended modes. */
-static uint32_t cpuEA06Ext(UWO ext, uint32_t base_reg_value, uint32_t index_value)
+static uint32_t cpuEA06Ext(uint16_t ext, uint32_t base_reg_value, uint32_t index_value)
 {
   uint32_t base_displacement;
   uint32_t outer_displacement;
@@ -129,11 +129,11 @@ static uint32_t cpuEA06Ext(UWO ext, uint32_t base_reg_value, uint32_t index_valu
 uint32_t cpuEA06(uint32_t regno)
 {
   uint32_t reg_value = cpuGetAReg(regno);
-  UWO ext = cpuGetNextWord();
+  uint16_t ext = cpuGetNextWord();
   uint32_t index_value = cpuGetReg(ext >> 15, (ext >> 12) & 7);
   if (!(ext & 0x0800))
   {
-    index_value = cpuSignExtWordToLong((UWO)index_value);
+    index_value = cpuSignExtWordToLong((uint16_t)index_value);
   }
   if (cpuGetModelMajor() >= 2)
   {
@@ -175,11 +175,11 @@ uint32_t cpuEA72(void)
 uint32_t cpuEA73(void)
 {
   uint32_t reg_value = cpuGetPC();
-  UWO ext = cpuGetNextWord();
+  uint16_t ext = cpuGetNextWord();
   uint32_t index_value = cpuGetReg(ext >> 15, (ext >> 12) & 0x7);
   if (!(ext & 0x0800))
   {
-    index_value = cpuSignExtWordToLong((UWO)index_value);
+    index_value = cpuSignExtWordToLong((uint16_t)index_value);
   }
   if (cpuGetModelMajor() >= 2)
   {
