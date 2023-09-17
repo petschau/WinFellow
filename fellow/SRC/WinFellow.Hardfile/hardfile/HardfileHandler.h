@@ -44,7 +44,7 @@ namespace fellow::hardfile
     void RebuildHardfileConfiguration();
     void ClearDeviceRuntimeInfo(HardfileDevice& device);
 
-    void SetIOError(BYT errorCode);
+    void SetIOError(int8_t errorCode);
     void SetIOActual(uint32_t ioActual);
     uint32_t GetUnitNumber();
     UWO GetCommand();
@@ -53,12 +53,12 @@ namespace fellow::hardfile
 
     // BeginIO commands
     void IgnoreOK(uint32_t index);
-    BYT Read(uint32_t index);
-    BYT Write(uint32_t index);
-    BYT GetNumberOfTracks(uint32_t index);
-    BYT GetDiskDriveType(uint32_t index);
+    int8_t Read(uint32_t index);
+    int8_t Write(uint32_t index);
+    int8_t GetNumberOfTracks(uint32_t index);
+    int8_t GetDiskDriveType(uint32_t index);
     void WriteProt(uint32_t index);
-    BYT ScsiDirect(uint32_t index);
+    int8_t ScsiDirect(uint32_t index);
 
     void DoDiag();
     void DoOpen();

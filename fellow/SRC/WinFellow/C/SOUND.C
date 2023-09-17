@@ -663,7 +663,7 @@ __inline void soundSetSampleVolume(uint8_t sample_in, uint8_t volume, WOR sample
   volumes[sample_in][volume] = sample_out;
 }
 
-__inline WOR soundGetSampleVolume(BYT sample_in, uint8_t volume)
+__inline WOR soundGetSampleVolume(int8_t sample_in, uint8_t volume)
 {
   return volumes[sample_in][volume];
 }

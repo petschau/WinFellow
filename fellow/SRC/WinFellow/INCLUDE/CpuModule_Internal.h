@@ -184,8 +184,8 @@ extern void cpuCallResetExceptionFunc(void);
 extern void cpuFrame1(UWO vector_offset, uint32_t pc);
 
 // Private help functions
-static uint32_t cpuSignExtByteToLong(uint8_t v) {return (uint32_t)(LON)(BYT) v;}
-static UWO cpuSignExtByteToWord(uint8_t v) {return (UWO)(WOR)(BYT) v;}
+static uint32_t cpuSignExtByteToLong(uint8_t v) {return (uint32_t)(LON)(int8_t) v;}
+static UWO cpuSignExtByteToWord(uint8_t v) {return (UWO)(WOR)(int8_t) v;}
 static uint32_t cpuSignExtWordToLong(UWO v) {return (uint32_t)(LON)(WOR) v;}
 static uint32_t cpuJoinWordToLong(UWO upper, UWO lower) {return (((uint32_t)upper) << 16) | ((uint32_t)lower);}
 static uint32_t cpuJoinByteToLong(uint8_t upper, uint8_t midh, uint8_t midl, uint8_t lower) {return (((uint32_t)upper) << 24) | (((uint32_t)midh) << 16) | (((uint32_t)midl) << 8) | ((uint32_t)lower);}

@@ -181,8 +181,8 @@ void wjoytest(UWO data, uint32_t address)
   uint32_t i;
 
   for (i = 0; i < 2; i++) {
-    gameport_x[i] = gameport_x_last_read[i] = (BYT) (data & 0xff);
-    gameport_y[i] = gameport_y_last_read[i] = (BYT) ((data>>8) & 0xff);
+    gameport_x[i] = gameport_x_last_read[i] = (int8_t) (data & 0xff);
+    gameport_y[i] = gameport_y_last_read[i] = (int8_t) ((data>>8) & 0xff);
   }
 }
 

@@ -60,7 +60,7 @@ static uint32_t cpuDisGetBit(UWO opcode, uint32_t bit)
 
 static LON cpuDisGetLowByteSignExtend(UWO opc)
 {
-  return (LON)(BYT)opc;
+  return (LON)(int8_t)opc;
 }
 
 static uint32_t cpuDisGetSize(UWO opcode)

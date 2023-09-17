@@ -503,7 +503,7 @@ static void cpuClr()
 /// <returns>The result</returns>
 static uint8_t cpuNegB(uint8_t src1)
 {
-  uint8_t res = (uint8_t)-(BYT)src1;
+  uint8_t res = (uint8_t)-(int8_t)src1;
   cpuSetFlagsNeg(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src1));
   return res;
 }
@@ -536,8 +536,8 @@ static uint32_t cpuNegL(uint32_t src1)
 /// <returns>The result</returns>
 static uint8_t cpuNegxB(uint8_t src1)
 {
-  BYT x = (cpuGetFlagX()) ? 1 : 0;
-  uint8_t res = (uint8_t)-(BYT)src1 - x;
+  int8_t x = (cpuGetFlagX()) ? 1 : 0;
+  uint8_t res = (uint8_t)-(int8_t)src1 - x;
   cpuSetFlagsNegx(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src1));
   return res;
 }
@@ -1424,12 +1424,12 @@ static uint32_t cpuLsrL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// </summary>
 static uint8_t cpuAslB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
-  BYT res;
+  int8_t res;
   sh &= 0x3f;
   if (sh == 0)
   {
     cpuSetFlagsShiftZero(cpuIsZeroB(dst), cpuMsbB(dst));
-    res = (BYT) dst;
+    res = (int8_t) dst;
   }
   else if (sh >= 8)
   {
@@ -1440,7 +1440,7 @@ static uint8_t cpuAslB(uint8_t dst, uint32_t sh, uint32_t cycles)
   {
     uint8_t mask = 0xff << (7-sh);
     uint8_t out = dst & mask;
-    res = ((BYT)dst) << sh;
+    res = ((int8_t)dst) << sh;
 
     // Overflow calculation: 
     // 1. The msb of the result and original are different
@@ -1532,12 +1532,12 @@ static uint32_t cpuAslL(uint32_t dst, uint32_t sh, uint32_t cycles)
 /// </summary>
 static uint8_t cpuAsrB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
-  BYT res;
+  int8_t res;
   sh &= 0x3f;
   if (sh == 0)
   {
     cpuSetFlagsShiftZero(cpuIsZeroB(dst), cpuMsbB(dst));
-    res = (BYT) dst;
+    res = (int8_t) dst;
   }
   else if (sh >= 8)
   {
@@ -1546,7 +1546,7 @@ static uint8_t cpuAsrB(uint8_t dst, uint32_t sh, uint32_t cycles)
   }
   else
   {
-    res = ((BYT)dst) >> sh;
+    res = ((int8_t)dst) >> sh;
     cpuSetFlagsShift(cpuIsZeroB(res), cpuMsbB(res), dst & (1<<(sh-1)), FALSE);
   }
   cpuSetInstructionTime(cycles + sh*2);
@@ -3227,7 +3227,7 @@ static void cpuMoveSB(uint32_t ea, UWO extension)
       }
       else
       {
-	cpuSetAReg(regno, (uint32_t)(LON)(BYT) data);
+	cpuSetAReg(regno, (uint32_t)(LON)(int8_t) data);
       }
     }
   }
@@ -3516,7 +3516,7 @@ static void cpuChkCmp2B(uint32_t ea, UWO extension)
   BOOLE is_chk2 = (extension & 0x0800);
   if (da == 1)
   {
-    cpuChk2Cmp2((uint32_t)(LON)(BYT)memoryReadByte(ea), (uint32_t)(LON)(BYT)memoryReadByte(ea + 1), cpuGetAReg(rn), is_chk2);
+    cpuChk2Cmp2((uint32_t)(LON)(int8_t)memoryReadByte(ea), (uint32_t)(LON)(int8_t)memoryReadByte(ea + 1), cpuGetAReg(rn), is_chk2);
   }
   else
   {

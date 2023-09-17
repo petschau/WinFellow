@@ -22,7 +22,6 @@
 
 typedef unsigned short int UWO;
 typedef unsigned FELLOW_LONG_LONG ULL;
-typedef signed char BYT;
 typedef signed short int WOR;
 typedef signed int LON;
 typedef signed FELLOW_LONG_LONG LLO;

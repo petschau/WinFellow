@@ -535,7 +535,7 @@ namespace fellow::hardfile
     _deviceNameStartNumber = 0;
   }
 
-  void HardfileHandler::SetIOError(BYT errorCode)
+  void HardfileHandler::SetIOError(int8_t errorCode)
   {
     VM->Memory.WriteByte(errorCode, VM->CPU.GetAReg(1) + 31);
   }
@@ -564,7 +564,7 @@ namespace fellow::hardfile
     SetIOError(0); // io_Error - 0 - success
   }
 
-  BYT HardfileHandler::Read(uint32_t index)
+  int8_t HardfileHandler::Read(uint32_t index)
   {
     if (index == 2)
     {
@@ -600,7 +600,7 @@ namespace fellow::hardfile
     return 0;
   }
 
-  BYT HardfileHandler::Write(uint32_t index)
+  int8_t HardfileHandler::Write(uint32_t index)
   {
     if (_devices[index].F == nullptr)
     {
@@ -630,7 +630,7 @@ namespace fellow::hardfile
     return 0;
   }
 
-  BYT HardfileHandler::GetNumberOfTracks(uint32_t index)
+  int8_t HardfileHandler::GetNumberOfTracks(uint32_t index)
   {
     if (_devices[index].F == nullptr)
     {
@@ -641,7 +641,7 @@ namespace fellow::hardfile
     return 0;
   }
 
-  BYT HardfileHandler::GetDiskDriveType(uint32_t index)
+  int8_t HardfileHandler::GetDiskDriveType(uint32_t index)
   {
     if (_devices[index].F == nullptr)
     {
@@ -658,9 +658,9 @@ namespace fellow::hardfile
     SetIOActual(_devices[index].Readonly ? 1 : 0);
   }
 
-  BYT HardfileHandler::ScsiDirect(uint32_t index)
+  int8_t HardfileHandler::ScsiDirect(uint32_t index)
   {
-    BYT error = 0;
+    int8_t error = 0;
     uint32_t scsiCmdStruct = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40); // io_Data
 
     Service->Log.AddLogDebug("HD_SCSICMD Unit %d (%d) ScsiCmd at %.8X\n", GetUnitNumberFromIndex(index), index, scsiCmdStruct);
@@ -966,7 +966,7 @@ namespace fellow::hardfile
   // void BeginIO(io_req)
   void HardfileHandler::DoBeginIO()
   {
-    BYT error = 0;
+    int8_t error = 0;
     uint32_t unit = GetUnitNumber();
     unsigned int index = GetIndexFromUnitNumber(unit);
     UWO cmd = GetCommand();
