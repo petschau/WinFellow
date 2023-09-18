@@ -1764,11 +1764,11 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
 {
   BITMAPFILEHEADER bfh;
   BITMAPINFOHEADER bih;
-  HDC memDC = NULL;
-  HGDIOBJ bitmap = NULL;
-  HGDIOBJ oldbit = NULL;
-  FILE *file = NULL;
-  void *data = NULL;
+  HDC memDC = nullptr;
+  HGDIOBJ bitmap = nullptr;
+  HGDIOBJ oldbit = nullptr;
+  FILE *file = nullptr;
+  void *data = nullptr;
   int bpp, datasize;
   bool bSuccess = FALSE;
 
@@ -1801,8 +1801,8 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   bih.biBitCount = bpp * 8;
   bih.biCompression = BI_RGB;
 
-  bitmap = CreateDIBSection(NULL, (BITMAPINFO *)&bih,
-    DIB_RGB_COLORS, &data, NULL, 0);
+  bitmap = CreateDIBSection(nullptr, (BITMAPINFO *)&bih,
+                            DIB_RGB_COLORS, &data, nullptr, 0);
 
   if (!bitmap) goto cleanup;
   if (!data) goto cleanup;
@@ -1811,7 +1811,7 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   if (!memDC) goto cleanup;
 
   oldbit = SelectObject(memDC, bitmap);
-  if (oldbit <= 0) goto cleanup;
+  if (oldbit <= nullptr) goto cleanup;
 
   bSuccess = StretchBlt(memDC, 0, 0, width, height, hDC, x, y, width / lDisplayScale, height / lDisplayScale, SRCCOPY) ? true : false;
   if (!bSuccess) goto cleanup;
@@ -1826,7 +1826,7 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   bSuccess = TRUE;
 
 cleanup:
-  if (oldbit > 0) SelectObject(memDC, oldbit);
+  if (oldbit > nullptr) SelectObject(memDC, oldbit);
   if (memDC) DeleteDC(memDC);
   if (file) fclose(file);
   if (bitmap) DeleteObject(bitmap);
@@ -1841,7 +1841,7 @@ static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface
   DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, const char *filename) {
   DDSURFACEDESC ddsd;
   HRESULT hResult = DD_OK;
-  HDC surfDC = NULL;
+  HDC surfDC = nullptr;
   bool bSuccess = FALSE;
 
   if (!surface) return FALSE;

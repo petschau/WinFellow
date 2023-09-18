@@ -61,7 +61,7 @@ BOOLE fsWrapHasDrives(void) {
 /*===========================================================================*/
 
 BOOLE *fsWrapGetDriveMap(void) {
-  return NULL;
+  return nullptr;
 }
 
 /*===========================================================================*/
@@ -143,19 +143,19 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
     {
 
 #ifdef _DEBUG
-      LPTSTR szErrorMessage=NULL;
+      LPTSTR szErrorMessage= nullptr;
       DWORD hResult = GetLastError();
 
       fellowAddLog("  fsWrapStat(): GetFileAttributesEx() failed, return code=%d", 
         hResult);
 
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
-        NULL, hResult, MAKELANGID(0, SUBLANG_ENGLISH_US), (LPTSTR)&szErrorMessage, 0, NULL);
-      if (szErrorMessage != NULL)
+                    nullptr, hResult, MAKELANGID(0, SUBLANG_ENGLISH_US), (LPTSTR)&szErrorMessage, 0, nullptr);
+      if (szErrorMessage != nullptr)
       {
           fellowAddTimelessLog(" (%s)\n", szErrorMessage);
           LocalFree(szErrorMessage);
-          szErrorMessage = NULL;
+          szErrorMessage = nullptr;
       }
       else
         fellowAddTimelessLog("\n");
@@ -210,7 +210,7 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
 
 fs_navig_point *fsWrapMakePoint(const char *point) {
   struct stat mystat;
-  fs_navig_point *fsnp = NULL;
+  fs_navig_point *fsnp = nullptr;
   FILE *file_ptr;
 
   // check file permissions
@@ -227,7 +227,7 @@ fs_navig_point *fsWrapMakePoint(const char *point) {
     if(fsnp->writeable)
     {
       file_ptr = fopen(point, "a");
-      if(file_ptr == NULL)
+      if(file_ptr == nullptr)
       {
         fsnp->writeable = FALSE;
       }
@@ -239,7 +239,7 @@ fs_navig_point *fsWrapMakePoint(const char *point) {
     fsnp->size = mystat.st_size;
     fsnp->drive = 0;
     fsnp->relative = FALSE;
-    fsnp->lnode = NULL;
+    fsnp->lnode = nullptr;
   }
   else
   {
@@ -307,7 +307,7 @@ fs_navig_point *fsWrapReadDir(void) {
     else if (FindNextFile(fs_wrap_dirent_handle, &fs_wrap_dirent))
       return fsWrapMakePoint(fs_wrap_dirent.cFileName);
   }
-  return NULL;
+  return nullptr;
 }
 
 

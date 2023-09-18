@@ -1494,7 +1494,7 @@ void wdbgDebugSessionRun(HWND parent)
 
 #else
 
-HWND wdeb_hDialog = 0;
+HWND wdeb_hDialog = nullptr;
 uint32_t WDEB_DISASM_LINES = 42;
 
 enum wdeb_actions
@@ -1845,7 +1845,7 @@ void wdebDoMessages()
 void wdebCloseDialog()
 {
   DestroyWindow(wdeb_hDialog);
-  wdeb_hDialog = 0;
+  wdeb_hDialog = nullptr;
 }
 
 void wdebDebug()
@@ -1869,7 +1869,7 @@ void wdebDebug()
   }
   else
   {
-    MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
+    MessageBox(nullptr, "Specified KickImage does not exist", "Configuration Error", 0);
   }
 }
 

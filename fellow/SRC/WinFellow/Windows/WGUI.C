@@ -82,10 +82,10 @@ char extractedpathname[CFG_FILENAME_LENGTH];
 wgui_drawmodes wgui_dm;								// data structure for resolution data
 wgui_drawmode *pwgui_dm_match;
 BOOLE wgui_emulation_state = FALSE;
-HBITMAP power_led_on_bitmap = 0;
-HBITMAP power_led_off_bitmap = 0;
-HBITMAP diskdrive_led_disabled_bitmap = 0;
-HBITMAP diskdrive_led_off_bitmap = 0;
+HBITMAP power_led_on_bitmap = nullptr;
+HBITMAP power_led_off_bitmap = nullptr;
+HBITMAP diskdrive_led_disabled_bitmap = nullptr;
+HBITMAP diskdrive_led_off_bitmap = nullptr;
 
 #define MAX_JOYKEY_PORT 2
 #define MAX_DISKDRIVES 4
@@ -224,7 +224,7 @@ char *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {
 // preset handling
 char wgui_preset_path[CFG_FILENAME_LENGTH] = "";
 uint32_t wgui_num_presets = 0;
-wgui_preset *wgui_presets = NULL;
+wgui_preset *wgui_presets = nullptr;
 
 /*============================================================================*/
 /* Flags for various global events                                            */
@@ -324,16 +324,16 @@ UINT wgui_propsheetICON[PROP_SHEETS] = {
 // in this struct, we remember the configuration dialog property sheet handles,
 // so that a refresh can be triggered by the presets propery sheet
 HWND wgui_propsheetHWND[PROP_SHEETS] = {
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr
 };
 
 typedef INT_PTR (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
@@ -353,19 +353,19 @@ wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {
 
 void wguiLoadBitmaps(void)
 {
-  if (power_led_on_bitmap == 0)
+  if (power_led_on_bitmap == nullptr)
   {
     power_led_on_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_POWER_LED_ON));
   }
-  if (power_led_off_bitmap == 0)
+  if (power_led_off_bitmap == nullptr)
   {
     power_led_off_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_POWER_LED_OFF));
   }
-  if (diskdrive_led_off_bitmap == 0)
+  if (diskdrive_led_off_bitmap == nullptr)
   {
     diskdrive_led_off_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF));
   }
-  if (diskdrive_led_disabled_bitmap == 0)
+  if (diskdrive_led_disabled_bitmap == nullptr)
   {
     diskdrive_led_disabled_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED));
   }
@@ -373,10 +373,10 @@ void wguiLoadBitmaps(void)
 
 void wguiReleaseBitmaps(void)
 {
-  if (power_led_on_bitmap != 0) DeleteObject(power_led_on_bitmap);
-  if (power_led_off_bitmap != 0) DeleteObject(power_led_off_bitmap);
-  if (diskdrive_led_disabled_bitmap != 0) DeleteObject(diskdrive_led_disabled_bitmap);
-  if (diskdrive_led_off_bitmap != 0) DeleteObject(diskdrive_led_off_bitmap);
+  if (power_led_on_bitmap != nullptr) DeleteObject(power_led_on_bitmap);
+  if (power_led_off_bitmap != nullptr) DeleteObject(power_led_off_bitmap);
+  if (diskdrive_led_disabled_bitmap != nullptr) DeleteObject(diskdrive_led_disabled_bitmap);
+  if (diskdrive_led_off_bitmap != nullptr) DeleteObject(diskdrive_led_off_bitmap);
 }
 
 void wguiCheckMemorySettingsForChipset(void)
@@ -650,7 +650,7 @@ char *wguiExtractPath(char *fullpathname) {
     return extractedpathname;
   }
   else
-    return NULL;
+    return nullptr;
 }
 
 /*============================================================================*/
@@ -692,13 +692,13 @@ BOOLE wguiSelectFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *
   ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
   ofn.hInstance = win_drv_hInstance;
   ofn.lpstrFilter = pfilters;
-  ofn.lpstrCustomFilter = NULL;
+  ofn.lpstrCustomFilter = nullptr;
   ofn.nMaxCustFilter = 0;
   ofn.nFilterIndex = 1;
   filename[0] = '\0';
   ofn.lpstrFile = filename;
   ofn.nMaxFile = filenamesize;
-  ofn.lpstrFileTitle = NULL;
+  ofn.lpstrFileTitle = nullptr;
   ofn.nMaxFileTitle = 0;
 
   switch (SelectFileType) {
@@ -729,17 +729,17 @@ BOOLE wguiSelectFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *
       ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini);
       break;
     default:
-      ofn.lpstrInitialDir = NULL;
+      ofn.lpstrInitialDir = nullptr;
   }
 
   ofn.lpstrTitle = title;
   ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
   ofn.nFileOffset = 0;
   ofn.nFileExtension = 0;
-  ofn.lpstrDefExt = NULL;
+  ofn.lpstrDefExt = nullptr;
   ofn.lCustData = 0;
-  ofn.lpfnHook = NULL;
-  ofn.lpTemplateName = NULL;
+  ofn.lpfnHook = nullptr;
+  ofn.lpTemplateName = nullptr;
   return GetOpenFileName(&ofn);
 }
 
@@ -756,12 +756,12 @@ BOOLE wguiSaveFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *ti
   ofn.hwndOwner = hwndDlg;             /* the possibilities... */
   ofn.hInstance = win_drv_hInstance;
   ofn.lpstrFilter = pfilters;
-  ofn.lpstrCustomFilter = NULL;
+  ofn.lpstrCustomFilter = nullptr;
   ofn.nMaxCustFilter = 0;
   ofn.nFilterIndex = 1;
   ofn.lpstrFile = filename;
   ofn.nMaxFile = filenamesize;
-  ofn.lpstrFileTitle = NULL;
+  ofn.lpstrFileTitle = nullptr;
   ofn.nMaxFileTitle = 0;
 
   switch (SelectFileType)
@@ -800,7 +800,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *ti
     ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini);
     break;
   default:
-    ofn.lpstrInitialDir = NULL;
+    ofn.lpstrInitialDir = nullptr;
   }
 
   ofn.lpstrTitle = title;
@@ -809,8 +809,8 @@ BOOLE wguiSaveFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *ti
   ofn.nFileExtension = 0;
   ofn.lpstrDefExt = (LPCSTR) &".wfc";
   ofn.lCustData = (LPARAM)0;
-  ofn.lpfnHook = NULL;
-  ofn.lpTemplateName = NULL;
+  ofn.lpfnHook = nullptr;
+  ofn.lpTemplateName = nullptr;
   return GetSaveFileName(&ofn);
 }
 
@@ -819,11 +819,11 @@ BOOLE wguiSelectDirectory(HWND hwndDlg, char *szPath, char *szDescription, uint3
   BROWSEINFO bi =
   {
     hwndDlg,								// hwndOwner
-    NULL,								// pidlRoot
+    nullptr,								// pidlRoot
     szPath,								// pszDisplayName
     szTitle,								// lpszTitle
     BIF_RETURNONLYFSDIRS,					        // ulFlags
-    NULL,								// lpfn
+    nullptr,								// lpfn
     0,									// lParam
     0									// iImage
   };
@@ -831,7 +831,7 @@ BOOLE wguiSelectDirectory(HWND hwndDlg, char *szPath, char *szDescription, uint3
   LPITEMIDLIST pidlTarget = SHBrowseForFolder(&bi);
   if (pidlTarget)
   {
-    if (szDescription != NULL)
+    if (szDescription != nullptr)
     {
       strcpy(szDescription, bi.pszDisplayName);
     }
@@ -848,10 +848,10 @@ BOOLE wguiSelectDirectory(HWND hwndDlg, char *szPath, char *szDescription, uint3
 
 void wguiRemoveAllHistory(void) {
   HMENU menu = GetMenu(wgui_hDialog);
-  if (menu != 0)
+  if (menu != nullptr)
   {
     HMENU submenu = GetSubMenu(menu, 0);
-    if (submenu != 0)
+    if (submenu != nullptr)
     {
       RemoveMenu(submenu, ID_FILE_HISTORYCONFIGURATION0, MF_BYCOMMAND);
       RemoveMenu(submenu, ID_FILE_HISTORYCONFIGURATION1, MF_BYCOMMAND);
@@ -1514,7 +1514,7 @@ HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, char* filename, rdb_status 
 
   TV_INSERTSTRUCT tvInsert;
   memset(&tvInsert, 0, sizeof(tvInsert));
-  tvInsert.hParent = NULL;
+  tvInsert.hParent = nullptr;
   tvInsert.hInsertAfter = TVI_LAST;
   tvInsert.item.mask = TVIF_TEXT | TVIF_PARAM;
   tvInsert.item.pszText = s;
@@ -1751,7 +1751,7 @@ void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
 
 /* Execute filesystem add or edit data */
 
-cfg_filesys *wgui_current_filesystem_edit = NULL;
+cfg_filesys *wgui_current_filesystem_edit = nullptr;
 uint32_t wgui_current_filesystem_edit_index = 0;
 
 /* Run a filesystem edit or add dialog */
@@ -2163,13 +2163,13 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
       ccwEditSetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strLastPresetROMDir);
 
-      if(strLastPresetROMDir != NULL)
+      if(strLastPresetROMDir != nullptr)
         if(strLastPresetROMDir[0] != '\0') {
           ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_MODEL);
           ccwButtonEnable(hwndDlg, IDC_COMBO_PRESETS_MODEL);
         }
 
-      if(wgui_presets != NULL) {
+      if(wgui_presets != nullptr) {
         uint32_t i;          
 
         for(i=0; i<wgui_num_presets; i++)
@@ -2185,7 +2185,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             {
               char strROMSearchPath[CFG_FILENAME_LENGTH] = "";
 
-              if (wguiSelectDirectory(hwndDlg, strROMSearchPath, NULL, CFG_FILENAME_LENGTH, 
+              if (wguiSelectDirectory(hwndDlg, strROMSearchPath, nullptr, CFG_FILENAME_LENGTH, 
 	        "Select ROM Directory:")) {
 	        ccwEditSetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strROMSearchPath);
                 iniSetLastUsedPresetROMDir(wgui_ini, strROMSearchPath);
@@ -2244,7 +2244,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
           case IDC_COMBO_PRESETS_MODEL:
             {
               uint32_t index = 0;
-              cfg *cfgTemp = NULL;
+              cfg *cfgTemp = nullptr;
               char strTemp[CFG_FILENAME_LENGTH] = "";
 
               index = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
@@ -2364,7 +2364,7 @@ void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, int editIdentifier, uint32_t i
 
 bool wguiCreateFloppyDiskImage(cfg *conf, HWND hwndDlg, uint32_t index) 
 {
-  char *filename = NULL;
+  char *filename = nullptr;
     
   filename = (char *) DialogBox(win_drv_hInstance,
       MAKEINTRESOURCE(IDD_FLOPPY_ADF_CREATE),
@@ -2976,7 +2976,7 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
           break;
         }
         _strupr(fname);
-        if (strrchr(fname, '.HDF') == NULL)
+        if (strrchr(fname, '.HDF') == nullptr)
         {
           if (hfile.Filename.length() > 252)
           {
@@ -3305,15 +3305,15 @@ INT_PTR wguiConfigurationDialog()
       propertysheets[i].hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(wgui_propsheetICON[i]));
     } else {
       propertysheets[i].dwFlags = PSP_DEFAULT;
-      propertysheets[i].hIcon = 0;
+      propertysheets[i].hIcon = nullptr;
     }
     propertysheets[i].hInstance = win_drv_hInstance;
     propertysheets[i].pszTemplate = MAKEINTRESOURCE(wgui_propsheetRID[i]);
-    propertysheets[i].pszTitle = NULL;
+    propertysheets[i].pszTitle = nullptr;
     propertysheets[i].pfnDlgProc = wgui_propsheetDialogProc[i];
     propertysheets[i].lParam = 0;
-    propertysheets[i].pfnCallback = NULL;
-    propertysheets[i].pcRefParent = NULL;
+    propertysheets[i].pfnCallback = nullptr;
+    propertysheets[i].pcRefParent = nullptr;
   }
   propertysheetheader.dwSize = sizeof(PROPSHEETHEADER);
   propertysheetheader.dwFlags = PSH_PROPSHEETPAGE;
@@ -3324,7 +3324,7 @@ INT_PTR wguiConfigurationDialog()
   propertysheetheader.nPages = PROP_SHEETS;
   propertysheetheader.nStartPage = 4;
   propertysheetheader.ppsp = propertysheets;
-  propertysheetheader.pfnCallback = NULL;
+  propertysheetheader.pfnCallback = nullptr;
   return PropertySheet(&propertysheetheader);
 }
 
@@ -3361,7 +3361,7 @@ INT_PTR CALLBACK wguiAboutDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
           break;
         case IDC_STATIC_LINK:
           SetTextColor((HDC) LOWORD(lParam), RGB(0, 0, 255));
-          ShellExecute(NULL, "open", "http://fellow.sourceforge.net", NULL,NULL, SW_SHOWNORMAL);
+          ShellExecute(nullptr, "open", "http://fellow.sourceforge.net", nullptr, nullptr, SW_SHOWNORMAL);
           break;  
         default:
           break;
@@ -3560,7 +3560,7 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
 /*============================================================================*/
 
 void wguiRequester(char *szMessage, UINT uType) {
-  MessageBox(NULL, szMessage, "WinFellow Amiga Emulator", uType);
+  MessageBox(nullptr, szMessage, "WinFellow Amiga Emulator", uType);
 }
 
 
@@ -3571,7 +3571,7 @@ void wguiRequester(char *szMessage, UINT uType) {
 BOOLE wguiCheckEmulationNecessities(void) {
   if(strcmp(cfgGetKickImage(wgui_cfg), "") != 0) {
     FILE *F = fopen(cfgGetKickImage(wgui_cfg), "rb");
-    if (F != NULL)
+    if (F != nullptr)
     {
       fclose(F);
       return TRUE;
@@ -3786,7 +3786,7 @@ static bool wguiInitializePresets(wgui_preset **wgui_presets, uint32_t *wgui_num
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
   uint32_t i = 0;
-  cfg *cfgTemp = NULL;
+  cfg *cfgTemp = nullptr;
   bool bResult = false;
   char strFilename[CFG_FILENAME_LENGTH] = "";
 
@@ -3865,7 +3865,7 @@ void wguiSetProcessDPIAwareness(const char *pszAwareness)
 
   fellowAddLog("wguiSetProcessDPIAwareness(%s)\n", pszAwareness);
 
-  nAwareness = (Process_DPI_Awareness)strtoul(pszAwareness, NULL, 0);
+  nAwareness = (Process_DPI_Awareness)strtoul(pszAwareness, nullptr, 0);
   hr = E_NOTIMPL;
   hCoreDll = LoadLibrary("Shcore.dll");
 
@@ -3938,6 +3938,6 @@ void wguiShutdown(void) {
   wguiReleaseBitmaps();
   wguiFreeGuiDrawModesLists();
 
-  if(wgui_presets != NULL)
+  if(wgui_presets != nullptr)
     free(wgui_presets);
 }

@@ -128,7 +128,7 @@ char memory_key[256];
 
 bool memory_a1000_wcs = false;              ///< emulate the Amiga 1000 WCS (writable control store)
 
-uint8_t *memory_a1000_bootstrap = NULL;         ///< hold A1000 bootstrap ROM, if used
+uint8_t *memory_a1000_bootstrap = nullptr;         ///< hold A1000 bootstrap ROM, if used
 
 bool memory_a1000_bootstrap_mapped = false; ///< true while A1000 bootstrap ROM mapped to KS area
 
@@ -148,9 +148,9 @@ uint8_t memory_slow[0x1c0000 + 32];
 
 uint8_t memory_kick[0x080000 + 32];
 
-uint8_t *memory_kick_ext = NULL;
+uint8_t *memory_kick_ext = nullptr;
 
-uint8_t *memory_fast = NULL;
+uint8_t *memory_fast = nullptr;
 
 uint32_t memory_fast_baseaddress;
 
@@ -480,7 +480,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-      if (basep != NULL)
+      if (basep != nullptr)
 
       {
 
@@ -492,7 +492,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
       {
 
-	memory_bank_pointer[i] = NULL;
+	memory_bank_pointer[i] = nullptr;
 
       }
 
@@ -644,9 +644,9 @@ const char *memory_kickimage_versionstrings[14] = {
 
                   memoryUnmappedWriteWord, 
 
-                  memoryUnmappedWriteLong, 
+                  memoryUnmappedWriteLong,
 
-                  NULL,
+                  nullptr,
 
                   bank,
 
@@ -1054,7 +1054,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
                     memoryEmemWriteLong,
 
-                    NULL,
+                    nullptr,
 
                     0xe8,
 
@@ -1330,7 +1330,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-    if (result != NULL)
+    if (result != nullptr)
 
       result += address;
 
@@ -1812,7 +1812,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
   {
 
-    if (memory_fast != NULL)
+    if (memory_fast != nullptr)
 
       memset(memory_fast, 0, memoryGetFastSize());
 
@@ -1824,13 +1824,13 @@ const char *memory_kickimage_versionstrings[14] = {
 
   {
 
-    if (memory_fast != NULL)
+    if (memory_fast != nullptr)
 
     {
 
       free(memory_fast);
 
-      memory_fast = NULL;
+      memory_fast = nullptr;
 
       memory_fast_baseaddress = 0;
 
@@ -1854,11 +1854,11 @@ const char *memory_kickimage_versionstrings[14] = {
 
       memory_fast = (uint8_t *) malloc(memoryGetFastSize());
 
-      if (memory_fast == NULL) memorySetFastSize(0);
+      if (memory_fast == nullptr) memorySetFastSize(0);
 
       else memoryFastClear();
 
-      memorySetFastAllocatedSize((memory_fast == NULL) ? 0 : memoryGetFastSize());
+      memorySetFastAllocatedSize((memory_fast == nullptr) ? 0 : memoryGetFastSize());
 
     }
 
@@ -2194,7 +2194,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
                   memoryMysteryWriteLong,
 
-                  NULL, 
+                  nullptr, 
 
                   0xe9, 
 
@@ -2214,7 +2214,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
                   memoryMysteryWriteLong,
 
-                  NULL, 
+                  nullptr, 
 
                   0xde, 
 
@@ -2378,7 +2378,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
                     memoryIoWriteLong,
 
-                    NULL,
+                    nullptr,
 
                     bank,
 
@@ -2604,7 +2604,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
     if(address >= 0xfc0000) {
 
-      uint8_t *p = NULL;
+      uint8_t *p = nullptr;
 
       address = (address & 0xffffff) - 0xf80000;
 
@@ -2628,7 +2628,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
     if(address >= 0xfc0000) {
 
-      uint8_t *p = NULL;
+      uint8_t *p = nullptr;
 
       address = (address & 0xffffff) - 0xf80000;
 
@@ -2652,7 +2652,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
     if(address >= 0xfc0000) {
 
-      uint8_t *p = NULL;
+      uint8_t *p = nullptr;
 
       address = (address & 0xffffff) - 0xf80000;
 
@@ -2826,11 +2826,11 @@ const char *memory_kickimage_versionstrings[14] = {
 
   {
 
-    if(memory_a1000_bootstrap != NULL) {
+    if(memory_a1000_bootstrap != nullptr) {
 
       free(memory_a1000_bootstrap);
 
-      memory_a1000_bootstrap = NULL;
+      memory_a1000_bootstrap = nullptr;
 
       memory_a1000_bootstrap_mapped = false;
 
@@ -3100,7 +3100,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
   {
 
-    char *keybuffer = NULL;
+    char *keybuffer = nullptr;
 
     uint32_t keysize, filesize = 0, keypos = 0, c;
 
@@ -3112,7 +3112,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-    if ((KF = fopen(keyfile, "rb")) != NULL)
+    if ((KF = fopen(keyfile, "rb")) != nullptr)
 
     {
 
@@ -3122,7 +3122,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
       keybuffer = (char*)malloc(keysize);
 
-      if (keybuffer != NULL)
+      if (keybuffer != nullptr)
 
       {
 
@@ -3142,7 +3142,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 #ifdef WIN32
 
-      HMODULE hAmigaForeverDLL = NULL;
+      HMODULE hAmigaForeverDLL = nullptr;
 
       char *strLibName = TEXT("amigaforever.dll");
 
@@ -3208,7 +3208,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 	if (pfnGetKey) {
 
-	  keysize = pfnGetKey(NULL, 0);
+	  keysize = pfnGetKey(nullptr, 0);
 
 	  if (keysize) {
 
@@ -3272,7 +3272,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-    if ((RF = fopen(filename, "rb")) != NULL)
+    if ((RF = fopen(filename, "rb")) != nullptr)
 
     {
 
@@ -3412,7 +3412,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-          if(memory_a1000_bootstrap == NULL)
+          if(memory_a1000_bootstrap == nullptr)
 
             memory_a1000_bootstrap = (uint8_t *) malloc(262144);
 
@@ -3432,7 +3432,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
               free(memory_a1000_bootstrap);
 
-              memory_a1000_bootstrap = NULL;
+              memory_a1000_bootstrap = nullptr;
 
               memoryKickError(MEMORY_ROM_ERROR_CHECKSUM, lCRC32);
 
@@ -3568,7 +3568,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
     memory_kickimage_none = FALSE;/* Initially Kickstart is expected to be OK */
 
-    if ((fsnp = fsWrapMakePoint(memory_kickimage)) == NULL)
+    if ((fsnp = fsWrapMakePoint(memory_kickimage)) == nullptr)
 
       memoryKickError(MEMORY_ROM_ERROR_EXISTS_NOT, 0);
 
@@ -3584,7 +3584,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
       { /* File passed initial tests */
 
-	if ((F = fopen(memory_kickimage, "rb")) == NULL)
+	if ((F = fopen(memory_kickimage, "rb")) == nullptr)
 
 	  memoryKickError(MEMORY_ROM_ERROR_EXISTS_NOT, 0);
 
@@ -3618,13 +3618,13 @@ const char *memory_kickimage_versionstrings[14] = {
 
       suffix = strchr(memory_kickimage, '.');
 
-      if (suffix != NULL)
+      if (suffix != nullptr)
 
       {
 
 	lastsuffix = suffix;
 
-	while ((suffix = strchr(lastsuffix + 1, '.')) != NULL)
+	while ((suffix = strchr(lastsuffix + 1, '.')) != nullptr)
 
 	  lastsuffix = suffix;
 
@@ -3662,7 +3662,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
           
 
-          if(memory_a1000_bootstrap == NULL) 
+          if(memory_a1000_bootstrap == nullptr) 
 
             memory_a1000_bootstrap = (uint8_t *) malloc(262144);
 
@@ -3686,7 +3686,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
               free(memory_a1000_bootstrap);
 
-              memory_a1000_bootstrap = NULL;
+              memory_a1000_bootstrap = nullptr;
 
               memoryKickError(MEMORY_ROM_ERROR_CHECKSUM, lCRC32);
 
@@ -3772,7 +3772,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
       free(memory_kick_ext);
 
-      memory_kick_ext = NULL;
+      memory_kick_ext = nullptr;
 
     }
 
@@ -3822,7 +3822,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-    if ((fsnp = fsWrapMakePoint(memory_kickimage_ext)) == NULL)
+    if ((fsnp = fsWrapMakePoint(memory_kickimage_ext)) == nullptr)
 
       return;
 
@@ -3838,7 +3838,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
       { /* File passed initial tests */
 
-        if ((F = fopen(memory_kickimage_ext, "rb")) == NULL)
+        if ((F = fopen(memory_kickimage_ext, "rb")) == nullptr)
 
           return;
 
@@ -3942,7 +3942,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
       fclose(F);
 
-      F = NULL;
+      F = nullptr;
 
     }
 
@@ -4036,7 +4036,7 @@ __inline  uint8_t memoryReadByte(uint32_t address)
 
     uint8_t *memory_ptr = memory_bank_pointer[address>>16];
 
-    if (memory_ptr != NULL)
+    if (memory_ptr != nullptr)
 
     {
 
@@ -4070,7 +4070,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
     uint8_t *memory_ptr = memory_bank_pointer[address>>16];
 
-    if ((memory_ptr != NULL) && !(address & 1))
+    if ((memory_ptr != nullptr) && !(address & 1))
 
     {
 
@@ -4488,7 +4488,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
   {
 
-    memory_fast = NULL;
+    memory_fast = nullptr;
 
     memory_fast_baseaddress = 0;
 

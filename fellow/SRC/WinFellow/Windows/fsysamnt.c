@@ -64,7 +64,7 @@ void filesys_init(int automount_drives)
   char volumename[MAX_PATH]="";
   char volumepath[6];
   DWORD dwDriveMask;
-  char *result = NULL;
+  char *result = nullptr;
 
   mountinfo.num_units = 0;
   if ( automount_drives) {
@@ -102,7 +102,7 @@ static int get_volume_name(struct uaedev_mount_info *mtinf, char *volumepath, ch
 {
   int result = -1;
 
-  if( GetVolumeInformation( volumepath, volumename, size, NULL, NULL, NULL, NULL, 0 ) && volumename[0] && valid_volumename( mtinf, volumename, fullcheck ) )
+  if( GetVolumeInformation( volumepath, volumename, size, nullptr, nullptr, nullptr, nullptr, 0 ) && volumename[0] && valid_volumename( mtinf, volumename, fullcheck ) )
   {
     result = 1;
   }

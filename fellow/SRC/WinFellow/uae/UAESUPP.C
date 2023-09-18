@@ -79,8 +79,8 @@ void do_put_mem_byte(uae_u8 *address, uae_u8 data) {
 /*-------------------------------------------------*/
 
 int valid_address(uaecptr adr, uae_u32 size) {
-  return ((memory_bank_pointer[(adr & 0xffffff)>>16] != NULL) &&
-	  (memory_bank_pointer[((adr + size) & 0xffffff)>>16] != NULL));
+  return ((memory_bank_pointer[(adr & 0xffffff)>>16] != nullptr) &&
+	  (memory_bank_pointer[((adr + size) & 0xffffff)>>16] != nullptr));
 }
 
 /* This was taken from compiler.c in duae075b */

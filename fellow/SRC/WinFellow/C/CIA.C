@@ -918,7 +918,7 @@ ciaWriteFunc cia_write[16] =
       ciaWriteByte,
       ciaWriteWord,
       ciaWriteLong,
-      NULL,
+      nullptr,
       bank,
       0xa00000>>16,
       FALSE);

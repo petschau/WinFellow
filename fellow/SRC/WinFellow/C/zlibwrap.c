@@ -38,8 +38,8 @@ BOOLE gzUnpack(const char *src, const char *dest)
   char	buffer[1<<14];
   int		length;
 
-  if((output = fopen(dest, "wb")) == NULL) return FALSE;
-  if((input  = gzopen(src, "rb")) == NULL) return FALSE;
+  if((output = fopen(dest, "wb")) == nullptr) return FALSE;
+  if((input  = gzopen(src, "rb")) == nullptr) return FALSE;
 
   for(;;)
   {
@@ -70,8 +70,8 @@ BOOLE gzPack(const char *src, const char *dest)
 
   strcpy(outmode, "wb9 ");
 
-  if((input  = fopen(src, "rb"))      == NULL) return FALSE;
-  if((output = gzopen(dest, outmode)) == NULL) return FALSE;;
+  if((input  = fopen(src, "rb"))      == nullptr) return FALSE;
+  if((output = gzopen(dest, outmode)) == nullptr) return FALSE;;
 
   for(;;) 
   {

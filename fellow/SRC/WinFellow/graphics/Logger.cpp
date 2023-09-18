@@ -8,7 +8,7 @@ void Logger::Log(uint32_t line, uint32_t cylinder, char *message)
 {
   if (_enableLog)
   {
-    if (_logfile == 0)
+    if (_logfile == nullptr)
     {
       char filename[MAX_PATH];
       fileopsGetGenericFileName(filename, "WinFellow", "Graphics.log");
@@ -27,9 +27,9 @@ void Logger::Log(uint32_t line, uint32_t cylinder, char *message)
 
 void Logger::Shutdown(void)
 {
-  if (_logfile != 0)
+  if (_logfile != nullptr)
   {
     fclose(_logfile);
-    _logfile = 0;
+    _logfile = nullptr;
   }
 }

@@ -1271,7 +1271,7 @@ void drawEndOfFrame(void)
 	for (uint32_t i = 0; i < height; i++)
         {
 	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);
-	  if (graph_frame_ptr != NULL)
+	  if (graph_frame_ptr != nullptr)
 	  {
 	    if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
 	    {

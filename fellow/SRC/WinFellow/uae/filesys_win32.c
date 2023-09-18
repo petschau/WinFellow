@@ -84,7 +84,7 @@ DIR *win32_opendir(const char *path)
 	if (!(dir = (DIR *)GlobalAlloc(GPTR,sizeof(DIR))))
 	{
 		lasterror = GetLastError();
-		return 0;
+		return nullptr;
 	}
 
 	strcpy(buf, path);
@@ -94,7 +94,7 @@ DIR *win32_opendir(const char *path)
 	{
 		lasterror = GetLastError();
 		GlobalFree(dir);
-		return 0;
+		return nullptr;
 	}
 
 	return dir;
@@ -102,15 +102,15 @@ DIR *win32_opendir(const char *path)
 
 struct dirent *win32_readdir(DIR *dir)
 {
-	if (dir == NULL)
-		return NULL;
+	if (dir == nullptr)
+		return nullptr;
 
 	if (dir->getnext)
 	{
 		if (!FindNextFile(dir->hDir,&dir->finddata))
 		{
 			lasterror = GetLastError();
-			return 0;
+			return nullptr;
 		}
 	}
 	dir->getnext = TRUE;
@@ -120,7 +120,7 @@ struct dirent *win32_readdir(DIR *dir)
 
 void win32_closedir(DIR *dir)
 {
-	if(dir == NULL)
+	if(dir == nullptr)
 		return;
 
 	FindClose(dir->hDir);
@@ -129,7 +129,7 @@ void win32_closedir(DIR *dir)
 
 int win32_mkdir(const char *name, int mode)
 {
-	if (CreateDirectory(name, NULL)) 
+	if (CreateDirectory(name, nullptr)) 
 		return 0;
 
 	lasterror = GetLastError();
@@ -147,10 +147,10 @@ int win32_truncate (const char *name, long int len)
     BOOL bResult = FALSE;
     int result = -1;
 
-    if( ( hFile = CreateFile( name, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                              OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL ) ) != INVALID_HANDLE_VALUE )
+    if( ( hFile = CreateFile( name, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                              OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr) ) != INVALID_HANDLE_VALUE )
     {
-        if( SetFilePointer( hFile, len, NULL, FILE_BEGIN ) == (DWORD)len )
+        if( SetFilePointer( hFile, len, nullptr, FILE_BEGIN ) == (DWORD)len )
         {
             if( SetEndOfFile( hFile ) == TRUE )
                 result = 0;

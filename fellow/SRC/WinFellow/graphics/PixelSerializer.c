@@ -188,12 +188,12 @@ void PixelSerializer::OutputCylindersUntil(uint32_t rasterY, uint32_t cylinder)
   if (outputUntilCylinder > 479)
   {
     // For debug
-    MessageBox(0, "outputUntilCylinder larger than it should be", "outputUntilCylinder out of range", 0);
+    MessageBox(nullptr, "outputUntilCylinder larger than it should be", "outputUntilCylinder out of range", 0);
   }
 
   if (outputUntilCylinder < _lastCylinderOutput)
   {
-    MessageBox(0, "outputUntilCylinder less than _lastCylinderOutput", "outputUntilCylinder out of range", 0);
+    MessageBox(nullptr, "outputUntilCylinder less than _lastCylinderOutput", "outputUntilCylinder out of range", 0);
   }
 
   if (cylinderCount == 0)

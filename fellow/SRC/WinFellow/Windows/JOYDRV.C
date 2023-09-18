@@ -145,7 +145,7 @@ BOOLE		      joy_drv_in_use;
 char *joyDrvDInputErrorString(HRESULT hResult)
 {
 #ifdef _DEBUG
-  char *UnErr = NULL;
+  char *UnErr = nullptr;
 #endif
 
   switch (hResult)
@@ -322,7 +322,7 @@ BOOLE joyDrvDxCreateAndInitDevice( IDirectInput8 *pDi, IDirectInputDevice8 *pDiD
 
   if (!pDiD[port])
   {
-    res = CoCreateInstance(CLSID_DirectInputDevice8, NULL, CLSCTX_INPROC_SERVER, IID_IDirectInputDevice8, (LPVOID*) &(pDiD[port]));
+    res = CoCreateInstance(CLSID_DirectInputDevice8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInputDevice8, (LPVOID*) &(pDiD[port]));
     if (res != DI_OK)
     {
       joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance()", res );
@@ -381,7 +381,7 @@ void joyDrvDInputInitialize(void)
 
   if (!joy_drv_lpDI)
   {
-    res = CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_INPROC_SERVER, IID_IDirectInput8, (LPVOID*) &joy_drv_lpDI);
+    res = CoCreateInstance(CLSID_DirectInput8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInput8, (LPVOID*) &joy_drv_lpDI);
     if (res != DI_OK)
     {
       joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance()", res );
@@ -424,18 +424,18 @@ void joyDrvDInputRelease(void)
 
   for( port = 0; port < MAX_JOY_PORT; port++ )
   {
-    if (joy_drv_lpDID[port] != NULL)
+    if (joy_drv_lpDID[port] != nullptr)
     {
       joyDrvDInputUnacquire(port);
       IDirectInputDevice8_Release( joy_drv_lpDID[port] );
-      joy_drv_lpDID[port] = NULL;
+      joy_drv_lpDID[port] = nullptr;
     }
   }
   
-  if (joy_drv_lpDI != NULL)
+  if (joy_drv_lpDI != nullptr)
   {
     IDirectInput8_Release( joy_drv_lpDI );
-    joy_drv_lpDI = NULL;
+    joy_drv_lpDI = nullptr;
   }
 }
 
@@ -465,7 +465,7 @@ void joyDrvStateHasChanged(BOOLE active)
 
   for( port = 0; port < MAX_JOY_PORT; port++ )
   {
-    if(joy_drv_lpDID[port] != NULL)
+    if(joy_drv_lpDID[port] != nullptr)
     {
       joyDrvDInputAcquire(port);
     }
@@ -620,7 +620,7 @@ void joyDrvMovementHandler(void)
         joystickNo = 1;
       }
 
-      if(joy_drv_lpDID[joystickNo] == NULL)
+      if(joy_drv_lpDID[joystickNo] == nullptr)
       {
         return;
       }
@@ -690,11 +690,11 @@ void joyDrvStartup(void)
   joy_drv_active = FALSE;
   joy_drv_in_use = FALSE;
 
-  joy_drv_lpDI = NULL;
-  joy_drv_lpDID[0] = NULL;
-  joy_drv_lpDID[1] = NULL;
+  joy_drv_lpDI = nullptr;
+  joy_drv_lpDID[0] = nullptr;
+  joy_drv_lpDID[1] = nullptr;
 
-  HRESULT res = CoInitialize( NULL );
+  HRESULT res = CoInitialize(nullptr);
   if(res != S_OK)
   {
     fellowAddLog("joyDrvStartup(): Could not initialize COM library: %d\n", res);

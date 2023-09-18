@@ -113,7 +113,7 @@ namespace fellow::service
     if (_new_line)
     {
       // log date/time into buffer
-      time_t thetime = time(NULL);
+      time_t thetime = time(nullptr);
       struct tm timedata;
       localtime_s(&timedata, &thetime);
       strftime(buffer, 255, "%c: ", &timedata);

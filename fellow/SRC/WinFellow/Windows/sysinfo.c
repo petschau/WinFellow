@@ -55,8 +55,8 @@ void sysinfoLogErrorMessageFromSystem (void)
   sprintf(szTemp, "Error %u: ", dwError);
   cMsgLen =
     FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER
-		   | 40, NULL, dwError, MAKELANGID (0, SUBLANG_ENGLISH_US),
-		   (LPTSTR) & msgBuf, MYREGBUFFERSIZE, NULL);
+		   | 40, nullptr, dwError, MAKELANGID (0, SUBLANG_ENGLISH_US),
+		   (LPTSTR) & msgBuf, MYREGBUFFERSIZE, nullptr);
   if(cMsgLen) {
     strcat (szTemp, msgBuf);
     fellowAddTimelessLog ("%s\n", szTemp);
@@ -80,16 +80,16 @@ static char *sysinfoRegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCT
   char *result;
 
   if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS) 
-    return NULL;
+    return nullptr;
 
-  lRet = RegQueryValueEx (hKey, ValueName, NULL, &dwType, (LPBYTE) szBuffer, &dwBufLen);
+  lRet = RegQueryValueEx (hKey, ValueName, nullptr, &dwType, (LPBYTE) szBuffer, &dwBufLen);
 
   RegCloseKey (hKey);
 
   if (lRet != ERROR_SUCCESS)
-    return NULL;
+    return nullptr;
   if (dwType != REG_SZ)
-    return NULL;
+    return nullptr;
 
   result = (char *) malloc (strlen (szBuffer) + 1);
   strcpy (result, szBuffer);
@@ -110,16 +110,16 @@ static DWORD *sysinfoRegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCT
   DWORD *result;
 
   if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS) 
-	return NULL;
+	return nullptr;
   lRet =
-    RegQueryValueEx (hKey, ValueName, NULL, &dwType, (LPBYTE) & dwBuffer,
+    RegQueryValueEx (hKey, ValueName, nullptr, &dwType, (LPBYTE) & dwBuffer,
 		     &dwBufLen);
   RegCloseKey (hKey);
 
   if (lRet != ERROR_SUCCESS)
-    return NULL;
+    return nullptr;
   if (dwType != REG_DWORD)
-    return NULL;
+    return nullptr;
 
   result = (DWORD *) malloc (sizeof (dwBuffer));
   *result = dwBuffer;
@@ -147,8 +147,8 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
   }
 
   /* retrieve information about that key (no. of subkeys) */
-  if (RegQueryInfoKey (hKey, NULL, NULL, NULL, &dwNoSubkeys, NULL,
-		      NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
+  if (RegQueryInfoKey (hKey, nullptr, nullptr, nullptr, &dwNoSubkeys, nullptr,
+                       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS) {
     /* LogErrorMessageFromSystem (); */
     return;
   }
@@ -159,7 +159,7 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
 			CurrentSubKey,
 			szSubKeyName,
 			&dwSubKeyNameLen,
-			NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
+                        nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS) {
 	    /* sysinfoLogErrorMessageFromSystem (); */
 	    continue;
 	  }
@@ -174,9 +174,9 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
 	  return;
 	}
 
-      if (RegQueryInfoKey (hKey2, NULL, NULL, NULL, &dwNoSubkeys2, NULL,
-			   NULL, NULL, NULL, NULL, NULL,
-			   NULL) != ERROR_SUCCESS)
+      if (RegQueryInfoKey (hKey2, nullptr, nullptr, nullptr, &dwNoSubkeys2, nullptr,
+                           nullptr, nullptr, nullptr, nullptr, nullptr,
+      nullptr) != ERROR_SUCCESS)
 	{
 	  /* sysinfoLogErrorMessageFromSystem (); */
 	  return;
@@ -190,7 +190,7 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
 			    CurrentSubKey2,
 			    szSubKeyName2,
 			    &dwSubKeyNameLen2,
-			    NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
+                            nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
 	    {
 	      /* LogErrorMessageFromSystem (); */
 	      continue;
@@ -342,8 +342,8 @@ static int sysinfoParseProcessorInformation()
 {
   LPFN_GLPI glpi;
   BOOL done = FALSE;
-  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = NULL;
-  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = NULL;
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = nullptr;
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = nullptr;
   DWORD returnLength = 0;
   DWORD logicalProcessorCount = 0;
   DWORD numaNodeCount = 0;
@@ -358,7 +358,7 @@ static int sysinfoParseProcessorInformation()
   glpi = (LPFN_GLPI)GetProcAddress(
     GetModuleHandle(TEXT("kernel32")),
     "GetLogicalProcessorInformation");
-  if (NULL == glpi)
+  if (nullptr == glpi)
   {
     fellowAddTimelessLog("\n\tGetLogicalProcessorInformation is not supported.\n");
     return (1);
@@ -378,7 +378,7 @@ static int sysinfoParseProcessorInformation()
         buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)malloc(
           returnLength);
 
-        if (NULL == buffer)
+        if (nullptr == buffer)
         {
           fellowAddTimelessLog("\n\tError: Allocation failure\n");
           return (2);
@@ -626,8 +626,8 @@ static void sysinfoParseOSVersionInfo(void) {
 }
 
 static void sysinfoParseRegistry(void) {
-  char *tempstr = NULL;
-  DWORD *dwTemp = NULL;
+  char *tempstr = nullptr;
+  DWORD *dwTemp = nullptr;
 
   tempstr = sysinfoRegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
     ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),

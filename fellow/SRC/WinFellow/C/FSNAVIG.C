@@ -69,7 +69,7 @@ void fsNavigInitializeInstallDir(char *cmd) {
 
   fsWrapFullPath(tmpname, cmd);
   locc = strrchr(tmpname, FS_WRAP_PATH_SEPARATOR_CHAR);
-  if (locc == NULL) strcpy(tmpname, ".");
+  if (locc == nullptr) strcpy(tmpname, ".");
   else *locc = '\0';
   fs_navig_install_dir = fsWrapMakePoint(tmpname);
 }
@@ -126,10 +126,10 @@ void fsNavigSetCWDStartupDir(void) {
 felist *fsNavigGetDirList(fs_navig_point *fs_point)
 {
   fs_navig_point *fsnpnode;
-  felist *l = NULL;
+  felist *l = nullptr;
 
   if (fsWrapOpenDir(fs_point))
-    while ((fsnpnode = fsWrapReadDir()) != NULL)
+    while ((fsnpnode = fsWrapReadDir()) != nullptr)
       l = listAddLast(l, listNew(fsnpnode));
   return l;
 }
@@ -150,9 +150,9 @@ void fsNavigStartup(char *argv[]) {
 /*===========================================================================*/
 
 void fsNavigShutdown(void) {
-  if (fs_navig_install_dir != NULL)
+  if (fs_navig_install_dir != nullptr)
     free(fs_navig_install_dir);
-  if (fs_navig_startup_dir != NULL)
+  if (fs_navig_startup_dir != nullptr)
     free(fs_navig_startup_dir);
 
 }

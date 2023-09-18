@@ -52,17 +52,17 @@ void cpuClearEverything(void)
   cpuSetInitialPC(0);
   cpuSetInitialSP(0);
   cpuSetModel(0, 0);  // Also sets model-mask
-  cpuSetCheckPendingInterruptsFunc(NULL);
+  cpuSetCheckPendingInterruptsFunc(nullptr);
 
 #ifdef CPU_INSTRUCTION_LOGGING
   cpuSetCurrentOpcode(0);
-  cpuSetInstructionLoggingFunc(NULL);
-  cpuSetExceptionLoggingFunc(NULL);
-  cpuSetInterruptLoggingFunc(NULL);
+  cpuSetInstructionLoggingFunc(nullptr);
+  cpuSetExceptionLoggingFunc(nullptr);
+  cpuSetInterruptLoggingFunc(nullptr);
 #endif
 
-  cpuSetMidInstructionExceptionFunc(NULL);
-  cpuSetResetExceptionFunc(NULL);
+  cpuSetMidInstructionExceptionFunc(nullptr);
+  cpuSetResetExceptionFunc(nullptr);
 }
 
 void cpuHardReset(void)

@@ -393,8 +393,8 @@ BOOLE prsGetAmigaName( char *line, char **pAm, char **pWin )
 
 BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
 {
-  FILE *f = NULL;
-  char line[256], *pAmigaName = NULL, *pWinName = NULL;
+  FILE *f = nullptr;
+  char line[256], *pAmigaName = nullptr, *pWinName = nullptr;
   int AmigaIndex, PcIndex, ReplIndex;
 
   f = fopen( szFilename, "r" );
@@ -473,7 +473,7 @@ BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_re
 
 BOOLE prsWriteFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
 {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   char line[256];
   int AmigaIndex, PcIndex;
 

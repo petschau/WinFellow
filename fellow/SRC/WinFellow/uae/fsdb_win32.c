@@ -95,7 +95,7 @@ int fsdb_name_invalid (const char *n)
 
     /* these characters are *never* allowed */
     for (i=0; i < NUM_EVILCHARS; i++) {
-        if (strchr (n, evilchars[i]) != 0)
+        if (strchr (n, evilchars[i]) != nullptr)
             return 1;
     }
 
@@ -179,12 +179,12 @@ char *fsdb_create_unique_nname (a_inode *base, const char *suggestion)
 	
     /* replace the evil ones... */
     for (i=0; i < NUM_EVILCHARS; i++)
-        while ((c = strchr (tmp, evilchars[i])) != 0)
+        while ((c = strchr (tmp, evilchars[i])) != nullptr)
             *c = '_';
 	
-    while ((c = strchr (tmp, '.')) != 0)
+    while ((c = strchr (tmp, '.')) != nullptr)
         *c = '_';
-	while ((c = strchr (tmp, ' ')) != 0)
+	while ((c = strchr (tmp, ' ')) != nullptr)
         *c = '_';
 
     for (;;) {

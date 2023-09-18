@@ -1942,7 +1942,7 @@ namespace fellow::hardfile
 
     if (!configuration.Filename.empty() && size != 0)
     {
-      if ((hf = CreateFile(configuration.Filename.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL)) != INVALID_HANDLE_VALUE)
+      if ((hf = CreateFile(configuration.Filename.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr)) != INVALID_HANDLE_VALUE)
       {
         LONG high = 0;
         if (SetFilePointer(hf, size, &high, FILE_BEGIN) == size)
