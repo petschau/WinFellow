@@ -1,5 +1,4 @@
-#ifndef UART_H
-#define UART_H
+#pragma once
 
 #include "DEFS.H"
 #include <string>
@@ -62,5 +61,3 @@ public:
 };
 
 extern UART uart;
-
-#endif

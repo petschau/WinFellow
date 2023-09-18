@@ -1,5 +1,4 @@
-#ifndef CPUMODULE_DISASSEMBLERFUNC_H
-#define CPUMODULE_DISASSEMBLERFUNC_H
+#pragma once
 
 static uint8_t cpu_dis_func_tab[65536] = 
 {
@@ -4100,4 +4099,3 @@ static uint8_t cpu_dis_func_tab[65536] =
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 #include "sound.h"
 #include "CpuIntegration.h"
@@ -458,7 +457,3 @@ extern void  cfgSetConfigAppliedOnce(cfg *, BOOLE);
 extern BOOLE cfgGetConfigAppliedOnce(cfg *);
 extern void  cfgSetConfigChangedSinceLastSave(cfg *, BOOLE);
 extern BOOLE cfgGetConfigChangedSinceLastSave(cfg *);
-
-
-#endif  /* CONFIG_H */
-

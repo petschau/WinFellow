@@ -1,7 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKID_H
-#define FELLOW_HARDFILE_HUNKS_HUNKID_H
-
-#include "fellow/api/defs.h"
+#pragma once
 
 namespace fellow::hardfile::hunks
 {
@@ -12,5 +9,3 @@ namespace fellow::hardfile::hunks
   static const uint32_t EndHunkID = 0x3f2;
   static const uint32_t HeaderHunkID = 0x3f3;
 }
-
-#endif

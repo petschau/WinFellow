@@ -1,5 +1,4 @@
-#ifndef SPRITE_H
-#define SPRITE_H
+#pragma once
 
 #include "graph.h"
 
@@ -37,5 +36,3 @@ class CycleExactSprites;
 extern Sprites *sprites;
 extern LineExactSprites *line_exact_sprites;
 extern CycleExactSprites *cycle_exact_sprites;
-
-#endif /* SPRITE_H */

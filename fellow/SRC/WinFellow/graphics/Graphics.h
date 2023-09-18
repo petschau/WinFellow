@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+#pragma once
 
 #include "DEFS.H"
 
@@ -48,5 +47,3 @@ public:
 };
 
 extern Graphics GraphicsContext;
-
-#endif

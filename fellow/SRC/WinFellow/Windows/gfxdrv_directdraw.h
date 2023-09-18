@@ -1,5 +1,4 @@
-#ifndef GFXDRV_DIRECTDRAW_H
-#define GFXDRV_DIRECTDRAW_H
+#pragma once
 
 #include "DEFS.H"
 #include "DRAW.H"
@@ -24,5 +23,3 @@ void gfxDrvDDrawShutdown();
 
 bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC, DWORD, DWORD, DWORD, DWORD, uint32_t, DWORD, const char *);
 bool gfxDrvDDrawSaveScreenshot(const bool, const char *);
-
-#endif

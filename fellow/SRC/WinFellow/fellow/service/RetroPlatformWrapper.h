@@ -1,5 +1,4 @@
-#ifndef FELLOW_SERVICE_RETROPLATFORMWRAPPER_H
-#define FELLOW_SERVICE_RETROPLATFORMWRAPPER_H
+#pragma once
 
 #include "fellow/api/service/IRetroPlatform.h"
 
@@ -12,5 +11,3 @@ namespace fellow::service
     bool PostHardDriveLED(const uint32_t lHardDriveNo, const bool bActive, const bool bWriteActivity) override;
   };
 }
-
-#endif

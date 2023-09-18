@@ -1,3 +1,5 @@
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Planar2ChunkyDecoder                                                    */
@@ -21,9 +23,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#ifndef PLANAR2CHUNKYDECODER_H
-#define PLANAR2CHUNKYDECODER_H
 
 #include "DEFS.H"
 #include "CoreHost.h"
@@ -73,5 +72,3 @@ public:
   void P2CNext4Pixels(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
   void P2CNext8Pixels(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CYCLEEXACTCOPPER_H
-#define CYCLEEXACTCOPPER_H
+#pragma once
 
 #include "DEFS.H"
 #include "COPPER.H"
@@ -52,5 +51,3 @@ public:
   CycleExactCopper();
   virtual ~CycleExactCopper();
 };
-
-#endif

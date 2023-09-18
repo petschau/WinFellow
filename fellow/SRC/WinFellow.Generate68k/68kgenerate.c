@@ -1873,27 +1873,22 @@ void cgCloseFiles()
 {
   if (codef != NULL)
   {
-    fprintf(codef, "#endif\n");
     fclose(codef);
   }
   if (dataf != NULL)
   {
-    fprintf(dataf, "#endif\n");
     fclose(dataf);
   }
   if (declf != NULL)
   {
-    fprintf(declf, "#endif\n");
     fclose(declf);
   }
   if (profilef != NULL)
   {
-    fprintf(profilef, "#endif\n");
     fclose(profilef);
   }
   if (disfuncf != NULL)
   {
-    fprintf(disfuncf, "#endif\n");
     fclose(disfuncf);
   }
 }
@@ -1909,16 +1904,11 @@ int cgOpenFiles()
   res = (codef != NULL && dataf != NULL && declf != NULL && profilef != NULL && disfuncf != NULL);
   if (!res) cgCloseFiles();
 
-  fprintf(dataf, "#ifndef CPUMODULE_DATA_H\n");
-  fprintf(dataf, "#define CPUMODULE_DATA_H\n\n");
-  fprintf(codef, "#ifndef CPUMODULE_CODE_H\n");
-  fprintf(codef, "#define CPUMODULE_CODE_H\n\n");
-  fprintf(declf, "#ifndef CPUMODULE_DECL_H\n");
-  fprintf(declf, "#define CPUMODULE_DECL_H\n\n");
-  fprintf(profilef, "#ifndef CPUMODULE_PROFILE_H\n");
-  fprintf(profilef, "#define CPUMODULE_PROFILE_H\n\n");
-  fprintf(disfuncf, "#ifndef CPUMODULE_DISASSEMBLERFUNC_H\n");
-  fprintf(disfuncf, "#define CPUMODULE_DISASSEMBLERFUNC_H\n\n");
+  fprintf(dataf, "#pragma once\n");
+  fprintf(codef, "#pragma once\n");
+  fprintf(declf, "#pragma once\n");
+  fprintf(profilef, "#pragma once\n");
+  fprintf(disfuncf, "#pragma once\n");
 
   return res;
 }

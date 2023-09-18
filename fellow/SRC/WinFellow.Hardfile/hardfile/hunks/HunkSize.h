@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKSIZE_H
-#define FELLOW_HARDFILE_HUNKS_HUNKSIZE_H
+#pragma once
 
 #include "fellow/api/defs.h"
 
@@ -16,5 +15,3 @@ namespace fellow::hardfile::hunks
     HunkSize(uint32_t sizeInLongwords, uint32_t memoryFlags, uint32_t additionalFlags);
   };
 }
-
-#endif

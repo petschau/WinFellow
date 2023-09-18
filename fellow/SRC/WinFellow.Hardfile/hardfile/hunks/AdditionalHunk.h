@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_ADDITIONALHUNK_H
-#define FELLOW_HARDFILE_HUNKS_ADDITIONALHUNK_H
+#pragma once
 
 #include "hardfile/hunks/HunkBase.h"
 
@@ -17,5 +16,3 @@ namespace fellow::hardfile::hunks
     AdditionalHunk(uint32_t sourceHunkIndex);
   };
 }
-
-#endif

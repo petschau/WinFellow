@@ -1,5 +1,4 @@
-#ifndef KEYCODES_H
-#define KEYCODES_H
+#pragma once
 
 /* Amiga keys */
 
@@ -225,5 +224,3 @@ typedef enum {
   PCK_NUMPAD_0 = 104,
   PCK_NUMPAD_DOT = 105,
   PCK_LAST_KEY = 106} kbd_drv_pc_symbol;
-
-#endif

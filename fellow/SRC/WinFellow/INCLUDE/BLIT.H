@@ -1,5 +1,4 @@
-#ifndef BLIT_H
-#define BLIT_H
+#pragma once
 
 /*===========================================================================*/
 /* Blitter-properties                                                        */
@@ -32,5 +31,3 @@ void blitterLineMode(void);
 void blitFinishBlit(void);
 void blitForceFinish(void);
 void blitterCopy(void);
-
-#endif

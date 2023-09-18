@@ -1,5 +1,4 @@
-#ifndef CPUMODULE_CODE_H
-#define CPUMODULE_CODE_H
+#pragma once
 
 static void ADD_D000(uint32_t*opc_data)
 {
@@ -12208,4 +12207,3 @@ static void UNPK_8188(uint32_t*opc_data)
 {
 	cpuUnpkEa(opc_data[1], opc_data[0]);
 }
-#endif

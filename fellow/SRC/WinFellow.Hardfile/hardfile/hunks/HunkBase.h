@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKBASE_H
-#define FELLOW_HARDFILE_HUNKS_HUNKBASE_H
+#pragma once
 
 #include "hardfile/hunks/RawDataReader.h"
 #include "hardfile/hunks/HunkID.h"
@@ -15,5 +14,3 @@ namespace fellow::hardfile::hunks
     virtual ~HunkBase() = default;
   };
 }
-
-#endif

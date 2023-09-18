@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGIErrorLogger_H
-#define GfxDrvDXGIErrorLogger_H
+#pragma once
 
 #include <DXGI.h>
 
@@ -11,5 +10,3 @@ private:
 public:
   static void LogError(const char* headline, const HRESULT hResult);
 };
-
-#endif

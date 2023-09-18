@@ -1,5 +1,4 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 #include "DEFS.H"
 
@@ -18,5 +17,3 @@ public:
   Logger(void) : _enableLog(false), _logfile(0) {};
 
 };
-
-#endif

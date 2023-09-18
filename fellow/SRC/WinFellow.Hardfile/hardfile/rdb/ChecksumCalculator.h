@@ -1,3 +1,5 @@
+#pragma once
+
 #include "hardfile/rdb/RDBFileReader.h"
 
 namespace fellow::hardfile::rdb

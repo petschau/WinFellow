@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKRELOCATOR_H
-#define FELLOW_HARDFILE_HUNKS_HUNKRELOCATOR_H
+#pragma once
 
 #include "hardfile/hunks/FileImage.h"
 #include "hardfile/hunks/Reloc32Hunk.h"
@@ -21,5 +20,3 @@ namespace fellow::hardfile::hunks
     HunkRelocator(FileImage& fileImage);
   };
 }
-
-#endif

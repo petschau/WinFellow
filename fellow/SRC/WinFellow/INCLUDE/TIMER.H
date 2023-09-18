@@ -1,5 +1,4 @@
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 typedef void(*timerCallbackFunction)(uint32_t millisecondTicks);
 
@@ -9,5 +8,3 @@ void timerEmulationStart();
 void timerEmulationStop();
 void timerStartup();
 void timerShutdown();
-
-#endif

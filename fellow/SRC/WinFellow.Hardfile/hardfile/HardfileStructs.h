@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HARDFILESTRUCTS_H
-#define FELLOW_HARDFILE_HARDFILESTRUCTS_H
+#pragma once
 
 #include "fellow/api/module/IHardfileHandler.h"
 #include "hardfile/rdb/RDB.h"
@@ -104,5 +103,3 @@ namespace fellow::hardfile
     }
   };
 }
-
-#endif

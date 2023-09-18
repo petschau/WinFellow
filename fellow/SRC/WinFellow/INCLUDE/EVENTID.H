@@ -1,5 +1,4 @@
-#ifndef EVENTID_H
-#define EVENTID_H
+#pragma once
 
 #define EVENTCOUNT    16384
 #define EVENTMASK     0x3fff
@@ -49,5 +48,3 @@ extern BOOLE logdivisionby0ex;
 extern BOOLE logprivilegieviolationex;
 extern BOOLE logtrapex;
 extern BOOLE logfline;
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CPUMODULE_MEMORY
-#define CPUMODULE_MEMORY
+#pragma once
 
 // This header pulls in the memory interface functions
 
@@ -16,8 +15,5 @@
 // For trapping into the "UAE filesystem" driver
 #include "uae2fell.h"
 #include "autoconf.h"
-
-#endif
-
 
 #endif

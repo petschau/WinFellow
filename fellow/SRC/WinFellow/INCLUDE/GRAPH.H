@@ -1,5 +1,4 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#pragma once
 
 /* C declarations */
 
@@ -132,5 +131,3 @@ extern BOOLE graph_buffer_lost;
 #define graph_line_bplcon2                    2344
 #define graph_line_reserved1                  2346
 #define graph_line_end                        2348
-
-#endif

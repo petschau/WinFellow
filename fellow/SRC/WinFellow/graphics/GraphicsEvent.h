@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_EVENT_H
-#define GRAPHICS_EVENT_H
+#pragma once
 
 #include "DEFS.H"
 #include "BUS.H"
@@ -21,5 +20,3 @@ public:
   virtual void Handler(uint32_t rasterY, uint32_t cylinder) = 0;
   GraphicsEvent(void);
 };
-
-#endif

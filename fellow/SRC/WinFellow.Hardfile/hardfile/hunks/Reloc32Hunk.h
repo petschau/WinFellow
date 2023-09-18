@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_RELOC32HUNK_H
-#define FELLOW_HARDFILE_HUNKS_RELOC32HUNK_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -25,5 +24,3 @@ namespace fellow::hardfile::hunks
     Reloc32Hunk(uint32_t sourceHunkIndex);
   };
 }
-
-#endif

@@ -14,8 +14,6 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: fsdb.h,v 1.7 2008-02-17 12:57:02 peschau Exp $
-
    FELLOW IN (END)------------------- */
 
 /* FELLOW IN (START)----------------- */

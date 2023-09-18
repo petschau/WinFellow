@@ -1,5 +1,4 @@
-#ifndef SPRITEP2CDECODER_H
-#define SPRITEP2CDECODER_H
+#pragma once
 
 typedef union sprite_deco_
 {
@@ -21,5 +20,3 @@ public:
 
   static void Initialize();
 };
-
-#endif

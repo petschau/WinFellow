@@ -1,8 +1,6 @@
-#ifndef FELLOW_HARDFILE_HUNKS_RAWDATAREADER_H
-#define FELLOW_HARDFILE_HUNKS_RAWDATAREADER_H
+#pragma once
 
 #include <string>
-#include "fellow/api/defs.h"
 
 namespace fellow::hardfile::hunks
 {
@@ -27,5 +25,3 @@ namespace fellow::hardfile::hunks
     RawDataReader(uint8_t *rawData, uint32_t rawDataLength);
   };
 }
-
-#endif

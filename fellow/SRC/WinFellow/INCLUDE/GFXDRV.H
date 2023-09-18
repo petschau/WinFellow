@@ -1,5 +1,4 @@
-#ifndef GFXDRV_H
-#define GFXDRV_H
+#pragma once
 
 #include "draw.h"
 
@@ -33,5 +32,3 @@ extern void gfxDrvShutdown();
 extern bool gfxDrvSaveScreenshot(const bool, const char *filename);
 
 extern bool gfxDrvDXGIValidateRequirements(void);
-
-#endif

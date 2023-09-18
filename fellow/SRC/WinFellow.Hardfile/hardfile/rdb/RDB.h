@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDB_H
-#define FELLOW_HARDFILE_RDB_RDB_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -62,5 +61,3 @@ namespace fellow::hardfile::rdb
     RDB();
   };
 }
-
-#endif

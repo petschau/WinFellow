@@ -1,4 +1,4 @@
- /*
+/*
   * UAE - The Un*x Amiga Emulator
   *
   * Autoconfig device support
@@ -12,8 +12,6 @@
   It originates from the UAE 0.8.22 source code distribution.
 
   Torsten Enderling (carfesh@gmx.net) 2004
-
-  @(#) $Id: AUTOCONF.H,v 1.5 2008-02-17 12:57:00 peschau Exp $
 
    FELLOW IN (END)------------------- */
 

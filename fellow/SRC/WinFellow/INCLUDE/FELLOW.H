@@ -1,5 +1,4 @@
-#ifndef FELLOW_H
-#define FELLOW_H
+#pragma once
 
 #include <string>
 #include <list>
@@ -39,5 +38,3 @@ extern void fellowAddLog(const char *, ...);
 extern void fellowAddLogRequester(FELLOW_REQUESTER_TYPE, const char *, ...);
 extern void fellowAddTimelessLog(const char *, ...);
 extern void fellowAddLog2(char *msg);
-
-#endif

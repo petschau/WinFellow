@@ -1,4 +1,5 @@
-/* @(#) $Id: fileops.h,v 1.6 2012-12-07 14:05:43 carfesh Exp $             */
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -23,9 +24,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef FILEOPS_H
-#define FILEOPS_H
-
 extern BOOLE fileopsGetFellowLogfileName(char *);
 extern BOOLE fileopsGetGenericFileName(char *, const char *, const char *);
 extern BOOLE fileopsGetDefaultConfigFileName(char *);
@@ -35,5 +33,3 @@ extern BOOLE fileopsGetScreenshotFileName(char *);
 extern char *fileopsGetTemporaryFilename(void);
 extern bool fileopsGetWinFellowInstallationPath(char *, const DWORD);
 extern bool fileopsGetKickstartByCRC32(const char *, const uint32_t, char *, const uint32_t);
-
-#endif // FILEOPS_H

@@ -1,5 +1,4 @@
-#ifndef SCRIPT_H
-#define SCRIPT_H
+#pragma once
 
 #include "DEFS.H"
 #include "GAMEPORT.H"
@@ -55,5 +54,3 @@ public:
   Script();
   ~Script();
 };
-
-#endif

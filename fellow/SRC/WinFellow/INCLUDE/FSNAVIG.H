@@ -1,5 +1,4 @@
-#ifndef FSNAVIG_H
-#define FSNAVIG_H
+#pragma once
 
 #include "fswrap.h"
 #include "ListTree.h"
@@ -29,5 +28,3 @@ extern void fsNavigShutdown(void);
 extern felist *fsNavigGetDirList(fs_navig_point *fs_point);
 extern fs_navig_point *fsNavigGetCWD(void);
 extern void fsNavigSetCWD(fs_navig_point *fs_point);
-
-#endif

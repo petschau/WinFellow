@@ -1,5 +1,4 @@
-#ifndef COMMONCONTROLWRAP_H
-#define COMMONCONTROLWRAP_H
+#pragma once
 
 extern void ccwButtonSetCheck(HWND windowHandle, int controlIdentifier);
 extern void ccwButtonUncheck(HWND windowHandle, int controlIdentifier);
@@ -24,5 +23,3 @@ extern void ccwEditEnableConditionalBool(HWND windowHandle, int controlIdentifie
 extern void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bitmapFirst, HBITMAP bitmapSecond, BOOLE setFirst);
 extern void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE enable);
 extern BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier);
-
-#endif

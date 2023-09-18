@@ -1,5 +1,4 @@
-#ifndef FELLOW_API_SERVICE_IFSWRAPPER_H
-#define FELLOW_API_SERVICE_IFSWRAPPER_H
+#pragma once
 
 #include <string>
 #include "fellow/api/defs.h"
@@ -30,5 +29,3 @@ namespace fellow::api::service
     virtual fs_wrapper_point *MakePoint(const char *point) = 0;
   };
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CPUMODULE_DISASSEMBLER_H
-#define CPUMODULE_DISASSEMBLER_H
+#pragma once
 
 extern uint32_t cpuDisOpcode(uint32_t disasm_pc, char *saddress, char *sdata, char *sinstruction, char *soperands);
 
@@ -93,5 +92,3 @@ extern uint32_t cpuDisTrapcc(uint32_t prc, uint32_t opc, char *sdata, char *sins
 extern uint32_t cpuDisUnpk(uint32_t prc, uint32_t opc, char *sdata, char *sinstruction, char *soperands);
 extern uint32_t cpuDisCallm(uint32_t prc, uint32_t opc, char *sdata, char *sinstruction, char *soperands);
 extern uint32_t cpuDisRtm(uint32_t prc, uint32_t opc, char *sdata, char *sinstruction, char *soperands);
-
-#endif

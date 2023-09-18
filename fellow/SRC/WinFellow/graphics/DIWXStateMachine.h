@@ -1,3 +1,5 @@
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* DIWX State Machine                                                      */
@@ -21,9 +23,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#ifndef DIWXSTATEMACHINE_H
-#define DIWXSTATEMACHINE_H
 
 #include "DEFS.H"
 #include "GraphicsEventQueue.h"
@@ -70,5 +69,3 @@ public:
   DIWXStateMachine(void) : GraphicsEvent() {};
 
 };
-
-#endif

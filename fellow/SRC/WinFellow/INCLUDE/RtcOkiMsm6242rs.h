@@ -1,5 +1,4 @@
-#ifndef RTCOKIMSM6242RS_H
-#define RTCOKIMSM6242RS_H
+#pragma once
 
 #include "DEFS.H"
 
@@ -85,5 +84,3 @@ public:
   void logRtcTime(char *msg);
   RtcOkiMsm6242rs(void);
 };
-
-#endif

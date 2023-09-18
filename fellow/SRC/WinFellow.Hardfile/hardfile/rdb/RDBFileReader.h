@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBFILEREADER_H
-#define FELLOW_HARDFILE_RDB_RDBFILEREADER_H
+#pragma once
 
 #include <string>
 #include "fellow/api/defs.h"
@@ -21,5 +20,3 @@ namespace fellow::hardfile::rdb
     RDBFileReader(FILE *F);
   };
 }
-
-#endif

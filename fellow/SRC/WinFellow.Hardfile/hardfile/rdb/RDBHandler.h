@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBHANDLER_H
-#define FELLOW_HARDFILE_RDB_RDBHANDLER_H
+#pragma once
 
 #include "fellow/api/module/IHardfileHandler.h"
 #include "hardfile/rdb/RDBFileReader.h"
@@ -17,5 +16,3 @@ namespace fellow::hardfile::rdb
     static RDB* GetDriveInformation(RDBFileReader& reader, bool geometryOnly = false);
   };
 }
-
-#endif

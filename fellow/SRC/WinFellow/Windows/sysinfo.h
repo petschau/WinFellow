@@ -1,4 +1,5 @@
-/* @(#) $Id: sysinfo.h,v 1.4 2008-02-23 20:45:11 carfesh Exp $ */
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -29,9 +30,4 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef _SYSINFO_H_
-#define _SYSINFO_H_
-
 void sysinfoLogSysInfo(void);
-
-#endif

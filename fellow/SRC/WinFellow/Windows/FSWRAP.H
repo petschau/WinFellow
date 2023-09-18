@@ -1,5 +1,4 @@
-#ifndef FSWRAP_H
-#define FSWRAP_H
+#pragma once
 
 #define FS_WRAP_MAX_PATH_LENGTH       256
 #define FS_WRAP_PATH_SEPARATOR_STR    "\\"
@@ -19,10 +18,3 @@ extern fs_navig_point *fsWrapReadDir(void);
 extern void fsWrapCloseDir(void);
 extern fs_navig_point *fsWrapMakePoint(const char *point);
 extern int fsWrapStat(const char *szFilename, struct stat *pStatBuffer);
-
-#endif
-
-
-
-
-

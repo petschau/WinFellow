@@ -1,5 +1,4 @@
-#ifndef COPPER_H
-#define COPPER_H
+#pragma once
 
 extern void copperInitializeFromEmulationMode();
 extern void copperEventHandler();
@@ -29,5 +28,3 @@ public:
 };
 
 extern Copper* copper;
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef LINEEXACTCOPPER_H
-#define LINEEXACTCOPPER_H
+#pragma once
 
 #include "COPPER.H"
 
@@ -33,5 +32,3 @@ public:
   LineExactCopper();
   virtual ~LineExactCopper();
 };
-
-#endif

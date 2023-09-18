@@ -1,4 +1,5 @@
-/* @(#) $Id: WDBG.H,v 1.5 2008-02-24 10:26:41 carfesh Exp $ */
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -24,9 +25,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef wdbg_H
-#define wdbg_H
-
 extern void wdbgDebugSessionRun(HWND parent);
 extern void wdebDebug();
 
@@ -35,8 +33,3 @@ typedef enum {
   DBG_STEP_OVER,
   DBG_RUN
 } dbg_operations;
-
-
-
-#endif /* wdbg_H */
-

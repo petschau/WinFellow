@@ -1,5 +1,4 @@
-#ifndef WGUI_H
-#define WGUI_H
+#pragma once
 
 #include <list>
 #include "DRAW.H"
@@ -81,6 +80,3 @@ extern BOOLE wguiEnter(void);
 extern void wguiRequester(char *szMessage, UINT uType);
 extern void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert);
 extern void wguiSetProcessDPIAwareness(const char *pszAwareness);
-
-#endif /* End of WGUI_H */
-

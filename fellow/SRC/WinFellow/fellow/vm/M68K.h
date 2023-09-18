@@ -1,5 +1,4 @@
-#ifndef FELLOW_VM_M68K_H
-#define FELLOW_VM_M68K_H
+#pragma once
 
 #include "fellow/api/vm/IM68K.h"
 
@@ -15,5 +14,3 @@ namespace fellow::vm
     M68K();
   };
 }
-
-#endif

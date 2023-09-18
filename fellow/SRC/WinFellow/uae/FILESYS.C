@@ -31,8 +31,6 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.13 2013-01-06 00:09:02 peschau Exp $
-
    FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)-------------------

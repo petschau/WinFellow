@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGIAdapterEnumerator_H
-#define GfxDrvDXGIAdapterEnumerator_H
+#pragma once
 
 #include <DXGI.h>
 #include "GfxDrvDXGIAdapter.h"
@@ -10,5 +9,3 @@ public:
   static GfxDrvDXGIAdapterList* EnumerateAdapters(IDXGIFactory *factory);
   static void DeleteAdapterList(GfxDrvDXGIAdapterList* adapters);
 };
-
-#endif

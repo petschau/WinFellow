@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKFACTORY_H
-#define FELLOW_HARDFILE_HUNKS_HUNKFACTORY_H
+#pragma once
 
 #include "hardfile/hunks/InitialHunk.h"
 #include "hardfile/hunks/AdditionalHunk.h"
@@ -13,5 +12,3 @@ namespace fellow::hardfile::hunks
     static AdditionalHunk* CreateAdditionalHunk(uint32_t type, uint32_t sourceHunkIndex);
   };
 }
-
-#endif
