@@ -116,32 +116,32 @@ void blitterSetFast(BOOLE fast)
   blitter_fast = fast;
 }
 
-BOOLE blitterGetFast(void)
+BOOLE blitterGetFast()
 {
   return blitter_fast;
 }
 
-BOOLE blitterGetDMAPending(void)
+BOOLE blitterGetDMAPending()
 {
   return blitter.dma_pending;
 }
 
-BOOLE blitterGetZeroFlag(void)
+BOOLE blitterGetZeroFlag()
 {
   return (blitter.bltzero & 0xffff) == 0;
 }
 
-uint32_t blitterGetFreeCycles(void)
+uint32_t blitterGetFreeCycles()
 {
   return blitter.cycle_free;
 }
 
-BOOLE blitterIsStarted(void)
+BOOLE blitterIsStarted()
 {
   return blitter.started;
 }
 
-BOOLE blitterIsDescending(void)
+BOOLE blitterIsDescending()
 {
   return (blitter.bltcon & 2);
 }
@@ -150,7 +150,7 @@ BOOLE blitterIsDescending(void)
 /* Blitter event setup                                                        */
 /*============================================================================*/
 
-void blitterRemoveEvent(void)
+void blitterRemoveEvent()
 {
   if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
   {
@@ -186,12 +186,12 @@ void blitterSetOperationLog(BOOLE operation_log)
   blitter_operation_log = operation_log;
 }
 
-BOOLE blitterGetOperationLog(void)
+BOOLE blitterGetOperationLog()
 {
   return blitter_operation_log;
 }
 
-void blitterOperationLog(void) {
+void blitterOperationLog() {
   if (blitter_operation_log) {
     FILE* F;
     char filename[MAX_PATH];
@@ -958,7 +958,7 @@ void blitterOperationLog(void) {
   wintreq_direct(0x8040, 0xdff09c, true); \
 }
 
-void blitterCopyABCD(void)
+void blitterCopyABCD()
 {
   if (blitter.bltcon & 0x18)
   { /* Fill */
@@ -1086,7 +1086,7 @@ void blitterCopyABCD(void)
 /*                                                */
 /*================================================*/
 
-void blitterLineMode(void)
+void blitterLineMode()
 {
   uint32_t bltadat_local;
   uint32_t bltbdat_local;
@@ -1252,7 +1252,7 @@ void blitClearBlitterBusy()
   _core.Registers.DmaConR = _core.Registers.DmaConR & 0x0000bfff;
 }
 
-void blitInitiate(void)
+void blitInitiate()
 {
   uint32_t channels = (blitter.bltcon >> 24) & 0xf;
   uint32_t cycle_length, cycle_free;
@@ -1327,7 +1327,7 @@ void blitInitiate(void)
 // Handles a blitter event.
 // Can also be called by writes to certain registers. (Via. blitterForceFinish())
 // Event has already been popped.
-void blitFinishBlit(void)
+void blitFinishBlit()
 {
   blitterEvent.cycle = BUS_CYCLE_DISABLE;
   blitter.dma_pending = FALSE;
@@ -1346,7 +1346,7 @@ void blitFinishBlit(void)
   }
 }
 
-void blitForceFinish(void)
+void blitForceFinish()
 {
   if (blitterIsStarted())
   {
@@ -1355,7 +1355,7 @@ void blitForceFinish(void)
   }
 }
 
-void blitterCopy(void)
+void blitterCopy()
 {
   blitInitiate();
 }
@@ -1795,7 +1795,7 @@ void wbltadat(uint16_t data, uint32_t address)
 /* Fill-table init                                                            */
 /*============================================================================*/
 
-static void blitterFillTableInit(void)
+static void blitterFillTableInit()
 {
   uint32_t i, data, bit, fc_tmp, fc, mode;
 
@@ -1820,7 +1820,7 @@ static void blitterFillTableInit(void)
 /* Set blitter IO stubs in IO read/write table                                */
 /*============================================================================*/
 
-static void blitterIOHandlersInstall(void)
+static void blitterIOHandlersInstall()
 {
   memorySetIoWriteStub(0x40, wbltcon0);
   memorySetIoWriteStub(0x42, wbltcon1);
@@ -1854,7 +1854,7 @@ static void blitterIOHandlersInstall(void)
 /* Set blitter to default values                                              */
 /*============================================================================*/
 
-static void blitterIORegistersClear(void)
+static void blitterIORegistersClear()
 {
   blitter.bltapt = 0;
   blitter.bltbpt = 0;
@@ -1887,12 +1887,12 @@ static void blitterIORegistersClear(void)
 /* Reset blitter to default values                                            */
 /*============================================================================*/
 
-void blitterHardReset(void)
+void blitterHardReset()
 {
   blitterIORegistersClear();
 }
 
-void blitterEndOfFrame(void)
+void blitterEndOfFrame()
 {
   if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
   {
@@ -1972,12 +1972,12 @@ void blitterLoadState(FILE* F)
   fread(&blitter.cycle_free, sizeof(blitter.cycle_free), 1, F);
 }
 
-void blitterEmulationStart(void)
+void blitterEmulationStart()
 {
   blitterIOHandlersInstall();
 }
 
-void blitterEmulationStop(void)
+void blitterEmulationStop()
 {
 }
 
@@ -2023,7 +2023,7 @@ void verifyMinterms()
 /* Called on emulator startup / shutdown                                     */
 /*===========================================================================*/
 
-void blitterStartup(void)
+void blitterStartup()
 {
   blitterFillTableInit();
   blitterSetFast(FALSE);
@@ -2043,6 +2043,6 @@ void blitterStartup(void)
 #endif
 }
 
-void blitterShutdown(void)
+void blitterShutdown()
 {
 }

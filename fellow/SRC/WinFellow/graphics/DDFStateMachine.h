@@ -65,5 +65,5 @@ public:
   void Startup();
   void Shutdown();
 
-  DDFStateMachine(void) : GraphicsEvent() {};
+  DDFStateMachine() : GraphicsEvent() {};
 };

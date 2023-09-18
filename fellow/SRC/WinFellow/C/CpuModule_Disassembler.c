@@ -804,13 +804,11 @@ static uint32_t cpuDisCmpm(uint32_t prc, uint16_t opc, char *sdata, char *sinstr
 
 static uint32_t cpuDisDBcc(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
-  uint32_t offset;
-  uint32_t adr;
   uint32_t bratype = cpuDisGetBranchType(opc);
 
   prc += 2;
-  offset = memoryReadWord(prc);
-  adr = (offset > 32767) ? (prc + offset - 65536) : (prc + offset);
+  uint32_t offset = memoryReadWord(prc);
+  uint32_t adr = (offset > 32767) ? (prc + offset - 65536) : (prc + offset);
   cpuDisWordAppend(offset, sdata);
   sprintf(sinstruction, "DB%s", (bratype == 0) ? "T" : ((bratype == 1) ? "F" : cpu_dis_btab[bratype]));
   sprintf(soperands, "D%1u,$%6.6X", cpuDisGetSourceRegister(opc), adr);
@@ -949,14 +947,12 @@ static uint32_t cpuDisMovea(uint32_t prc, uint16_t opc, char *sdata, char *sinst
 
 static void cpuDisMovemRegmaskStrCat(uint32_t regmask, char *s, BOOLE predec)
 {
-  uint32_t i, j;
   char tmp[2][16];
-  char *tmpp;
 
-  for (j = 0; j < 2; j++)
+  for (uint32_t j = 0; j < 2; j++)
   {
-    tmpp = tmp[j];
-    for (i = (8*j); i < (8 + (8*j)); i++)
+    char* tmpp = tmp[j];
+    for (uint32_t i = (8 * j); i < (8 + (8*j)); i++)
     {
       if (regmask & (1<<i))
       {
@@ -981,12 +977,10 @@ static uint32_t cpuDisMovem(uint32_t prc, uint16_t opc, char *sdata, char *sinst
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
-  uint32_t size;
   uint32_t dir = cpuDisGetBit(opc, 10);
-  uint32_t regmask;
 
-  size = (!cpuDisGetBit(opc, 6)) ? 16 : 32;
-  regmask = memoryReadWord(prc + 2);
+  uint32_t size = (!cpuDisGetBit(opc, 6)) ? 16 : 32;
+  uint32_t regmask = memoryReadWord(prc + 2);
   cpuDisWordAppend(regmask, sdata);
   sprintf(sinstruction, "MOVEM.%c", (size == 16) ? 'W' : 'L');
   if (dir == 0 && eamode == 4)
@@ -1315,13 +1309,11 @@ static uint32_t cpuDisDivl(uint32_t prc, uint16_t opc, char *sdata, char *sinstr
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
-  uint32_t dq;
-  uint32_t dr;
   char stmp[16];
 
   cpuDisWordAppend(ext, sdata);
-  dq = (ext >> 12) & 7;
-  dr = ext & 7;
+  uint32_t dq = (ext >> 12) & 7;
+  uint32_t dr = ext & 7;
   sprintf(sinstruction, "DIV%c%s.L ", (ext & 0x800) ? 'S' : 'U', (ext & 0x400) ? "L" : "");
   prc = cpuDisAdrMode(cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg), eareg, prc + 4, 32, sdata, soperands);
   if (ext & 0x400)
@@ -1362,7 +1354,6 @@ static uint32_t cpuDisMoveFromCcr(uint32_t prc, uint16_t opc, char *sdata, char 
 
 static uint32_t cpuDisMovec(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
-  uint32_t creg;
   uint32_t extw = memoryReadWord(prc + 2);
   char stmp[16];
 
@@ -1373,7 +1364,7 @@ static uint32_t cpuDisMovec(uint32_t prc, uint16_t opc, char *sdata, char *sinst
     sprintf(stmp, "%s%u,", (extw & 0x8000) ? "A" : "D", (extw>>12) & 7); 
     strcat(soperands, stmp);
   }
-  creg = extw & 0xfff;
+  uint32_t creg = extw & 0xfff;
   if (cpuGetModelMajor() == 1 && ((creg != 0) && (creg != 1) && (creg != 0x800) &&
     (creg != 0x801))) creg = 0xfff;
   switch (creg)
@@ -1441,12 +1432,10 @@ static uint32_t cpuDisMull(uint32_t prc, uint16_t opc, char *sdata, char *sinstr
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
-  uint32_t dl;
-  uint32_t dh;
   char stmp[16];
 
-  dl = (ext>>12) & 7;
-  dh = ext & 7;
+  uint32_t dl = (ext >> 12) & 7;
+  uint32_t dh = ext & 7;
   cpuDisWordAppend(ext, sdata);
   sprintf(sinstruction, "MUL%c.L", (ext & 0x800) ? 'S' : 'U');
   prc = cpuDisAdrMode(cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg), eareg, prc + 4, 32, sdata, soperands);

@@ -99,11 +99,9 @@ void kbdEventDFxIntoDF0(uint32_t driveNumber)
 /* Called from the main end of frame handler                                 */
 /*===========================================================================*/
 
-void kbdEventEOFHandler(void) {
-  kbd_event thisev;
-
+void kbdEventEOFHandler() {
   while (kbd_state.eventsEOF.outpos < kbd_state.eventsEOF.inpos) {
-    thisev =(kbd_event)(kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.outpos & KBDBUFFERMASK]);
+    kbd_event thisev = (kbd_event)(kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.outpos & KBDBUFFERMASK]);
 
     automator.RecordEmulatorAction(thisev);
 
@@ -177,8 +175,7 @@ void kbdEventEOFHandler(void) {
 /* Called from the main end of line handler                                  */
 /*===========================================================================*/
 
-void kbdEventEOLHandler(void) {
-  kbd_event thisev;
+void kbdEventEOLHandler() {
   BOOLE left[2], up[2], right[2], down[2], fire0[2], fire1[2];
   BOOLE left_changed[2], up_changed[2], right_changed[2], down_changed[2];
   BOOLE fire0_changed[2], fire1_changed[2];
@@ -189,7 +186,7 @@ void kbdEventEOLHandler(void) {
     fire0_changed[i] = fire1_changed[i] = FALSE;
 
   while (kbd_state.eventsEOL.outpos < kbd_state.eventsEOL.inpos) {
-    thisev =(kbd_event)(kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.outpos &
+    kbd_event thisev = (kbd_event)(kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.outpos &
       KBDBUFFERMASK]);
     switch (thisev) {
       case EVENT_JOY0_UP_ACTIVE:
@@ -314,13 +311,11 @@ void kbdEventEOLHandler(void) {
 /* Called from end_of_line                                                   */
 /*===========================================================================*/
 
-void kbdQueueHandler(void) {
+void kbdQueueHandler() {
   if (kbd_state.scancodes.outpos < kbd_state.scancodes.inpos) {
     if (--kbd_time_to_wait <= 0) {
-      uint32_t scode;
-
       kbd_time_to_wait = 10;
-      scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos & KBDBUFFERMASK];
+      uint32_t scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos & KBDBUFFERMASK];
       kbd_state.scancodes.outpos++;
       if (scode != A_NONE) {
 #ifdef _DEBUG
@@ -338,7 +333,7 @@ void kbdQueueHandler(void) {
 /* Fellow standard functions                                                 */
 /*===========================================================================*/
 
-void kbdHardReset(void) {
+void kbdHardReset() {
   kbd_state.eventsEOL.inpos = 0;
   kbd_state.eventsEOL.outpos = 0;
   kbd_state.eventsEOF.inpos = 0;
@@ -351,22 +346,20 @@ void kbdHardReset(void) {
   kbdDrvHardReset();
 }
 
-void kbdEmulationStart(void) {
-  uint32_t i;
-
-  for (i = 0; i < 4; i++) insert_dfX[i] = FALSE;
+void kbdEmulationStart() {
+  for (uint32_t i = 0; i < 4; i++) insert_dfX[i] = FALSE;
   kbdDrvEmulationStart();
 }
 
-void kbdEmulationStop(void) {
+void kbdEmulationStop() {
   kbdDrvEmulationStop();
 }
 
-void kbdStartup(void) {
+void kbdStartup() {
   kbdDrvStartup();
 }
 
-void kbdShutdown(void) {
+void kbdShutdown() {
   kbdDrvShutdown();
 }
 

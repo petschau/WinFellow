@@ -26,12 +26,10 @@
 #include "CpuModule_Memory.h"
 #include "CpuModule_Internal.h"
 
-void cpuClearEverything(void)
+void cpuClearEverything()
 {
-  uint32_t i,j;
-
-  for (j = 0; j < 2; j++)
-    for (i = 0; i < 8; i++)
+  for (uint32_t j = 0; j < 2; j++)
+    for (uint32_t i = 0; i < 8; i++)
       cpuSetReg(j, i, 0);
 
   cpuSetUspDirect(0);
@@ -65,13 +63,13 @@ void cpuClearEverything(void)
   cpuSetResetExceptionFunc(nullptr);
 }
 
-void cpuHardReset(void)
+void cpuHardReset()
 {
   cpuThrowResetException();
   cpuSetRaiseInterrupt(FALSE);
 }
 
-void cpuStartup(void)
+void cpuStartup()
 {
   cpuClearEverything();
 }

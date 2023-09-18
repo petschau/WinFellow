@@ -123,7 +123,7 @@ char *cfgfile_subst_path (const char *path, const char *subst, const char *file)
 /* FELLOW IN (START)---------------- */
 #ifndef DONT_HAVE_POSIX
 /* FELLOW IN (END)------------------ */
-static long dos_errno(void)
+static long dos_errno()
 {
     int e = errno;
 
@@ -330,7 +330,7 @@ char *set_filesys_unit (struct uaedev_mount_info *mountinfo, int nr,
 }
 
 /* FELLOW IN (START) Added some get functions */
-uint32_t getNumUnits(void) {
+uint32_t getNumUnits() {
   return mountinfo.num_units;
 }
 
@@ -446,7 +446,7 @@ void write_filesys_config (struct uaedev_mount_info *mountinfo,
     }
 }
 
-struct uaedev_mount_info *alloc_mountinfo (void)
+struct uaedev_mount_info *alloc_mountinfo ()
 {
     struct uaedev_mount_info *info;
 /* FELLOW BUGFIX: info = (struct uaedev_mount_info *)malloc (sizeof *info); */
@@ -1245,7 +1245,7 @@ static a_inode *get_aino (Unit *unit, a_inode *base, const char *rel, uae_u32 *e
     return curr;
 }
 
-static uae_u32 startup_handler (void)
+static uae_u32 startup_handler ()
 {
     /* Just got the startup packet. It's in A4. DosBase is in A2,
      * our allocated volume structure is in D6, A5 is a pointer to
@@ -2877,7 +2877,7 @@ action_flush (Unit *unit, dpacket packet)
  * know whether AmigaOS takes care of that, but this does. */
 static uae_sem_t singlethread_int_sem;
 
-static uae_u32 exter_int_helper (void)
+static uae_u32 exter_int_helper ()
 {
     UnitInfo *uip = current_mountinfo->ui;
     uaecptr port;
@@ -3094,7 +3094,7 @@ static void *filesys_thread (void *unit_v)
 #endif
 
 /* Talk about spaghetti code... */
-static uae_u32 filesys_handler (void)
+static uae_u32 filesys_handler ()
 {
     Unit *unit = find_unit (m68k_areg (regs, 5));
     uaecptr packet_addr = m68k_dreg (regs, 3);
@@ -3152,7 +3152,7 @@ static uae_u32 filesys_handler (void)
 static int current_deviceno = 0;
 static int current_cdrom = 0;
 
-static void reset_uaedevices (void)
+static void reset_uaedevices ()
 {
     current_deviceno = 0;
     current_cdrom = 0;
@@ -3175,7 +3175,7 @@ static int get_new_device (char **devname, uaecptr *devname_amiga, int cdrom)
     return result;
 }
 
-void filesys_start_threads (void)
+void filesys_start_threads ()
 {
     UnitInfo *uip;
     int i;
@@ -3202,7 +3202,7 @@ void filesys_start_threads (void)
     }
 }
 
-void filesys_reset (void)
+void filesys_reset ()
 {
     Unit *u, *u1;
 
@@ -3241,7 +3241,7 @@ static void free_all_ainos (Unit *u, a_inode *parent)
 }
 
 
-void filesys_prepare_reset (void)
+void filesys_prepare_reset ()
 {
     UnitInfo *uip = current_mountinfo->ui;
     Unit *u;
@@ -3269,7 +3269,7 @@ void filesys_prepare_reset (void)
     }
 }
 
-static uae_u32 filesys_diagentry (void)
+static uae_u32 filesys_diagentry ()
 {
     uaecptr resaddr = m68k_areg (regs, 2) + 0x10;
     uaecptr start = resaddr;
@@ -3338,7 +3338,7 @@ static uae_u32 filesys_diagentry (void)
 
 /* Remember a pointer AmigaOS gave us so we can later use it to identify
  * which unit a given startup message belongs to.  */
-static uae_u32 filesys_dev_remember (void)
+static uae_u32 filesys_dev_remember ()
 {
     int unit_no = m68k_dreg (regs, 6);
     uaecptr devicenode = m68k_areg (regs, 3);
@@ -3348,7 +3348,7 @@ static uae_u32 filesys_dev_remember (void)
 }
 
 /* Fill in per-unit fields of a parampacket */
-static uae_u32 filesys_dev_storeinfo (void)
+static uae_u32 filesys_dev_storeinfo ()
 {
     UnitInfo *uip = current_mountinfo->ui;
     int unit_no = m68k_dreg (regs, 6);
@@ -3380,7 +3380,7 @@ static uae_u32 filesys_dev_storeinfo (void)
     return is_hardfile (current_mountinfo, unit_no);
 }
 
-void filesys_install (void)
+void filesys_install ()
 {
     /* FELLOW REMOVE (unreferenced): int i; */
     uaecptr loop;
@@ -3424,7 +3424,7 @@ void filesys_install (void)
     org (loop);
 }
 
-void filesys_install_code (void)
+void filesys_install_code ()
 {
     align(4);
 

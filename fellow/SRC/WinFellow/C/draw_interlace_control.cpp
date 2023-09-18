@@ -37,22 +37,22 @@ typedef struct
 
 draw_interlace_status interlace_status;
 
-bool drawGetUseInterlacedRendering(void)
+bool drawGetUseInterlacedRendering()
 {
   return interlace_status.use_interlaced_rendering;
 }
 
-bool drawGetFrameIsLong(void)
+bool drawGetFrameIsLong()
 {
   return interlace_status.frame_is_long;
 }
 
-bool drawDecideUseInterlacedRendering(void)
+bool drawDecideUseInterlacedRendering()
 {
   return interlace_status.enable_deinterlace && interlace_status.frame_is_interlaced;
 }
 
-void drawDecideInterlaceStatusForNextFrame(void)
+void drawDecideInterlaceStatusForNextFrame()
 {
   bool lace_bit = _core.RegisterUtility.IsInterlaceEnabled();
 
@@ -85,7 +85,7 @@ void drawDecideInterlaceStatusForNextFrame(void)
 //    fellowAddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
 }
 
-void drawInterlaceStartup(void)
+void drawInterlaceStartup()
 {
   interlace_status.frame_is_interlaced = false;
   interlace_status.frame_is_long = true;
@@ -93,7 +93,7 @@ void drawInterlaceStartup(void)
   interlace_status.use_interlaced_rendering = false;
 }
 
-void drawInterlaceEndOfFrame(void)
+void drawInterlaceEndOfFrame()
 {
   drawDecideInterlaceStatusForNextFrame();
 }

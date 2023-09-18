@@ -39,12 +39,12 @@ void DIWXStateMachine::Log(uint32_t line, uint32_t cylinder)
   }
 }
 
-uint32_t DIWXStateMachine::GetStartPosition(void)
+uint32_t DIWXStateMachine::GetStartPosition()
 {
   return diwxleft;
 }
 
-uint32_t DIWXStateMachine::GetStopPosition(void)
+uint32_t DIWXStateMachine::GetStopPosition()
 {
   return diwxright;
 }
@@ -119,12 +119,12 @@ void DIWXStateMachine::DoStateWaitingForStopPos(uint32_t rasterY, uint32_t cylin
   SetStateWaitingForStartPos(rasterY, cylinder);
 }
 
-bool DIWXStateMachine::IsVisible(void)
+bool DIWXStateMachine::IsVisible()
 {
   return (_state == DIWX_STATE_WAITING_FOR_STOP_POS);
 }
 
-void DIWXStateMachine::ChangedValue(void)
+void DIWXStateMachine::ChangedValue()
 {
   switch (_state)
   {
@@ -162,32 +162,32 @@ void DIWXStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
 /* Fellow events */
 
-void DIWXStateMachine::EndOfFrame(void)
+void DIWXStateMachine::EndOfFrame()
 {
   SetStateWaitingForStartPos(0, 0);
 }
 
-void DIWXStateMachine::SoftReset(void)
+void DIWXStateMachine::SoftReset()
 {
 }
 
-void DIWXStateMachine::HardReset(void)
+void DIWXStateMachine::HardReset()
 {
 }
 
-void DIWXStateMachine::EmulationStart(void)
+void DIWXStateMachine::EmulationStart()
 {
 }
 
-void DIWXStateMachine::EmulationStop(void)
+void DIWXStateMachine::EmulationStop()
 {
 }
 
-void DIWXStateMachine::Startup(void)
+void DIWXStateMachine::Startup()
 {
   _maxValidX = 455;
 }
 
-void DIWXStateMachine::Shutdown(void)
+void DIWXStateMachine::Shutdown()
 {
 }

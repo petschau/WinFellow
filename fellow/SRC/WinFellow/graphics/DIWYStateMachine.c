@@ -42,12 +42,12 @@ void DIWYStateMachine::Log(uint32_t line, uint32_t cylinder)
   }
 }
 
-uint32_t DIWYStateMachine::GetStartLine(void)
+uint32_t DIWYStateMachine::GetStartLine()
 {
   return (diwytop < _minValidY) ? _minValidY : diwytop;
 }
 
-uint32_t DIWYStateMachine::GetStopLine(void)
+uint32_t DIWYStateMachine::GetStopLine()
 {
   return diwybottom;
 }
@@ -97,12 +97,12 @@ void DIWYStateMachine::DoStateWaitingForStopLine(uint32_t rasterY)
   SetStateWaitingForStartLine(rasterY);
 }
 
-bool DIWYStateMachine::IsVisible(void)
+bool DIWYStateMachine::IsVisible()
 {
   return _state == DIWY_STATE_WAITING_FOR_STOP_LINE;
 }
 
-void DIWYStateMachine::ChangedValue(void)
+void DIWYStateMachine::ChangedValue()
 {
   switch (_state)
   {
@@ -140,33 +140,33 @@ void DIWYStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
 /* Fellow events */
 
-void DIWYStateMachine::EndOfFrame(void)
+void DIWYStateMachine::EndOfFrame()
 {
   SetStateWaitingForStartLine(0);
 }
 
-void DIWYStateMachine::SoftReset(void)
+void DIWYStateMachine::SoftReset()
 {
 }
 
-void DIWYStateMachine::HardReset(void)
+void DIWYStateMachine::HardReset()
 {
 }
 
-void DIWYStateMachine::EmulationStart(void)
+void DIWYStateMachine::EmulationStart()
 {
 }
 
-void DIWYStateMachine::EmulationStop(void)
+void DIWYStateMachine::EmulationStop()
 {
 }
 
-void DIWYStateMachine::Startup(void)
+void DIWYStateMachine::Startup()
 {
   _minValidY = 26;
   _maxValidY = busGetLinesInThisFrame();
 }
 
-void DIWYStateMachine::Shutdown(void)
+void DIWYStateMachine::Shutdown()
 {
 }

@@ -97,7 +97,7 @@ cia_state cia[2];
 bool cia_recheck_irq;
 uint32_t cia_recheck_irq_time;
 
-BOOLE ciaIsSoundFilterEnabled(void)
+BOOLE ciaIsSoundFilterEnabled()
 {
   return (cia[0].pra & 2) == 2;
 }
@@ -199,7 +199,7 @@ void ciaRaiseIRQ(uint32_t i, uint32_t req)
 
 /* Helps the floppy loader, Cia B Flag IRQ */
 
-void ciaRaiseIndexIRQ(void) {
+void ciaRaiseIndexIRQ() {
   ciaRaiseIRQ(1, CIA_FLAG_IRQ);
 }
 
@@ -331,7 +331,7 @@ void ciaEventSetup()
 
 void ciaSetupNextEvent()
 {
-  uint32_t nextevtime = BUS_CYCLE_DISABLE, nextevtype = CIA_NO_EVENT, i;
+  uint32_t nextevtime = BUS_CYCLE_DISABLE, nextevtype = CIA_NO_EVENT;
 
   if (cia_recheck_irq)
   {
@@ -339,7 +339,7 @@ void ciaSetupNextEvent()
     nextevtype = CIA_RECHECK_IRQ_EVENT;
   }
 
-  for (i = 0; i < 2; i++)
+  for (uint32_t i = 0; i < 2; i++)
   {
     if (((uint32_t) cia[i].taleft) < nextevtime)
     {
@@ -364,7 +364,7 @@ void ciaSetupNextEvent()
   ciaEventSetup();
 }
 
-void ciaHandleEvent(void)
+void ciaHandleEvent()
 {
   ciaEvent.cycle = BUS_CYCLE_DISABLE;
   switch (cia_next_event_type)
@@ -402,10 +402,9 @@ void ciaRecheckIRQ()
 
 /* PRA */
 
-uint8_t ciaReadApra(void)
+uint8_t ciaReadApra()
 {
   uint8_t result = 0;
-  uint32_t drivesel;
 
   if( gameport_autofire0[0] )
     gameport_fire0[0] = !gameport_fire0[0];
@@ -416,7 +415,7 @@ uint8_t ciaReadApra(void)
     result |= 0x40;	/* Two firebuttons on port 1 */
   if (!gameport_fire0[1])
     result |= 0x80;
-  drivesel = floppySelectedGet();       /* Floppy bits */
+  uint32_t drivesel = floppySelectedGet();       /* Floppy bits */
 
   if (!floppyIsReady(drivesel))
     result |= 0x20;
@@ -429,7 +428,7 @@ uint8_t ciaReadApra(void)
   return result | (uint8_t)(cia[0].pra & 2);
 }
 
-uint8_t ciaReadBpra(void)
+uint8_t ciaReadBpra()
 {
   return (uint8_t) cia[1].pra;
 }
@@ -756,7 +755,6 @@ uint8_t ciaReadicr(uint32_t i)
 
 void ciaWriteicr(uint32_t i, uint8_t data)
 {
-  uint32_t old = cia[i].icrmsk;
   if (data & 0x80)
   {
     cia[i].icrmsk |= (data & 0x1f);
@@ -907,11 +905,9 @@ ciaWriteFunc cia_write[16] =
   /* Map cia banks into the memory table                                        */
   /*============================================================================*/
 
-  void ciaMemoryMap(void)
+  void ciaMemoryMap()
   {
-    uint32_t bank;
-
-    for (bank = 0xa00000>>16; bank < (0xc00000>>16); bank++)
+    for (uint32_t bank = 0xa00000 >> 16; bank < (0xc00000>>16); bank++)
       memoryBankSet(ciaReadByte,
       ciaReadWord,
       ciaReadLong,
@@ -928,11 +924,9 @@ ciaWriteFunc cia_write[16] =
   /* Cia state zeroing                                                          */
   /*============================================================================*/
 
-  void ciaStateClear(void)
+  void ciaStateClear()
   {
-    uint32_t i;
-
-    for (i = 0; i < 2; i++)
+    for (uint32_t i = 0; i < 2; i++)
     {
       cia[i].ev = 0;		/* Zero out event counters */
       cia[i].evlatch = 0;
@@ -968,9 +962,7 @@ ciaWriteFunc cia_write[16] =
 
   void ciaSaveState(FILE *F)
   {
-    uint32_t i;
-
-    for (i = 0; i < 2; i++)
+    for (uint32_t i = 0; i < 2; i++)
     {
       fwrite(&cia[i].ev, sizeof(cia[i].ev), 1, F);
       fwrite(&cia[i].evlatch, sizeof(cia[i].evlatch), 1, F);
@@ -1000,9 +992,7 @@ ciaWriteFunc cia_write[16] =
 
   void ciaLoadState(FILE *F)
   {
-    uint32_t i;
-
-    for (i = 0; i < 2; i++)
+    for (uint32_t i = 0; i < 2; i++)
     {
       fread(&cia[i].ev, sizeof(cia[i].ev), 1, F);
       fread(&cia[i].evlatch, sizeof(cia[i].evlatch), 1, F);
@@ -1030,20 +1020,20 @@ ciaWriteFunc cia_write[16] =
     fread(&cia_next_event_type, sizeof(cia_next_event_type), 1, F);
   }
 
-  void ciaEmulationStart(void) {
+  void ciaEmulationStart() {
   }
 
-  void ciaEmulationStop(void) {
+  void ciaEmulationStop() {
   }
 
-  void ciaHardReset(void) {
+  void ciaHardReset() {
     ciaStateClear();
     ciaMemoryMap();
   }
 
-  void ciaStartup(void) {
+  void ciaStartup() {
     ciaStateClear();
   }
 
-  void ciaShutdown(void) {
+  void ciaShutdown() {
   }

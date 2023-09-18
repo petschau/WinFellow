@@ -351,7 +351,7 @@ wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {
   wguiVariousDialogProc
 };
 
-void wguiLoadBitmaps(void)
+void wguiLoadBitmaps()
 {
   if (power_led_on_bitmap == nullptr)
   {
@@ -371,7 +371,7 @@ void wguiLoadBitmaps(void)
   }
 }
 
-void wguiReleaseBitmaps(void)
+void wguiReleaseBitmaps()
 {
   if (power_led_on_bitmap != nullptr) DeleteObject(power_led_on_bitmap);
   if (power_led_off_bitmap != nullptr) DeleteObject(power_led_off_bitmap);
@@ -379,7 +379,7 @@ void wguiReleaseBitmaps(void)
   if (diskdrive_led_off_bitmap != nullptr) DeleteObject(diskdrive_led_off_bitmap);
 }
 
-void wguiCheckMemorySettingsForChipset(void)
+void wguiCheckMemorySettingsForChipset()
 {
   if (!cfgGetECS(wgui_cfg) && cfgGetChipSize(wgui_cfg) > 0x80000)
   {
@@ -470,9 +470,8 @@ void wguiGetFrameSkippingStrWithIndex(LONG index, char char_buffer[]) {
 
 void wguiSetSliderTextAccordingToPosition(HWND windowHandle, int sliderIdentifier, int sliderTextIdentifier, void (*getSliderStrWithIndex)(LONG, char[])) {
   char buffer[255];
-  uint32_t pos;
 
-  pos = ccwSliderGetPosition(windowHandle, sliderIdentifier);
+  uint32_t pos = ccwSliderGetPosition(windowHandle, sliderIdentifier);
   getSliderStrWithIndex(pos, buffer);
   ccwStaticSetText(windowHandle, sliderTextIdentifier, buffer);
 }
@@ -516,7 +515,6 @@ LONG wguiGetComboboxIndexFromDisplayDriver(DISPLAYDRIVER displaydriver) {
 
 void wguiConvertDrawModeListToGuiDrawModes()
 {
-  uint32_t i;
   uint32_t id16bit		= 0;
   uint32_t id24bit		= 0;
   uint32_t id32bit		= 0;
@@ -538,17 +536,17 @@ void wguiConvertDrawModeListToGuiDrawModes()
     switch(dm->bits)
     {
       case 16:
-        wgui_dm.res16bit.push_front(wgui_drawmode(dm));
+        wgui_dm.res16bit.emplace_front(dm);
 	id16bit++;
 	break;
 
       case 24:
-        wgui_dm.res24bit.push_front(wgui_drawmode(dm));
+        wgui_dm.res24bit.emplace_front(dm);
 	id24bit++;
 	break;
 
       case 32:
-        wgui_dm.res32bit.push_front(wgui_drawmode(dm));
+        wgui_dm.res32bit.emplace_front(dm);
 	id32bit++;
 	break;
     }
@@ -560,7 +558,7 @@ void wguiConvertDrawModeListToGuiDrawModes()
   wgui_dm.numberof16bit = id16bit;
   wgui_dm.numberof24bit = id24bit;
   wgui_dm.numberof32bit = id32bit;
-  i=0;
+  uint32_t i = 0;
 
 
   for (wgui_drawmode_list::iterator wmdm_it = wgui_dm.res16bit.begin(); wmdm_it != wgui_dm.res16bit.end(); ++wmdm_it)
@@ -626,10 +624,7 @@ wgui_drawmode* wguiMatchFullScreenResolution()
 /*============================================================================*/
 
 char *wguiExtractFilename(char *fullpathname) {
-
-  char *strpointer;
-
-  strpointer = strrchr(fullpathname, '\\');
+  char* strpointer = strrchr(fullpathname, '\\');
   strncpy(extractedfilename, fullpathname + strlen(fullpathname) - strlen(strpointer) + 1, strlen(fullpathname) - strlen(strpointer) - 1);
   return extractedfilename;
 }
@@ -639,26 +634,15 @@ char *wguiExtractFilename(char *fullpathname) {
 /*============================================================================*/
 
 char *wguiExtractPath(char *fullpathname) {
-
-  char *strpointer;
-
-  strpointer = strrchr(fullpathname, '\\');
+  char* strpointer = strrchr(fullpathname, '\\');
 
   if(strpointer) {
     strncpy(extractedpathname, fullpathname, strlen(fullpathname) - strlen(strpointer));
     extractedpathname[strlen(fullpathname) - strlen(strpointer)] = '\0';
     return extractedpathname;
   }
-  else
-    return nullptr;
-}
 
-/*============================================================================*/
-/* Convert bool to string                                                     */
-/*============================================================================*/
-
-static char *wguiGetBOOLEToString(BOOLE value) {
-  return (value) ? "yes" : "no";
+  return nullptr;
 }
 
 /*============================================================================*/
@@ -683,10 +667,9 @@ BOOLE wguiSelectFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *
 {
   OPENFILENAME ofn;
   char filters[CFG_FILENAME_LENGTH];
-  char *pfilters;
 
   memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
-  pfilters = &filters[0];
+  char* pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
   ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
@@ -747,10 +730,9 @@ BOOLE wguiSaveFile(HWND hwndDlg, char *filename, uint32_t filenamesize, char *ti
 {
   OPENFILENAME ofn;
   char filters[CFG_FILENAME_LENGTH];
-  char *pfilters;
 
   memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
-  pfilters = &filters[0];
+  char* pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
   ofn.hwndOwner = hwndDlg;             /* the possibilities... */
@@ -846,7 +828,7 @@ BOOLE wguiSelectDirectory(HWND hwndDlg, char *szPath, char *szDescription, uint3
 /* Install history of configuration files into window menu                    */
 /*============================================================================*/
 
-void wguiRemoveAllHistory(void) {
+void wguiRemoveAllHistory() {
   HMENU menu = GetMenu(wgui_hDialog);
   if (menu != nullptr)
   {
@@ -861,7 +843,7 @@ void wguiRemoveAllHistory(void) {
   }
 }
 
-void wguiInstallHistoryIntoMenu(void) {
+void wguiInstallHistoryIntoMenu() {
   char cfgfilename[CFG_FILENAME_LENGTH+2];
 
   wguiRemoveAllHistory();
@@ -891,11 +873,10 @@ void wguiInstallHistoryIntoMenu(void) {
 }
 
 void wguiPutCfgInHistoryOnTop(uint32_t cfgtotop) {
-  uint32_t i;
   char cfgfilename[CFG_FILENAME_LENGTH];
 
   strncpy(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, cfgtotop), CFG_FILENAME_LENGTH);
-  for (i=cfgtotop; i>0; i--) {
+  for (uint32_t i = cfgtotop; i>0; i--) {
     iniSetConfigurationHistoryFilename(wgui_ini, i, iniGetConfigurationHistoryFilename(wgui_ini, i-1));
   }
   iniSetConfigurationHistoryFilename(wgui_ini, 0, cfgfilename);
@@ -904,12 +885,10 @@ void wguiPutCfgInHistoryOnTop(uint32_t cfgtotop) {
 
 void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert) {
   char cfgfilename[CFG_FILENAME_LENGTH];
-  uint32_t i;
-  BOOL exists;
 
   // first we need to check if the file is already in the history
-  exists = FALSE;
-  i = 0;
+  BOOL exists = FALSE;
+  uint32_t i = 0;
   while ((i<4) && (exists == FALSE)) {
     i++;
     if (strncmp(cfgfilenametoinsert, iniGetConfigurationHistoryFilename(wgui_ini, i-1), CFG_FILENAME_LENGTH) == 0) {
@@ -931,9 +910,7 @@ void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert) {
 }
 
 void wguiDeleteCfgFromHistory(uint32_t itemtodelete) {
-  uint32_t i;
-
-  for (i=itemtodelete; i<3; i++) {
+  for (uint32_t i = itemtodelete; i<3; i++) {
     iniSetConfigurationHistoryFilename(wgui_ini, i, iniGetConfigurationHistoryFilename(wgui_ini, i+1));
   }
   iniSetConfigurationHistoryFilename(wgui_ini, 3, "");
@@ -1013,10 +990,10 @@ void wguiOpenStateFile(cfg *conf, HWND hwndDlg)
 /* install CPU config */
 
 void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf) {
-  int slidervalue, i;
+  int slidervalue;
 
   /* set CPU type */
-  for(i=0; i<NUMBER_OF_CPUS; i++)
+  for(int i = 0; i<NUMBER_OF_CPUS; i++)
     ccwButtonUncheck(hwndDlg, wgui_cpus_cci[i]);
   ccwButtonSetCheck(hwndDlg, wgui_cpus_cci[cfgGetCPUType(conf)]);
 
@@ -1046,10 +1023,8 @@ void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf) {
 /* Extract CPU config */
 
 void wguiExtractCPUConfig(HWND hwndDlg, cfg *conf) {
-  uint32_t i;
-
   /* get CPU type */
-  for (i=0; i<NUMBER_OF_CPUS; i++) {
+  for (uint32_t i = 0; i<NUMBER_OF_CPUS; i++) {
     if (ccwButtonGetCheck(hwndDlg, wgui_cpus_cci[i])) { cfgSetCPUType(conf, (cpu_integration_models) i); }
   }	
 
@@ -1081,11 +1056,9 @@ void wguiExtractCPUConfig(HWND hwndDlg, cfg *conf) {
 /* install floppy config */
 
 void wguiInstallFloppyConfig(HWND hwndDlg, cfg *conf) {
-  uint32_t i;
-
   /* set floppy image names */
 
-  for (i=0; i<MAX_DISKDRIVES; i++) {
+  for (uint32_t i = 0; i<MAX_DISKDRIVES; i++) {
     ccwEditSetText(hwndDlg, diskimage_data[i][DID_IMAGENAME], cfgGetDiskImage(conf, i));
     ccwButtonCheckConditional(hwndDlg, diskimage_data[i][DID_ENABLED], cfgGetDiskEnabled(conf, i));
     ccwButtonCheckConditional(hwndDlg, diskimage_data[i][DID_READONLY], cfgGetDiskReadOnly(conf, i));
@@ -1099,10 +1072,8 @@ void wguiInstallFloppyConfig(HWND hwndDlg, cfg *conf) {
 /* set floppy images in main window */
 
 void wguiInstallFloppyMain(HWND hwndDlg, cfg *conf) {
-  uint32_t i;
-
   wguiLoadBitmaps();
-  for (i=0; i<MAX_DISKDRIVES; i++) {
+  for (uint32_t i = 0; i<MAX_DISKDRIVES; i++) {
     ccwEditSetText(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], cfgGetDiskImage(conf, i));
     ccwEditEnableConditional(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], cfgGetDiskEnabled(conf, i));
     ccwButtonEnableConditional(hwndDlg, diskimage_data_main[i][DID_EJECT_MAIN], cfgGetDiskEnabled(conf,i));
@@ -1115,11 +1086,10 @@ void wguiInstallFloppyMain(HWND hwndDlg, cfg *conf) {
 
 void wguiExtractFloppyConfig(HWND hwndDlg, cfg *conf) {
   char tmp[CFG_FILENAME_LENGTH];
-  uint32_t i;
 
   /* Get floppy disk image names */
 
-  for (i=0; i<MAX_DISKDRIVES; i++) {
+  for (uint32_t i = 0; i<MAX_DISKDRIVES; i++) {
     ccwEditGetText(hwndDlg, diskimage_data[i][DID_IMAGENAME], tmp, CFG_FILENAME_LENGTH);
     cfgSetDiskImage(conf, i, tmp);
     cfgSetDiskEnabled(conf, i, ccwButtonGetCheck(hwndDlg, diskimage_data[i][DID_ENABLED]));
@@ -1138,11 +1108,10 @@ void wguiExtractFloppyMain(HWND hwndDlg, cfg *conf)
   char tmp[CFG_FILENAME_LENGTH];
   char old_tmp[CFG_FILENAME_LENGTH];
   bool config_changed = false;
-  uint32_t i;
 
   /* Get floppy disk image names */
 
-  for (i=0; i<MAX_DISKDRIVES; i++)
+  for (uint32_t i = 0; i<MAX_DISKDRIVES; i++)
   {
     strcpy(old_tmp, cfgGetDiskImage(conf, i));
     ccwEditGetText(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], tmp, CFG_FILENAME_LENGTH);
@@ -1216,7 +1185,6 @@ void wguiInstallMemoryConfig(HWND hwndDlg, cfg *conf) {
 
 void wguiExtractMemoryConfig(HWND hwndDlg, cfg *conf) {
   char tmp[CFG_FILENAME_LENGTH];
-  uint32_t cursel;
   uint32_t sizes1[9] = {0,
     0x40000,
     0x80000,
@@ -1234,7 +1202,7 @@ void wguiExtractMemoryConfig(HWND hwndDlg, cfg *conf) {
 
   /* Get current memory sizes */
 
-  cursel = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_CHIP);
+  uint32_t cursel = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_CHIP);
   if (cursel > 7) cursel = 7;
   cfgSetChipSize(conf, sizes1[cursel + 1]);
 
@@ -1388,7 +1356,7 @@ void wguiExtractSoundConfig(HWND hwndDlg, cfg *conf) {
 /* Install gameport config */
 
 void wguiInstallGameportConfig(HWND hwndDlg, cfg *conf) {
-  uint32_t i, j;
+  uint32_t i;
 
   /* fill comboboxes with choices */
   for (i=0; i<NUMBER_OF_GAMEPORT_STRINGS; i++) {
@@ -1402,7 +1370,7 @@ void wguiInstallGameportConfig(HWND hwndDlg, cfg *conf) {
 
   /* set current used keys for keyboard layout replacements */
   for( i=0; i<MAX_JOYKEY_PORT; i++ ) {
-    for ( j=0; j<MAX_JOYKEY_VALUE; j++) {
+    for ( uint32_t j = 0; j<MAX_JOYKEY_VALUE; j++) {
       ccwStaticSetText(hwndDlg, gameport_keys_labels[i][j], kbdDrvKeyPrettyString(kbdDrvJoystickReplacementGet(gameport_keys_events[i][j])));
     }
   }
@@ -1512,8 +1480,7 @@ HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, char* filename, rdb_status 
   char s[256];
   snprintf(s, 256, "%s%s", filename, rdbStatus == rdb_status::RDB_FOUND ? " (RDB)" : (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR || rdbStatus == RDB_FOUND_WITH_PARTITION_ERROR ? " (Invalid RDB)" : ""));
 
-  TV_INSERTSTRUCT tvInsert;
-  memset(&tvInsert, 0, sizeof(tvInsert));
+  TV_INSERTSTRUCT tvInsert = {};
   tvInsert.hParent = nullptr;
   tvInsert.hInsertAfter = TVI_LAST;
   tvInsert.item.mask = TVIF_TEXT | TVIF_PARAM;
@@ -1527,8 +1494,7 @@ void wguiHardfileTreeViewAddPartition(HWND hwndTree, HTREEITEM parent, int parti
   char s[256];
   wguiHardfileSetInformationString(s, deviceName, partitionNumber, partition);
 
-  TV_INSERTSTRUCT tvInsert;
-  memset(&tvInsert, 0, sizeof(tvInsert));
+  TV_INSERTSTRUCT tvInsert = {};
   tvInsert.hParent = parent;
   tvInsert.hInsertAfter = TVI_LAST;
   tvInsert.item.mask = TVIF_TEXT | TVIF_PARAM;
@@ -1560,8 +1526,7 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
     MessageBox(wgui_hDialog, s, "Configuration Error", 0);
   }
 
-  struct stat StatBuffer;
-  memset(&StatBuffer, 0, sizeof(StatBuffer));
+  struct stat StatBuffer = {};
   int result = fsWrapStat(hf->filename, &StatBuffer);
 
   if (result != 0)
@@ -2050,8 +2015,6 @@ void wguiExtractDisplayFullscreenConfig(HWND hwndDlg, cfg *cfg)
 
 void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 {
-  HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
-
   // get current colorbits
   cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS)));
 
@@ -2128,8 +2091,7 @@ LPARAM wguiTreeViewSelection(HWND hwndTree)
     return -1;
   }
 
-  TVITEM item;
-  memset(&item, 0, sizeof(item));
+  TVITEM item = {};
   item.hItem = hItem;
   item.mask = TVIF_PARAM;
   TreeView_GetItem(hwndTree, &item);
@@ -2146,10 +2108,10 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
   {
     case WM_INITDIALOG:
     {
-      char *strLastPresetROMDir, strAmigaForeverROMDir[CFG_FILENAME_LENGTH] = "";
+      char strAmigaForeverROMDir[CFG_FILENAME_LENGTH] = "";
 
       wgui_propsheetHWND[PROPSHEETPRESETS] = hwndDlg;
-      strLastPresetROMDir = iniGetLastUsedPresetROMDir(wgui_ini);
+      char* strLastPresetROMDir = iniGetLastUsedPresetROMDir(wgui_ini);
 
       if(strncmp(strLastPresetROMDir, "", CFG_FILENAME_LENGTH) == 0)
       {
@@ -2170,9 +2132,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         }
 
       if(wgui_presets != nullptr) {
-        uint32_t i;          
-
-        for(i=0; i<wgui_num_presets; i++)
+        for(uint32_t i = 0; i<wgui_num_presets; i++)
           ccwComboBoxAddString(hwndDlg, IDC_COMBO_PRESETS_MODEL, wgui_presets[i].strPresetDescription);
       }
 
@@ -2467,12 +2427,11 @@ INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPar
 	switch (LOWORD(wParam)) {
           case IDOK:
             {
-              char *strFilename;
               char strVolume[CFG_FILENAME_LENGTH] = "";
               bool bResult = false;
-              bool bFormat, bBootable = false, bFFS = false;
+              bool bBootable = false, bFFS = false;
 
-              strFilename = (char *) malloc(CFG_FILENAME_LENGTH + 1);
+              char* strFilename = (char*)malloc(CFG_FILENAME_LENGTH + 1);
 
               ccwEditGetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_FILENAME, strFilename, CFG_FILENAME_LENGTH);
   
@@ -2485,7 +2444,7 @@ INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPar
 	        break;
 	      }
 
-              bFormat   = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
+              bool bFormat = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
               if(bFormat) 
               {
                 bBootable = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE);
@@ -3294,11 +3253,10 @@ INT_PTR CALLBACK wguiVariousDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 
 INT_PTR wguiConfigurationDialog()
 {
-  int i;
   PROPSHEETPAGE propertysheets[PROP_SHEETS];
   PROPSHEETHEADER propertysheetheader;
 
-  for (i = 0; i < PROP_SHEETS; i++)  {
+  for (int i = 0; i < PROP_SHEETS; i++)  {
     propertysheets[i].dwSize = sizeof(PROPSHEETPAGE);
     if (wgui_propsheetICON[i] != 0) {
       propertysheets[i].dwFlags = PSP_USEHICON;
@@ -3443,12 +3401,9 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
       break;
     case IDC_CONFIGURATION:
       {
-        cfg *configbackup;
-        INT_PTR result;
-
-        configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
+        cfg* configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
  
-        result = wguiConfigurationDialog();
+        INT_PTR result = wguiConfigurationDialog();
         if(result >= 1)
         {
           cfgManagerFreeConfig(&cfg_manager, configbackup);
@@ -3568,7 +3523,7 @@ void wguiRequester(char *szMessage, UINT uType) {
 /* Runs the GUI                                                               */
 /*============================================================================*/
 
-BOOLE wguiCheckEmulationNecessities(void) {
+BOOLE wguiCheckEmulationNecessities() {
   if(strcmp(cfgGetKickImage(wgui_cfg), "") != 0) {
     FILE *F = fopen(cfgGetKickImage(wgui_cfg), "rb");
     if (F != nullptr)
@@ -3581,7 +3536,7 @@ BOOLE wguiCheckEmulationNecessities(void) {
   else return FALSE;
 }	
 
-BOOLE wguiEnter(void)
+BOOLE wguiEnter()
 {
   BOOLE quit_emulator = FALSE;
   BOOLE debugger_start = FALSE;
@@ -3639,12 +3594,10 @@ BOOLE wguiEnter(void)
             wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
 
             if(cfgGetConfigChangedSinceLastSave(wgui_cfg)) {
-              int result;
-
-              result = MessageBox(wgui_hDialog, 
-                "There are unsaved configuration changes, quit anyway?", 
-                "WinFellow",
-              MB_YESNO | MB_ICONEXCLAMATION);
+              int result = MessageBox(wgui_hDialog,
+                                      "There are unsaved configuration changes, quit anyway?",
+                                      "WinFellow",
+                                      MB_YESNO | MB_ICONEXCLAMATION);
               if(result == IDNO)
                 bQuit = FALSE;
             }
@@ -3788,7 +3741,6 @@ static bool wguiInitializePresets(wgui_preset **wgui_presets, uint32_t *wgui_num
   uint32_t i = 0;
   cfg *cfgTemp = nullptr;
   bool bResult = false;
-  char strFilename[CFG_FILENAME_LENGTH] = "";
 
   strncpy(strSearchPattern, wgui_preset_path, CFG_FILENAME_LENGTH);
   strncat(strSearchPattern, "\\*", 3);
@@ -3857,21 +3809,17 @@ void wguiSetProcessDPIAwareness(const char *pszAwareness)
 #endif
   typedef HRESULT(WINAPI *PFN_SetProcessDpiAwareness)(Process_DPI_Awareness);
   typedef BOOL(WINAPI *PFN_SetProcessDPIAware)();
-  PFN_SetProcessDpiAwareness pfnSetProcessDpiAwareness;
-  PFN_SetProcessDPIAware pfnSetProcessDPIAware;
-  Process_DPI_Awareness nAwareness;
-  HINSTANCE hCoreDll, hUser32;
-  HRESULT hr;
 
   fellowAddLog("wguiSetProcessDPIAwareness(%s)\n", pszAwareness);
 
-  nAwareness = (Process_DPI_Awareness)strtoul(pszAwareness, nullptr, 0);
-  hr = E_NOTIMPL;
-  hCoreDll = LoadLibrary("Shcore.dll");
+  Process_DPI_Awareness nAwareness = (Process_DPI_Awareness)strtoul(pszAwareness, nullptr, 0);
+  HRESULT hr = E_NOTIMPL;
+  HINSTANCE hCoreDll = LoadLibrary("Shcore.dll");
 
   if (hCoreDll)
   {
-    pfnSetProcessDpiAwareness = (PFN_SetProcessDpiAwareness)GetProcAddress(hCoreDll, "SetProcessDpiAwareness");
+    PFN_SetProcessDpiAwareness pfnSetProcessDpiAwareness = (PFN_SetProcessDpiAwareness)GetProcAddress(
+      hCoreDll, "SetProcessDpiAwareness");
     if (pfnSetProcessDpiAwareness)
       hr = pfnSetProcessDpiAwareness(nAwareness);
     if (hr == S_OK)
@@ -3881,11 +3829,11 @@ void wguiSetProcessDPIAwareness(const char *pszAwareness)
 
   if (hr == E_NOTIMPL && nAwareness > 0) // Windows Vista / Windows 7
   {
-    hUser32 = LoadLibrary("user32.dll");
+    HINSTANCE hUser32 = LoadLibrary("user32.dll");
     if (hUser32)
     {
       fellowAddLog("hUser32");
-      pfnSetProcessDPIAware = (PFN_SetProcessDPIAware)GetProcAddress(hUser32, "SetProcessDPIAware");
+      PFN_SetProcessDPIAware pfnSetProcessDPIAware = (PFN_SetProcessDPIAware)GetProcAddress(hUser32, "SetProcessDPIAware");
       if (pfnSetProcessDPIAware) {
         hr = pfnSetProcessDPIAware();
         if (hr != 0)
@@ -3901,7 +3849,7 @@ void wguiSetProcessDPIAwareness(const char *pszAwareness)
 /* Called at the start of Fellow execution                                    */
 /*============================================================================*/
 
-void wguiStartup(void) {
+void wguiStartup() {
   wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
   wgui_ini = iniManagerGetCurrentInitdata(&ini_manager);
   wguiConvertDrawModeListToGuiDrawModes();
@@ -3917,7 +3865,7 @@ void wguiStartup(void) {
 /* Called at the end of Fellow initialization                                 */
 /*============================================================================*/
 
-void wguiStartupPost(void) {
+void wguiStartupPost() {
   wguiLoadBitmaps();
 
   if (wgui_emulation_state) {
@@ -3934,7 +3882,7 @@ void wguiStartupPost(void) {
 /* Called at the end of Fellow execution                                      */
 /*============================================================================*/
 
-void wguiShutdown(void) {
+void wguiShutdown() {
   wguiReleaseBitmaps();
   wguiFreeGuiDrawModesLists();
 

@@ -44,7 +44,7 @@
 
 static int opencount = 0;
 
-static uae_u32 hardfile_open (void)
+static uae_u32 hardfile_open ()
 {
     uaecptr tmp1 = m68k_areg(regs, 1); /* IOReq */
 
@@ -63,7 +63,7 @@ static uae_u32 hardfile_open (void)
     return (uae_u32)-1;
 }
 
-static uae_u32 hardfile_close (void)
+static uae_u32 hardfile_close ()
 {
     opencount--;
     put_word (m68k_areg(regs, 6) + 32, get_word (m68k_areg(regs, 6) + 32) - 1);
@@ -71,12 +71,12 @@ static uae_u32 hardfile_close (void)
     return 0;
 }
 
-static uae_u32 hardfile_expunge (void)
+static uae_u32 hardfile_expunge ()
 {
     return 0; /* Simply ignore this one... */
 }
 
-static uae_u32 hardfile_beginio (void)
+static uae_u32 hardfile_beginio ()
 {
     uae_u32 tmp1, tmp2, dataptr, offset;
     uae_u32 retval = m68k_dreg(regs, 0);
@@ -193,12 +193,12 @@ static uae_u32 hardfile_beginio (void)
     return retval;
 }
 
-static uae_u32 hardfile_abortio (void)
+static uae_u32 hardfile_abortio ()
 {
     return (uae_u32)-3;
 }
 
-void hardfile_install (void)
+void hardfile_install ()
 {
     uae_u32 functable, datatable;
     uae_u32 initcode, openfunc, closefunc, expungefunc;

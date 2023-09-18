@@ -162,31 +162,27 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
 {
   DWORD dwThreadId;
   MSG myMsg;
-  HANDLE FellowThread;
-  DWORD dwEvt;
   HANDLE multi_events[3];
-  uint32_t event_count;
   enum MultiEventTypes object_mapping[4];
-  BOOLE keep_on_waiting;
-  
+
   win_drv_emulation_ended = CreateEvent(nullptr, FALSE, FALSE, nullptr);
   fellowAddLog("fellowEmulationStart() finished\n");
-  FellowThread = CreateThread(nullptr,     // Security attr
-                              0,                   // Stack Size
-                              startfunc,   // Thread procedure
-                              param,	            // Thread parameter
-                              0,                   // Creation flags
-                              &dwThreadId);        // ThreadId
+  HANDLE FellowThread = CreateThread(nullptr, // Security attr
+                                     0, // Stack Size
+                                     startfunc, // Thread procedure
+                                     param, // Thread parameter
+                                     0, // Creation flags
+                                     &dwThreadId);        // ThreadId
   SetTimer(gfxDrvCommon->GetHWND(), 1, 10, nullptr);
-  event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
-  keep_on_waiting = TRUE;
+  uint32_t event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
+  BOOLE keep_on_waiting = TRUE;
   while (keep_on_waiting)
   {
-    dwEvt = MsgWaitForMultipleObjects(event_count,
-				      multi_events,
-				      FALSE,
-				      INFINITE,
-				      QS_ALLINPUT);
+    DWORD dwEvt = MsgWaitForMultipleObjects(event_count,
+                                            multi_events,
+                                            FALSE,
+                                            INFINITE,
+                                            QS_ALLINPUT);
     if ((dwEvt >= WAIT_OBJECT_0) && (dwEvt <= (WAIT_OBJECT_0 + event_count))) 
     {
       switch (object_mapping[dwEvt - WAIT_OBJECT_0]) 
@@ -222,7 +218,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   CloseHandle(win_drv_emulation_ended);
 }
 
-void winDrvEmulationStart(void) 
+void winDrvEmulationStart() 
 {
   if (fellowEmulationStart())
   {
@@ -281,7 +277,7 @@ BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg)
 /* Timer controls execution of this function                                 */
 /*===========================================================================*/
 
-void winDrvHandleInputDevices(void) 
+void winDrvHandleInputDevices() 
 {
   joyDrvMovementHandler();
 }
@@ -320,11 +316,10 @@ void winDrvSetKey(char *path, char *name, char *value)
 void winDrvSetRegistryKeys(char **argv) 
 {
   char p[1024];
-  char *locc;
   p[0] = '\0';
   winDrvSetKey("Software\\WinFellow", "version", FELLOWNUMERICVERSION);
   _fullpath(p, argv[0], 1024);
-  locc = strrchr(p, '\\');
+  char* locc = strrchr(p, '\\');
   if (locc == nullptr)
   {
     p[0] = '\0';
@@ -388,12 +383,9 @@ char *winDrvCmdLineGetNextEnd(char *lpCmdLine)
 
 char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc) 
 {
-  int elements = 0, i;
-  char *tmp;
-  char **argv;
-  char *argstart, *argend;
-  
-  tmp = winDrvCmdLineGetNextFirst(lpCmdLine);
+  int elements = 0;
+
+  char* tmp = winDrvCmdLineGetNextFirst(lpCmdLine);
   if (tmp != nullptr) 
   {
     while ((tmp = winDrvCmdLineGetNextFirst(tmp)) != nullptr) 
@@ -402,12 +394,12 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
       elements++;
     }
   }
-  argv = (char **) malloc(sizeof(char**)*(elements + 2));
+  char** argv = (char**)malloc(sizeof(char**)*(elements + 2));
   argv[0] = "winfellow.exe";
-  argend = lpCmdLine;
-  for (i = 1; i <= elements; i++) 
+  char* argend = lpCmdLine;
+  for (int i = 1; i <= elements; i++) 
   {
-    argstart = winDrvCmdLineGetNextFirst(argend);
+    char* argstart = winDrvCmdLineGetNextFirst(argend);
     argend = winDrvCmdLineGetNextEnd(argstart);
     if (*argstart == '\"')
     {
@@ -505,18 +497,16 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
 #endif
 
   char *cmdline = (char *) malloc(strlen(lpCmdLine) + 1);
-  char **argv;
   int argc;
-  int result;
-  
+
   winDrvSetThreadName(-1, "WinMain()");
   win_drv_nCmdShow = nCmdShow;
   win_drv_hInstance = hInstance;
   strcpy(cmdline, lpCmdLine);
-  argv = winDrvCmdLineMakeArgv(cmdline, &argc);
+  char** argv = winDrvCmdLineMakeArgv(cmdline, &argc);
   winDrvSetRegistryKeys(argv);
 
-  result = main(argc, argv);
+  int result = main(argc, argv);
 
   free(cmdline);
   free(argv);
@@ -530,9 +520,8 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
 /* detect memory leaks in debug builds; called after main                     */
 /*============================================================================*/
 
-int winDrvDetectMemoryLeaks(void)
+int winDrvDetectMemoryLeaks()
 {
-  HANDLE hLogFile;
   char stOutputFileName[CFG_FILENAME_LENGTH];
   char strLogFileName[CFG_FILENAME_LENGTH];
   SYSTEMTIME t;
@@ -546,9 +535,9 @@ int winDrvDetectMemoryLeaks(void)
 
   fileopsGetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
 
-  hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE,
-    FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS,
-    FILE_ATTRIBUTE_NORMAL, nullptr);
+  HANDLE hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE,
+                               FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS,
+                               FILE_ATTRIBUTE_NORMAL, nullptr);
 
   _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
   _CrtSetReportFile(_CRT_WARN, hLogFile);

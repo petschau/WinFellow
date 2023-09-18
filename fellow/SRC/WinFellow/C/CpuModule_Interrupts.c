@@ -28,7 +28,7 @@
 /* Function for checking pending interrupts */
 cpuCheckPendingInterruptsFunc cpu_check_pending_interrupts_func;
 
-void cpuCheckPendingInterrupts(void)
+void cpuCheckPendingInterrupts()
 {
   if (cpuGetRaiseInterrupt()) return;
   cpu_check_pending_interrupts_func();
@@ -39,7 +39,7 @@ void cpuSetCheckPendingInterruptsFunc(cpuCheckPendingInterruptsFunc func)
   cpu_check_pending_interrupts_func = func;
 }
 
-uint32_t cpuActivateSSP(void)
+uint32_t cpuActivateSSP()
 {
   uint32_t currentSP = cpuGetAReg(7);
 

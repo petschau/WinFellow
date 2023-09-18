@@ -293,7 +293,7 @@ addrbank filesys_bank = {
  */
 
 
-/* FELLOW CHANGE: static void expamem_map_filesys (void) */
+/* FELLOW CHANGE: static void expamem_map_filesys () */
 void expamem_map_filesys (uint32_t mapping)
 {
     uaecptr a;
@@ -318,8 +318,8 @@ void expamem_map_filesys (uint32_t mapping)
     org (a);
 }
 
-/* FELLOW CHANGE: static void expamem_init_filesys (void) */
-void expamem_init_filesys (void)
+/* FELLOW CHANGE: static void expamem_init_filesys () */
+void expamem_init_filesys ()
 {
     /* struct DiagArea - the size has to be large enough to store several device ROMTags */
     uae_u8 diagarea[] = { 0x90, 0x00, /* da_Config, da_Flags */

@@ -33,7 +33,7 @@
 #include "defs.h"
 #include "fswrap.h"
 #include "fellow.h"
-#include "errno.h"
+#include <cerrno>
 
 
 /*===========================================================================*/
@@ -52,7 +52,7 @@ BOOLE fs_wrap_opendir_firsttime;
 /* Unix has no drives                                                        */
 /*===========================================================================*/
 
-BOOLE fsWrapHasDrives(void) {
+BOOLE fsWrapHasDrives() {
   return TRUE;
 }
 
@@ -60,7 +60,7 @@ BOOLE fsWrapHasDrives(void) {
 /* Unix has no drives                                                        */
 /*===========================================================================*/
 
-BOOLE *fsWrapGetDriveMap(void) {
+BOOLE *fsWrapGetDriveMap() {
   return nullptr;
 }
 
@@ -120,15 +120,14 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
 
 #if (_MSC_VER >= 1900) // compiler version is Visual Studio 2015 or higher?
   // check OS version, only execute replacement code on Windows XP/OS versions before Vista
-  OSVERSIONINFO osvi;
-  BOOL bIsLegacyOS; // Windows 2000, XP, 2003
+  OSVERSIONINFO osvi;// Windows 2000, XP, 2003
 
   ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
   GetVersionEx(&osvi);
 
-  bIsLegacyOS = osvi.dwMajorVersion == 5;
+  BOOL bIsLegacyOS = osvi.dwMajorVersion == 5;
 
   if(bIsLegacyOS)
   {
@@ -211,7 +210,6 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
 fs_navig_point *fsWrapMakePoint(const char *point) {
   struct stat mystat;
   fs_navig_point *fsnp = nullptr;
-  FILE *file_ptr;
 
   // check file permissions
   if(fsWrapStat(point, &mystat) == 0) {
@@ -226,7 +224,7 @@ fs_navig_point *fsWrapMakePoint(const char *point) {
     fsnp->writeable = !!(mystat.st_mode & _S_IWRITE);
     if(fsnp->writeable)
     {
-      file_ptr = fopen(point, "a");
+      FILE* file_ptr = fopen(point, "a");
       if(file_ptr == nullptr)
       {
         fsnp->writeable = FALSE;
@@ -263,7 +261,7 @@ BOOLE fsWrapSetCWD(fs_navig_point *fs_point) {
 /* Returns current directory                                                 */
 /*===========================================================================*/
 
-fs_navig_point *fsWrapGetCWD(void) {
+fs_navig_point *fsWrapGetCWD() {
   char tmpcwd[FS_WRAP_MAX_PATH_LENGTH];
 
   _getcwd(tmpcwd, FS_WRAP_MAX_PATH_LENGTH);
@@ -275,7 +273,7 @@ fs_navig_point *fsWrapGetCWD(void) {
 /* Free allocated dirents                                                    */
 /*===========================================================================*/
 
-void fsWrapDirentsFree(void) {
+void fsWrapDirentsFree() {
 }
 
 
@@ -298,7 +296,7 @@ BOOLE fsWrapOpenDir(fs_navig_point *fs_point) {
 /* Returns current entry in the dirlisting, and advance the index            */
 /*===========================================================================*/
 
-fs_navig_point *fsWrapReadDir(void) {
+fs_navig_point *fsWrapReadDir() {
   if (fs_wrap_dirent_open) {
     if (fs_wrap_opendir_firsttime) {
       fs_wrap_opendir_firsttime = FALSE;
@@ -315,7 +313,7 @@ fs_navig_point *fsWrapReadDir(void) {
 /* Terminates the current directory listing                                  */
 /*===========================================================================*/
 
-void fsWrapCloseDir(void) {
+void fsWrapCloseDir() {
   if (fs_wrap_dirent_open) {
     FindClose(fs_wrap_dirent_handle);
     fs_wrap_dirent_open = FALSE;
@@ -327,7 +325,7 @@ void fsWrapCloseDir(void) {
 /* Module startup                                                            */
 /*===========================================================================*/
 
-void fsWrapStartup(void) {
+void fsWrapStartup() {
   fs_wrap_dirent_open = FALSE;
 }
 
@@ -336,6 +334,6 @@ void fsWrapStartup(void) {
 /* Module shutdown                                                           */
 /*===========================================================================*/
 
-void fsWrapShutdown(void) {
+void fsWrapShutdown() {
   fsWrapCloseDir();
 }

@@ -264,7 +264,7 @@ void gfxDrvShutdown()
   }
 }
 
-bool gfxDrvDXGIValidateRequirements(void)
+bool gfxDrvDXGIValidateRequirements()
 {
   return GfxDrvDXGI::ValidateRequirements();
 }

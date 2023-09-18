@@ -395,7 +395,7 @@ BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_re
 {
   FILE *f = nullptr;
   char line[256], *pAmigaName = nullptr, *pWinName = nullptr;
-  int AmigaIndex, PcIndex, ReplIndex;
+  int PcIndex;
 
   f = fopen( szFilename, "r" );
   if( !f )
@@ -429,8 +429,8 @@ BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_re
       continue;
     }
 
-    ReplIndex = -1;
-    AmigaIndex = prsGetKeyIndex( pAmigaName, amiga_keys, MAX_AMIGA_NAMES );
+    int ReplIndex = -1;
+    int AmigaIndex = prsGetKeyIndex(pAmigaName, amiga_keys, MAX_AMIGA_NAMES);
     PcIndex = prsGetKeyIndex( pWinName, pc_keys, MAX_PC_NAMES );
 
     if( AmigaIndex < 0 )
@@ -475,7 +475,7 @@ BOOLE prsWriteFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_r
 {
   FILE *f = nullptr;
   char line[256];
-  int AmigaIndex, PcIndex;
+  int AmigaIndex;
 
   f = fopen( szFilename, "w" );
   if( !f )
@@ -491,7 +491,7 @@ BOOLE prsWriteFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_r
   for( AmigaIndex = 0; AmigaIndex < MAX_AMIGA_NAMES; AmigaIndex++ )
   {
     line[0] = '\0';
-    for( PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++ )
+    for( int PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++ )
     {
       if( pc_to_am[PcIndex] == amiga_scancode[ AmigaIndex ] )
       {

@@ -610,7 +610,7 @@ volatile kbd_drv_pc_symbol	kbd_drv_captured_key;
 BOOLE				kbd_drv_capture;
 
 
-void kbdDrvClearPressedKeys(void)
+void kbdDrvClearPressedKeys()
 {
   kbd_drv_home_pressed = FALSE;
   kbd_drv_end_pressed = FALSE;
@@ -680,7 +680,7 @@ void kbdDrvDInputUnacquireFailure(char* header, HRESULT err)
 /* Set keyboard cooperative level                                            */
 /*===========================================================================*/
 
-bool kbdDrvDInputSetCooperativeLevel(void)
+bool kbdDrvDInputSetCooperativeLevel()
 {
   HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
@@ -709,7 +709,7 @@ void kbdDrvDInputAcquireFailure(char* header, HRESULT err)
 /// it's purpose is to relay simulated escape key presses to the Amiga, as well as to
 /// escape devices when the escape key has been held longer than the configured interval
 
-void kbdDrvEOFHandler(void)
+void kbdDrvEOFHandler()
 {
   ULONGLONG t = 0;
 
@@ -745,7 +745,7 @@ void kbdDrvEOFHandler(void)
 /* Unacquire DirectInput keyboard device                                     */
 /*===========================================================================*/
 
-void kbdDrvDInputUnacquire(void) 
+void kbdDrvDInputUnacquire() 
 {
   if (kbd_drv_lpDID == nullptr)
   {
@@ -764,7 +764,7 @@ void kbdDrvDInputUnacquire(void)
 /* Acquire DirectInput keyboard device                                       */
 /*===========================================================================*/
 
-void kbdDrvDInputAcquire(void) 
+void kbdDrvDInputAcquire() 
 {
   if (kbd_drv_lpDID == nullptr)
   {
@@ -782,7 +782,7 @@ void kbdDrvDInputAcquire(void)
 /* Release DirectInput for keyboard                                          */
 /*===========================================================================*/
 
-void kbdDrvDInputRelease(void)
+void kbdDrvDInputRelease()
 {
   if (kbd_drv_lpDID != nullptr)
   {
@@ -806,7 +806,7 @@ void kbdDrvDInputRelease(void)
 /* Initialize DirectInput for keyboard                                       */
 /*===========================================================================*/
 
-bool kbdDrvDInputInitialize(void)
+bool kbdDrvDInputInitialize()
 {
   DIPROPDWORD dipdw =
   {
@@ -936,9 +936,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 {
   uint32_t eol_evpos = kbd_state.eventsEOL.inpos;
   uint32_t eof_evpos = kbd_state.eventsEOF.inpos;
-  
-  uint32_t port, setting;
-  
+
   for (;;)
   {
 	
@@ -1071,16 +1069,15 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
     // Check joysticks replacements
     // New here: Must remember last value to decide if a change has happened
 	
-    for( port = 0; port < 2; port++ )
+    for( uint32_t port = 0; port < 2; port++ )
     {
-      for( setting = 0; setting < 2; setting++ )
+      for( uint32_t setting = 0; setting < 2; setting++ )
       {
 	if( kbd_drv_joykey_enabled[port][setting] )
 	{
 	  // Here the gameport is set up for input from the specified set of joykeys 
 	  // Check each key for change
-	  int direction;
-	  for (direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
+          for (int direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
 	  {
 	    if (symbol_key == kbd_drv_joykey[setting][direction])
 	    {
@@ -1225,7 +1222,7 @@ void kbdDrvKeypressRaw(uint32_t lRawKeyCode, BOOL pressed)
 /* Keyboard keypress handler                                                 */
 /*===========================================================================*/
 
-void kbdDrvBufferOverflowHandler(void)
+void kbdDrvBufferOverflowHandler()
 {
 }
 
@@ -1234,7 +1231,7 @@ void kbdDrvBufferOverflowHandler(void)
 /* Keyboard keypress handler                                                 */
 /*===========================================================================*/
 
-void kbdDrvKeypressHandler(void)
+void kbdDrvKeypressHandler()
 {
   if (!kbd_drv_active)
   {
@@ -1406,7 +1403,7 @@ uint32_t kbdDrvJoystickReplacementGet(kbd_event event)
   return PC_NONE;
 }
 
-void kbdDrvInitializeDIKToSymbolKeyTable(void)
+void kbdDrvInitializeDIKToSymbolKeyTable()
 {
   for (int i = 0; i < PCK_LAST_KEY; i++)
   {
@@ -1532,7 +1529,7 @@ void kbdDrvSetJoyKeyEnabled(uint32_t lGameport, uint32_t lSetting, BOOLE bEnable
 /* Hard Reset                                                                */
 /*===========================================================================*/
 
-void kbdDrvHardReset(void)
+void kbdDrvHardReset()
 {
 }
 
@@ -1541,7 +1538,7 @@ void kbdDrvHardReset(void)
 /* Emulation Starting                                                        */
 /*===========================================================================*/
 
-void kbdDrvEmulationStart(void)
+void kbdDrvEmulationStart()
 {
   for (uint32_t port = 0; port < 2; port++)
   {
@@ -1559,7 +1556,7 @@ void kbdDrvEmulationStart(void)
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
 
-void kbdDrvEmulationStop(void)
+void kbdDrvEmulationStop()
 {
   kbdDrvDInputRelease();
 }
@@ -1568,7 +1565,7 @@ void kbdDrvEmulationStop(void)
 /* Emulation Startup                                                         */
 /*===========================================================================*/
 
-void kbdDrvStartup(void)
+void kbdDrvStartup()
 {
   kbd_drv_joykey_event[0][0][JOYKEY_UP] = EVENT_JOY0_UP_INACTIVE;
   kbd_drv_joykey_event[0][1][JOYKEY_UP] = EVENT_JOY0_UP_ACTIVE;
@@ -1646,7 +1643,7 @@ void kbdDrvStartup(void)
 /* Emulation Shutdown                                                        */
 /*===========================================================================*/
 
-void kbdDrvShutdown(void)
+void kbdDrvShutdown()
 {
   if (prs_rewrite_mapping_file)
   {

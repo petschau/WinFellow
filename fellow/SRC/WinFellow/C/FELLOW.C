@@ -81,7 +81,7 @@ void fellowSetPreStartReset(BOOLE reset) {
   fellow_pre_start_reset = reset;
 }
 
-BOOLE fellowGetPreStartReset(void) {
+BOOLE fellowGetPreStartReset() {
   return fellow_pre_start_reset;
 }
 
@@ -98,7 +98,7 @@ void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code) {
 }
 
 
-static fellow_runtime_error_codes fellowGetRuntimeErrorCode(void) {
+static fellow_runtime_error_codes fellowGetRuntimeErrorCode() {
   return fellow_runtime_error_code;
 }
 
@@ -191,7 +191,7 @@ char *fellowGetVersionString()
 /* Runtime Error Check                                                        */
 /*============================================================================*/
 
-static void fellowRuntimeErrorCheck(void) {
+static void fellowRuntimeErrorCheck() {
   switch (fellowGetRuntimeErrorCode()) {
     case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
       fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
@@ -206,7 +206,7 @@ static void fellowRuntimeErrorCheck(void) {
 /* Softreset                                                                  */
 /*============================================================================*/
 
-void fellowSoftReset(void) {
+void fellowSoftReset() {
   memorySoftReset();
   interruptSoftReset();
   HardfileHandler->HardReset();
@@ -232,7 +232,7 @@ void fellowSoftReset(void) {
 /* Hardreset                                                                  */
 /*============================================================================*/
 
-void fellowHardReset(void) {
+void fellowHardReset() {
   memoryHardReset();
   interruptHardReset();
   HardfileHandler->HardReset();
@@ -260,12 +260,12 @@ void fellowHardReset(void) {
 /* Emulation will stop at the beginning of the next frame                     */
 /*============================================================================*/
 
-void fellowRequestEmulationStop(void) {
+void fellowRequestEmulationStop() {
   fellow_request_emulation_stop = TRUE;
 }
 
 
-void fellowRequestEmulationStopClear(void) {
+void fellowRequestEmulationStopClear() {
   fellow_request_emulation_stop = FALSE;
 }
 
@@ -274,7 +274,6 @@ void fellowRequestEmulationStopClear(void) {
 /*============================================================================*/
 
 BOOLE fellowEmulationStart() {
-  BOOLE result;
   fellowRequestEmulationStopClear();
   iniEmulationStart();
   memoryEmulationStart();
@@ -287,7 +286,7 @@ BOOLE fellowEmulationStart() {
   drawEmulationStart();
   kbdEmulationStart();
   gameportEmulationStart();
-  result = drawEmulationStartPost();
+  BOOLE result = drawEmulationStartPost();
   graphEmulationStart();
   soundEmulationStart();
   busEmulationStart();
@@ -347,7 +346,7 @@ void fellowEmulationStop() {
 /* FellowEmulationStop() will be called elsewhere                             */
 /*============================================================================*/
 
-void fellowRun(void) {
+void fellowRun() {
   if (fellowGetPreStartReset()) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
@@ -361,7 +360,7 @@ void fellowRun(void) {
 /* Steps one CPU instruction                                                  */
 /*============================================================================*/
 
-void fellowStepOne(void)
+void fellowStepOne()
 {
   fellowRequestEmulationStopClear();
   if (fellowGetPreStartReset())
@@ -382,7 +381,7 @@ void fellowStepOne(void)
 /* Steps over a CPU instruction                                               */
 /*============================================================================*/
 
-void fellowStepOver(void)
+void fellowStepOver()
 {
   char saddress[128];
   char sdata[128];
@@ -430,7 +429,7 @@ void fellowRunDebug(uint32_t breakpoint) {
 /* Something really bad happened, immediate emulation stop                    */
 /*============================================================================*/
 
-void fellowNastyExit(void) {
+void fellowNastyExit() {
   longjmp(fellow_runtime_error_env, fellowGetRuntimeErrorCode());  
   fprintf(stderr, "You only die twice, I give in!\n");
   soundShutdown();
@@ -444,7 +443,7 @@ void fellowNastyExit(void) {
 /* Draw subsystem failure message and exit                                    */
 /*============================================================================*/
 
-static void fellowDrawFailed(void) {
+static void fellowDrawFailed() {
   fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
     "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
 
@@ -536,7 +535,7 @@ static void fellowModulesStartup(int argc, char *argv[])
 /* Release all modules in the emulator, called on shutdown                    */
 /*============================================================================*/
 
-static void fellowModulesShutdown(void)
+static void fellowModulesShutdown()
 {
   automator.Shutdown();
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)

@@ -23,7 +23,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <windef.h>
-#include <stdio.h>
+#include <cstdio>
 #include <commctrl.h>
 
 #include "defs.h"
@@ -154,15 +154,14 @@ void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE e
 BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier)
 {
   HMENU hMenu = GetMenu(windowHandle);
-  BOOLE ischecked, result;
 
   MENUITEMINFO mii = { 0 };
   mii.cbSize = sizeof(MENUITEMINFO);
   mii.fMask = MIIM_STATE;
 
   GetMenuItemInfo(hMenu, menuIdentifier, FALSE, &mii);
-  ischecked = mii.fState & MFS_CHECKED;
-  result = !ischecked;
+  BOOLE ischecked = mii.fState & MFS_CHECKED;
+  BOOLE result = !ischecked;
 
   CheckMenuItem(hMenu, menuIdentifier, result ? MFS_CHECKED : MFS_UNCHECKED);
 

@@ -256,32 +256,32 @@ void PixelSerializer::InitializeEvent(GraphicsEventQueue *queue)
 
 /* Fellow events */
 
-void PixelSerializer::EndOfFrame(void)
+void PixelSerializer::EndOfFrame()
 {
   EventSetup(LAST_CYLINDER);
 }
 
-void PixelSerializer::SoftReset(void)
+void PixelSerializer::SoftReset()
 {
 }
 
-void PixelSerializer::HardReset(void)
+void PixelSerializer::HardReset()
 {
   EventSetup(LAST_CYLINDER);
 }
 
-void PixelSerializer::EmulationStart(void)
+void PixelSerializer::EmulationStart()
 {
 }
 
-void PixelSerializer::EmulationStop(void)
+void PixelSerializer::EmulationStop()
 {
 }
 
-void PixelSerializer::Startup(void)
+void PixelSerializer::Startup()
 {
 }
 
-void PixelSerializer::Shutdown(void)
+void PixelSerializer::Shutdown()
 {
 }

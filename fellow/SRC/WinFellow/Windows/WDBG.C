@@ -241,7 +241,7 @@ void wdbgInitializeDPIScale(HWND hwnd)
 /* debugger main dialog proc */
 /*===========================*/
 
-INT_PTR wdbgSessionMainDialog(void)
+INT_PTR wdbgSessionMainDialog()
 {
   int i;
   PROPSHEETPAGE propertysheets[DEBUG_PROP_SHEETS];
@@ -1508,7 +1508,6 @@ enum wdeb_actions wdeb_action;
 
 void wdebInitInstructionColumns()
 {
-  uint32_t i;
   LV_COLUMN lv_col;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INSTRUCTIONS);
@@ -1537,7 +1536,7 @@ void wdebInitInstructionColumns()
 
   memset(&lv_item, 0, sizeof(lv_item));
   lv_item.mask = LVIF_TEXT;
-  for (i = 0; i < WDEB_DISASM_LINES; ++i)
+  for (uint32_t i = 0; i < WDEB_DISASM_LINES; ++i)
   {
     lv_item.pszText = "x";
     lv_item.iItem = i;
@@ -1564,7 +1563,6 @@ char *wdbg_registernames[] =
 
 void wdebInitRegisterColumns()
 {
-  uint32_t i;
   LV_COLUMN lv_col;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_REGISTERS);
@@ -1583,7 +1581,7 @@ void wdebInitRegisterColumns()
 
   memset(&lv_item, 0, sizeof(lv_item));
   lv_item.mask = LVIF_TEXT;
-  for (i = 0; i < 23; ++i)
+  for (uint32_t i = 0; i < 23; ++i)
   {
     lv_item.pszText = wdbg_registernames[i];
     lv_item.iItem = i;
@@ -1617,7 +1615,6 @@ void wdebInitInfoColumns()
 
 void wdebUpdateInstructionColumns()
 {
-  uint32_t i;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INSTRUCTIONS);
   uint32_t disasm_pc = cpuGetPC();
@@ -1628,7 +1625,7 @@ void wdebUpdateInstructionColumns()
 
   memset(&lv_item, 0, sizeof(lv_item));
   lv_item.mask = LVIF_TEXT;
-  for (i = 0; i < WDEB_DISASM_LINES; i++)
+  for (uint32_t i = 0; i < WDEB_DISASM_LINES; i++)
   {
     inst_address[0] = '\0';
     inst_data[0] = '\0';
@@ -1656,7 +1653,6 @@ void wdebUpdateInstructionColumns()
 
 void wdebUpdateRegisterColumns()
 {
-  uint32_t i, j, col;
   LV_ITEM lv_item;
   HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_REGISTERS);
   uint32_t disasm_pc = cpuGetPC();
@@ -1665,11 +1661,11 @@ void wdebUpdateRegisterColumns()
   memset(&lv_item, 0, sizeof(lv_item));
   lv_item.mask = LVIF_TEXT;
 
-  col = 0;
+  uint32_t col = 0;
 
-  for (j = 0; j < 2; j++)
+  for (uint32_t j = 0; j < 2; j++)
   {
-    for (i = 0; i < 8; i++)
+    for (uint32_t i = 0; i < 8; i++)
     {
       sprintf(tmp, "%.8X", cpuGetReg(j, i));
       lv_item.pszText = tmp;

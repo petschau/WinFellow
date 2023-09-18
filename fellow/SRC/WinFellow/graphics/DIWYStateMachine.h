@@ -65,6 +65,6 @@ public:
   void Startup();
   void Shutdown();
 
-  DIWYStateMachine(void) : GraphicsEvent() {};
+  DIWYStateMachine() : GraphicsEvent() {};
 
 };

@@ -146,13 +146,13 @@ uint32_t cpuEA06(uint32_t regno)
 }
 
 /* Calculates EA for xxxx.W */
-uint32_t cpuEA70(void)
+uint32_t cpuEA70()
 {
   return cpuGetNextWordSignExt();
 }
 
 /* Calculates EA for xxxxxxxx.L */
-uint32_t cpuEA71(void)
+uint32_t cpuEA71()
 {
   return cpuGetNextLong();
 }
@@ -161,7 +161,7 @@ uint32_t cpuEA71(void)
 /// Calculates EA for disp16(PC)
 /// </summary>
 /// <returns>Address</returns>
-uint32_t cpuEA72(void)
+uint32_t cpuEA72()
 {
   uint32_t pc_tmp = cpuGetPC();
   return pc_tmp + cpuGetNextWordSignExt();
@@ -171,7 +171,7 @@ uint32_t cpuEA72(void)
 /// Calculates EA for disp8(PC,Ri.size). Calls cpuEA06Ext() to calculate extended 68020 modes.
 /// </summary>
 /// <returns>Address</returns>
-uint32_t cpuEA73(void)
+uint32_t cpuEA73()
 {
   uint32_t reg_value = cpuGetPC();
   uint16_t ext = cpuGetNextWord();

@@ -287,14 +287,14 @@ bus_event *busPopEvent()
 FILE *BUSLOG = NULL;
 BOOLE bus_log = FALSE;
 
-FILE *busOpenLog(void)
+FILE *busOpenLog()
 {
   char filename[MAX_PATH];
   fileopsGetGenericFileName(filename, "WinFellow", "bus.log");
   return fopen(filename, "w");
 }
 
-void busCloseLog(void)
+void busCloseLog()
 {
   if (BUSLOG) fclose(BUSLOG);
 }
@@ -354,22 +354,22 @@ uint32_t busGetCyclesInThisLine()
   return bus.screen_limits->cycles_in_this_line;
 }
 
-uint32_t busGetLinesInThisFrame(void)
+uint32_t busGetLinesInThisFrame()
 {
   return bus.screen_limits->lines_in_this_frame;
 }
 
-uint32_t busGetMaxLinesInFrame(void)
+uint32_t busGetMaxLinesInFrame()
 {
   return bus.screen_limits->max_lines_in_frame;
 }
 
-uint32_t busGetCyclesInThisFrame(void)
+uint32_t busGetCyclesInThisFrame()
 {
   return bus.screen_limits->cycles_in_this_frame;
 }
 
-void busRun68000Fast(void)
+void busRun68000Fast()
 {
   while (!fellow_request_emulation_stop)
   {
@@ -407,7 +407,7 @@ void busRun68000Fast(void)
   }
 }
 
-void busRunGeneric(void)
+void busRunGeneric()
 {
   while (!fellow_request_emulation_stop)
   {
@@ -446,7 +446,7 @@ void busRunGeneric(void)
 }
 
 typedef void (*busRunHandlerFunc)();
-busRunHandlerFunc busGetRunHandler(void)
+busRunHandlerFunc busGetRunHandler()
 {
   if (cpuGetModelMajor() <= 1)
   {
@@ -456,13 +456,13 @@ busRunHandlerFunc busGetRunHandler(void)
   return busRunGeneric;
 }
 
-void busRun(void)
+void busRun()
 {
   busGetRunHandler()();
 }
 
 /* Steps one instruction forward */
-void busDebugStepOneInstruction(void)
+void busDebugStepOneInstruction()
 {
   while (!fellow_request_emulation_stop)
   {
@@ -508,7 +508,7 @@ void busClearEvent(bus_event *ev, busEventHandler handlerFunc)
   ev->handler = handlerFunc;
 }
 
-void busDetermineCpuInstructionEventHandler(void) {
+void busDetermineCpuInstructionEventHandler() {
   if (cpuGetModelMajor() <= 1) {
     if (cpuIntegrationGetSpeed() == 4)
         cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
@@ -526,7 +526,7 @@ void busClearCpuEvent()
   busDetermineCpuInstructionEventHandler();
 }
 
-void busInitializeQueue(void)
+void busInitializeQueue()
 {
   bus.events = nullptr;
   busClearCpuEvent();
@@ -543,7 +543,7 @@ void busInitializeQueue(void)
   busInsertEvent(&eolEvent);
 }
 
-void busInitializePalLongFrame(void)
+void busInitializePalLongFrame()
 {
   pal_long_frame.cycles_in_this_line = 227;
   pal_long_frame.max_cycles_in_line = 227;
@@ -551,7 +551,7 @@ void busInitializePalLongFrame(void)
   pal_long_frame.max_lines_in_frame = 314;
   pal_long_frame.cycles_in_this_frame = 313*227;
 }
-void busInitializePalShortFrame(void)
+void busInitializePalShortFrame()
 {
   pal_short_frame.cycles_in_this_line = 227;
   pal_short_frame.max_cycles_in_line = 227;
@@ -560,7 +560,7 @@ void busInitializePalShortFrame(void)
   pal_short_frame.cycles_in_this_frame = 312*227;
 }
 
-void busInitializeScreenLimits(void)
+void busInitializeScreenLimits()
 {
   busInitializePalLongFrame();
   busInitializePalShortFrame();
@@ -617,20 +617,20 @@ void busLoadState(FILE *F)
   if (interruptEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&interruptEvent);
 }
 
-void busEmulationStart(void)
+void busEmulationStart()
 {
 }
 
-void busEmulationStop(void)
+void busEmulationStop()
 {
 }
 
-void busSoftReset(void)
+void busSoftReset()
 {
   busInitializeQueue();
 }
 
-void busHardReset(void)
+void busHardReset()
 {
   busInitializeQueue();
 
@@ -643,7 +643,7 @@ void busHardReset(void)
 /* Called on emulator startup / shutdown                                     */
 /*===========================================================================*/
 
-void busStartup(void)
+void busStartup()
 {
   bus.frame_no = 0;
   bus.cycle = 0;
@@ -652,7 +652,7 @@ void busStartup(void)
   busInitializeScreenLimits();
 }
 
-void busShutdown(void)
+void busShutdown()
 {
 #ifdef ENABLE_BUS_EVENT_LOGGING
   busCloseLog();

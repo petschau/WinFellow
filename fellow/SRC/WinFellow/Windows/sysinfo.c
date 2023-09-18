@@ -43,20 +43,17 @@ typedef BOOL(WINAPI* LPFN_GLPI)(
 /*=======================*/
 /* handle error messages */
 /*=======================*/
-void sysinfoLogErrorMessageFromSystem (void) 
+void sysinfoLogErrorMessageFromSystem () 
 {
   CHAR szTemp[MYREGBUFFERSIZE * 2];
-  DWORD cMsgLen;
-  DWORD dwError;
   CHAR *msgBuf;
 
-  dwError = GetLastError ();
+  DWORD dwError = GetLastError();
 
   sprintf(szTemp, "Error %u: ", dwError);
-  cMsgLen =
-    FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER
-		   | 40, nullptr, dwError, MAKELANGID (0, SUBLANG_ENGLISH_US),
-		   (LPTSTR) & msgBuf, MYREGBUFFERSIZE, nullptr);
+  DWORD cMsgLen = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER
+                                | 40, nullptr, dwError, MAKELANGID(0, SUBLANG_ENGLISH_US),
+                                (LPTSTR)&msgBuf, MYREGBUFFERSIZE, nullptr);
   if(cMsgLen) {
     strcat (szTemp, msgBuf);
     fellowAddTimelessLog ("%s\n", szTemp);
@@ -76,13 +73,11 @@ static char *sysinfoRegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCT
   TCHAR szBuffer[MYREGBUFFERSIZE];
   DWORD dwBufLen = MYREGBUFFERSIZE;
   DWORD dwType;
-  LONG lRet;
-  char *result;
 
   if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS) 
     return nullptr;
 
-  lRet = RegQueryValueEx (hKey, ValueName, nullptr, &dwType, (LPBYTE) szBuffer, &dwBufLen);
+  LONG lRet = RegQueryValueEx(hKey, ValueName, nullptr, &dwType, (LPBYTE)szBuffer, &dwBufLen);
 
   RegCloseKey (hKey);
 
@@ -91,7 +86,7 @@ static char *sysinfoRegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCT
   if (dwType != REG_SZ)
     return nullptr;
 
-  result = (char *) malloc (strlen (szBuffer) + 1);
+  char* result = (char*)malloc(strlen (szBuffer) + 1);
   strcpy (result, szBuffer);
 
   return result;
@@ -106,14 +101,11 @@ static DWORD *sysinfoRegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCT
   DWORD dwBuffer;
   DWORD dwBufLen = sizeof (dwBuffer);
   DWORD dwType;
-  LONG lRet;
-  DWORD *result;
 
   if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS) 
 	return nullptr;
-  lRet =
-    RegQueryValueEx (hKey, ValueName, nullptr, &dwType, (LPBYTE) & dwBuffer,
-		     &dwBufLen);
+  LONG lRet = RegQueryValueEx(hKey, ValueName, nullptr, &dwType, (LPBYTE)&dwBuffer,
+                              &dwBufLen);
   RegCloseKey (hKey);
 
   if (lRet != ERROR_SUCCESS)
@@ -121,7 +113,7 @@ static DWORD *sysinfoRegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCT
   if (dwType != REG_DWORD)
     return nullptr;
 
-  result = (DWORD *) malloc (sizeof (dwBuffer));
+  DWORD* result = (DWORD*)malloc(sizeof (dwBuffer));
   *result = dwBuffer;
 
   return result;
@@ -134,10 +126,8 @@ static DWORD *sysinfoRegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCT
 static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
   HKEY hKey, hKey2;
   DWORD dwNoSubkeys, dwNoSubkeys2;
-  DWORD CurrentSubKey, CurrentSubKey2;
   TCHAR szSubKeyName[MYREGBUFFERSIZE], szSubKeyName2[MYREGBUFFERSIZE];
   DWORD dwSubKeyNameLen = MYREGBUFFERSIZE, dwSubKeyNameLen2 = MYREGBUFFERSIZE;
-  char *szClass, *szDevice;
 
   /* get handle to specified key tree */
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SubKey, 0,
@@ -153,7 +143,7 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
     return;
   }
 
-  for (CurrentSubKey = 0; CurrentSubKey < dwNoSubkeys; CurrentSubKey++) {
+  for (DWORD CurrentSubKey = 0; CurrentSubKey < dwNoSubkeys; CurrentSubKey++) {
       dwSubKeyNameLen = MYREGBUFFERSIZE;
       if (RegEnumKeyEx (hKey,
 			CurrentSubKey,
@@ -182,7 +172,7 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
 	  return;
 	}
 
-      for (CurrentSubKey2 = 0; CurrentSubKey2 < dwNoSubkeys2;
+      for (DWORD CurrentSubKey2 = 0; CurrentSubKey2 < dwNoSubkeys2;
 	   CurrentSubKey2++)
 	{
 	  dwSubKeyNameLen2 = MYREGBUFFERSIZE;
@@ -197,14 +187,14 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
 	    }
 
 	  /* now open the key and read the info */
-	  szClass = sysinfoRegistryQueryStringValue (hKey2, szSubKeyName2, TEXT ("Class"));
+	  char* szClass = sysinfoRegistryQueryStringValue(hKey2, szSubKeyName2, TEXT("Class"));
 	  if (szClass)
 	    {
 	      if ((stricmp (szClass, "display") == 0) ||
 		      (stricmp (szClass, "media"  ) == 0) ||
 			  (stricmp (szClass, "unknown") == 0))
 		{
-		  szDevice = sysinfoRegistryQueryStringValue (hKey2, szSubKeyName2, TEXT ("DeviceDesc"));
+		  char* szDevice = sysinfoRegistryQueryStringValue(hKey2, szSubKeyName2, TEXT("DeviceDesc"));
 		  if (szDevice) {
 		      fellowAddTimelessLog("\t%s: %s\n", strlwr(szClass), szDevice);
 		      free (szDevice);
@@ -218,7 +208,7 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
   RegCloseKey (hKey);
 }
 
-static void sysinfoEnumRegistry (void) {
+static void sysinfoEnumRegistry () {
   OSVERSIONINFO osInfo;
 
   ZeroMemory(&osInfo, sizeof (OSVERSIONINFO));
@@ -274,7 +264,7 @@ static const char* sysinfoGetProcessorArchitectureDescription(WORD wProcessorArc
   return "UNKNOWN PROCESSOR ARCHITECTURE";
 }
 
-bool sysinfoIs64BitWindows(void)
+bool sysinfoIs64BitWindows()
 {
 #if defined(_WIN64)
   return true;  // 64-bit programs run only on Win64
@@ -310,7 +300,7 @@ bool sysinfoIs64BitWindows(void)
 /* windows system info structures */
 /*================================*/
 
-static void sysinfoParseSystemInfo (void)
+static void sysinfoParseSystemInfo ()
 {
   SYSTEM_INFO SystemInfo;
   GetNativeSystemInfo(&SystemInfo);
@@ -327,9 +317,8 @@ static DWORD sysinfoCountSetBits(ULONG_PTR bitMask)
   DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
   DWORD bitSetCount = 0;
   ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
-  DWORD i;
 
-  for (i = 0; i <= LSHIFT; ++i)
+  for (DWORD i = 0; i <= LSHIFT; ++i)
   {
     bitSetCount += ((bitMask & bitTest) ? 1 : 0);
     bitTest /= 2;
@@ -340,7 +329,6 @@ static DWORD sysinfoCountSetBits(ULONG_PTR bitMask)
 
 static int sysinfoParseProcessorInformation()
 {
-  LPFN_GLPI glpi;
   BOOL done = FALSE;
   PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = nullptr;
   PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = nullptr;
@@ -355,7 +343,7 @@ static int sysinfoParseProcessorInformation()
   DWORD byteOffset = 0;
   PCACHE_DESCRIPTOR Cache;
 
-  glpi = (LPFN_GLPI)GetProcAddress(
+  LPFN_GLPI glpi = (LPFN_GLPI)GetProcAddress(
     GetModuleHandle(TEXT("kernel32")),
     "GetLogicalProcessorInformation");
   if (nullptr == glpi)
@@ -459,7 +447,7 @@ static int sysinfoParseProcessorInformation()
   return 0;
 }
 
-static void sysinfoParseOSVersionInfo(void) {
+static void sysinfoParseOSVersionInfo() {
   OSVERSIONINFOEX osInfo;
   BOOL osVersionInfoEx;
 
@@ -625,7 +613,7 @@ static void sysinfoParseOSVersionInfo(void) {
   fellowAddTimelessLog("\t64 bit OS:\t\t%s\n", sysinfoIs64BitWindows() ? "yes" : "no");
 }
 
-static void sysinfoParseRegistry(void) {
+static void sysinfoParseRegistry() {
   char *tempstr = nullptr;
   DWORD *dwTemp = nullptr;
 
@@ -662,7 +650,7 @@ static void sysinfoParseRegistry(void) {
   }
 }
 
-static void sysinfoParseMemoryStatus (void) {
+static void sysinfoParseMemoryStatus () {
   MEMORYSTATUSEX MemoryStatusEx;
 
   ZeroMemory(&MemoryStatusEx, sizeof (MemoryStatusEx));
@@ -678,7 +666,7 @@ static void sysinfoParseMemoryStatus (void) {
   fellowAddTimelessLog("\tfree virtual address space: \t%I64d MB\n", MemoryStatusEx.ullAvailVirtual / 1024 / 1024);
 }
 
-static void sysinfoVersionInfo (void) {
+static void sysinfoVersionInfo () {
   char *versionstring = fellowGetVersionString();
   fellowAddTimelessLog(versionstring);
   free(versionstring);
@@ -693,7 +681,7 @@ static void sysinfoVersionInfo (void) {
 /*===============*/
 /* Do the thing. */
 /*===============*/
-void sysinfoLogSysInfo(void)
+void sysinfoLogSysInfo()
 {
   sysinfoVersionInfo();
   fellowAddTimelessLog("\nsystem information:\n\n");

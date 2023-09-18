@@ -13,7 +13,7 @@ void Graphics::Commit(uint32_t untilRasterY, uint32_t untilRasterX)
   _queue.Run(untilRasterY*GraphicsEventQueue::GetCylindersPerLine() + untilRasterX*2 + 1);
 }
 
-void Graphics::InitializeEventQueue(void)
+void Graphics::InitializeEventQueue()
 {
   _queue.Clear();
 
@@ -24,7 +24,7 @@ void Graphics::InitializeEventQueue(void)
   PixelSerializer.InitializeEvent(&_queue);
 }
 
-void Graphics::EndOfFrame(void)
+void Graphics::EndOfFrame()
 {
   DIWXStateMachine.EndOfFrame();
   DIWYStateMachine.EndOfFrame();
@@ -33,7 +33,7 @@ void Graphics::EndOfFrame(void)
   PixelSerializer.EndOfFrame();
 }
 
-void Graphics::SoftReset(void)
+void Graphics::SoftReset()
 {
   DIWXStateMachine.SoftReset();
   DIWYStateMachine.SoftReset();
@@ -41,7 +41,7 @@ void Graphics::SoftReset(void)
   PixelSerializer.SoftReset();
 }
 
-void Graphics::HardReset(void)
+void Graphics::HardReset()
 {
   DIWXStateMachine.HardReset();
   DIWYStateMachine.HardReset();
@@ -49,7 +49,7 @@ void Graphics::HardReset(void)
   PixelSerializer.HardReset();
 }
 
-void Graphics::EmulationStart(void)
+void Graphics::EmulationStart()
 {
   DIWXStateMachine.EmulationStart();
   DIWYStateMachine.EmulationStart();
@@ -57,7 +57,7 @@ void Graphics::EmulationStart(void)
   PixelSerializer.EmulationStart();
 }
 
-void Graphics::EmulationStop(void)
+void Graphics::EmulationStop()
 {
   DIWXStateMachine.EmulationStop();
   DIWYStateMachine.EmulationStop();
@@ -65,7 +65,7 @@ void Graphics::EmulationStop(void)
   PixelSerializer.EmulationStop();
 }
 
-void Graphics::Startup(void)
+void Graphics::Startup()
 {
   DIWXStateMachine.Startup();
   DIWYStateMachine.Startup();
@@ -75,7 +75,7 @@ void Graphics::Startup(void)
   InitializeEventQueue();
 }
 
-void Graphics::Shutdown(void)
+void Graphics::Shutdown()
 {
   DIWXStateMachine.Shutdown();
   DIWYStateMachine.Shutdown();

@@ -135,7 +135,7 @@ void cpuUpdateSr(uint32_t new_sr)
   }
 }
 
-static void cpuIllegal(void)
+static void cpuIllegal()
 {
   uint16_t opcode = memoryReadWord(cpuGetPC() - 2);
   if ((opcode & 0xf000) == 0xf000)
@@ -1060,35 +1060,31 @@ static void cpuMulL(uint32_t src1, uint16_t extension)
 uint8_t cpuMuluTime[256];
 uint8_t cpuMulsTime[512];
 
-void cpuCreateMuluTimeTable(void)
+void cpuCreateMuluTimeTable()
 {
-  uint32_t i, j, k;
-
-  for (i = 0; i < 256; i++)
+  for (uint32_t i = 0; i < 256; i++)
   {
-    j = 0;
-    for (k = 0; k < 8; k++)
+    uint32_t j = 0;
+    for (uint32_t k = 0; k < 8; k++)
       if (((i>>k) & 1) == 1)
 	j++;
     cpuMuluTime[i] = (uint8_t) j*2;
   }
 }
 
-void cpuCreateMulsTimeTable(void)
+void cpuCreateMulsTimeTable()
 {
-  uint32_t i, j, k;
-
-  for (i = 0; i < 512; i++)
+  for (uint32_t i = 0; i < 512; i++)
   {
-    j = 0;
-    for (k = 0; k < 9; k++)
+    uint32_t j = 0;
+    for (uint32_t k = 0; k < 9; k++)
       if ((((i>>k) & 3) == 1) || (((i>>k) & 3) == 2))
 	j++; 
     cpuMulsTime[i] = (uint8_t) j*2;
   }
 }
 
-void cpuCreateMulTimeTables(void)
+void cpuCreateMulTimeTables()
 {
   cpuCreateMuluTimeTable();
   cpuCreateMulsTimeTable();
@@ -1191,15 +1187,14 @@ static void cpuDivL(uint32_t divisor, uint32_t ext, uint32_t instruction_time)
     BOOLE size64 = (ext>>10) & 1;
     BOOLE sign = (ext>>11) & 1;
     BOOLE resultsigned = FALSE, restsigned = FALSE;
-    uint64_t result, rest;
     uint64_t x, y;
-    int64_t x_signed, y_signed; 
+    int64_t x_signed; 
 
     if (sign)
     { 
       if (size64) x_signed = (int64_t) ((uint64_t) cpuGetDReg(dq_reg)) | (((int64_t) cpuGetDReg(dr_reg))<<32);
       else x_signed = (int64_t) (int32_t) cpuGetDReg(dq_reg);
-      y_signed = (int64_t) (int32_t) divisor;
+      int64_t y_signed = (int64_t)(int32_t)divisor;
 
       if (y_signed < 0)
       {
@@ -1222,8 +1217,8 @@ static void cpuDivL(uint32_t divisor, uint32_t ext, uint32_t instruction_time)
       y = (uint64_t) divisor;
     }
 
-    result = x / y;
-    rest = x % y;
+    uint64_t result = x / y;
+    uint64_t rest = x % y;
 
     if (sign)
     {
@@ -1750,13 +1745,11 @@ static uint32_t cpuRorL(uint32_t dst, uint32_t sh, uint32_t cycles)
 static uint8_t cpuRoxlB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
-  BOOLE x_temp;
   uint8_t res = dst;
-  uint32_t i;
   sh &= 0x3f;
-  for (i = 0; i < sh; ++i)
+  for (uint32_t i = 0; i < sh; ++i)
   {
-    x_temp = cpuMsbB(res);
+    BOOLE x_temp = cpuMsbB(res);
     res = (res << 1) | ((x) ? 1:0);
     x = x_temp;
   }
@@ -1771,13 +1764,11 @@ static uint8_t cpuRoxlB(uint8_t dst, uint32_t sh, uint32_t cycles)
 static uint16_t cpuRoxlW(uint16_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
-  BOOLE x_temp;
   uint16_t res = dst;
-  uint32_t i;
   sh &= 0x3f;
-  for (i = 0; i < sh; ++i)
+  for (uint32_t i = 0; i < sh; ++i)
   {
-    x_temp = cpuMsbW(res);
+    BOOLE x_temp = cpuMsbW(res);
     res = (res << 1) | ((x) ? 1:0);
     x = x_temp;
   }
@@ -1792,13 +1783,11 @@ static uint16_t cpuRoxlW(uint16_t dst, uint32_t sh, uint32_t cycles)
 static uint32_t cpuRoxlL(uint32_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
-  BOOLE x_temp;
   uint32_t res = dst;
-  uint32_t i;
   sh &= 0x3f;
-  for (i = 0; i < sh; ++i)
+  for (uint32_t i = 0; i < sh; ++i)
   {
-    x_temp = cpuMsbL(res);
+    BOOLE x_temp = cpuMsbL(res);
     res = (res << 1) | ((x) ? 1:0);
     x = x_temp;
   }
@@ -1813,13 +1802,11 @@ static uint32_t cpuRoxlL(uint32_t dst, uint32_t sh, uint32_t cycles)
 static uint8_t cpuRoxrB(uint8_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
-  BOOLE x_temp;
   uint8_t res = dst;
-  uint32_t i;
   sh &= 0x3f;
-  for (i = 0; i < sh; ++i)
+  for (uint32_t i = 0; i < sh; ++i)
   {
-    x_temp = res & 1;
+    BOOLE x_temp = res & 1;
     res = (res >> 1) | ((x) ? 0x80:0);
     x = x_temp;
   }
@@ -1834,13 +1821,11 @@ static uint8_t cpuRoxrB(uint8_t dst, uint32_t sh, uint32_t cycles)
 static uint16_t cpuRoxrW(uint16_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
-  BOOLE x_temp;
   uint16_t res = dst;
-  uint32_t i;
   sh &= 0x3f;
-  for (i = 0; i < sh; ++i)
+  for (uint32_t i = 0; i < sh; ++i)
   {
-    x_temp = res & 1;
+    BOOLE x_temp = res & 1;
     res = (res >> 1) | ((x) ? 0x8000:0);
     x = x_temp;
   }
@@ -1855,13 +1840,11 @@ static uint16_t cpuRoxrW(uint16_t dst, uint32_t sh, uint32_t cycles)
 static uint32_t cpuRoxrL(uint32_t dst, uint32_t sh, uint32_t cycles)
 {
   BOOLE x = cpuGetFlagX();
-  BOOLE x_temp;
   uint32_t res = dst;
-  uint32_t i;
   sh &= 0x3f;
-  for (i = 0; i < sh; ++i)
+  for (uint32_t i = 0; i < sh; ++i)
   {
-    x_temp = res & 1;
+    BOOLE x_temp = res & 1;
     res = (res >> 1) | ((x) ? 0x80000000:0);
     x = x_temp;
   }
@@ -1917,10 +1900,9 @@ static void cpuRte()
   if (cpuGetFlagSupervisor())
   {
     BOOLE redo = TRUE;
-    uint16_t newsr;
     do
     {
-      newsr = memoryReadWord(cpuGetAReg(7));
+      uint16_t newsr = memoryReadWord(cpuGetAReg(7));
       cpuSetAReg(7, cpuGetAReg(7) + 2);
 
       cpuInitializeFromNewPC(memoryReadLong(cpuGetAReg(7)));
@@ -2076,9 +2058,9 @@ static void cpuMovemwPre(uint16_t regs, uint32_t reg)
   uint32_t cycles = 8;
   uint32_t dstea = cpuGetAReg(reg);
   uint32_t index = 1;
-  int32_t i, j;
+  int32_t j;
 
-  i = 1;
+  int32_t i = 1;
   for (j = 7; j >= 0; j--)
   {
     if (regs & index)
@@ -2121,9 +2103,9 @@ static void cpuMovemlPre(uint16_t regs, uint32_t reg)
   uint32_t cycles = 8;
   uint32_t dstea = cpuGetAReg(reg);
   uint32_t index = 1;
-  int32_t i, j;
+  int32_t j;
 
-  i = 1;
+  int32_t i = 1;
   for (j = 7; j >= 0; j--)
   {
     if (regs & index)
@@ -2167,11 +2149,10 @@ static void cpuMovemwPost(uint16_t regs, uint32_t reg)
   uint32_t cycles = 12;
   uint32_t dstea = cpuGetAReg(reg);
   uint32_t index = 1;
-  uint32_t i, j;
 
-  for (i = 0; i < 2; ++i)
+  for (uint32_t i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 8; ++j)
+    for (uint32_t j = 0; j < 8; ++j)
     {
       if (regs & index)
       {
@@ -2196,11 +2177,10 @@ static void cpuMovemlPost(uint16_t regs, uint32_t reg)
   uint32_t cycles = 12;
   uint32_t dstea = cpuGetAReg(reg);
   uint32_t index = 1;
-  uint32_t i, j;
 
-  for (i = 0; i < 2; ++i)
+  for (uint32_t i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 8; ++j)
+    for (uint32_t j = 0; j < 8; ++j)
     {
       if (regs & index)
       {
@@ -2224,11 +2204,10 @@ static void cpuMovemwEa2R(uint16_t regs, uint32_t ea, uint32_t eacycles)
   uint32_t cycles = eacycles;
   uint32_t dstea = ea;
   uint32_t index = 1;
-  uint32_t i, j;
 
-  for (i = 0; i < 2; ++i)
+  for (uint32_t i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 8; ++j)
+    for (uint32_t j = 0; j < 8; ++j)
     {
       if (regs & index)
       {
@@ -2252,11 +2231,10 @@ static void cpuMovemlEa2R(uint16_t regs, uint32_t ea, uint32_t eacycles)
   uint32_t cycles = eacycles;
   uint32_t dstea = ea;
   uint32_t index = 1;
-  uint32_t i, j;
 
-  for (i = 0; i < 2; ++i)
+  for (uint32_t i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 8; ++j)
+    for (uint32_t j = 0; j < 8; ++j)
     {
       if (regs & index)
       {
@@ -2279,11 +2257,10 @@ static void cpuMovemwR2Ea(uint16_t regs, uint32_t ea, uint32_t eacycles)
   uint32_t cycles = eacycles;
   uint32_t dstea = ea;
   uint32_t index = 1;
-  uint32_t i, j;
 
-  for (i = 0; i < 2; ++i)
+  for (uint32_t i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 8; ++j)
+    for (uint32_t j = 0; j < 8; ++j)
     {
       if (regs & index)
       {
@@ -2660,7 +2637,7 @@ static uint32_t cpuRotateRight(uint32_t value, uint32_t shift)
   return (value >> shift) | (value << (32 - shift));
 }
 
-static void cpuSetBfField(struct cpuBfData *bf_data, uint32_t ea_or_reg, bool has_ea)
+static void cpuSetBfField(cpuBfData *bf_data, uint32_t ea_or_reg, bool has_ea)
 {
   if (has_ea)
   {
@@ -2694,7 +2671,7 @@ static void cpuSetBfField(struct cpuBfData *bf_data, uint32_t ea_or_reg, bool ha
   }
 }
 
-void cpuBfDecodeExtWordAndGetField(struct cpuBfData *bf_data, uint32_t ea_or_reg, bool has_dn, bool has_ea, uint16_t ext)
+void cpuBfDecodeExtWordAndGetField(cpuBfData *bf_data, uint32_t ea_or_reg, bool has_dn, bool has_ea, uint16_t ext)
 {
   bool offsetIsDataRegister = ((ext & 0x0800) == 0x0800);
   bool widthIsDataRegister = ((ext & 0x0020) == 0x0020);
@@ -2751,7 +2728,7 @@ void cpuBfDecodeExtWordAndGetField(struct cpuBfData *bf_data, uint32_t ea_or_reg
 /// </summary>
 static void cpuBfChgCommon(uint32_t ea_or_reg, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
+  cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 
@@ -2779,7 +2756,7 @@ static void cpuBfChgEa(uint32_t ea, uint16_t ext)
 /// </summary>
 static void cpuBfClrCommon(uint32_t ea_or_reg, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
+  cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
 
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
@@ -2810,11 +2787,10 @@ static void cpuBfClrEa(uint32_t ea, uint16_t ext)
 /// </summary>
 static void cpuBfExtsCommon(uint32_t ea_or_reg, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
-  BOOLE n_flag;
+  cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, true, has_ea, ext);
 
-  n_flag = bf_data.field & (1 << (bf_data.width - 1));
+  BOOLE n_flag = bf_data.field & (1 << (bf_data.width - 1));
 
   cpuSetFlagsNZVC(bf_data.field == 0, n_flag, FALSE, FALSE);
 
@@ -2847,7 +2823,7 @@ static void cpuBfExtsEa(uint32_t ea, uint16_t ext)
 /// </summary>
 static void cpuBfExtuCommon(uint32_t ea_or_reg, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
+  cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, true, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
   // Destination is always Dn
@@ -2875,7 +2851,7 @@ static void cpuBfExtuEa(uint32_t ea, uint16_t ext)
 /// </summary>
 static void cpuBfFfoCommon(uint32_t val, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
+  cpuBfData bf_data;
   uint32_t i;
   cpuBfDecodeExtWordAndGetField(&bf_data, val, true, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
@@ -2909,7 +2885,7 @@ static void cpuBfFfoEa(uint32_t ea, uint16_t ext)
 /// </summary>
 static void cpuBfInsCommon(uint32_t ea_or_reg, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
+  cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, true, has_ea, ext);
 
   bf_data.field = cpuGetDReg(bf_data.dn) & bf_data.field_mask;
@@ -2941,7 +2917,7 @@ static void cpuBfInsEa(uint32_t ea, uint16_t ext)
 /// </summary>
 static void cpuBfSetCommon(uint32_t ea_or_reg, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
+  cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 
@@ -2971,7 +2947,7 @@ static void cpuBfSetEa(uint32_t ea, uint16_t ext)
 /// </summary>
 static void cpuBfTstCommon(uint32_t ea_or_reg, bool has_ea, uint16_t ext)
 {
-  struct cpuBfData bf_data;
+  cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 }
@@ -3699,10 +3675,9 @@ static void cpuPtest040(uint32_t rw, uint32_t regno)
 
 cpuOpcodeData cpu_opcode_data_current[65536];
 
-void cpuMakeOpcodeTableForModel(void)
+void cpuMakeOpcodeTableForModel()
 {
-  uint32_t opcode;
-  for (opcode = 0; opcode < 65536; opcode++)
+  for (uint32_t opcode = 0; opcode < 65536; opcode++)
   {
     if (cpu_opcode_model_mask[opcode] & cpuGetModelMask())
     {
@@ -3721,7 +3696,7 @@ void cpuMakeOpcodeTableForModel(void)
 uint32_t irq_arrival_time = -1;
 extern uint32_t busGetCycle();
 
-uint32_t cpuExecuteInstruction(void)
+uint32_t cpuExecuteInstruction()
 {
   if (cpuGetRaiseInterrupt())
   {

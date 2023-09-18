@@ -122,8 +122,10 @@ extern const draw_rect& drawGetInternalClip();
 extern void drawSetOutputClip(const draw_rect& output_clip);
 extern const draw_rect& drawGetOutputClip();
 
-extern const std::pair<uint32_t, uint32_t> drawCalculateHorizontalOutputClip(uint32_t buffer_width, uint32_t buffer_scale_factor);
-extern const std::pair<uint32_t, uint32_t> drawCalculateVerticalOutputClip(uint32_t buffer_height, uint32_t buffer_scale_factor);
+extern std::pair<uint32_t, uint32_t> drawCalculateHorizontalOutputClip(uint32_t buffer_width,
+                                                                       uint32_t buffer_scale_factor);
+extern std::pair<uint32_t, uint32_t> drawCalculateVerticalOutputClip(uint32_t buffer_height,
+                                                                     uint32_t buffer_scale_factor);
 
 
 /*===========================================================================*/

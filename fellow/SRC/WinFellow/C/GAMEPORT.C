@@ -67,12 +67,11 @@ void gameportSetInput(uint32_t index, gameport_inputs gameportinput) {
   gameport_input[index] = gameportinput;
 }
 
-BOOLE gameportGetAnalogJoystickInUse(void)
+BOOLE gameportGetAnalogJoystickInUse()
 {
   BOOLE result = FALSE;
-  uint32_t i;
 
-  for(i = 0; i < 2; i++)
+  for(uint32_t i = 0; i < 2; i++)
   {
     if (gameport_input[i] == GP_ANALOG0 || gameport_input[i] == GP_ANALOG1)
       result = TRUE;
@@ -92,10 +91,9 @@ BOOLE gameportGetAnalogJoystickInUse(void)
 
 static uint32_t rjoydat(uint32_t i) {
   if (gameport_input[i] == GP_MOUSE0) { /* Gameport input is mouse */
-    int32_t diffx, diffy;
 
-    diffx = gameport_x[i] - gameport_x_last_read[i];
-    diffy = gameport_y[i] - gameport_y_last_read[i];
+    int32_t diffx = gameport_x[i] - gameport_x_last_read[i];
+    int32_t diffy = gameport_y[i] - gameport_y_last_read[i];
     if (diffx > 127)
       diffx = 127;  /* Find relative movement */
     else if (diffx < -127)
@@ -178,9 +176,7 @@ uint16_t rpotgor(uint32_t address)
 
 void wjoytest(uint16_t data, uint32_t address)
 {
-  uint32_t i;
-
-  for (i = 0; i < 2; i++) {
+  for (uint32_t i = 0; i < 2; i++) {
     gameport_x[i] = gameport_x_last_read[i] = (int8_t) (data & 0xff);
     gameport_y[i] = gameport_y_last_read[i] = (int8_t) ((data>>8) & 0xff);
   }
@@ -203,11 +199,9 @@ void gameportMouseHandler(gameport_inputs mousedev,
 			  BOOLE button1,
 			  BOOLE button2,
 			  BOOLE button3) {
-  uint32_t i;
-
   automator.RecordMouse(mousedev, x, y, button1, button2, button3);
 
-  for (i = 0; i < 2; i++) {
+  for (uint32_t i = 0; i < 2; i++) {
     if (gameport_input[i] == mousedev) {
       if ((!gameport_fire1[i]) && button3)
 	potdat[i] = (potdat[i] + 0x100) & 0xffff; 
@@ -235,11 +229,9 @@ void gameportJoystickHandler(gameport_inputs joydev,
 	BOOLE down,
 	BOOLE button1,
 	BOOLE button2) {
-  uint32_t i;
-
   automator.RecordJoystick(joydev, left, up, right, down, button1, button2);
 
-  for (i = 0; i < 2; i++)
+  for (uint32_t i = 0; i < 2; i++)
     if (gameport_input[i] == joydev)
     {
       if ((!gameport_fire1[i]) && button2)
@@ -275,7 +267,7 @@ void gameportJoystickHandler(gameport_inputs joydev,
 /* Initialize the register stubs for the gameports                           */
 /*===========================================================================*/
 
-void gameportIOHandlersInstall(void)
+void gameportIOHandlersInstall()
 {
   memorySetIoReadStub(0xa, rjoy0dat);
   memorySetIoReadStub(0xc, rjoy1dat);
@@ -290,10 +282,8 @@ void gameportIOHandlersInstall(void)
 /*===========================================================================*/
 
 void gameportIORegistersClear(BOOLE clear_pot) {
-  uint32_t i;
-
   if (clear_pot) potgor = 0xffff;
-  for (i = 0; i < 2; i++) {
+  for (uint32_t i = 0; i < 2; i++) {
     if (clear_pot) potdat[i] = 0;
     gameport_autofire0[i] = FALSE;
     gameport_autofire1[i] = FALSE;
@@ -316,13 +306,13 @@ void gameportIORegistersClear(BOOLE clear_pot) {
 /* Standard Fellow module functions                                          */
 /*===========================================================================*/
 
-void gameportHardReset(void) {
+void gameportHardReset() {
   gameportIORegistersClear(TRUE);
   mouseDrvHardReset();
   joyDrvHardReset();
 }
 
-void gameportEmulationStart(void) {
+void gameportEmulationStart() {
   gameportIOHandlersInstall();
   fellowAddLog("gameportEmulationStart()\n");
   mouseDrvEmulationStart();
@@ -330,12 +320,12 @@ void gameportEmulationStart(void) {
   gameportIORegistersClear(FALSE);
 }
 
-void gameportEmulationStop(void) {
+void gameportEmulationStop() {
   joyDrvEmulationStop();
   mouseDrvEmulationStop();
 }
 
-void gameportStartup(void) {
+void gameportStartup() {
   gameportIORegistersClear(TRUE);
   mouseDrvStartup();
   joyDrvStartup();
@@ -348,7 +338,7 @@ void gameportStartup(void) {
   gameportSetInput(1, GP_NONE);
 }
 
-void gameportShutdown(void) {
+void gameportShutdown() {
   joyDrvShutdown();
   mouseDrvShutdown();
 }

@@ -98,12 +98,12 @@ bool rtcSetEnabled(bool enabled)
   return needreset;
 }
 
-bool rtcGetEnabled(void)
+bool rtcGetEnabled()
 {
   return rtc_enabled;
 }
 
-void rtcMap(void)
+void rtcMap()
 {
   if (rtcGetEnabled())
   {

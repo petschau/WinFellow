@@ -116,9 +116,6 @@ char *soundDrvDSoundErrorString(HRESULT hResult)
   return "Unknown DirectSound Error";
 }
 
-/* Forward declaration */
-void soundDrvPollBufferPosition();
-
 /*==========================================================================*/
 /* Multimedia Callback fnc. Used when DirectSound notification unsupported  */
 /*==========================================================================*/
@@ -147,7 +144,7 @@ void soundDrvDSoundFailure(char *header, HRESULT err)
 /* Release DirectSound                                                       */
 /*===========================================================================*/
 
-void soundDrvDSoundRelease(void)
+void soundDrvDSoundRelease()
 {
   if (sound_drv_dsound_device_current.lpDS != nullptr)
   {
@@ -176,7 +173,7 @@ void soundDrvDSoundRelease(void)
 /* Initialize DirectSound                                                    */
 /*===========================================================================*/
 
-bool soundDrvDSoundInitialize(void)
+bool soundDrvDSoundInitialize()
 {
   uint32_t i;
 
@@ -271,10 +268,6 @@ void soundDrvYesNoLog(char *intro, bool pred)
 bool soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_device)
 {
   DSCAPS dscaps;
-  bool stereo, mono, bits8, bits16;
-  bool secondary_stereo, secondary_mono, secondary_bits8, secondary_bits16;
-  bool continuous_rate, emulated_driver, certified_driver;
-  uint32_t minrate, maxrate;
   char s[80];
 
   memset(&dscaps, 0, sizeof(dscaps));
@@ -285,33 +278,33 @@ bool soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_dev
     soundDrvDSoundFailure("soundDrvDSoundModeInformationInitialize: ", getCapsResult);
     return false;
   }
-  stereo = !!(dscaps.dwFlags & DSCAPS_PRIMARYSTEREO);
+  bool stereo = !!(dscaps.dwFlags & DSCAPS_PRIMARYSTEREO);
   soundDrvYesNoLog("DSCAPS_PRIMARYSTEREO", stereo);
-  mono = !!(dscaps.dwFlags & DSCAPS_PRIMARYMONO);
+  bool mono = !!(dscaps.dwFlags & DSCAPS_PRIMARYMONO);
   soundDrvYesNoLog("DSCAPS_PRIMARYMONO", mono);
-  bits16 = !!(dscaps.dwFlags & DSCAPS_PRIMARY16BIT);
+  bool bits16 = !!(dscaps.dwFlags & DSCAPS_PRIMARY16BIT);
   soundDrvYesNoLog("DSCAPS_PRIMARY16BIT", bits16);
-  bits8 = !!(dscaps.dwFlags & DSCAPS_PRIMARY8BIT);
+  bool bits8 = !!(dscaps.dwFlags & DSCAPS_PRIMARY8BIT);
   soundDrvYesNoLog("DSCAPS_PRIMARY8BIT", bits8);
 
-  secondary_stereo = !!(dscaps.dwFlags & DSCAPS_SECONDARYSTEREO);
+  bool secondary_stereo = !!(dscaps.dwFlags & DSCAPS_SECONDARYSTEREO);
   soundDrvYesNoLog("DSCAPS_SECONDARYSTEREO", secondary_stereo);
-  secondary_mono = !!(dscaps.dwFlags & DSCAPS_SECONDARYMONO);
+  bool secondary_mono = !!(dscaps.dwFlags & DSCAPS_SECONDARYMONO);
   soundDrvYesNoLog("DSCAPS_SECONDARYMONO", secondary_mono);
-  secondary_bits16 = !!(dscaps.dwFlags & DSCAPS_SECONDARY16BIT);
+  bool secondary_bits16 = !!(dscaps.dwFlags & DSCAPS_SECONDARY16BIT);
   soundDrvYesNoLog("DSCAPS_SECONDARY16BIT", secondary_bits16);
-  secondary_bits8 = !!(dscaps.dwFlags & DSCAPS_SECONDARY8BIT);
+  bool secondary_bits8 = !!(dscaps.dwFlags & DSCAPS_SECONDARY8BIT);
   soundDrvYesNoLog("DSCAPS_SECONDARY8BIT", secondary_bits8);
 
-  continuous_rate = !!(dscaps.dwFlags & DSCAPS_CONTINUOUSRATE);
+  bool continuous_rate = !!(dscaps.dwFlags & DSCAPS_CONTINUOUSRATE);
   soundDrvYesNoLog("DSCAPS_CONTINUOUSRATE", continuous_rate);
-  emulated_driver = !!(dscaps.dwFlags & DSCAPS_EMULDRIVER);
+  bool emulated_driver = !!(dscaps.dwFlags & DSCAPS_EMULDRIVER);
   soundDrvYesNoLog("DSCAPS_EMULDRIVER", emulated_driver);
-  certified_driver = !!(dscaps.dwFlags & DSCAPS_CERTIFIED);
+  bool certified_driver = !!(dscaps.dwFlags & DSCAPS_CERTIFIED);
   soundDrvYesNoLog("DSCAPS_CERTIFIED", certified_driver);
 
-  minrate = dscaps.dwMinSecondarySampleRate;
-  maxrate = dscaps.dwMaxSecondarySampleRate;
+  uint32_t minrate = dscaps.dwMinSecondarySampleRate;
+  uint32_t maxrate = dscaps.dwMaxSecondarySampleRate;
   sprintf(s, "ddscaps.dwMinSecondarySampleRate - %u\n", minrate);
   fellowAddLog(s);
   sprintf(s, "ddscaps.dwMaxSecondarySampleRate - %u\n", maxrate);
@@ -956,7 +949,6 @@ bool soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
 			  bool &need_to_restart_playback)
 {
   HANDLE multi_events[3];
-  DWORD evt;
   bool terminate_wait = false;
   bool terminate_thread = false;
   uint32_t wait_for_x_events = 3;
@@ -988,10 +980,10 @@ bool soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
     {
       multi_events[2] = dsound_device->notifications[next_buffer_no];
     }
-    evt = WaitForMultipleObjects(wait_for_x_events,
-			         (void*const*) multi_events,
-			         FALSE,
-			         INFINITE);
+    DWORD evt = WaitForMultipleObjects(wait_for_x_events,
+                                       (void*const*)multi_events,
+                                       FALSE,
+                                       INFINITE);
     switch (evt)
     {
       case WAIT_OBJECT_0:
@@ -1028,7 +1020,7 @@ bool soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
 /* Called from the message loop in response to a timer.                      */
 /*===========================================================================*/
 
-void soundDrvPollBufferPosition(void)
+void soundDrvPollBufferPosition()
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
   soundDrvAcquireMutex(dsound_device);
@@ -1176,7 +1168,7 @@ DWORD WINAPI soundDrvThreadProc(void *in)
 /* Hard Reset                                                                */
 /*===========================================================================*/
 
-void soundDrvHardReset(void)
+void soundDrvHardReset()
 {
 }
 
@@ -1256,7 +1248,7 @@ bool soundDrvEmulationStart(uint32_t rate,
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
 
-void soundDrvEmulationStop(void)
+void soundDrvEmulationStop()
 {
   soundDrvAcquireMutex(&sound_drv_dsound_device_current);
   SetEvent(sound_drv_dsound_device_current.notifications[2]);
@@ -1296,7 +1288,7 @@ bool soundDrvStartup(sound_device *devinfo)
 /* Emulation Shutdown                                                        */
 /*===========================================================================*/
 
-void soundDrvShutdown(void)
+void soundDrvShutdown()
 {
   soundDrvDSoundModeInformationRelease(&sound_drv_dsound_device_current);
   soundDrvDSoundRelease();

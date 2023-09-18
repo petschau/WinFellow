@@ -56,7 +56,7 @@ void cpuIntegrationSetSpeed(uint32_t speed)
   cpu_integration_speed = speed;
 }
 
-uint32_t cpuIntegrationGetSpeed(void)
+uint32_t cpuIntegrationGetSpeed()
 {
   return cpu_integration_speed;
 }
@@ -66,12 +66,12 @@ static void cpuIntegrationSetSpeedMultiplier(uint32_t multiplier)
   cpu_integration_speed_multiplier = multiplier;
 }
 
-static uint32_t cpuIntegrationGetSpeedMultiplier(void)
+static uint32_t cpuIntegrationGetSpeedMultiplier()
 {
   return cpu_integration_speed_multiplier;
 }
 
-void cpuIntegrationCalculateMultiplier(void)
+void cpuIntegrationCalculateMultiplier()
 {
   uint32_t multiplier = 12;
 
@@ -115,7 +115,7 @@ BOOLE cpuIntegrationSetModel(cpu_integration_models model)
   return needreset;
 }
 
-cpu_integration_models cpuIntegrationGetModel(void)
+cpu_integration_models cpuIntegrationGetModel()
 {
   return cpu_integration_model;
 }
@@ -125,7 +125,7 @@ void cpuIntegrationSetChipCycles(uint32_t chip_cycles)
   cpu_integration_chip_cycles = chip_cycles;
 }
 
-uint32_t cpuIntegrationGetChipCycles(void)
+uint32_t cpuIntegrationGetChipCycles()
 {
   return cpu_integration_chip_cycles;
 }
@@ -135,7 +135,7 @@ void cpuIntegrationSetChipSlowdown(uint32_t chip_slowdown)
   cpu_integration_chip_slowdown = chip_slowdown;
 }
 
-uint32_t cpuIntegrationGetChipSlowdown(void)
+uint32_t cpuIntegrationGetChipSlowdown()
 {
   return cpu_integration_chip_slowdown;
 }
@@ -145,7 +145,7 @@ void cpuIntegrationSetChipInterruptNumber(uint32_t chip_interrupt_number)
   cpu_integration_chip_interrupt_number = chip_interrupt_number;
 }
 
-uint32_t cpuIntegrationGetChipInterruptNumber(void)
+uint32_t cpuIntegrationGetChipInterruptNumber()
 {
   return cpu_integration_chip_interrupt_number;
 }
@@ -165,7 +165,7 @@ void cpuIntegrationSetIrqLevel(uint32_t new_interrupt_level, uint32_t chip_inter
 /* Exception mid-instruction exit function */
 /*=========================================*/
 
-void cpuIntegrationMidInstructionExceptionFunc(void)
+void cpuIntegrationMidInstructionExceptionFunc()
 {
   longjmp(cpu_integration_exception_buffer, -1);
 }
@@ -174,7 +174,7 @@ void cpuIntegrationMidInstructionExceptionFunc(void)
 /* Handles reset exception event from the cpu-module */
 /*===================================================*/
 
-void cpuIntegrationResetExceptionFunc(void)
+void cpuIntegrationResetExceptionFunc()
 {
   fellowSoftReset();
 }
@@ -188,7 +188,7 @@ void cpuIntegrationResetExceptionFunc(void)
 FILE *CPUINSTRUCTIONLOG;
 int cpu_disable_instruction_log = TRUE;
 
-void cpuInstructionLogOpen(void)
+void cpuInstructionLogOpen()
 {
   if (CPUINSTRUCTIONLOG == nullptr)
   {
@@ -198,12 +198,12 @@ void cpuInstructionLogOpen(void)
   }
 }
 
-void cpuIntegrationPrintBusCycle(void)
+void cpuIntegrationPrintBusCycle()
 {
   fprintf(CPUINSTRUCTIONLOG, "%I64u:%.5u ", bus.frame_no, bus.cycle);
 }
 
-void cpuIntegrationInstructionLogging(void)
+void cpuIntegrationInstructionLogging()
 {
   char saddress[256], sdata[256], sinstruction[256], soperands[256];
 
@@ -260,10 +260,9 @@ void cpuIntegrationInterruptLogging(uint32_t level, uint32_t vector_address)
 
 #endif
 
-void cpuIntegrationExecuteInstructionEventHandler68000Fast(void)
+void cpuIntegrationExecuteInstructionEventHandler68000Fast()
 {
-  uint32_t cycles;
-  cycles = cpuExecuteInstruction();
+  uint32_t cycles = cpuExecuteInstruction();
 
   if (cpuGetStop())
   {
@@ -276,7 +275,7 @@ void cpuIntegrationExecuteInstructionEventHandler68000Fast(void)
   cpuIntegrationSetChipCycles(0);
 }
 
-void cpuIntegrationExecuteInstructionEventHandler68000General(void)
+void cpuIntegrationExecuteInstructionEventHandler68000General()
 {
   uint32_t cycles = 0;
   uint32_t time_used = 0;
@@ -300,7 +299,7 @@ void cpuIntegrationExecuteInstructionEventHandler68000General(void)
   cpuIntegrationSetChipCycles(0);
 }
 
-void cpuIntegrationExecuteInstructionEventHandler68020(void)
+void cpuIntegrationExecuteInstructionEventHandler68020()
 {
   uint32_t time_used = 0;
   do
@@ -321,7 +320,7 @@ void cpuIntegrationExecuteInstructionEventHandler68020(void)
   cpuIntegrationSetChipCycles(0);
 }
 
-void cpuIntegrationSetDefaultConfig(void)
+void cpuIntegrationSetDefaultConfig()
 {
   cpuIntegrationSetModel(M68000);
   cpuIntegrationSetChipCycles(0);
@@ -359,16 +358,16 @@ void cpuIntegrationLoadState(FILE *F)
   // Everything else is configuration options which will be set when the associated config-file is loaded.
 }
 
-void cpuIntegrationEmulationStart(void)
+void cpuIntegrationEmulationStart()
 {
   cpuIntegrationCalculateMultiplier();
 }
 
-void cpuIntegrationEmulationStop(void)
+void cpuIntegrationEmulationStop()
 {
 }
 
-void cpuIntegrationHardReset(void)
+void cpuIntegrationHardReset()
 {
   cpuIntegrationSetChipCycles(0);
   cpuIntegrationSetChipSlowdown(1);
@@ -377,14 +376,14 @@ void cpuIntegrationHardReset(void)
   cpuHardReset();
 }
 
-void cpuIntegrationStartup(void)
+void cpuIntegrationStartup()
 {
   cpuStartup();
   cpuIntegrationSetDefaultConfig();
   cpuCreateMulTimeTables();
 }
 
-void cpuIntegrationShutdown(void)
+void cpuIntegrationShutdown()
 {
   cpuProfileWrite();
 }

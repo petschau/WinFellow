@@ -36,14 +36,13 @@ BOOLE gzUnpack(const char *src, const char *dest)
   gzFile	input;
   FILE	*output;
   char	buffer[1<<14];
-  int		length;
 
   if((output = fopen(dest, "wb")) == nullptr) return FALSE;
   if((input  = gzopen(src, "rb")) == nullptr) return FALSE;
 
   for(;;)
   {
-    length = gzread(input, buffer, sizeof(buffer));
+    int length = gzread(input, buffer, sizeof(buffer));
     if(length < 0) return FALSE;
     if(length == 0) break;
     if((int)fwrite(buffer, 1, (unsigned)length, output) != length) return FALSE;
@@ -66,7 +65,6 @@ BOOLE gzPack(const char *src, const char *dest)
   gzFile output;
   char outmode[20];
   char buffer[1<<14];
-  size_t length;
 
   strcpy(outmode, "wb9 ");
 
@@ -75,7 +73,7 @@ BOOLE gzPack(const char *src, const char *dest)
 
   for(;;) 
   {
-    length = fread(buffer, 1, sizeof(buffer), input);
+    size_t length = fread(buffer, 1, sizeof(buffer), input);
     if(ferror(input)) return FALSE;
     if(length == 0) break;
     if(gzwrite(output, buffer, (unsigned)length) != length) return FALSE;

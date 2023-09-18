@@ -85,7 +85,7 @@ int valid_address(uaecptr adr, uae_u32 size) {
 
 /* This was taken from compiler.c in duae075b */
 
-void m68k_do_rts(void)
+void m68k_do_rts()
 {
     m68k_setpc(get_long(m68k_areg(regs, 7)));
     cpuSetAReg(7, m68k_areg(regs, 7) + 4);
