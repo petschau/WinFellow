@@ -1,3 +1,5 @@
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Bitplane draw (in host buffer)                                          */
@@ -22,9 +24,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef BITPLANEDRAW_H
-#define BITPLANEDRAW_H
-
 class BitplaneDraw
 {
 private:
@@ -44,6 +43,3 @@ public:
   BitplaneDraw();
   ~BitplaneDraw();
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_CODEHUNK_H
-#define FELLOW_HARDFILE_HUNKS_CODEHUNK_H
+#pragma once
 
 #include "hardfile/hunks/InitialHunk.h"
 
@@ -17,5 +16,3 @@ namespace fellow::hardfile::hunks
     CodeHunk(uint32_t allocateSizeInLongwords);
   };
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_BSSHUNK_H
-#define FELLOW_HARDFILE_HUNKS_BSSHUNK_H
+#pragma once
 
 #include "hardfile/hunks/InitialHunk.h"
 
@@ -17,5 +16,3 @@ namespace fellow::hardfile::hunks
     BSSHunk(uint32_t allocateSizeInLongwords);
   };
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_FILEIMAGE_H
-#define FELLOW_HARDFILE_HUNKS_FILEIMAGE_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -31,5 +30,3 @@ namespace fellow::hardfile::hunks
     void Clear();
   };
 }
-
-#endif

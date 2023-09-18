@@ -1,7 +1,5 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBFILESYSTEMHEADER_H
-#define FELLOW_HARDFILE_RDB_RDBFILESYSTEMHEADER_H
+#pragma once
 
-#include "fellow/api/defs.h"
 #include "hardfile/rdb/RDBFileReader.h"
 #include "hardfile/rdb/RDBFileSystemHandler.h"
 
@@ -42,5 +40,3 @@ namespace fellow::hardfile::rdb
     RDBFileSystemHeader();
   };
 }
-
-#endif

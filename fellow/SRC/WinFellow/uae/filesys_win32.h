@@ -1,4 +1,5 @@
-/* @(#) $Id: filesys_win32.h,v 1.5 2008-02-17 12:57:01 peschau Exp $ */
+#pragma once
+
 /*=========================================================================*/
 /* UAE - The Un*x Amiga Emulator                                           */
 /*                                                                         */
@@ -23,9 +24,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#ifndef __FILESYS_WIN32_H__
-#define __FILESYS_WIN32_H__
 
 #include "uae2fell.h"
 
@@ -56,5 +54,3 @@ extern void win32_closedir(DIR *);
 extern int win32_mkdir(const char *, int);
 
 extern int win32_truncate(const char *, long int);
-
-#endif /* #ifndef __FILESYS_WIN32_H__ */

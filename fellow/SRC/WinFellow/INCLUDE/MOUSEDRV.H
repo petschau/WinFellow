@@ -1,5 +1,4 @@
-#ifndef MOUSEDRV_H
-#define MOUSEDRV_H
+#pragma once
 
 extern void  mouseDrvHardReset(void);
 extern BOOLE mouseDrvEmulationStart(void);
@@ -11,5 +10,3 @@ extern void  mouseDrvStateHasChanged(BOOLE);
 extern void  mouseDrvToggleFocus(void);
 extern void  mouseDrvMovementHandler(void);
 extern void  mouseDrvSetFocus(const BOOLE, const BOOLE);
-
-#endif

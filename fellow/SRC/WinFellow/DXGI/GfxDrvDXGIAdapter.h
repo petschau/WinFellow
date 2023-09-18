@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGIAdapter_H
-#define GfxDrvDXGIAdapter_H
+#pragma once
 
 #include <DXGI.h>
 #include <list>
@@ -23,5 +22,3 @@ public:
 };
 
 typedef std::list<GfxDrvDXGIAdapter*> GfxDrvDXGIAdapterList;
-
-#endif

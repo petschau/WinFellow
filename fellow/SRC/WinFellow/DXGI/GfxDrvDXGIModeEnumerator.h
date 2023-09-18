@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGIModeEnumerator_H
-#define GfxDrvDXGIModeEnumerator_H
+#pragma once
 
 #include "GfxDrvDXGIMode.h"
 
@@ -9,5 +8,3 @@ public:
   static void EnumerateModes(IDXGIOutput *output, GfxDrvDXGIModeList& modes);
   static void DeleteModeList(GfxDrvDXGIModeList& modes);
 };
-
-#endif

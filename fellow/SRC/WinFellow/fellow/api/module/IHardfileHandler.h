@@ -1,5 +1,4 @@
-#ifndef FELLOW_API_MODULE_IHARDFILEHANDLER_H
-#define FELLOW_API_MODULE_IHARDFILEHANDLER_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -121,5 +120,3 @@ namespace fellow::api::module
 
   extern IHardfileHandler *HardfileHandler;
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef FELLOW_API_SERVICES_H
-#define FELLOW_API_SERVICES_H
+#pragma once
 
 #include "fellow/api/service/IHUD.h"
 #include "fellow/api/service/IFSWrapper.h"
@@ -25,5 +24,3 @@ namespace fellow::api
 
   extern Services* Service;
 }
-
-#endif

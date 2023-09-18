@@ -1,5 +1,4 @@
-#ifndef BUS_H
-#define BUS_H
+#pragma once
 
 //#define ENABLE_BUS_EVENT_LOGGING
 
@@ -82,5 +81,3 @@ extern bus_event eofEvent;
 extern bus_event ciaEvent;
 extern bus_event blitterEvent;
 extern bus_event interruptEvent;
-
-#endif

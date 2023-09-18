@@ -1,5 +1,4 @@
-#ifndef CpuModule_Internal_H
-#define CpuModule_Internal_H
+#pragma once
 
 // This header file defines the internal interfaces of the CPU module.
 extern void cpuMakeOpcodeTableForModel(void);
@@ -196,6 +195,3 @@ static BOOLE cpuMsbL(uint32_t v) {return v>>31;}
 static BOOLE cpuIsZeroB(uint8_t v) {return v == 0;}
 static BOOLE cpuIsZeroW(uint16_t v) {return v == 0;}
 static BOOLE cpuIsZeroL(uint32_t v) {return v == 0;}
-
-
-#endif

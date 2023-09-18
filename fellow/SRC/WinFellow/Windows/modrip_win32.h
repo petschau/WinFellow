@@ -1,4 +1,5 @@
-/* @(#) $Id: modrip_win32.h,v 1.9 2008-02-21 00:08:24 peschau Exp $ */
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -23,9 +24,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef _MODRIP_WIN32_H_
-#define _MODRIP_WIN32_H_
-
 /* fellow includes */
 #include "defs.h"
 
@@ -43,5 +41,3 @@ extern void modripGuiUnInitialize(void);
 extern void modripGuiError(char *);
 extern BOOLE modripGuiDumpChipMem(void);
 extern BOOLE modripGuiRunProWiz(void);
-
-#endif

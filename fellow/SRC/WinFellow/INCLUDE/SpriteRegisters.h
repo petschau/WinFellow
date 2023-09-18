@@ -1,5 +1,4 @@
-#ifndef SPRITEREGISTERS_H
-#define SPRITEREGISTERS_H
+#pragma once
 
 #include "DEFS.H"
 
@@ -27,5 +26,3 @@ public:
 };
 
 extern SpriteRegisters sprite_registers;
-
-#endif

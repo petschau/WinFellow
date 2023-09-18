@@ -1,5 +1,4 @@
-#ifndef FELLOW_SERVICE_FSWRAPPER_H
-#define FELLOW_SERVICE_FSWRAPPER_H
+#pragma once
 
 #include "fellow/api/service/IFSWrapper.h"
 #include "FSWRAP.H"
@@ -16,5 +15,3 @@ namespace fellow::service
     FSWrapper();
   };
 }
-
-#endif

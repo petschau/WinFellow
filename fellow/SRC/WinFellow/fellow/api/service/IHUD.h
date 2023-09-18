@@ -1,6 +1,4 @@
-#ifndef FELLOW_API_SERVICE_IHUD_H
-#define FELLOW_API_SERVICE_IHUD_H
-
+#pragma once
 namespace fellow::api::service
 {
   class IHUD
@@ -11,5 +9,3 @@ namespace fellow::api::service
     virtual void SetHarddiskLED(int deviceIndex, bool active, bool write) = 0;
   };
 }
-
-#endif

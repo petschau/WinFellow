@@ -1,5 +1,4 @@
-#ifndef SPRITEMERGER_H
-#define SPRITEMERGER_H
+#pragma once
 
 #include "DEFS.H"
 
@@ -20,5 +19,3 @@ public:
 
   static void Initialize();
 };
-
-#endif

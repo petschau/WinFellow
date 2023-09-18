@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HEADERHUNK_H
-#define FELLOW_HARDFILE_HUNKS_HEADERHUNK_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -31,5 +30,3 @@ namespace fellow::hardfile::hunks
     HeaderHunk();
   };
 }
-
-#endif

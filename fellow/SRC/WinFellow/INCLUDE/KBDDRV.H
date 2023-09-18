@@ -1,5 +1,4 @@
-#ifndef KBDDRV_H
-#define KBDDRV_H
+#pragma once
 
 #include "KEYCODES.H"
 #include "KBD.H"
@@ -27,6 +26,4 @@ extern void kbdDrvKeypressHandler(void);
 #ifdef RETRO_PLATFORM
 extern void kbdDrvEOFHandler(void);
 extern void kbdDrvSetJoyKeyEnabled(uint32_t, uint32_t, BOOLE);
-#endif
-
 #endif

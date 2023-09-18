@@ -1,5 +1,4 @@
-#ifndef CpuIntegration_H
-#define CpuIntegration_H
+#pragma once
 
 typedef enum {
   M68000  = 0,
@@ -40,5 +39,3 @@ extern void cpuIntegrationEmulationStop(void);
 extern void cpuIntegrationHardReset(void);
 extern void cpuIntegrationStartup(void);
 extern void cpuIntegrationShutdown(void);
-
-#endif

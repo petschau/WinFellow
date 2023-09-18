@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_EVENT_QUEUE_H
-#define GRAPHICS_EVENT_QUEUE_H
+#pragma once
 
 #include "DEFS.H"
 #include "GraphicsEvent.h"
@@ -23,5 +22,3 @@ public:
 
   void Run(uint32_t untilTime);
 };
-
-#endif

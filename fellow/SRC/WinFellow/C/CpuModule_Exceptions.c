@@ -1,4 +1,3 @@
-/* @(#) $Id: CpuModule_Exceptions.c,v 1.5 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k exception handling functions                                    */

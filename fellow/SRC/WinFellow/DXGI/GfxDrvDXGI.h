@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGI_H
-#define GfxDrvDXGI_H
+#pragma once
 
 #include <DXGI.h>
 #include <D3D11.h>
@@ -130,5 +129,3 @@ public:
   GfxDrvDXGI();
   virtual ~GfxDrvDXGI();
 };
-
-#endif

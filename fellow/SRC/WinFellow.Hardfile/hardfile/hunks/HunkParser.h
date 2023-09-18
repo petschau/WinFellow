@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKPARSER_H
-#define FELLOW_HARDFILE_HUNKS_HUNKPARSER_H
+#pragma once
 
 #include "hardfile/hunks/RawDataReader.h"
 #include "hardfile/hunks/FileImage.h"
@@ -22,5 +21,3 @@ namespace fellow::hardfile::hunks
     HunkParser(uint8_t *rawData, uint32_t rawDataLength, FileImage& fileImage);
   };
 }
-
-#endif

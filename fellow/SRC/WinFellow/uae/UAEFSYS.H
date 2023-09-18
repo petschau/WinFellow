@@ -1,4 +1,3 @@
-
 #include "uae2fell.h"
 #include "autoconf.h"
 

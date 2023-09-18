@@ -1,3 +1,5 @@
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Keeps track of sprite state                                             */
@@ -21,9 +23,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#ifndef CYCLEEXACTSPRITES_H
-#define CYCLEEXACTSPRITES_H
 
 #include "DEFS.H"
 #include "SPRITE.H"
@@ -110,5 +109,3 @@ public:
   CycleExactSprites();
   virtual ~CycleExactSprites();
 };
-
-#endif

@@ -19,8 +19,6 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: EXPANSIO.C,v 1.5 2012-07-14 18:50:50 peschau Exp $
-
    FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)--------------------

@@ -1,5 +1,4 @@
-#ifndef FELLOW_API_VM_H
-#define FELLOW_API_VM_H
+#pragma once
 
 #include "fellow/api/VM/IM68K.h"
 #include "fellow/api/VM/IMemorySystem.h"
@@ -17,5 +16,3 @@ namespace fellow::api
 
   extern VirtualMachine* VM;
 }
-
-#endif

@@ -4,19 +4,6 @@
 
 #include "portable.h"
 
-//#define DRAW_TSC_PROFILE
-
-/*================================*/
-/* The rest is not wise to change */
-/*================================*/
-
-/* Maximum values for memory, don't change */
-
-#define CHIPMEM 0x200000
-#define FASTMEM 0x800000
-#define BOGOMEM 0x1c0000
-#define KICKMEM 0x080000
-
 typedef int BOOLE;
 
 #define FALSE 0

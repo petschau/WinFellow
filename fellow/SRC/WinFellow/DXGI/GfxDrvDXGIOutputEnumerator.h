@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGIOutputEnumerator_H
-#define GfxDrvDXGIOutputEnumerator_H
+#pragma once
 
 #include "GfxDrvDXGIOutput.h"
 
@@ -9,5 +8,3 @@ public:
   static void EnumerateOutputs(IDXGIAdapter *adapter, GfxDrvDXGIOutputList& outputs);
   static void DeleteOutputs(GfxDrvDXGIOutputList& outputs);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef FMEM_H
-#define FMEM_H
+#pragma once
 
 /* Access for chipset emulation that already have validated addresses */
 
@@ -162,5 +161,3 @@ extern uint32_t potgor;
 
 extern uint32_t memory_fault_address;
 extern BOOLE memory_fault_read;
-
-#endif

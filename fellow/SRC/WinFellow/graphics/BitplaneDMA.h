@@ -1,3 +1,5 @@
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Bitplane DMA                                                            */
@@ -21,9 +23,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#ifndef BITPLANEDMA_H
-#define BITPLANEDMA_H
 
 #include "DEFS.H"
 #include "GraphicsEventQueue.h"
@@ -66,5 +65,3 @@ public:
   BitplaneDMA(void) : GraphicsEvent(), _stopDDF(false), _state(BPL_DMA_STATE_NONE) {};
 
 };
-
-#endif

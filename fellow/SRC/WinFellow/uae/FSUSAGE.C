@@ -22,8 +22,6 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FSUSAGE.C,v 1.7 2013-01-13 18:31:10 peschau Exp $
-
    FELLOW IN (END)------------------- */
 
 /* FELLOW OUT START -----------------------

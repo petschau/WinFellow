@@ -1,9 +1,8 @@
+#pragma once
+
 /*===========================================================================*/
 /* Windows data, misc.                                                       */
 /*===========================================================================*/
-
-#ifndef WinDrv_H
-#define WinDrv_H
 
 #include "wdbg.h"
 
@@ -14,5 +13,3 @@ extern void winDrvHandleInputDevices(void);
 extern void winDrvEmulationStart(void);
 extern BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg);
 extern void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName);
-
-#endif

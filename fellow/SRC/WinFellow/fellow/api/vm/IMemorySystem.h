@@ -1,5 +1,4 @@
-#ifndef FELLOW_API_VM_IMEMORYSYSTEM_H
-#define FELLOW_API_VM_IMEMORYSYSTEM_H
+#pragma once
 
 #include "fellow/api/defs.h"
 
@@ -56,5 +55,3 @@ namespace fellow::api::vm
     virtual uint32_t GetKickImageVersion() = 0;
   };
 }
-
-#endif

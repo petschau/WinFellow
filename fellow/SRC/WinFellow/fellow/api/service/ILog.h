@@ -1,5 +1,4 @@
-#ifndef FELLOW_API_SERVICE_ILOG_H
-#define FELLOW_API_SERVICE_ILOG_H
+#pragma once
 
 #include <string>
 #include <list>
@@ -17,5 +16,3 @@ namespace fellow::api::service
     virtual void AddLog2(char *msg) = 0;
   };
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGIMode_H
-#define GfxDrvDXGIMode_H
+#pragma once
 
 #include <DXGI.h>
 #include <list>
@@ -34,5 +33,3 @@ public:
 };
 
 typedef std::list<GfxDrvDXGIMode*> GfxDrvDXGIModeList;
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef INI_H
-#define INI_H
-
+#pragma once
 
 /*============================================================================*/
 /* struct that holds initialization data                                      */
@@ -132,6 +130,3 @@ extern void iniEmulationStart(void);
 extern void iniEmulationStop(void);
 extern void iniStartup(void);
 extern void iniShutdown(void);
-
-
-#endif  /* INI_H */

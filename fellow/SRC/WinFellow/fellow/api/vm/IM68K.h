@@ -1,5 +1,4 @@
-#ifndef FELLOW_API_VM_IM68K_H
-#define FELLOW_API_VM_IM68K_H
+#pragma once
 
 #include "fellow/api/defs.h"
 
@@ -13,5 +12,3 @@ namespace fellow::api::vm
     virtual uint32_t GetAReg(uint32_t registerNumber) = 0;
   };
 }
-
-#endif

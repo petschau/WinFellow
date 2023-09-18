@@ -1,5 +1,4 @@
-#ifndef FFILESYS_H
-#define FFILESYS_H
+#pragma once
 
 #include <string>
 
@@ -39,5 +38,3 @@ extern void ffilesysEmulationStart(void);
 extern void ffilesysEmulationStop(void);
 extern void ffilesysStartup(void);
 extern void ffilesysShutdown(void);
-
-#endif

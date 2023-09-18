@@ -1,10 +1,4 @@
-#ifndef GAMEPORT_H
-#define GAMEPORT_H
-
-/* ---------------- CHANGE LOG -----------------
-Tuesday, September 19, 2000: nova
-- added gameport_autofire arrays
-*/
+#pragma once
 
 /*===========================================================================*/
 /* Joystickdata                                                              */
@@ -71,6 +65,3 @@ extern void gameportEmulationStart(void);
 extern void gameportEmulationStop(void);
 extern void gameportStartup(void);
 extern void gameportShutdown(void);
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_INITIALHUNK_H
-#define FELLOW_HARDFILE_HUNKS_INITIALHUNK_H
+#pragma once
 
 #include <memory>
 #include "hardfile/hunks/HunkBase.h"
@@ -27,5 +26,3 @@ namespace fellow::hardfile::hunks
     InitialHunk(uint32_t allocateSizeInLongwords);
   };
 }
-
-#endif

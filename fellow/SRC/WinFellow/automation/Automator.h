@@ -1,5 +1,4 @@
-#ifndef AUTOMATOR_H
-#define AUTOMATOR_H
+#pragma once
 
 #include "KBD.H"
 #include "GAMEPORT.H"
@@ -36,5 +35,3 @@ public:
 };
 
 extern Automator automator;
-
-#endif

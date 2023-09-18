@@ -1,5 +1,4 @@
-#ifndef FELLOW_SERVICE_LOG_H
-#define FELLOW_SERVICE_LOG_H
+#pragma once
 
 #include <string>
 #include "fellow/api/service/ILog.h"
@@ -33,5 +32,3 @@ namespace fellow::service
     Log();
   };
 }
-
-#endif

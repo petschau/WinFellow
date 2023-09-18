@@ -1,5 +1,4 @@
-#ifndef LISTTREE_H
-#define LISTTREE_H
+#pragma once
 
 /* Generic list */
 
@@ -29,5 +28,3 @@ void listRemove(felist *l);
 felist *listFree(felist *node);
 felist *listIndex(felist *l, unsigned int index);
 void listFreeAll(felist *l, bool freenodes);
-
-#endif

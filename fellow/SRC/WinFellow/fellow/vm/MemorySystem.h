@@ -1,5 +1,4 @@
-#ifndef FELLOW_VM_MEMORYSYSTEM_H
-#define FELLOW_VM_MEMORYSYSTEM_H
+#pragma once
 
 #include "fellow/api/vm/IMemorySystem.h"
 
@@ -48,5 +47,3 @@ namespace fellow::vm
     MemorySystem();
   };
 }
-
-#endif

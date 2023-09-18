@@ -1,8 +1,5 @@
-#ifndef FELLOW_API_DEFS_H
-#define FELLOW_API_DEFS_H
+#pragma once
 
 #include "fellow/api/portable.h"
 
 #include "INCLUDE/DEFS.H"
-
-#endif

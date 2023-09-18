@@ -1,4 +1,5 @@
-/* @(#) $Id: SOUND.H,v 1.6 2008-02-21 00:00:44 peschau Exp $ */
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -22,10 +23,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#ifndef SOUND_H
-#define SOUND_H
-
 
 /*===========================*/
 /* Symbols for configuration */
@@ -108,7 +105,3 @@ extern void soundEmulationStart(void);
 extern void soundEmulationStop(void);
 extern BOOLE soundStartup(void);
 extern void soundShutdown(void);
-
-#endif
-
-

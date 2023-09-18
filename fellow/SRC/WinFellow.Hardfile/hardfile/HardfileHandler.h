@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HARDFILEHANDLER_H
-#define FELLOW_HARDFILE_HARDFILEHANDLER_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -126,5 +125,3 @@ namespace fellow::hardfile
     virtual ~HardfileHandler();
   };
 }
-
-#endif

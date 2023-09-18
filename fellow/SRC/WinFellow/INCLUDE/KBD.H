@@ -1,10 +1,4 @@
-#ifndef KBD_H
-#define KBD_H
-
-/* ---------------- CHANGE LOG ----------------- 
-Tuesday, September 19, 2000: nova
-- added autofire events
-*/
+#pragma once
 
 typedef enum {
   EVENT_INSERT_DF0,
@@ -99,5 +93,3 @@ extern void kbdQueueHandler(void);
 extern void kbdEventEOLHandler(void);
 
 extern uint8_t insert_dfX[4];
-
-#endif

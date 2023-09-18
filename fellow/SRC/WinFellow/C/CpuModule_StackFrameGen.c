@@ -1,4 +1,3 @@
-/* @(#) $Id: CpuModule_StackFrameGen.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 stack frame generation                                            */

@@ -1,5 +1,4 @@
-#ifndef INTERRUPT_H
-#define INTERRUPT_H
+#pragma once
 
 extern uint16_t intena;
 
@@ -18,5 +17,3 @@ void interruptEmulationStart(void);
 void interruptEmulationStop(void);
 void interruptStartup(void);
 void interruptShutdown(void);
-
-#endif

@@ -16,8 +16,6 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: fsdb_win32.c,v 1.11 2008-02-17 12:57:12 peschau Exp $
-
    FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)-------------------

@@ -1,5 +1,4 @@
-#ifndef LINEEXACTSPRITES_H
-#define LINEEXACTSPRITES_H
+#pragma once
 
 #include "DEFS.H"
 #include "SPRITE.H"
@@ -184,5 +183,3 @@ public:
   virtual ~LineExactSprites();
 
 };
-
-#endif

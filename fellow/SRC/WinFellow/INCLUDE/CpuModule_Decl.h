@@ -1,5 +1,4 @@
-#ifndef CPUMODULE_DECL_H
-#define CPUMODULE_DECL_H
+#pragma once
 
 static void ADD_D000(uint32_t*opc_data);
 static void ADD_D010(uint32_t*opc_data);
@@ -1674,4 +1673,3 @@ static void PACK_8140(uint32_t*opc_data);
 static void PACK_8148(uint32_t*opc_data);
 static void UNPK_8180(uint32_t*opc_data);
 static void UNPK_8188(uint32_t*opc_data);
-#endif

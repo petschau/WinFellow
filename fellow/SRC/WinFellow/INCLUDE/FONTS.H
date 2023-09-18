@@ -1,5 +1,4 @@
-#ifndef FONTS_H
-#define FONTS_H
+#pragma once
 
 bool draw_fps_font[12][5][4] = 
 { false,false,true,false,  /* 1 */
@@ -62,5 +61,3 @@ bool draw_fps_font[12][5][4] =
   false,false,false,false,
   false,false,false,false,
   false,false,false,false};
-
-#endif

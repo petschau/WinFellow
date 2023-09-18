@@ -1,5 +1,4 @@
-#ifndef GfxDrvCommon_H
-#define GfxDrvCommon_H
+#pragma once
 
 #include <windows.h>
 
@@ -85,5 +84,3 @@ public:
 };
 
 extern GfxDrvCommon* gfxDrvCommon;
-
-#endif

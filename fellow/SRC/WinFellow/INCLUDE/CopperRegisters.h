@@ -1,5 +1,4 @@
-#ifndef COPPERREGISTERS_H
-#define COPPERREGISTERS_H
+#pragma once
 
 #include "DEFS.H"
 
@@ -22,5 +21,3 @@ public:
 };
 
 extern CopperRegisters copper_registers;
-
-#endif

@@ -1,3 +1,5 @@
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -23,9 +25,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef _CAPS_H_
-#define _CAPS_H_
-
 #ifdef FELLOW_SUPPORT_CAPS
 #include "defs.h"
 
@@ -37,7 +36,5 @@ extern BOOLE capsLoadImage(uint32_t, FILE *, uint32_t *);
 extern BOOLE capsUnloadImage(uint32_t);
 extern BOOLE capsLoadNextRevolution(uint32_t, uint32_t, uint8_t *, uint32_t *);
 extern BOOLE capsLoadTrack(uint32_t, uint32_t, uint8_t *, uint32_t *, uint32_t *, uint32_t *, BOOLE *);
-
-#endif
 
 #endif

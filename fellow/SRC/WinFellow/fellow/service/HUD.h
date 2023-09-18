@@ -1,5 +1,4 @@
-#ifndef FELLOW_SERVICE_HUD_H
-#define FELLOW_SERVICE_HUD_H
+#pragma once
 
 #include "fellow/api/service/IHUD.h"
 
@@ -14,5 +13,3 @@ namespace fellow::service
     HUD();
   };
 }
-
-#endif

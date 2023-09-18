@@ -1,5 +1,4 @@
-#ifndef CpuModule_H
-#define CpuModule_H
+#pragma once
 
 // This header file defines the internal interfaces of the CPU module.
 
@@ -88,5 +87,3 @@ extern void cpuSetResetExceptionFunc(cpuResetExceptionFunc func);
 extern void cpuSetModel(uint32_t major, uint32_t minor);
 extern uint32_t cpuGetModelMajor(void);
 extern uint32_t cpuGetModelMinor(void);
-
-#endif

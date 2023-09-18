@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBLSEGBLOCK_H
-#define FELLOW_HARDFILE_RDB_RDBLSEGBLOCK_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -28,5 +27,3 @@ namespace fellow::hardfile::rdb
     RDBLSegBlock();
   };
 }
-
-#endif

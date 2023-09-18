@@ -1,5 +1,4 @@
-#ifndef CIA_H
-#define CIA_H
+#pragma once
 
 extern void ciaSaveState(FILE *F);
 extern void ciaLoadState(FILE *F);
@@ -19,5 +18,3 @@ extern void ciaUpdateIRQ(uint32_t i);
 extern void ciaRecheckIRQ();
 
 extern BOOLE ciaIsSoundFilterEnabled(void);
-
-#endif

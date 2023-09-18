@@ -1,5 +1,4 @@
-#ifndef GfxDrvDXGIOutput_H
-#define GfxDrvDXGIOutput_H
+#pragma once
 
 #include <DXGI.h>
 #include <list>
@@ -24,5 +23,3 @@ public:
 };
 
 typedef std::list<GfxDrvDXGIOutput*> GfxDrvDXGIOutputList;
-
-#endif

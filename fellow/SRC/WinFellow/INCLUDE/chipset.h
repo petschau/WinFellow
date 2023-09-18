@@ -1,5 +1,4 @@
-#ifndef CHIPSET_H
-#define CHIPSET_H
+#pragma once
 
 typedef struct _chipset_information
 {
@@ -18,5 +17,3 @@ extern BOOLE chipsetSetECS(bool ecs);
 extern bool chipsetGetECS(void);
 
 extern void chipsetStartup(void);
-
-#endif

@@ -1,3 +1,5 @@
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -22,9 +24,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#ifndef UAE2FELLH
-#define UAE2FELLH
 
 #include "defs.h"
 #include "CpuModule.h"
@@ -296,5 +295,3 @@ extern BOOLE CheckRM(char *);
 static int get_volume_name(struct uaedev_mount_info *, char *, char *, int, int, int, int);
 extern int valid_volumename(struct uaedev_mount_info *, char *, int);
 extern void filesys_init(int);
-
-#endif
