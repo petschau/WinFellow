@@ -952,9 +952,9 @@ static void drawBufferFlip(void)
 /*
 The interface for getting stats are: 
 
-uint32_t drawStatLast50FramesFps(void);
-uint32_t drawStatLastFrameFps(void);
-uint32_t drawStatSessionFps(void);
+uint32_t drawStatLast50FramesFps();
+uint32_t drawStatLastFrameFps();
+uint32_t drawStatSessionFps();
 */
 
 /* The fps number drawn in the top right corner of the emulation screen now use

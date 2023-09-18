@@ -112,10 +112,10 @@ extern BOOLE floppy_fast;
 extern BOOLE floppy_DMA_started;
 extern uint32_t diskDMAen;   /* Counts the number of writes to dsklen */
 
-extern void floppyDMAStart(void);
-extern void floppyStartup(void);
-extern void floppyShutdown(void);
-extern int32_t floppySelectedGet(void);
+extern void floppyDMAStart();
+extern void floppyStartup();
+extern void floppyShutdown();
+extern int32_t floppySelectedGet();
 extern void floppySelectedSet(uint32_t selbits);
 extern BOOLE floppyIsTrack0(uint32_t drive);
 extern BOOLE floppyIsWriteProtected(uint32_t drive);
@@ -137,10 +137,10 @@ extern void floppySetFastDMA(BOOLE fastDMA);
 
 /* Module control */
 
-extern void floppyHardReset(void);
-extern void floppyEmulationStart(void);
-extern void floppyEmulationStop(void);
-extern void floppyStartup(void);
-extern void floppyShutdown(void);
+extern void floppyHardReset();
+extern void floppyEmulationStart();
+extern void floppyEmulationStop();
+extern void floppyStartup();
+extern void floppyShutdown();
 
-extern void floppyEndOfLine(void);
+extern void floppyEndOfLine();

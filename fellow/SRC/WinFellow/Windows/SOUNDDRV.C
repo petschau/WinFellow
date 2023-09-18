@@ -117,7 +117,7 @@ char *soundDrvDSoundErrorString(HRESULT hResult)
 }
 
 /* Forward declaration */
-void soundDrvPollBufferPosition(void);
+void soundDrvPollBufferPosition();
 
 /*==========================================================================*/
 /* Multimedia Callback fnc. Used when DirectSound notification unsupported  */

@@ -1,9 +1,9 @@
 #pragma once
 
-bool drawGetUseInterlacedRendering(void);
-bool drawGetFrameIsLong(void);
+bool drawGetUseInterlacedRendering();
+bool drawGetFrameIsLong();
 
-void drawDecideInterlaceStatusForNextFrame(void);
-void drawInterlaceStartup(void);
-void drawInterlaceEndOfFrame(void);
+void drawDecideInterlaceStatusForNextFrame();
+void drawInterlaceStartup();
+void drawInterlaceEndOfFrame();
 void drawSetDeinterlace(bool);

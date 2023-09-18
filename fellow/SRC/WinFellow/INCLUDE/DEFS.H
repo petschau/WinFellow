@@ -39,10 +39,10 @@ typedef union {
           uint8_t bval[4];
           } ptunion;
 
-typedef void (*planar2chunkyroutine)(void);
+typedef void (*planar2chunkyroutine)();
 
-typedef void (*playbuffer_routine)(void);
-typedef void (*sound_before_emu_routine)(void);
-typedef void (*sound_after_emu_routine)(void);
+typedef void (*playbuffer_routine)();
+typedef void (*sound_before_emu_routine)();
+typedef void (*sound_after_emu_routine)();
 
-typedef void (*buseventfunc)(void);
+typedef void (*buseventfunc)();

@@ -41,8 +41,8 @@ private:
   uint32_t _maxValidY;
 
   void Log(uint32_t line, uint32_t cylinder);
-  uint32_t GetStartLine(void);
-  uint32_t GetStopLine(void);
+  uint32_t GetStartLine();
+  uint32_t GetStopLine();
   void SetState(DIWYStates newState, uint32_t arriveTime);
   void SetStateWaitingForStartLine(uint32_t rasterY);
   void SetStateWaitingForStopLine(uint32_t rasterY);
@@ -51,19 +51,19 @@ private:
 
 
 public:
-  bool IsVisible(void);
-  void ChangedValue(void);
+  bool IsVisible();
+  void ChangedValue();
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
   virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
-  void SoftReset(void);
-  void HardReset(void);
-  void EndOfFrame(void);
-  void EmulationStart(void);
-  void EmulationStop(void);
-  void Startup(void);
-  void Shutdown(void);
+  void SoftReset();
+  void HardReset();
+  void EndOfFrame();
+  void EmulationStart();
+  void EmulationStop();
+  void Startup();
+  void Shutdown();
 
   DIWYStateMachine(void) : GraphicsEvent() {};
 

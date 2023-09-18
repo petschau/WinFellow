@@ -48,6 +48,6 @@ struct ModuleInfo {
   unsigned instruments;
 };
 
-extern void modripRIP(void);
-extern void modripChipDump(void);
+extern void modripRIP();
+extern void modripChipDump();
 extern BOOLE modripSaveMem(struct ModuleInfo *, MemoryAccessFunc);

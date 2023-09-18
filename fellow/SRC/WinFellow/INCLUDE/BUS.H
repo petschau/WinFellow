@@ -6,23 +6,23 @@
 
 extern void busSaveState(FILE *F);
 extern void busLoadState(FILE *F);
-extern void busEmulationStart(void);
-extern void busEmulationStop(void);
-extern void busSoftReset(void);
-extern void busHardReset(void);
-extern void busStartup(void);
-extern void busShutdown(void);
-extern void busDetermineCpuInstructionEventHandler(void);
+extern void busEmulationStart();
+extern void busEmulationStop();
+extern void busSoftReset();
+extern void busHardReset();
+extern void busStartup();
+extern void busShutdown();
+extern void busDetermineCpuInstructionEventHandler();
 
-void busEndOfLine(void);
-void busEndOfFrame(void);
+void busEndOfLine();
+void busEndOfFrame();
 
 #ifdef ENABLE_BUS_EVENT_LOGGING
 extern void busLogCpu(char *s);
 extern void busLogCpuException(char *s);
 #endif
 
-typedef void (*busEventHandler)(void);
+typedef void (*busEventHandler)();
 typedef struct bus_event_struct
 {
   struct bus_event_struct *next;
@@ -55,19 +55,19 @@ typedef struct bus_state_
 
 extern bus_state bus;
 
-extern void busRun(void);
-extern void busDebugStepOneInstruction(void);
+extern void busRun();
+extern void busDebugStepOneInstruction();
 
-extern uint32_t busGetCycle(void);
-extern uint32_t busGetRasterX(void);
-extern uint32_t busGetRasterY(void);
-extern uint64_t busGetRasterFrameCount(void);
+extern uint32_t busGetCycle();
+extern uint32_t busGetRasterX();
+extern uint32_t busGetRasterY();
+extern uint64_t busGetRasterFrameCount();
 
-extern uint32_t busGetCyclesInThisLine(void);
-extern uint32_t busGetLinesInThisFrame(void);
-extern uint32_t busGetCyclesInThisFrame(void);
+extern uint32_t busGetCyclesInThisLine();
+extern uint32_t busGetLinesInThisFrame();
+extern uint32_t busGetCyclesInThisFrame();
 
-extern uint32_t busGetMaxLinesInFrame(void);
+extern uint32_t busGetMaxLinesInFrame();
 
 extern void busSetScreenLimits(bool is_long_frame);
 

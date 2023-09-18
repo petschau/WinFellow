@@ -41,9 +41,9 @@ private:
   uint32_t _maxValidX;
 
   void Log(uint32_t line, uint32_t cylinder);
-  uint32_t GetStartPosition(void);
-  uint32_t GetStopPosition(void);
-  uint32_t GetFetchSize(void);
+  uint32_t GetStartPosition();
+  uint32_t GetStopPosition();
+  uint32_t GetFetchSize();
   void SetState(DDFStates newState, uint32_t arriveTime);
   void SetStateWaitingForFirstFetch(uint32_t rasterY, uint32_t cylinder);
   void SetStateWaitingForNextFetch(uint32_t rasterY, uint32_t cylinder);
@@ -51,19 +51,19 @@ private:
   void DoStateWaitingForNextFetch(uint32_t rasterY, uint32_t cylinder);
 
 public:
-  bool CanRead(void);
-  void ChangedValue(void);
+  bool CanRead();
+  void ChangedValue();
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
   virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
-  void SoftReset(void);
-  void HardReset(void);
-  void EndOfFrame(void);
-  void EmulationStart(void);
-  void EmulationStop(void);
-  void Startup(void);
-  void Shutdown(void);
+  void SoftReset();
+  void HardReset();
+  void EndOfFrame();
+  void EmulationStart();
+  void EmulationStop();
+  void Startup();
+  void Shutdown();
 
   DDFStateMachine(void) : GraphicsEvent() {};
 };

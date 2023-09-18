@@ -18,12 +18,12 @@ class Graphics
 private:
   GraphicsEventQueue _queue;
 
-  void InitializeEventQueue(void);
-  void InitializeDIWXEvent(void);
-  void InitializeDIWYEvent(void);
-  void InitializeDDFEvent(void);
-  void InitializeBitplaneDMAEvent(void);
-  void InitializePixelSerializerEvent(void);
+  void InitializeEventQueue();
+  void InitializeDIWXEvent();
+  void InitializeDIWYEvent();
+  void InitializeDDFEvent();
+  void InitializeBitplaneDMAEvent();
+  void InitializePixelSerializerEvent();
 
 public:
   DIWXStateMachine DIWXStateMachine;
@@ -37,13 +37,13 @@ public:
 
   void Commit(uint32_t untilRasterY, uint32_t untilRasterX);
 
-  void EndOfFrame(void);
-  void SoftReset(void);
-  void HardReset(void);
-  void EmulationStart(void);
-  void EmulationStop(void);
-  void Startup(void);
-  void Shutdown(void);
+  void EndOfFrame();
+  void SoftReset();
+  void HardReset();
+  void EmulationStart();
+  void EmulationStop();
+  void Startup();
+  void Shutdown();
 };
 
 extern Graphics GraphicsContext;

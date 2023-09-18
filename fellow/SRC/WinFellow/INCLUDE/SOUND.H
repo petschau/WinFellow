@@ -62,26 +62,26 @@ extern sound_notifications sound_notification;
 /*==================================*/
 
 extern void soundSetRate(sound_rates rate);
-extern sound_rates soundGetRate(void);
-extern uint32_t soundGetRateReal(void);
+extern sound_rates soundGetRate();
+extern uint32_t soundGetRateReal();
 extern void soundSetStereo(bool stereo);
-extern bool soundGetStereo(void);
+extern bool soundGetStereo();
 extern void soundSet16Bits(bool bits16);
-extern bool soundGet16Bits(void);
+extern bool soundGet16Bits();
 extern void soundSetEmulation(sound_emulations emulation);
-extern sound_emulations soundGetEmulation(void);
+extern sound_emulations soundGetEmulation();
 extern void soundSetFilter(sound_filters filter);
-extern sound_filters soundGetFilter(void);
+extern sound_filters soundGetFilter();
 extern void soundSetBufferLength(uint32_t ms);
-extern uint32_t soundGetBufferLength(void);
+extern uint32_t soundGetBufferLength();
 extern void soundSetVolume(uint32_t volume);
-extern uint32_t soundGetVolume(void);
+extern uint32_t soundGetVolume();
 extern void soundSetWAVDump(BOOLE wav_capture);
-extern BOOLE soundGetWAVDump(void);
+extern BOOLE soundGetWAVDump();
 extern void soundSetNotification(sound_notifications notification);
-extern sound_notifications soundGetNotification(void);
+extern sound_notifications soundGetNotification();
 
-extern void soundEndOfLine(void); /* for bus.c */
+extern void soundEndOfLine(); /* for bus.c */
 extern void soundChannelKill(uint32_t ch); /* for wdmacon */
 extern void soundChannelEnable(uint32_t ch); /* for wdmacon */
 
@@ -99,9 +99,9 @@ extern void soundState5(uint32_t ch);
 
 typedef void (*soundStateFunc)(uint32_t);
 
-extern void soundEndOfLine(void);
-extern void soundHardReset(void);
-extern void soundEmulationStart(void);
-extern void soundEmulationStop(void);
-extern BOOLE soundStartup(void);
-extern void soundShutdown(void);
+extern void soundEndOfLine();
+extern void soundHardReset();
+extern void soundEmulationStart();
+extern void soundEmulationStop();
+extern BOOLE soundStartup();
+extern void soundShutdown();

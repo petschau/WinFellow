@@ -1,28 +1,28 @@
 #pragma once
 
 // This header file defines the internal interfaces of the CPU module.
-extern void cpuMakeOpcodeTableForModel(void);
-extern void cpuCreateMulTimeTables(void);
+extern void cpuMakeOpcodeTableForModel();
+extern void cpuCreateMulTimeTables();
 
 // StackFrameGen
 extern void cpuStackFrameGenerate(uint16_t vector_no, uint32_t pc);
-extern void cpuStackFrameInit(void);
+extern void cpuStackFrameInit();
 
 // Registers
 extern uint32_t cpu_sr;  // Not static because the flags calculation uses it extensively
-extern BOOLE cpuGetFlagSupervisor(void);
-extern BOOLE cpuGetFlagMaster(void);
+extern BOOLE cpuGetFlagSupervisor();
+extern BOOLE cpuGetFlagMaster();
 extern void cpuSetUspDirect(uint32_t usp);
-extern uint32_t cpuGetUspDirect(void);
-extern uint32_t cpuGetUspAutoMap(void);
+extern uint32_t cpuGetUspDirect();
+extern uint32_t cpuGetUspAutoMap();
 extern void cpuSetSspDirect(uint32_t ssp);
-extern uint32_t cpuGetSspDirect(void);
-extern uint32_t cpuGetSspAutoMap(void);
+extern uint32_t cpuGetSspDirect();
+extern uint32_t cpuGetSspAutoMap();
 extern void cpuSetMspDirect(uint32_t msp);
-extern uint32_t cpuGetMspDirect(void);
-extern uint32_t cpuGetMspAutoMap(void);
+extern uint32_t cpuGetMspDirect();
+extern uint32_t cpuGetMspAutoMap();
 extern void cpuSetMspAutoMap(uint32_t new_msp);
-extern uint32_t cpuGetIspAutoMap(void);
+extern uint32_t cpuGetIspAutoMap();
 extern void cpuSetIspAutoMap(uint32_t new_isp);
 extern void cpuSetDReg(uint32_t i, uint32_t value);
 extern uint32_t cpuGetDReg(uint32_t i);
@@ -31,39 +31,39 @@ extern uint32_t cpuGetAReg(uint32_t i);
 extern void cpuSetReg(uint32_t da, uint32_t i, uint32_t value);
 extern uint32_t cpuGetReg(uint32_t da, uint32_t i);
 extern void cpuSetPC(uint32_t address);
-extern uint32_t cpuGetPC(void);
+extern uint32_t cpuGetPC();
 extern void cpuSetStop(BOOLE stop);
-extern BOOLE cpuGetStop(void);
+extern BOOLE cpuGetStop();
 extern void cpuSetVbr(uint32_t vbr);
-extern uint32_t cpuGetVbr(void);
+extern uint32_t cpuGetVbr();
 extern void cpuSetSfc(uint32_t sfc);
-extern uint32_t cpuGetSfc(void);
+extern uint32_t cpuGetSfc();
 extern void cpuSetDfc(uint32_t dfc);
-extern uint32_t cpuGetDfc(void);
+extern uint32_t cpuGetDfc();
 extern void cpuSetCacr(uint32_t cacr);
-extern uint32_t cpuGetCacr(void);
+extern uint32_t cpuGetCacr();
 extern void cpuSetCaar(uint32_t caar);
-extern uint32_t cpuGetCaar(void);
+extern uint32_t cpuGetCaar();
 extern void cpuSetSR(uint32_t sr);
-extern uint32_t cpuGetSR(void);
+extern uint32_t cpuGetSR();
 extern void cpuSetInstructionTime(uint32_t cycles);
-extern uint32_t cpuGetInstructionTime(void);
+extern uint32_t cpuGetInstructionTime();
 extern void cpuSetOriginalPC(uint32_t pc);
-extern uint32_t cpuGetOriginalPC(void);
+extern uint32_t cpuGetOriginalPC();
 extern void cpuSetInstructionAborted(bool aborted);
 extern bool cpuGetInstructionAborted();
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
 extern void cpuSetCurrentOpcode(uint16_t opcode);
-extern uint16_t cpuGetCurrentOpcode(void);
+extern uint16_t cpuGetCurrentOpcode();
 
 #endif
 
-extern void cpuProfileWrite(void);
+extern void cpuProfileWrite();
 
 extern void cpuSetModelMask(uint8_t model_mask);
-extern uint8_t cpuGetModelMask(void);
+extern uint8_t cpuGetModelMask();
 extern void cpuSetDRegWord(uint32_t regno, uint16_t val);
 extern void cpuSetDRegByte(uint32_t regno, uint8_t val);
 extern uint16_t cpuGetRegWord(uint32_t i, uint32_t regno);
@@ -75,13 +75,13 @@ extern uint32_t cpuGetDRegByteSignExtLong(uint32_t regno);
 extern uint16_t cpuGetARegWord(uint32_t regno);
 extern uint8_t cpuGetARegByte(uint32_t regno);
 
-extern uint16_t cpuGetNextWord(void);
-extern uint32_t cpuGetNextWordSignExt(void);
-extern uint32_t cpuGetNextLong(void);
-extern void cpuSkipNextWord(void);
-extern void cpuSkipNextLong(void);
-extern void cpuClearPrefetch(void);
-extern void cpuValidateReadPointer(void);
+extern uint16_t cpuGetNextWord();
+extern uint32_t cpuGetNextWordSignExt();
+extern uint32_t cpuGetNextLong();
+extern void cpuSkipNextWord();
+extern void cpuSkipNextLong();
+extern void cpuClearPrefetch();
+extern void cpuValidateReadPointer();
 
 extern void cpuInitializeFromNewPC(uint32_t new_pc);
 
@@ -91,10 +91,10 @@ extern uint32_t cpuEA03(uint32_t regno, uint32_t size);
 extern uint32_t cpuEA04(uint32_t regno, uint32_t size);
 extern uint32_t cpuEA05(uint32_t regno);
 extern uint32_t cpuEA06(uint32_t regno);
-extern uint32_t cpuEA70(void);
-extern uint32_t cpuEA71(void);
-extern uint32_t cpuEA72(void);
-extern uint32_t cpuEA73(void);
+extern uint32_t cpuEA70();
+extern uint32_t cpuEA71();
+extern uint32_t cpuEA72();
+extern uint32_t cpuEA73();
 
 // Flags
 extern void cpuSetFlagsAdd(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm);
@@ -113,11 +113,11 @@ extern void cpuSetFlagN(BOOLE f);
 extern void cpuSetFlagV(BOOLE f);
 extern void cpuSetFlagC(BOOLE f);
 extern void cpuSetFlagXC(BOOLE f);
-extern void cpuSetFlags0100(void);
+extern void cpuSetFlags0100();
 extern void cpuSetFlagsNeg(BOOLE z, BOOLE rm, BOOLE dm);
-extern BOOLE cpuGetFlagX(void);
+extern BOOLE cpuGetFlagX();
 extern void cpuSetFlagsNegx(BOOLE z, BOOLE rm, BOOLE dm);
-extern BOOLE cpuGetFlagV(void);
+extern BOOLE cpuGetFlagV();
 extern void cpuSetFlagsNZVC(BOOLE z, BOOLE n, BOOLE v, BOOLE c);
 extern void cpuSetFlagsVC(BOOLE v, BOOLE c);
 extern void cpuSetFlagsShiftZero(BOOLE z, BOOLE rm);
@@ -133,53 +133,53 @@ extern uint16_t cpuGetZFlagL(uint32_t res);
 extern uint16_t cpuGetNFlagB(uint8_t res);
 extern uint16_t cpuGetNFlagW(uint16_t res);
 extern uint16_t cpuGetNFlagL(uint32_t res);
-extern void cpuClearFlagsVC(void);
+extern void cpuClearFlagsVC();
 
-extern BOOLE cpuCalculateConditionCode0(void);
-extern BOOLE cpuCalculateConditionCode1(void);
-extern BOOLE cpuCalculateConditionCode2(void);
-extern BOOLE cpuCalculateConditionCode3(void);
-extern BOOLE cpuCalculateConditionCode4(void);
-extern BOOLE cpuCalculateConditionCode5(void);
-extern BOOLE cpuCalculateConditionCode6(void);
-extern BOOLE cpuCalculateConditionCode7(void);
-extern BOOLE cpuCalculateConditionCode8(void);
-extern BOOLE cpuCalculateConditionCode9(void);
-extern BOOLE cpuCalculateConditionCode10(void);
-extern BOOLE cpuCalculateConditionCode11(void);
-extern BOOLE cpuCalculateConditionCode12(void);
-extern BOOLE cpuCalculateConditionCode13(void);
-extern BOOLE cpuCalculateConditionCode14(void);
-extern BOOLE cpuCalculateConditionCode15(void);
+extern BOOLE cpuCalculateConditionCode0();
+extern BOOLE cpuCalculateConditionCode1();
+extern BOOLE cpuCalculateConditionCode2();
+extern BOOLE cpuCalculateConditionCode3();
+extern BOOLE cpuCalculateConditionCode4();
+extern BOOLE cpuCalculateConditionCode5();
+extern BOOLE cpuCalculateConditionCode6();
+extern BOOLE cpuCalculateConditionCode7();
+extern BOOLE cpuCalculateConditionCode8();
+extern BOOLE cpuCalculateConditionCode9();
+extern BOOLE cpuCalculateConditionCode10();
+extern BOOLE cpuCalculateConditionCode11();
+extern BOOLE cpuCalculateConditionCode12();
+extern BOOLE cpuCalculateConditionCode13();
+extern BOOLE cpuCalculateConditionCode14();
+extern BOOLE cpuCalculateConditionCode15();
 extern BOOLE cpuCalculateConditionCode(uint32_t cc);
 
 // Logging
 #ifdef CPU_INSTRUCTION_LOGGING
-extern void cpuCallInstructionLoggingFunc(void);
+extern void cpuCallInstructionLoggingFunc();
 extern void cpuCallExceptionLoggingFunc(char *description, uint32_t original_pc, uint16_t opcode);
 extern void cpuCallInterruptLoggingFunc(uint32_t level, uint32_t vector_address);
 #endif
 
 // Interrupt
-extern uint32_t cpuActivateSSP(void);
+extern uint32_t cpuActivateSSP();
 extern void cpuSetRaiseInterrupt(BOOLE raise_irq);
-extern BOOLE cpuGetRaiseInterrupt(void);
+extern BOOLE cpuGetRaiseInterrupt();
 extern void cpuSetRaiseInterruptLevel(uint32_t raise_irq_level);
-extern uint32_t cpuGetRaiseInterruptLevel(void);
+extern uint32_t cpuGetRaiseInterruptLevel();
 
 // Exceptions
-extern void cpuThrowPrivilegeViolationException(void);
+extern void cpuThrowPrivilegeViolationException();
 extern void cpuThrowIllegalInstructionException(BOOLE executejmp);
 extern void cpuThrowIllegalInstructionExceptionFromBreakpoint();
-extern void cpuThrowFLineException(void);
-extern void cpuThrowALineException(void);
-extern void cpuThrowTrapVException(void);
+extern void cpuThrowFLineException();
+extern void cpuThrowALineException();
+extern void cpuThrowTrapVException();
 extern void cpuThrowTrapException(uint32_t vector_no);
 extern void cpuThrowDivisionByZeroException();
-extern void cpuThrowChkException(void);
-extern void cpuThrowTraceException(void);
-extern void cpuThrowResetException(void);
-extern void cpuCallResetExceptionFunc(void);
+extern void cpuThrowChkException();
+extern void cpuThrowTraceException();
+extern void cpuThrowResetException();
+extern void cpuCallResetExceptionFunc();
 extern void cpuFrame1(uint16_t vector_offset, uint32_t pc);
 
 // Private help functions

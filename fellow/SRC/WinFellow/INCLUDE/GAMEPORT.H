@@ -53,15 +53,15 @@ extern void gameportJoystickHandler(gameport_inputs joydev,
 									BOOLE button2);
 extern void gameportSetInput(uint32_t index, gameport_inputs gameportinput);
 
-extern BOOLE gameportGetAnalogJoystickInUse(void);
+extern BOOLE gameportGetAnalogJoystickInUse();
 
 
 /*===========================================================================*/
 /* Fellow standard control functions                                         */
 /*===========================================================================*/
 
-extern void gameportHardReset(void);
-extern void gameportEmulationStart(void);
-extern void gameportEmulationStop(void);
-extern void gameportStartup(void);
-extern void gameportShutdown(void);
+extern void gameportHardReset();
+extern void gameportEmulationStart();
+extern void gameportEmulationStop();
+extern void gameportStartup();
+extern void gameportShutdown();

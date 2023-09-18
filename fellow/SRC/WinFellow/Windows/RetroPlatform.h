@@ -51,34 +51,34 @@
 class RetroPlatform 
 {
 public:
-  void       EmulationStart(void);
-  void       EmulationStop(void);
-  void       EnterHeadlessMode(void);
+  void       EmulationStart();
+  void       EmulationStop();
+  void       EnterHeadlessMode();
 
   // getters
-  uint32_t        GetClippingOffsetLeftAdjusted(void);
-  uint32_t        GetClippingOffsetTopAdjusted(void);
-  uint32_t        GetDisplayScale(void);
-  bool       GetEmulationPaused(void);
-  uint32_t        GetEscapeKey(void);
-  ULONGLONG  GetEscapeKeyHeldSince(void);
-  uint32_t        GetEscapeKeyHoldTime(void);
-  ULONGLONG  GetEscapeKeySimulatedTargetTime(void);
-  bool       GetHeadlessMode(void);
-  HWND       GetParentWindowHandle(void);
-  HWND       GetTopWindowHandle(void);
-  bool       GetScanlines(void);
+  uint32_t        GetClippingOffsetLeftAdjusted();
+  uint32_t        GetClippingOffsetTopAdjusted();
+  uint32_t        GetDisplayScale();
+  bool       GetEmulationPaused();
+  uint32_t        GetEscapeKey();
+  ULONGLONG  GetEscapeKeyHeldSince();
+  uint32_t        GetEscapeKeyHoldTime();
+  ULONGLONG  GetEscapeKeySimulatedTargetTime();
+  bool       GetHeadlessMode();
+  HWND       GetParentWindowHandle();
+  HWND       GetTopWindowHandle();
+  bool       GetScanlines();
   
-  uint32_t        GetScreenHeightAdjusted(void);
-  uint32_t        GetScreenWidthAdjusted(void);
+  uint32_t        GetScreenHeightAdjusted();
+  uint32_t        GetScreenWidthAdjusted();
 
-  uint32_t        GetSourceBufferWidth(void);
-  uint32_t        GetSourceBufferHeight(void);
+  uint32_t        GetSourceBufferWidth();
+  uint32_t        GetSourceBufferHeight();
 
-  ULONGLONG  GetTime(void);
+  ULONGLONG  GetTime();
 
   // IPC guest to host communication - asynchronous post
-  bool       PostEscaped(void);
+  bool       PostEscaped();
   bool       PostFloppyDriveLED(const uint32_t, const bool, const bool);
   bool       PostFloppyDriveSeek(const uint32_t, const uint32_t);
   bool       PostGameportActivity(const uint32_t, const uint32_t);
@@ -86,7 +86,7 @@ public:
   
   // IPC guest to host communication - synchronous send
   bool       SendActivated(const bool, const LPARAM);
-  bool       SendClose(void);
+  bool       SendClose();
   bool       SendEnable(const bool);
   bool       SendFloppyDriveContent(const uint32_t, const char *, const bool);
   bool       SendHardDriveContent(const uint32_t, const char *, const bool);
@@ -114,27 +114,27 @@ public:
   LRESULT CALLBACK HostMessageFunction(UINT, WPARAM, LPARAM, LPCVOID, DWORD, LPARAM);
   BOOL FAR PASCAL  EnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef);
 
-  void       Shutdown(void);
-  void       Startup(void);
+  void       Shutdown();
+  void       Startup();
 
              RetroPlatform();
   virtual   ~RetroPlatform();
   
 private:
   // private functions
-  bool       CheckEmulationNecessities(void);
+  bool       CheckEmulationNecessities();
   bool       ConnectInputDeviceToPort(const uint32_t, const uint32_t, DWORD, const char *);
   void       DetermineScreenModeFromConfig(struct RPScreenMode *, cfg *);
-  int        EnumerateJoysticks(void);
+  int        EnumerateJoysticks();
 
-  uint32_t        GetClippingOffsetLeft(void);
-  uint32_t        GetClippingOffsetTop(void);
-  uint32_t        GetCPUSpeed(void);
+  uint32_t        GetClippingOffsetLeft();
+  uint32_t        GetClippingOffsetTop();
+  uint32_t        GetCPUSpeed();
   bool       GetHostVersion(uint32_t *, uint32_t *, uint32_t *);
   const char *GetMessageText(uint32_t);
-  uint32_t        GetScreenHeight(void);
-  uint32_t        GetScreenWidth(void);
-  bool       GetScreenWindowed(void);
+  uint32_t        GetScreenHeight();
+  uint32_t        GetScreenWidth();
+  bool       GetScreenWindowed();
 
   // IPC guest to host communication - asynchronous post
   bool       PostMessageToHost(uint32_t, WPARAM, LPARAM, const RPGUESTINFO *);
@@ -154,12 +154,12 @@ private:
   void       SetScreenWindowed(const bool);
 
   // IPC guest to host communication - send (sync.)
-  bool       SendEnabledFloppyDrives(void);
-  bool       SendEnabledHardDrives(void);
-  bool       SendFeatures(void);
+  bool       SendEnabledFloppyDrives();
+  bool       SendEnabledHardDrives();
+  bool       SendFeatures();
   bool       SendGameports(const uint32_t);
   bool       SendInputDevice(const DWORD, const DWORD, const DWORD, const WCHAR *, const WCHAR *);
-  bool       SendInputDevices(void);
+  bool       SendInputDevices();
   bool       SendScreenMode(HWND);
 
   // private variables

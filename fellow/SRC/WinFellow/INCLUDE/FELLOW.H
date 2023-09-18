@@ -17,22 +17,22 @@ typedef enum {
 
 extern BOOLE fellow_request_emulation_stop;
 
-extern void fellowRun(void);
-extern void fellowStepOne(void);
-extern void fellowStepOver(void);
+extern void fellowRun();
+extern void fellowStepOne();
+extern void fellowStepOver();
 extern void fellowRunDebug(uint32_t breakpoint);
 extern void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code);
-extern void fellowNastyExit(void);
-extern char *fellowGetVersionString(void);
+extern void fellowNastyExit();
+extern char *fellowGetVersionString();
 extern void fellowSetPreStartReset(BOOLE reset);
-extern BOOLE fellowGetPreStartReset(void);
+extern BOOLE fellowGetPreStartReset();
 extern BOOLE fellowSaveState(char *filename);
 extern BOOLE fellowLoadState(char *filename);
-extern void fellowSoftReset(void);
-extern void fellowHardReset(void);
-extern BOOLE fellowEmulationStart(void);
-extern void fellowEmulationStop(void);
-extern void fellowRequestEmulationStop(void);
+extern void fellowSoftReset();
+extern void fellowHardReset();
+extern BOOLE fellowEmulationStart();
+extern void fellowEmulationStop();
+extern void fellowRequestEmulationStop();
 
 extern void fellowAddLog(const char *, ...);
 extern void fellowAddLogRequester(FELLOW_REQUESTER_TYPE, const char *, ...);

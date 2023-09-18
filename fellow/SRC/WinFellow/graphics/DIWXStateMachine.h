@@ -40,8 +40,8 @@ private:
   uint32_t _maxValidX;
 
   void Log(uint32_t line, uint32_t cylinder);
-  uint32_t GetStartPosition(void);
-  uint32_t GetStopPosition(void);
+  uint32_t GetStartPosition();
+  uint32_t GetStopPosition();
   void SetState(DIWXStates newState, uint32_t arriveTime);
   void SetStateWaitingForStartPos(uint32_t rasterY, uint32_t cylinder);
   void SetStateWaitingForStopPos(uint32_t rasterY, uint32_t cylinder);
@@ -52,19 +52,19 @@ private:
 
 public:
   //uint8_t GetOutputMask(uint32_t rasterX);
-  bool IsVisible(void);
-  void ChangedValue(void);
+  bool IsVisible();
+  void ChangedValue();
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
   virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
-  void SoftReset(void);
-  void HardReset(void);
-  void EndOfFrame(void);
-  void EmulationStart(void);
-  void EmulationStop(void);
-  void Startup(void);
-  void Shutdown(void);
+  void SoftReset();
+  void HardReset();
+  void EndOfFrame();
+  void EmulationStart();
+  void EmulationStop();
+  void Startup();
+  void Shutdown();
 
   DIWXStateMachine(void) : GraphicsEvent() {};
 

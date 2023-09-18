@@ -76,20 +76,20 @@ extern void kbdEventEOLAdd(uint8_t eventId);
 extern void kbdEventEOFAdd(uint8_t eventId);
 extern void kbdKeyAdd(uint8_t keyCode);
 
-extern void kbdHardReset(void);
-extern void kbdEmulationStart(void);
-extern void kbdEmulationStop(void);
-extern void kbdStartup(void);
-extern void kbdShutdown(void);
+extern void kbdHardReset();
+extern void kbdEmulationStart();
+extern void kbdEmulationStop();
+extern void kbdStartup();
+extern void kbdShutdown();
 
-extern void kbdQueueHandler(void);
-extern void kbdEventEOLHandler(void);
+extern void kbdQueueHandler();
+extern void kbdEventEOLHandler();
 
-void kbdQueueHandler(void);
-void kbdEventEOLHandler(void);
-void kbdEventEOFHandler(void);
+void kbdQueueHandler();
+void kbdEventEOLHandler();
+void kbdEventEOFHandler();
 
-extern void kbdQueueHandler(void);
-extern void kbdEventEOLHandler(void);
+extern void kbdQueueHandler();
+extern void kbdEventEOLHandler();
 
 extern uint8_t insert_dfX[4];

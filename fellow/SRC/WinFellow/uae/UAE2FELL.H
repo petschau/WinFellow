@@ -75,7 +75,7 @@ extern uint32_t hardfile_size;
 #define m68k_dreg(REGS, NR) (cpuGetDReg(NR))
 #define m68k_areg(REGS, NR) (cpuGetAReg(NR))
 #define m68k_setpc(I) (cpuInitializeFromNewPC(I))
-extern void m68k_do_rts(void);
+extern void m68k_do_rts();
 
 /*------------------------*/
 /* Memory interfacing     */
@@ -94,7 +94,7 @@ extern void m68k_do_rts(void);
 #define expamem_init_clear memoryEmemClear
 #define allocated_chipmem memory_chipsize
 extern uae_u8 filesysory[65536];
-extern void expamem_init_filesys (void);
+extern void expamem_init_filesys ();
 extern void expamem_map_filesys (uint32_t mapping);
 
 /*===========================================*/
@@ -267,7 +267,7 @@ int start_penguin( void *(*f)(void *), void *, penguin_id* );
 /* This isn't the best place for this, but it fits reasonably well. The logic
  * is that you probably don't have POSIX errnos if you don't have the above
  * functions. */
-extern long dos_errno (void);
+extern long dos_errno ();
 
 #include "posixemu.h"
 
@@ -278,17 +278,17 @@ extern long dos_errno (void);
 /* filesys.c exports */
 extern char *add_filesys_unit(struct uaedev_mount_info *,
 			char *, char *, int, int, int, int,	int);
-void filesys_install(void);
-void filesys_prepare_reset(void);
-void filesys_reset(void);
-void filesys_start_threads(void);
+void filesys_install();
+void filesys_prepare_reset();
+void filesys_reset();
+void filesys_start_threads();
 
 /* autoconf.c exports */
-extern void rtarea_init(void);
-extern void rtarea_setup(void);
+extern void rtarea_init();
+extern void rtarea_setup();
 
 /* hardfile.c exports */
-void hardfile_install(void);
+void hardfile_install();
 
 /* fsysamnt.c exports (moved from filesys.c) */
 extern BOOLE CheckRM(char *);
