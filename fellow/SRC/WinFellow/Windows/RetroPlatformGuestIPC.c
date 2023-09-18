@@ -59,16 +59,16 @@ HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHo
 		return E_POINTER;
 
 	pInfo->hInstance = hInstance;
-	pInfo->hHostMessageWindow = NULL;
-	pInfo->hGuestMessageWindow = NULL;
+	pInfo->hHostMessageWindow = nullptr;
+	pInfo->hGuestMessageWindow = nullptr;
 	pInfo->bGuestClassRegistered = FALSE;
 	pInfo->pfnMsgFunction = pfnMsgFunction;
 	pInfo->lMsgFunctionParam = lMsgFunctionParam;
-	pInfo->hRPGuestDLL = NULL;
-	pInfo->pRPGuestDLLData = NULL;
-	pInfo->pfnRPProcessMessage = NULL;
-	pInfo->pfnRPSendMessage = NULL;
-	pInfo->pfnRPPostMessage = NULL;
+	pInfo->hRPGuestDLL = nullptr;
+	pInfo->pRPGuestDLLData = nullptr;
+	pInfo->pfnRPProcessMessage = nullptr;
+	pInfo->pfnRPSendMessage = nullptr;
+	pInfo->pfnRPPostMessage = nullptr;
 
 	// find the host message window
 	//
@@ -79,7 +79,7 @@ HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHo
 		return E_OUTOFMEMORY;
 	}
 	wsprintf(pszHostClass, g_szHostWndClass, pszHostInfo);
-	pInfo->hHostMessageWindow = FindWindow(pszHostClass, NULL);
+	pInfo->hHostMessageWindow = FindWindow(pszHostClass, nullptr);
 	LocalFree(pszHostClass);
 	if (!pInfo->hHostMessageWindow)
 	{
@@ -132,7 +132,7 @@ HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHo
 	}
 	else
 	{
-		if (!RPSendMessage(RP_IPC_TO_HOST_HOSTAPIVERSION, 0, 0, NULL, 0, pInfo, &lr))
+		if (!RPSendMessage(RP_IPC_TO_HOST_HOSTAPIVERSION, 0, 0, nullptr, 0, pInfo, &lr))
 			lr = 0;
 		wMajorVersion = LOWORD(lr);
 		wMinorVersion = HIWORD(lr);
@@ -165,7 +165,7 @@ static HMODULE LoadRPGuestDLL(HWND hHostMessageWindow)
 	LPTSTR pszDLLName;
 	HMODULE hRPGuestDLL;
 
-	hRPGuestDLL = NULL;
+	hRPGuestDLL = nullptr;
 	GetWindowThreadProcessId(hHostMessageWindow, &dwHostProcessId);
 	hHostProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwHostProcessId);
 	if (hHostProcess)
@@ -215,7 +215,7 @@ void RPUninitializeGuest(RPGUESTINFO *pInfo)
 	if (pInfo->hGuestMessageWindow)
 	{
 		DestroyWindow(pInfo->hGuestMessageWindow);
-		pInfo->hGuestMessageWindow = NULL;
+		pInfo->hGuestMessageWindow = nullptr;
 	}
 	if (pInfo->bGuestClassRegistered)
 	{
@@ -229,7 +229,7 @@ void RPUninitializeGuest(RPGUESTINFO *pInfo)
 		if (pfnRPGuestShutdown)
 			pfnRPGuestShutdown(pInfo, sizeof(RPGUESTINFO));
 		FreeLibrary(pInfo->hRPGuestDLL);
-		pInfo->hRPGuestDLL = NULL;
+		pInfo->hRPGuestDLL = nullptr;
 	}
 }
 
@@ -337,12 +337,12 @@ static BOOL RegisterWndClass(LPCTSTR pszClassName, HINSTANCE hInstance)
 	wcex.cbClsExtra    = 0;
 	wcex.cbWndExtra    = 0;
 	wcex.hInstance     = hInstance;
-	wcex.hIcon         = NULL;
-	wcex.hCursor       = NULL;
+	wcex.hIcon         = nullptr;
+	wcex.hCursor       = nullptr;
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName  = NULL;
+	wcex.lpszMenuName  = nullptr;
 	wcex.lpszClassName = pszClassName;
-	wcex.hIconSm       = NULL;
+	wcex.hIconSm       = nullptr;
 
 	return RegisterClassEx(&wcex);
 }
@@ -394,7 +394,7 @@ static LRESULT CALLBACK RPGuestWndProc(HWND hWnd, UINT uMessage, WPARAM wParam, 
 			break;
 		default:
 			if (pInfo && uMessage >= WM_APP && uMessage <= 0xBFFF)
-				return pInfo->pfnMsgFunction(uMessage, wParam, lParam, NULL, 0, pInfo->lMsgFunctionParam);
+				return pInfo->pfnMsgFunction(uMessage, wParam, lParam, nullptr, 0, pInfo->lMsgFunctionParam);
 			break;
 	}
 	return DefWindowProc(hWnd, uMessage, wParam, lParam);

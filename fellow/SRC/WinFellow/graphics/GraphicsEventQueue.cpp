@@ -5,13 +5,13 @@
 
 void GraphicsEventQueue::Clear(void)
 {
-  _events = 0;
+  _events = nullptr;
 }
 
 void GraphicsEventQueue::Remove(GraphicsEvent *graphics_event)
 {
   bool found = false;
-  for (GraphicsEvent *tmp = _events; tmp != 0; tmp = tmp->_next)
+  for (GraphicsEvent *tmp = _events; tmp != nullptr; tmp = tmp->_next)
   {
     if (tmp == graphics_event)
     {
@@ -24,7 +24,7 @@ void GraphicsEventQueue::Remove(GraphicsEvent *graphics_event)
     return;
   }
 
-  if (graphics_event->_prev == 0)
+  if (graphics_event->_prev == nullptr)
   {
     _events = graphics_event->_next;
   }
@@ -32,25 +32,25 @@ void GraphicsEventQueue::Remove(GraphicsEvent *graphics_event)
   {
     graphics_event->_prev->_next = graphics_event->_next;
   }
-  if (graphics_event->_next != 0)
+  if (graphics_event->_next != nullptr)
   {
     graphics_event->_next->_prev = graphics_event->_prev;
   }
-  graphics_event->_prev = graphics_event->_next = 0;
+  graphics_event->_prev = graphics_event->_next = nullptr;
 }
 
 void GraphicsEventQueue::Insert(GraphicsEvent *graphics_event)
 {
-  if (_events == 0)
+  if (_events == nullptr)
   {
-    graphics_event->_prev = graphics_event->_next = 0;
+    graphics_event->_prev = graphics_event->_next = nullptr;
     _events = graphics_event;
   }
   else
   {
     GraphicsEvent *tmp;
-    GraphicsEvent *tmp_prev = 0;
-    for (tmp = _events; tmp != 0; tmp = tmp->_next)
+    GraphicsEvent *tmp_prev = nullptr;
+    for (tmp = _events; tmp != nullptr; tmp = tmp->_next)
     {
       if (graphics_event->_arriveTime < tmp->_arriveTime 
         || ((graphics_event->_arriveTime == tmp->_arriveTime) && (graphics_event->_priority > tmp->_priority)))
@@ -58,7 +58,7 @@ void GraphicsEventQueue::Insert(GraphicsEvent *graphics_event)
         graphics_event->_next = tmp;
         graphics_event->_prev = tmp_prev;
         tmp->_prev = graphics_event;
-        if (tmp_prev == 0)
+        if (tmp_prev == nullptr)
         {
           _events = graphics_event; /* In front */
         }
@@ -72,7 +72,7 @@ void GraphicsEventQueue::Insert(GraphicsEvent *graphics_event)
     }
     tmp_prev->_next = graphics_event; /* At end */
     graphics_event->_prev = tmp_prev;
-    graphics_event->_next = 0;
+    graphics_event->_next = nullptr;
   }
 }
 
@@ -80,9 +80,9 @@ GraphicsEvent *GraphicsEventQueue::Pop(void)
 {
   GraphicsEvent *tmp = _events;
   _events = tmp->_next;
-  if (_events != 0)
+  if (_events != nullptr)
   {
-    _events->_prev = 0;
+    _events->_prev = nullptr;
   }
   return tmp;
 }

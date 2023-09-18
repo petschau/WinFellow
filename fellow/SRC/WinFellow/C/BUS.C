@@ -215,7 +215,7 @@ void busRemoveEvent(bus_event *ev)
 {
   bus_event *tmp;
   BOOLE found = FALSE;
-  for (tmp = bus.events; tmp != NULL; tmp = tmp->next)
+  for (tmp = bus.events; tmp != nullptr; tmp = tmp->next)
   {
     if (tmp == ev)
     {
@@ -228,7 +228,7 @@ void busRemoveEvent(bus_event *ev)
     return;
   }
 
-  if (ev->prev == NULL)
+  if (ev->prev == nullptr)
   {
     bus.events = ev->next;
   }
@@ -236,15 +236,15 @@ void busRemoveEvent(bus_event *ev)
   {
     ev->prev->next = ev->next;
   }
-  if (ev->next != NULL) ev->next->prev = ev->prev;
-  ev->prev = ev->next = NULL;
+  if (ev->next != nullptr) ev->next->prev = ev->prev;
+  ev->prev = ev->next = nullptr;
 }
 
 void busInsertEventWithNullCheck(bus_event *ev)
 {
-  if (bus.events == NULL)
+  if (bus.events == nullptr)
   {
-    ev->prev = ev->next = NULL;
+    ev->prev = ev->next = nullptr;
     bus.events = ev;
   }
   else
@@ -256,15 +256,15 @@ void busInsertEventWithNullCheck(bus_event *ev)
 void busInsertEvent(bus_event *ev)
 {
   bus_event *tmp;
-  bus_event *tmp_prev = NULL;
-  for (tmp = bus.events; tmp != NULL; tmp = tmp->next)
+  bus_event *tmp_prev = nullptr;
+  for (tmp = bus.events; tmp != nullptr; tmp = tmp->next)
   {
       if (ev->cycle < tmp->cycle)
     {
       ev->next = tmp;
       ev->prev = tmp_prev;
       tmp->prev = ev;
-      if (tmp_prev == NULL) bus.events = ev; /* In front */
+      if (tmp_prev == nullptr) bus.events = ev; /* In front */
       else tmp_prev->next = ev;
       return;
     }
@@ -272,14 +272,14 @@ void busInsertEvent(bus_event *ev)
   }
   tmp_prev->next = ev; /* At end */
   ev->prev = tmp_prev;
-  ev->next = NULL;
+  ev->next = nullptr;
 }
 
 bus_event *busPopEvent(void)
 {
   bus_event *tmp = bus.events;
   bus.events = tmp->next;
-  bus.events->prev = NULL;
+  bus.events->prev = nullptr;
   return tmp;
 }
 
@@ -530,7 +530,7 @@ void busClearCpuEvent()
 
 void busInitializeQueue(void)
 {
-  bus.events = NULL;
+  bus.events = nullptr;
   busClearCpuEvent();
   busClearEvent(&eolEvent, busEndOfLine);
   busClearEvent(&eofEvent, busEndOfFrame);
@@ -609,7 +609,7 @@ void busLoadState(FILE *F)
   fread(&blitterEvent.cycle, sizeof(blitterEvent.cycle), 1, F);
   fread(&interruptEvent.cycle, sizeof(interruptEvent.cycle), 1, F);
 
-  bus.events = NULL;
+  bus.events = nullptr;
   if (cpuEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&cpuEvent);
   if (copperEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&copperEvent);
   if (eolEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&eolEvent);

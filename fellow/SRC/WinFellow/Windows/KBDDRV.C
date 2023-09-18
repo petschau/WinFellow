@@ -747,7 +747,7 @@ void kbdDrvEOFHandler(void)
 
 void kbdDrvDInputUnacquire(void) 
 {
-  if (kbd_drv_lpDID == NULL)
+  if (kbd_drv_lpDID == nullptr)
   {
     return;
   }
@@ -766,7 +766,7 @@ void kbdDrvDInputUnacquire(void)
 
 void kbdDrvDInputAcquire(void) 
 {
-  if (kbd_drv_lpDID == NULL)
+  if (kbd_drv_lpDID == nullptr)
   {
     return;
   }
@@ -784,20 +784,20 @@ void kbdDrvDInputAcquire(void)
 
 void kbdDrvDInputRelease(void)
 {
-  if (kbd_drv_lpDID != NULL)
+  if (kbd_drv_lpDID != nullptr)
   {
     IDirectInputDevice_Release(kbd_drv_lpDID);
-    kbd_drv_lpDID = NULL;
+    kbd_drv_lpDID = nullptr;
   }
-  if (kbd_drv_DIevent != NULL)
+  if (kbd_drv_DIevent != nullptr)
   {
     CloseHandle(kbd_drv_DIevent);
-    kbd_drv_DIevent = NULL;
+    kbd_drv_DIevent = nullptr;
   }
-  if (kbd_drv_lpDI != NULL)
+  if (kbd_drv_lpDI != nullptr)
   {
     IDirectInput_Release(kbd_drv_lpDI);
-    kbd_drv_lpDI = NULL;
+    kbd_drv_lpDI = nullptr;
   }
 }
 
@@ -821,11 +821,11 @@ bool kbdDrvDInputInitialize(void)
   
   /* Create Direct Input object */
   
-  kbd_drv_lpDI = NULL;
-  kbd_drv_lpDID = NULL;
-  kbd_drv_DIevent = NULL;
+  kbd_drv_lpDI = nullptr;
+  kbd_drv_lpDID = nullptr;
+  kbd_drv_DIevent = nullptr;
   kbd_drv_initialization_failed = false;
-  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, NULL);
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, nullptr);
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create()", res );
@@ -867,8 +867,8 @@ bool kbdDrvDInputInitialize(void)
 
   /* Create event for notification */
 
-  kbd_drv_DIevent = CreateEvent(0, 0, 0, 0);
-  if (kbd_drv_DIevent == NULL)
+  kbd_drv_DIevent = CreateEvent(nullptr, 0, 0, nullptr);
+  if (kbd_drv_DIevent == nullptr)
   {
     fellowAddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
     kbd_drv_initialization_failed = true;
@@ -1638,8 +1638,8 @@ void kbdDrvStartup(void)
   prs_rewrite_mapping_file = prsReadFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 
   kbd_drv_active = FALSE;
-  kbd_drv_lpDI = NULL;
-  kbd_drv_lpDID = NULL;
+  kbd_drv_lpDI = nullptr;
+  kbd_drv_lpDID = nullptr;
 }
 
 /*===========================================================================*/

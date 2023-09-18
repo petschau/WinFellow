@@ -190,7 +190,7 @@ int cpu_disable_instruction_log = TRUE;
 
 void cpuInstructionLogOpen(void)
 {
-  if (CPUINSTRUCTIONLOG == NULL)
+  if (CPUINSTRUCTIONLOG == nullptr)
   {
     char filename[MAX_PATH];
     fileopsGetGenericFileName(filename, "WinFellow", "cpuinstructions.log");

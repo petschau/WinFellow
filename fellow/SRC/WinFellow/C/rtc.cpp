@@ -113,7 +113,7 @@ void rtcMap(void)
       rtcWriteByte, 
       rtcWriteWord, 
       rtcWriteLong,
-      NULL, 
+      nullptr, 
       0xdc, 
       0,
       FALSE);

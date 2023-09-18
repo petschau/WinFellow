@@ -194,8 +194,8 @@ private:
 
   RPGUESTINFO GuestInfo;
 
-  HINSTANCE hWindowInstance = NULL;
-  HWND      hGuestWindow = NULL;
+  HINSTANCE hWindowInstance = nullptr;
+  HWND      hGuestWindow = nullptr;
 
   cfg *pConfig; ///< RetroPlatform copy of WinFellow configuration
 };

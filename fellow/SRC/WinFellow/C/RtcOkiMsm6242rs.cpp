@@ -32,7 +32,7 @@ int RtcOkiMsm6242rs::GetRegisterNumberFromAddress(uint32_t address)
 struct tm *RtcOkiMsm6242rs::GetCurrentOrHeldTime(void)
 {
   // Add the time passed since the clock was last set
-  time_t actual_now = time(0);
+  time_t actual_now = time(nullptr);
   double time_passed = difftime(actual_now, _rtcLastActualTime);
   time_t rtc_now = _rtcTime + (time_t) time_passed;
   return localtime(&rtc_now);
@@ -41,7 +41,7 @@ struct tm *RtcOkiMsm6242rs::GetCurrentOrHeldTime(void)
 void RtcOkiMsm6242rs::SetCurrentTime(struct tm *datetime)
 {
   _rtcTime = mktime(datetime);
-  _rtcLastActualTime = time(0);
+  _rtcLastActualTime = time(nullptr);
 }
 
 void RtcOkiMsm6242rs::ReplaceFirstDigit(int& value, int new_digit)
@@ -465,7 +465,7 @@ void RtcOkiMsm6242rs::InitializeRegisterSetters(void)
 
 RtcOkiMsm6242rs::RtcOkiMsm6242rs(void)
 {
-  _rtcLastActualTime = _rtcTime = time(0);
+  _rtcLastActualTime = _rtcTime = time(nullptr);
   _rtcWeekdayModifier = 0;
 
   _irqFlag = 0;

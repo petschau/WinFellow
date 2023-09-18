@@ -113,7 +113,7 @@ void wavHeaderWrite(void) {
 
   /* This must still be wrong since wav-editors only reluctantly reads it */
 
-  if ((wav_FILE = fopen(wav_filename, "wb")) != NULL) {
+  if ((wav_FILE = fopen(wav_filename, "wb")) != nullptr) {
     wav_filelength = 36;
     fwrite(wav_RIFF, 4, 1, wav_FILE);           /* 0  RIFF signature */
     fwrite(&wav_filelength, 4, 1, wav_FILE);    /* 4  Length of file, that is, the number of bytes following the RIFF/Length pair */
@@ -135,12 +135,12 @@ void wavHeaderWrite(void) {
     fwrite(&wav_filelength, 4, 1, wav_FILE);    /* 40 Bytes in data chunk */
     wav_filelength += 36;
     fclose(wav_FILE);
-    wav_FILE = NULL;
+    wav_FILE = nullptr;
   }
 }  
 
 void wavLengthUpdate(void) {
-  if (wav_FILE != NULL) {
+  if (wav_FILE != nullptr) {
     fseek(wav_FILE, 4, SEEK_SET);
     fwrite(&wav_filelength, 4, 1, wav_FILE);
     fseek(wav_FILE, 40, SEEK_SET);
@@ -175,7 +175,7 @@ void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo)
       wavHeaderWrite();
   }
   wav_FILE = fopen(wav_filename, "r+b");
-  if (wav_FILE != NULL) fseek(wav_FILE, 0, SEEK_END);
+  if (wav_FILE != nullptr) fseek(wav_FILE, 0, SEEK_END);
 }
 
 
@@ -212,10 +212,10 @@ void wavEmulationStart(sound_rates rate,
 
 void wavEmulationStop(void) {
   wavLengthUpdate();
-  if (wav_FILE != NULL) {
+  if (wav_FILE != nullptr) {
     fflush(wav_FILE);
     fclose(wav_FILE);
-    wav_FILE = NULL;
+    wav_FILE = nullptr;
   }
 }
 
@@ -231,7 +231,7 @@ void wavStartup(void) {
   wav_rate = (sound_rates) 9999;
   wav_16bits = 2;
   wav_stereo = 2; /* ILLEGAL */
-  wav_FILE = NULL;
+  wav_FILE = nullptr;
   wav_filelength = 0;
 }
 
@@ -241,7 +241,7 @@ void wavStartup(void) {
 /*===========================================================================*/
 
 void wavShutdown(void) {
-  if (wav_FILE != NULL)
+  if (wav_FILE != nullptr)
     fclose(wav_FILE);
 }
 

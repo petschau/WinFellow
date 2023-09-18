@@ -53,7 +53,7 @@ BOOLE modripGuiInitialize(void)
 
 void modripGuiSetBusy(void)
 {
-  HCURSOR BusyCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_WAIT));
+  HCURSOR BusyCursor = LoadCursor(nullptr, MAKEINTRESOURCE(IDC_WAIT));
   if (BusyCursor) SetCursor(BusyCursor);
 }
 
@@ -64,7 +64,7 @@ void modripGuiSetBusy(void)
 
 void modripGuiUnSetBusy(void)
 {
-  HCURSOR NormalCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW));
+  HCURSOR NormalCursor = LoadCursor(nullptr, MAKEINTRESOURCE(IDC_ARROW));
   if (NormalCursor) SetCursor(NormalCursor);
 }
 

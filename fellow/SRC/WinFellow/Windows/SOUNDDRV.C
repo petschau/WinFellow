@@ -149,23 +149,23 @@ void soundDrvDSoundFailure(char *header, HRESULT err)
 
 void soundDrvDSoundRelease(void)
 {
-  if (sound_drv_dsound_device_current.lpDS != NULL)
+  if (sound_drv_dsound_device_current.lpDS != nullptr)
   {
     IDirectSound_Release(sound_drv_dsound_device_current.lpDS);
   }
-  sound_drv_dsound_device_current.lpDS = NULL;
+  sound_drv_dsound_device_current.lpDS = nullptr;
   for (uint32_t i = 0; i < 3; i++)
   {
-    if (sound_drv_dsound_device_current.notifications[i] != NULL)
+    if (sound_drv_dsound_device_current.notifications[i] != nullptr)
     {
       CloseHandle(sound_drv_dsound_device_current.notifications[i]);
     }
   }
-  if (sound_drv_dsound_device_current.data_available != NULL)
+  if (sound_drv_dsound_device_current.data_available != nullptr)
   {
     CloseHandle(sound_drv_dsound_device_current.data_available);
   }
-  if (sound_drv_dsound_device_current.can_add_data != NULL)
+  if (sound_drv_dsound_device_current.can_add_data != nullptr)
   {
     CloseHandle(sound_drv_dsound_device_current.can_add_data);
   }
@@ -180,19 +180,19 @@ bool soundDrvDSoundInitialize(void)
 {
   uint32_t i;
 
-  sound_drv_dsound_device_current.modes = NULL;
-  sound_drv_dsound_device_current.lpDS = NULL;
-  sound_drv_dsound_device_current.lpDSB = NULL;
-  sound_drv_dsound_device_current.lpDSBS = NULL;
-  sound_drv_dsound_device_current.lpDSN = NULL;
+  sound_drv_dsound_device_current.modes = nullptr;
+  sound_drv_dsound_device_current.lpDS = nullptr;
+  sound_drv_dsound_device_current.lpDSB = nullptr;
+  sound_drv_dsound_device_current.lpDSBS = nullptr;
+  sound_drv_dsound_device_current.lpDSN = nullptr;
   for (i = 0; i < 3; i++)
   {
-    sound_drv_dsound_device_current.notifications[i] = NULL;
+    sound_drv_dsound_device_current.notifications[i] = nullptr;
   }
-  sound_drv_dsound_device_current.data_available = NULL;
-  sound_drv_dsound_device_current.can_add_data = NULL;
-  sound_drv_dsound_device_current.thread = NULL;
-  HRESULT directSoundCreateResult = DirectSoundCreate(NULL, &sound_drv_dsound_device_current.lpDS, NULL);
+  sound_drv_dsound_device_current.data_available = nullptr;
+  sound_drv_dsound_device_current.can_add_data = nullptr;
+  sound_drv_dsound_device_current.thread = nullptr;
+  HRESULT directSoundCreateResult = DirectSoundCreate(nullptr, &sound_drv_dsound_device_current.lpDS, nullptr);
   if (directSoundCreateResult != DS_OK)
   {
     soundDrvDSoundFailure("soundDrvDSoundInitialize: DirectSoundCreate - ", directSoundCreateResult);
@@ -200,10 +200,10 @@ bool soundDrvDSoundInitialize(void)
   }
   for (i = 0; i < 3; i++)
   {
-    sound_drv_dsound_device_current.notifications[i] = CreateEvent(0, 0, 0, 0);
+    sound_drv_dsound_device_current.notifications[i] = CreateEvent(nullptr, 0, 0, nullptr);
   }
-  sound_drv_dsound_device_current.data_available = CreateEvent(0, 0, 0, 0);
-  sound_drv_dsound_device_current.can_add_data = CreateEvent(0, 0, 0, 0);
+  sound_drv_dsound_device_current.data_available = CreateEvent(nullptr, 0, 0, nullptr);
+  sound_drv_dsound_device_current.can_add_data = CreateEvent(nullptr, 0, 0, nullptr);
   return true;
 }
 
@@ -235,7 +235,7 @@ sound_drv_dsound_mode *soundDrvFindMode(sound_drv_dsound_device *dsound_device,
 					bool bits16,
 					uint32_t rate)
 {
-  for (felist *fl = dsound_device->modes; fl != NULL; fl = listNext(fl))
+  for (felist *fl = dsound_device->modes; fl != nullptr; fl = listNext(fl))
   {
     sound_drv_dsound_mode *mode = (sound_drv_dsound_mode *) listNode(fl);
     if (mode->rate == rate && mode->stereo == stereo && mode->bits16 == bits16)
@@ -243,7 +243,7 @@ sound_drv_dsound_mode *soundDrvFindMode(sound_drv_dsound_device *dsound_device,
       return mode;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 
@@ -254,7 +254,7 @@ sound_drv_dsound_mode *soundDrvFindMode(sound_drv_dsound_device *dsound_device,
 void soundDrvDSoundModeInformationRelease(sound_drv_dsound_device *dsound_device)
 {
   listFreeAll(dsound_device->modes, true);
-  dsound_device->modes = NULL;
+  dsound_device->modes = nullptr;
 }
 
 
@@ -430,11 +430,11 @@ bool soundDrvDSoundSetCooperativeLevel(sound_drv_dsound_device *dsound_device)
 
 void soundDrvDSoundPrimaryBufferRelease(sound_drv_dsound_device *dsound_device)
 {
-  if (dsound_device->lpDSB != NULL)
+  if (dsound_device->lpDSB != nullptr)
   {
     IDirectSoundBuffer_Play(dsound_device->lpDSB, 0, 0, 0);
     IDirectSoundBuffer_Release(dsound_device->lpDSB);
-    dsound_device->lpDSB = NULL;
+    dsound_device->lpDSB = nullptr;
   }
 }
 
@@ -458,7 +458,7 @@ bool soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_devic
   dsbdesc.dwSize = sizeof(dsbdesc);
   dsbdesc.dwFlags = DSBCAPS_PRIMARYBUFFER;
   dsbdesc.dwBufferBytes = 0;
-  dsbdesc.lpwfxFormat = NULL;
+  dsbdesc.lpwfxFormat = nullptr;
 
   memset(&wfm, 0, sizeof(wfm));
   wfm.wFormatTag = WAVE_FORMAT_PCM;
@@ -499,16 +499,16 @@ bool soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_devic
 
 void soundDrvDSoundSecondaryBufferRelease(sound_drv_dsound_device *dsound_device)
 {
-  if (dsound_device->lpDSBS != NULL)
+  if (dsound_device->lpDSBS != nullptr)
   {
     IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, 0);
     IDirectSoundBuffer_Release(dsound_device->lpDSBS);
-    dsound_device->lpDSBS = NULL;
+    dsound_device->lpDSBS = nullptr;
   }
-  if (dsound_device->lpDSN != NULL)
+  if (dsound_device->lpDSN != nullptr)
   {
     IDirectSoundNotify_Release(dsound_device->lpDSN);
-    dsound_device->lpDSN = NULL;
+    dsound_device->lpDSN = nullptr;
   }
   if (!dsound_device->notification_supported)
   {
@@ -1038,7 +1038,7 @@ void soundDrvPollBufferPosition(void)
     DWORD halfway = (dsound_device->mode_current->buffer_sample_count*
   		     dsound_device->mode_current->buffer_block_align);
 
-    if (dsound_device->lpDSBS != NULL)
+    if (dsound_device->lpDSBS != nullptr)
     {
       HRESULT getCurrentPositionResult = IDirectSoundBuffer_GetCurrentPosition(dsound_device->lpDSBS,
 									       &readpos,
@@ -1209,7 +1209,7 @@ bool soundDrvEmulationStart(uint32_t rate,
 						 stereo,
 						 bits16,
 						 rate);
-  bool result = dsound_device->mode_current != NULL;
+  bool result = dsound_device->mode_current != nullptr;
 
   /* Record the number of samples in our buffer (ie. one half of the size) */
 
@@ -1230,13 +1230,13 @@ bool soundDrvEmulationStart(uint32_t rate,
 
   if (result)
   {
-    dsound_device->thread = CreateThread(NULL,                      // Security attr
-			                 0,                         // Stack Size
-				         soundDrvThreadProc,        // Thread procedure
-			                 dsound_device,             // Thread parameter
-			                 0,                         // Creation flags
-			                 &dsound_device->thread_id);// ThreadId
-    result = (dsound_device->thread != NULL);
+    dsound_device->thread = CreateThread(nullptr,                      // Security attr
+                                         0,                         // Stack Size
+                                         soundDrvThreadProc,        // Thread procedure
+                                         dsound_device,             // Thread parameter
+                                         0,                         // Creation flags
+                                         &dsound_device->thread_id);// ThreadId
+    result = (dsound_device->thread != nullptr);
   }
 
   /* In case of failure, we undo any stuff we've done so far */
@@ -1262,7 +1262,7 @@ void soundDrvEmulationStop(void)
   SetEvent(sound_drv_dsound_device_current.notifications[2]);
   WaitForSingleObject(sound_drv_dsound_device_current.thread, INFINITE);
   CloseHandle(sound_drv_dsound_device_current.thread);
-  sound_drv_dsound_device_current.thread = NULL;
+  sound_drv_dsound_device_current.thread = nullptr;
   soundDrvDSoundPlaybackStop(&sound_drv_dsound_device_current);
   soundDrvReleaseMutex(&sound_drv_dsound_device_current);
 }
@@ -1285,7 +1285,7 @@ bool soundDrvStartup(sound_device *devinfo)
   }
   else
   {
-    sound_drv_dsound_device_current.mutex = CreateMutex(NULL, 0, NULL);
+    sound_drv_dsound_device_current.mutex = CreateMutex(nullptr, 0, nullptr);
   }
 
   return result;
@@ -1300,7 +1300,7 @@ void soundDrvShutdown(void)
 {
   soundDrvDSoundModeInformationRelease(&sound_drv_dsound_device_current);
   soundDrvDSoundRelease();
-  if (sound_drv_dsound_device_current.mutex != NULL)
+  if (sound_drv_dsound_device_current.mutex != nullptr)
   {
     CloseHandle(sound_drv_dsound_device_current.mutex);
   }

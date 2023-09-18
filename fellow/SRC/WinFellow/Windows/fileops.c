@@ -57,7 +57,7 @@ BOOLE fileopsResolveVariables(const char *szPath, char *szNewPath) {
       else
         return TRUE;
     }
-  szNewPath = NULL;
+  szNewPath = nullptr;
   return FALSE;
 }
 
@@ -106,7 +106,7 @@ BOOLE fileopsGetScreenshotFileName(char *szFilename)
   HRESULT hr;
   char szFolderPath[MAX_PATH];
   
-  hr = SHGetFolderPath(NULL, CSIDL_MYPICTURES, NULL, SHGFP_TYPE_CURRENT, szFolderPath);
+  hr = SHGetFolderPath(nullptr, CSIDL_MYPICTURES, nullptr, SHGFP_TYPE_CURRENT, szFolderPath);
   if (hr == S_OK)
   {
     time_t rawtime;
@@ -157,7 +157,7 @@ BOOLE fileopsGetDefaultConfigFileName(char *szPath)
 /* writes WinFellow executable full path into strBuffer             */
 static BOOLE fileopsGetWinFellowExecutablePath(char *strBuffer, const DWORD lBufferSize)
 {
-  if(GetModuleFileName(NULL, strBuffer, lBufferSize) != 0)
+  if(GetModuleFileName(nullptr, strBuffer, lBufferSize) != 0)
     return TRUE;
   else
     return FALSE;
@@ -240,13 +240,13 @@ char *fileopsGetTemporaryFilename(void)
   char *result;
 
   tempvar = getenv("TEMP");
-  if( tempvar != NULL )
+  if( tempvar != nullptr)
   {
     result = _tempnam(tempvar, "wftemp");
   }
   else
   {
-    result = tmpnam(NULL);
+    result = tmpnam(nullptr);
   }
   return result;
 }
@@ -257,7 +257,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const uint32_t lCRC32
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
   uint8_t memory_kick[0x080000 + 32];
-  FILE *F = NULL;
+  FILE *F = nullptr;
   char strFilename[CFG_FILENAME_LENGTH] = "";
   uint32_t lCurrentCRC32 = 0;
 #ifdef FILEOPS_ROMSEARCH_RECURSIVE
@@ -297,7 +297,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const uint32_t lCRC32
           fread(memory_kick, ffd.nFileSizeLow, 1, F);
 
           fclose(F);
-          F = NULL;
+          F = nullptr;
 
           lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow);
 
@@ -317,7 +317,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const uint32_t lCRC32
           int result = memoryKickLoadAF2(strFilename, F, memory_kick, true);
 
           fclose(F);
-          F = NULL;
+          F = nullptr;
 
           if(result == TRUE) {
             lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow - 11);

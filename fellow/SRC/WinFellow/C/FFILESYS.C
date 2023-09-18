@@ -263,12 +263,12 @@ void ffilesysClearMountinfo(void)
     if(mountinfo.ui[mountinfo.num_units-1].volname) 
     {
       free(mountinfo.ui[mountinfo.num_units-1].volname);
-      mountinfo.ui[mountinfo.num_units-1].volname = NULL;
+      mountinfo.ui[mountinfo.num_units-1].volname = nullptr;
     }
     if(mountinfo.ui[mountinfo.num_units-1].rootdir) 
     {
       free(mountinfo.ui[mountinfo.num_units-1].rootdir);
-      mountinfo.ui[mountinfo.num_units-1].rootdir = NULL;
+      mountinfo.ui[mountinfo.num_units-1].rootdir = nullptr;
     }
   }
 }

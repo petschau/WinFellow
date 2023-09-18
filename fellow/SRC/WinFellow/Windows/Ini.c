@@ -304,7 +304,7 @@ BOOLE iniLoadIniFromFilename(ini *inidata, char *filename) {
   BOOLE result;
 
   inifile = fopen(filename, "r");
-  result = (inifile != NULL);
+  result = (inifile != nullptr);
   if (result) {
     result = iniLoadIniFile(inidata, inifile);
     fclose(inifile);
@@ -325,7 +325,7 @@ BOOLE iniSaveToFilename(ini *initdata, char *filename) {
   BOOLE result;
 
   inifile = fopen(filename, "w");
-  result = (inifile != NULL);
+  result = (inifile != nullptr);
   if (result) {
     result = iniSaveToFile(initdata, inifile);
     fclose(inifile);
@@ -344,7 +344,7 @@ BOOLE iniSetOption(ini *initdata, char *initoptionstr) {
   struct stat bla; 
 
   value = strchr(initoptionstr, '=');
-  result = (value != NULL);
+  result = (value != nullptr);
   if (result) {
     option = initoptionstr;
     *value++ = '\0';

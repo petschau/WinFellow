@@ -63,9 +63,9 @@ Sunday, February 03, 2008: carfesh
 /* Mouse specific data                                                       */
 /*===========================================================================*/
 
-LPDIRECTINPUT		mouse_drv_lpDI = NULL;
-LPDIRECTINPUTDEVICE	mouse_drv_lpDID = NULL;
-HANDLE			mouse_drv_DIevent = NULL;
+LPDIRECTINPUT		mouse_drv_lpDI = nullptr;
+LPDIRECTINPUTDEVICE	mouse_drv_lpDID = nullptr;
+HANDLE			mouse_drv_DIevent = nullptr;
 BOOLE			mouse_drv_focus;
 BOOLE			mouse_drv_active;
 BOOLE			mouse_drv_in_use;
@@ -161,7 +161,7 @@ void mouseDrvDInputAcquire(void)
 
   if (mouse_drv_in_use)
   {
-    if (mouse_drv_lpDID != NULL)
+    if (mouse_drv_lpDID != nullptr)
     {
 #ifdef RETRO_PLATFORM
       // call moved here to ensure future compatibility with fullscreen/windowed RP modes
@@ -183,7 +183,7 @@ void mouseDrvDInputAcquire(void)
   }
   else
   {
-    if (mouse_drv_lpDID != NULL && !mouse_drv_unacquired)
+    if (mouse_drv_lpDID != nullptr && !mouse_drv_unacquired)
     {
       mouse_drv_unacquired = true;
       if ((res = IDirectInputDevice_Unacquire(mouse_drv_lpDID)) != DI_OK)
@@ -201,20 +201,20 @@ void mouseDrvDInputAcquire(void)
 
 void mouseDrvDInputRelease(void)
 {
-  if (mouse_drv_lpDID != NULL)
+  if (mouse_drv_lpDID != nullptr)
   {
     IDirectInputDevice_Release(mouse_drv_lpDID);
-    mouse_drv_lpDID = NULL;
+    mouse_drv_lpDID = nullptr;
   }
-  if (mouse_drv_DIevent != NULL)
+  if (mouse_drv_DIevent != nullptr)
   {
     CloseHandle(mouse_drv_DIevent);
-    mouse_drv_DIevent = NULL;
+    mouse_drv_DIevent = nullptr;
   }
-  if (mouse_drv_lpDI != NULL)
+  if (mouse_drv_lpDI != nullptr)
   {
     IDirectInput_Release(mouse_drv_lpDI);
-    mouse_drv_lpDI = NULL;
+    mouse_drv_lpDI = nullptr;
   }
 }
 
@@ -253,13 +253,13 @@ BOOLE mouseDrvDInputInitialize(void)
 
   /* Create Direct Input object */
   
-  mouse_drv_lpDI = NULL;
-  mouse_drv_lpDID = NULL;
-  mouse_drv_DIevent = NULL;
+  mouse_drv_lpDI = nullptr;
+  mouse_drv_lpDID = nullptr;
+  mouse_drv_DIevent = nullptr;
   mouse_drv_initialization_failed = FALSE;
   mouse_drv_unacquired = true;
 
-  res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI, NULL);
+  res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI, nullptr);
   if (res != DI_OK)
   {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create()", res );
@@ -315,8 +315,8 @@ BOOLE mouseDrvDInputInitialize(void)
   }
 
   /* Create event for notification */
-  mouse_drv_DIevent = CreateEvent(0, 0, 0, 0);
-  if (mouse_drv_DIevent == NULL)
+  mouse_drv_DIevent = CreateEvent(nullptr, 0, 0, nullptr);
+  if (mouse_drv_DIevent == nullptr)
   {
     fellowAddLog("mouseDrvDInputInitialize(): CreateEvent() failed\n");
     mouse_drv_initialization_failed = TRUE;
@@ -553,9 +553,9 @@ void mouseDrvStartup(void)
   mouse_drv_in_use = FALSE;
   mouse_drv_initialization_failed = TRUE;
   mouse_drv_unacquired = true;
-  mouse_drv_lpDI = NULL;
-  mouse_drv_lpDID = NULL;
-  mouse_drv_DIevent = NULL;
+  mouse_drv_lpDI = nullptr;
+  mouse_drv_lpDID = nullptr;
+  mouse_drv_DIevent = nullptr;
   bLeftButton = FALSE;
   bRightButton = FALSE;
 }

@@ -63,15 +63,15 @@ char *nname_begin (char *nname)
  * exists that compares equal to REL, return 0.  */
 char *fsdb_search_dir (const char *dirname, char *rel)
 {
-    char *p = 0;
+    char *p = nullptr;
     struct dirent *de;
     DIR *dir = opendir (dirname);
 
     /* This really shouldn't happen...  */
     if (! dir)
-	return 0;
+	return nullptr;
     
-    while (p == 0 && (de = readdir (dir)) != 0) {
+    while (p == nullptr && (de = readdir (dir)) != nullptr) {
 	if (strcmp (de->d_name, rel) == 0)
 	    p = rel;
 	else if (strcasecmp (de->d_name, rel) == 0)
@@ -105,7 +105,7 @@ void fsdb_clean_dir (a_inode *dir)
     off_t pos1 = 0, pos2 = 0;
 
     /* FELLOW BUGFIX (START) : if (f == 0) return;*/
-    if(f == 0) {
+    if(f == nullptr) {
       free(n);  /* leak */
 	    return;
     }
@@ -133,8 +133,8 @@ static a_inode *aino_from_buf (a_inode *base, char *buf, long off)
     /* FELLOW CHANGE: a_inode *aino = (a_inode *) xmalloc (sizeof (a_inode)); */
 	a_inode *aino = (a_inode *) xcalloc (sizeof (a_inode), 1);
 	/* FELLOW BUGFIX (START) */
-	if(aino == NULL) 
-		return NULL;
+	if(aino == nullptr) 
+		return nullptr;
 	/* FELLOW BUGFIX (END) */
 
     mode = do_get_mem_long ((uae_u32 *)(buf + 1));
@@ -143,7 +143,7 @@ static a_inode *aino_from_buf (a_inode *base, char *buf, long off)
     buf += 257;
     aino->nname = build_nname (base->nname, buf);
     buf += 257;
-    aino->comment = *buf != '\0' ? my_strdup (buf) : 0;
+    aino->comment = *buf != '\0' ? my_strdup (buf) : nullptr;
     fsdb_fill_file_attrs (aino);
     aino->amigaos_mode = mode;
     aino->has_dbentry = 1;
@@ -160,8 +160,8 @@ a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *aname)
     FILE *f = get_fsdb (base, "rb");
 	long off = 0;
 
-    if (f == 0)
-	return 0;
+    if (f == nullptr)
+	return nullptr;
 
     for (;;) {
 	char buf[1 + 4 + 257 + 257 + 81];
@@ -180,13 +180,13 @@ a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *aname)
 		if (result && (access(result->nname, R_OK) != -1))
 			return(result);
 		else
-			return(NULL);
+			return(nullptr);
 		/* FELLOW BUGFIX (END) */
 	}
 	off += sizeof buf;
     }
     fclose (f);
-    return 0;
+    return nullptr;
 }
 
 a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *nname)
@@ -197,8 +197,8 @@ a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *nname)
     FILE *f = get_fsdb (base, "rb");
 	long off = 0;
 
-    if (f == 0)
-	return 0;
+    if (f == nullptr)
+	return nullptr;
 
     for (;;) {
 	char buf[1 + 4 + 257 + 257 + 81];
@@ -215,18 +215,18 @@ a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *nname)
 		if (result && (access(result->nname, R_OK) != -1))
 			return(result);
 		else
-			return(NULL);
+			return(nullptr);
 		/* FELLOW CHANGE (END) */
 	}
     }
     fclose (f);
-    return 0;
+    return nullptr;
 }
 
 int fsdb_used_as_nname (a_inode *base, const char *nname)
 {
     FILE *f = get_fsdb (base, "rb");
-    if (f == 0)
+    if (f == nullptr)
 	return 0;
     for (;;) {
 	char buf[1 + 4 + 257 + 257 + 81];
@@ -256,7 +256,7 @@ static int needs_dbentry (a_inode *aino)
     if (aino->deleted)
 	return 0;
     
-    if (! fsdb_mode_representable_p (aino) || aino->comment != 0)
+    if (! fsdb_mode_representable_p (aino) || aino->comment != nullptr)
 	return 1;
 
     nn_begin = nname_begin (aino->nname);
@@ -310,9 +310,9 @@ void fsdb_dir_writeback (a_inode *dir)
 	return;
 
     f = get_fsdb (dir, "r+b");
-    if (f == 0) {
+    if (f == nullptr) {
 	f = get_fsdb (dir, "w+b");
-	if (f == 0)
+	if (f == nullptr)
 	    /* This shouldn't happen... */
 	    return;
     }

@@ -82,11 +82,11 @@ BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
   uint32_t i;
   FILE *modfile;
 
-  if(info == NULL) return FALSE;
+  if(info == nullptr) return FALSE;
 
   RIPLOG3("mod-ripper saving range 0x%06x - 0x%06x\n", info->start, info->end);
 
-  if ((modfile = fopen(info->filename, "w+b")) == NULL) return FALSE;
+  if ((modfile = fopen(info->filename, "w+b")) == nullptr) return FALSE;
   for (i = info->start; i <= info->end; i++)
     fputc((*func)(i), modfile);
   fclose(modfile);
@@ -107,7 +107,7 @@ static BOOLE modripSaveChipMem(char *filename)
   FILE *memfile;
   size_t written;
   if(!filename || !(*filename)) return FALSE;
-  if((memfile = fopen(filename, "wb")) == NULL) return FALSE;
+  if((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
   written = fwrite(memory_chip, 1, memoryGetChipSize(), memfile);
   fclose(memfile);
   if(written < memoryGetChipSize()) return FALSE;
@@ -119,7 +119,7 @@ static BOOLE modripSaveSlowMem(char *filename)
   FILE *memfile;
   size_t written;
   if(!filename || !(*filename)) return FALSE;
-  if((memfile = fopen(filename, "wb")) == NULL) return FALSE;
+  if((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
   written = fwrite(memory_slow, 1, memoryGetSlowSize(), memfile);
   fclose(memfile);
   if(written < memoryGetSlowSize()) return FALSE;
@@ -131,7 +131,7 @@ static BOOLE modripSaveFastMem(char *filename)
   FILE *memfile;
   size_t written;
   if(!filename || !(*filename)) return FALSE;
-  if((memfile = fopen(filename, "wb")) == NULL) return FALSE;
+  if((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
   written = fwrite(memory_fast, 1, memoryGetFastSize(), memfile);
   fclose(memfile);
   if(written < memoryGetFastSize()) return FALSE;
@@ -832,7 +832,7 @@ static void modripScanFellowMemory(void)
 #define MODRIP_FLOPCACHE 0xFFFFF
 
 /* meant to hold the read floppy cache */
-static char *modripCurrentFloppyCache = NULL;
+static char *modripCurrentFloppyCache = nullptr;
 
 static uint8_t modripFloppyCacheRead(uint32_t address)
 {

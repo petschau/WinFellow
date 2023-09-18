@@ -760,10 +760,10 @@ void floppyError(uint32_t drive, uint32_t errorID)
   floppy[drive].imagestatus = FLOPPY_STATUS_ERROR;
   floppy[drive].imageerror = errorID;
   floppy[drive].inserted = FALSE;
-  if (floppy[drive].F != NULL)
+  if (floppy[drive].F != nullptr)
   {
     fclose(floppy[drive].F);
-    floppy[drive].F = NULL;
+    floppy[drive].F = nullptr;
   }
 }
 
@@ -822,7 +822,7 @@ bool floppyValidateAmigaDOSVolumeName(const char *strVolumeName)
   char strIllegalCharacters[2] = { ':', '/' };
   int i;
 
-  if(strVolumeName == NULL) 
+  if(strVolumeName == nullptr) 
     return false;
 
   if(strVolumeName[0] == '\0') 
@@ -832,7 +832,7 @@ bool floppyValidateAmigaDOSVolumeName(const char *strVolumeName)
     return false;
 
   for(i = 0; i < 2; i++)
-    if(strchr(strVolumeName, strIllegalCharacters[i]) != NULL)
+    if(strchr(strVolumeName, strIllegalCharacters[i]) != nullptr)
       return false;
 
   for(i = 0; i < 7; i++)
@@ -877,7 +877,7 @@ bool floppyImageADFCreate(char *strImageFilename, char *strVolumeLabel, bool bFo
   uint32_t lImageSize = 2*11*80*512; // 2 tracks per cylinder, 11 sectors per track, 80 cylinders, 512 bytes per sector
   uint32_t lCylinderSize = 2*11*512; // 2 tracks per cylinder, 11 sectors per track, 512 bytes per sector
 
-  FILE *f = NULL;
+  FILE *f = nullptr;
 
   if(bFormat) {
     if(!floppyValidateAmigaDOSVolumeName(strVolumeLabel)) return false;
@@ -887,7 +887,7 @@ bool floppyImageADFCreate(char *strImageFilename, char *strVolumeLabel, bool bFo
 
   if(f)
   { 
-    uint8_t *strCylinderContent = NULL;
+    uint8_t *strCylinderContent = nullptr;
     uint32_t i;
 
     strCylinderContent = (uint8_t *) malloc(lCylinderSize);
@@ -934,7 +934,7 @@ BOOLE floppyImageCompressedBZipPrepare(char *diskname, uint32_t drive)
   char *gzname;
   char cmdline[512];
 
-  if( (gzname = fileopsGetTemporaryFilename()) == NULL)
+  if( (gzname = fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -957,7 +957,7 @@ BOOLE floppyImageCompressedDMSPrepare(char *diskname, uint32_t drive)
   char *gzname;
   USHORT result;
 
-  if((gzname = fileopsGetTemporaryFilename()) == NULL)
+  if((gzname = fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -989,7 +989,7 @@ BOOLE floppyImageCompressedDMSPrepare(char *diskname, uint32_t drive)
 BOOLE floppyImageCompressedGZipPrepare(char *diskname, uint32_t drive)
 {
   char *gzname;
-  if( (gzname = fileopsGetTemporaryFilename()) == NULL)
+  if( (gzname = fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -1023,7 +1023,7 @@ void floppyImageCompressedRemove(uint32_t drive)
       ((access(floppy[drive].imagename, 2)) != -1 )) // file is not read-only
     {
 	    char *dotptr = strrchr(floppy[drive].imagename, '.');
-	    if (dotptr != NULL)
+	    if (dotptr != nullptr)
 	    {
 	      if ((strcmpi(dotptr, ".gz") == 0) ||
 	        (strcmpi(dotptr, ".z") == 0) ||
@@ -1056,7 +1056,7 @@ void floppyImageCompressedRemove(uint32_t drive)
 BOOLE floppyImageCompressedPrepare(char *diskname, uint32_t drive)
 {
   char *dotptr = strrchr(diskname, '.');
-  if (dotptr == NULL)
+  if (dotptr == nullptr)
   {
     return FALSE;
   }
@@ -1084,10 +1084,10 @@ BOOLE floppyImageCompressedPrepare(char *diskname, uint32_t drive)
 
 void floppyImageRemove(uint32_t drive)
 {
-  if (floppy[drive].F != NULL)
+  if (floppy[drive].F != nullptr)
   {
     fclose(floppy[drive].F);
-    floppy[drive].F = NULL;
+    floppy[drive].F = nullptr;
   }
   if (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK ||
     floppy[drive].imagestatus == FLOPPY_STATUS_EXTENDED_OK)
@@ -1308,7 +1308,7 @@ void floppySetDiskImage(uint32_t drive, char *diskname)
   }
   else 
   {
-    if ((fsnp = fsWrapMakePoint(diskname)) == NULL)
+    if ((fsnp = fsWrapMakePoint(diskname)) == nullptr)
     {
       floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
     }
@@ -1324,7 +1324,7 @@ void floppySetDiskImage(uint32_t drive, char *diskname)
 	if (floppy[drive].zipped)
 	{
 	  free(fsnp);
-	  if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == NULL)
+	  if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == nullptr)
 	  {
 	    floppyError(drive, FLOPPY_ERROR_COMPRESS);
 	  }
@@ -1334,7 +1334,7 @@ void floppySetDiskImage(uint32_t drive, char *diskname)
     if (!fsnp->writeable)
       floppySetReadOnlyEnforced(drive, true);
 	  if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
-	    (floppyIsWriteProtected(drive) ? "rb" : "r+b"))) == NULL)
+	    (floppyIsWriteProtected(drive) ? "rb" : "r+b"))) == nullptr)
 	  {
 	    floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
 	  }
@@ -1429,7 +1429,7 @@ void floppyDriveTableInit(void)
   uint32_t i;
   for (i = 0; i < 4; i++)
   {
-    floppy[i].F = NULL;
+    floppy[i].F = nullptr;
     floppy[i].sel = FALSE;
     floppy[i].track = 0;
     floppy[i].writeprotconfig = FALSE;
@@ -1483,7 +1483,7 @@ void floppyMfmDataFree(void)
   uint32_t i;
   for (i = 0; i < 4; i++)
   {
-    if (floppy[i].mfm_data != NULL)
+    if (floppy[i].mfm_data != nullptr)
     {
       free(floppy[i].mfm_data);
     }
@@ -1496,7 +1496,7 @@ void floppyTimeBufDataFree(void)
   uint32_t i;
   for (i = 0; i < 4; i++)
   {
-    if (floppy[i].timebuf != NULL)
+    if (floppy[i].timebuf != nullptr)
     {
       free(floppy[i].timebuf);
     }

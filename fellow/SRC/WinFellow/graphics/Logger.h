@@ -14,6 +14,6 @@ public:
 
   void Shutdown(void);
 
-  Logger(void) : _enableLog(false), _logfile(0) {};
+  Logger(void) : _enableLog(false), _logfile(nullptr) {};
 
 };

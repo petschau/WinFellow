@@ -459,7 +459,7 @@ BOOLE fellowSaveState(char *filename)
 {
   FILE *F = fopen(filename, "wb");
   
-  if (F == NULL) return FALSE;
+  if (F == nullptr) return FALSE;
 
   cpuIntegrationSaveState(F);
   memorySaveState(F);
@@ -480,7 +480,7 @@ BOOLE fellowLoadState(char *filename)
 {
   FILE *F = fopen(filename, "rb");
   
-  if (F == NULL) return FALSE;
+  if (F == nullptr) return FALSE;
 
   cpuIntegrationLoadState(F);
   memoryLoadState(F);

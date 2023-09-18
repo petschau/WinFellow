@@ -39,7 +39,7 @@ void cpuSetInstructionLoggingFunc(cpuInstructionLoggingFunc func)
 
 void cpuCallInstructionLoggingFunc(void)
 {
-  if (cpu_instruction_logging_func != NULL)
+  if (cpu_instruction_logging_func != nullptr)
     cpu_instruction_logging_func();
 }
 
@@ -50,7 +50,7 @@ void cpuSetExceptionLoggingFunc(cpuExceptionLoggingFunc func)
 
 void cpuCallExceptionLoggingFunc(char *description, uint32_t original_pc, uint16_t opcode)
 {
-  if (cpu_exception_logging_func != NULL)
+  if (cpu_exception_logging_func != nullptr)
     cpu_exception_logging_func(description, original_pc, opcode);
 }
 
@@ -61,7 +61,7 @@ void cpuSetInterruptLoggingFunc(cpuInterruptLoggingFunc func)
 
 void cpuCallInterruptLoggingFunc(uint32_t level, uint32_t vector_address)
 {
-  if (cpu_interrupt_logging_func != NULL)
+  if (cpu_interrupt_logging_func != nullptr)
     cpu_interrupt_logging_func(level, vector_address);
 }
 

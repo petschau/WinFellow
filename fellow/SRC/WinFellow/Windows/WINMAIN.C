@@ -169,15 +169,15 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   enum MultiEventTypes object_mapping[4];
   BOOLE keep_on_waiting;
   
-  win_drv_emulation_ended = CreateEvent(NULL, FALSE, FALSE, NULL);
+  win_drv_emulation_ended = CreateEvent(nullptr, FALSE, FALSE, nullptr);
   fellowAddLog("fellowEmulationStart() finished\n");
-  FellowThread = CreateThread(NULL,     // Security attr
-			       0,                   // Stack Size
-			       startfunc,   // Thread procedure
-			       param,	            // Thread parameter
-			       0,                   // Creation flags
-			       &dwThreadId);        // ThreadId
-  SetTimer(gfxDrvCommon->GetHWND(), 1, 10, NULL);
+  FellowThread = CreateThread(nullptr,     // Security attr
+                              0,                   // Stack Size
+                              startfunc,   // Thread procedure
+                              param,	            // Thread parameter
+                              0,                   // Creation flags
+                              &dwThreadId);        // ThreadId
+  SetTimer(gfxDrvCommon->GetHWND(), 1, 10, nullptr);
   event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   keep_on_waiting = TRUE;
   while (keep_on_waiting)
@@ -207,7 +207,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
         case met_messages:
 	  /* Deal with windows messages */
           while (PeekMessage(&myMsg,
-		             NULL,
+                             nullptr,
 		             0,
 		             0,
 		             PM_REMOVE)) 
@@ -226,7 +226,7 @@ void winDrvEmulationStart(void)
 {
   if (fellowEmulationStart())
   {
-    winDrvEmulate(winDrvFellowRunStart, 0);
+    winDrvEmulate(winDrvFellowRunStart, nullptr);
   }
   else 
   {
@@ -242,7 +242,7 @@ void winDrvEmulationStart(void)
 
 DWORD WINAPI winDrvFellowStepOne(LPVOID in)
 {
-  winDrvEmulate(winDrvFellowStepOneStart, NULL);
+  winDrvEmulate(winDrvFellowStepOneStart, nullptr);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
@@ -250,7 +250,7 @@ DWORD WINAPI winDrvFellowStepOne(LPVOID in)
 
 DWORD WINAPI winDrvFellowStepOver(LPVOID in)
 {
-  winDrvEmulate(winDrvFellowStepOverStart, NULL);
+  winDrvEmulate(winDrvFellowStepOverStart, nullptr);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
@@ -270,7 +270,7 @@ BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg)
   {
     case DBG_STEP:      winDrvFellowStepOne((LPVOID) 1); break;
     case DBG_STEP_OVER: winDrvFellowStepOver((LPVOID) 1); break;
-    case DBG_RUN:       winDrvFellowRunDebug((LPVOID) 0); break;
+    case DBG_RUN:       winDrvFellowRunDebug((LPVOID) nullptr); break;
     default:            return FALSE;
   }
   return TRUE;
@@ -297,10 +297,10 @@ void winDrvSetKey(char *path, char *name, char *value)
   LONG result = RegCreateKeyEx(HKEY_LOCAL_MACHINE,
 			       path,
 			       0,
-			       0,
+			       nullptr,
 			       REG_OPTION_NON_VOLATILE,
 			       KEY_ALL_ACCESS,
-			       NULL,
+                               nullptr,
 			       &hkey,
 			       &disposition);
   if ((result == ERROR_SUCCESS) &&
@@ -325,7 +325,7 @@ void winDrvSetRegistryKeys(char **argv)
   winDrvSetKey("Software\\WinFellow", "version", FELLOWNUMERICVERSION);
   _fullpath(p, argv[0], 1024);
   locc = strrchr(p, '\\');
-  if (locc == NULL)
+  if (locc == nullptr)
   {
     p[0] = '\0';
   }
@@ -361,7 +361,7 @@ char *winDrvCmdLineGetNextFirst(char *lpCmdLine)
   {
     lpCmdLine++;
   }
-  return (*lpCmdLine == '\0') ? NULL : lpCmdLine;
+  return (*lpCmdLine == '\0') ? nullptr : lpCmdLine;
 }
 
 
@@ -394,9 +394,9 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
   char *argstart, *argend;
   
   tmp = winDrvCmdLineGetNextFirst(lpCmdLine);
-  if (tmp != 0) 
+  if (tmp != nullptr) 
   {
-    while ((tmp = winDrvCmdLineGetNextFirst(tmp)) != NULL) 
+    while ((tmp = winDrvCmdLineGetNextFirst(tmp)) != nullptr) 
     {
       tmp = winDrvCmdLineGetNextEnd(tmp);
       elements++;
@@ -420,7 +420,7 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
     *argend++ = '\0';
     argv[i] = argstart;
   }
-  argv[elements + 1] = NULL;
+  argv[elements + 1] = nullptr;
   *argc = elements + 1;
   return argv;
 }
@@ -444,12 +444,12 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
   HINSTANCE hDbgHelp = LoadLibraryA("dbghelp.dll");
   SYSTEMTIME t;
 
-  if(hDbgHelp == NULL)
+  if(hDbgHelp == nullptr)
     return;
 
   tMDWD pMiniDumpWriteDump = (tMDWD) GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
 
-  if(pMiniDumpWriteDump == NULL)
+  if(pMiniDumpWriteDump == nullptr)
     return;
 
   GetSystemTime(&t);
@@ -462,7 +462,7 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
 
   fellowAddLog("Unhandled exception detected, write minidump to %s...\n", name);
 
-  HANDLE hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
   if(hFile == INVALID_HANDLE_VALUE)
       return;
@@ -477,9 +477,9 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
     GetCurrentProcessId(),
     hFile,
     MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpScanMemory),
-    e ? &exceptionInfo : NULL,
-    NULL,
-    NULL);
+    e ? &exceptionInfo : nullptr,
+    nullptr,
+  nullptr);
 
   CloseHandle(hFile);
 
@@ -547,8 +547,8 @@ int winDrvDetectMemoryLeaks(void)
   fileopsGetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
 
   hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE,
-    FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
-    FILE_ATTRIBUTE_NORMAL, NULL);
+    FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS,
+    FILE_ATTRIBUTE_NORMAL, nullptr);
 
   _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
   _CrtSetReportFile(_CRT_WARN, hLogFile);

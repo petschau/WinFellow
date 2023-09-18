@@ -177,7 +177,7 @@ uint32_t LineExactSprites::ActionListCount(spr_action_list_master* l)
 /* Returns the list item at position i */
 spr_action_list_item* LineExactSprites::ActionListGet(spr_action_list_master* l, uint32_t i)
 {
-  if (i >= l->count) return NULL;
+  if (i >= l->count) return nullptr;
   return &l->items[i];
 }
 
@@ -241,7 +241,7 @@ uint32_t LineExactSprites::MergeListCount(spr_merge_list_master* l)
 /* Returns the list item at position i */
 spr_merge_list_item* LineExactSprites::MergeListGet(spr_merge_list_master* l, uint32_t i)
 {
-  if (i >= l->count) return NULL;
+  if (i >= l->count) return nullptr;
   return &l->items[i];
 }
 
