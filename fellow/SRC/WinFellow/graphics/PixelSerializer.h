@@ -31,34 +31,34 @@
 class PixelSerializer : public GraphicsEvent
 {
 private:
-  const static ULO FIRST_CYLINDER = 56;
-  const static ULO LAST_CYLINDER = 25;
+  const static uint32_t FIRST_CYLINDER = 56;
+  const static uint32_t LAST_CYLINDER = 25;
 
   ByteLongUnion _active[6];
 
-  ULO _tmpline[960];
+  uint32_t _tmpline[960];
 
-  ULO _lastCylinderOutput;
+  uint32_t _lastCylinderOutput;
   bool _newLine;
   bool _activated;
 
-  void LogEndOfLine(ULO rasterY, ULO cylinder);
-  void LogOutput(ULO rasterY, ULO cylinder, ULO startCylinder, ULO untilCylinder);
-  void EventSetup(ULO arriveTime);
-  void ShiftActive(ULO pixelCount);
+  void LogEndOfLine(uint32_t rasterY, uint32_t cylinder);
+  void LogOutput(uint32_t rasterY, uint32_t cylinder, uint32_t startCylinder, uint32_t untilCylinder);
+  void EventSetup(uint32_t arriveTime);
+  void ShiftActive(uint32_t pixelCount);
 
-  ULO GetOutputLine(ULO rasterY, ULO cylinder);
-  ULO GetOutputCylinder(ULO cylinder);
+  uint32_t GetOutputLine(uint32_t rasterY, uint32_t cylinder);
+  uint32_t GetOutputCylinder(uint32_t cylinder);
   
-  void SerializePixels(ULO pixelCount);
-  void SerializeBatch(ULO cylinderCount);
+  void SerializePixels(uint32_t pixelCount);
+  void SerializeBatch(uint32_t cylinderCount);
 
 public:
-  void Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, UWO dat6);
+  void Commit(uint16_t dat1, uint16_t dat2, uint16_t dat3, uint16_t dat4, uint16_t dat5, uint16_t dat6);
 
-  void OutputCylindersUntil(ULO rasterY, ULO cylinder);
+  void OutputCylindersUntil(uint32_t rasterY, uint32_t cylinder);
 
-  virtual void Handler(ULO rasterY, ULO cylinder);
+  virtual void Handler(uint32_t rasterY, uint32_t cylinder);
   virtual void InitializeEvent(GraphicsEventQueue *queue);
 
   void EndOfFrame(void);

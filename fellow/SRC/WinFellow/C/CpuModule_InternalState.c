@@ -26,58 +26,58 @@
 #include "CpuModule_Internal.h"
 
 /* M68k registers */
-static ULO cpu_regs[2][8]; /* 0 - data, 1 - address */
-static ULO cpu_pc;
-static ULO cpu_usp;
-static ULO cpu_ssp;
-static ULO cpu_msp;
-static ULO cpu_sfc;
-static ULO cpu_dfc;
-ULO cpu_sr; // Not static because flags calculation use it extensively
-static ULO cpu_vbr;
-static UWO cpu_prefetch_word;
-static ULO cpu_cacr;
-static ULO cpu_caar;
+static uint32_t cpu_regs[2][8]; /* 0 - data, 1 - address */
+static uint32_t cpu_pc;
+static uint32_t cpu_usp;
+static uint32_t cpu_ssp;
+static uint32_t cpu_msp;
+static uint32_t cpu_sfc;
+static uint32_t cpu_dfc;
+uint32_t cpu_sr; // Not static because flags calculation use it extensively
+static uint32_t cpu_vbr;
+static uint16_t cpu_prefetch_word;
+static uint32_t cpu_cacr;
+static uint32_t cpu_caar;
 
 /* Irq management */
 static BOOLE cpu_raise_irq;
-static ULO cpu_raise_irq_level;
+static uint32_t cpu_raise_irq_level;
 
 /* Reset values */
-static ULO cpu_initial_pc;
-static ULO cpu_initial_sp;
+static uint32_t cpu_initial_pc;
+static uint32_t cpu_initial_sp;
 
 /* Flag set if CPU is stopped */
 static BOOLE cpu_stop;
 
 /* The current CPU model */
-static ULO cpu_model_major = -1;
-static ULO cpu_model_minor;
-static UBY cpu_model_mask;
+static uint32_t cpu_model_major = -1;
+static uint32_t cpu_model_minor;
+static uint8_t cpu_model_mask;
 
 /* For exception handling */
 #ifdef CPU_INSTRUCTION_LOGGING
 
-static UWO cpu_current_opcode;
+static uint16_t cpu_current_opcode;
 
 #endif
 
-static ULO cpu_original_pc;
+static uint32_t cpu_original_pc;
 static bool cpu_instruction_aborted;
 
 /* Number of cycles taken by the last intstruction */
-static ULO cpu_instruction_time;
+static uint32_t cpu_instruction_time;
 
 /* Getters and setters */
 
-void cpuSetDReg(ULO i, ULO value) {cpu_regs[0][i] = value;}
-ULO cpuGetDReg(ULO i) {return cpu_regs[0][i];}
+void cpuSetDReg(uint32_t i, uint32_t value) {cpu_regs[0][i] = value;}
+uint32_t cpuGetDReg(uint32_t i) {return cpu_regs[0][i];}
 
-void cpuSetAReg(ULO i, ULO value) {cpu_regs[1][i] = value;}
-ULO cpuGetAReg(ULO i) {return cpu_regs[1][i];}
+void cpuSetAReg(uint32_t i, uint32_t value) {cpu_regs[1][i] = value;}
+uint32_t cpuGetAReg(uint32_t i) {return cpu_regs[1][i];}
 
-void cpuSetReg(ULO da, ULO i, ULO value) {cpu_regs[da][i] = value;}
-ULO cpuGetReg(ULO da, ULO i) {return cpu_regs[da][i];}
+void cpuSetReg(uint32_t da, uint32_t i, uint32_t value) {cpu_regs[da][i] = value;}
+uint32_t cpuGetReg(uint32_t da, uint32_t i) {return cpu_regs[da][i];}
 
 /// <summary>
 /// Get the supervisor bit from sr.
@@ -95,21 +95,21 @@ BOOLE cpuGetFlagMaster(void)
   return cpu_sr & 0x1000;
 }
 
-void cpuSetUspDirect(ULO usp) {cpu_usp = usp;}
-ULO cpuGetUspDirect(void) {return cpu_usp;}
-ULO cpuGetUspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetUspDirect() : cpuGetAReg(7);}
+void cpuSetUspDirect(uint32_t usp) {cpu_usp = usp;}
+uint32_t cpuGetUspDirect(void) {return cpu_usp;}
+uint32_t cpuGetUspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetUspDirect() : cpuGetAReg(7);}
 
-void cpuSetSspDirect(ULO ssp) {cpu_ssp = ssp;}
-ULO cpuGetSspDirect(void) {return cpu_ssp;}
-ULO cpuGetSspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetAReg(7) : cpuGetSspDirect();}
+void cpuSetSspDirect(uint32_t ssp) {cpu_ssp = ssp;}
+uint32_t cpuGetSspDirect(void) {return cpu_ssp;}
+uint32_t cpuGetSspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetAReg(7) : cpuGetSspDirect();}
 
-void cpuSetMspDirect(ULO msp) {cpu_msp = msp;}
-ULO cpuGetMspDirect(void) {return cpu_msp;}
+void cpuSetMspDirect(uint32_t msp) {cpu_msp = msp;}
+uint32_t cpuGetMspDirect(void) {return cpu_msp;}
 
 /// <summary>
 /// Returns the master stack pointer.
 /// </summary>
-ULO cpuGetMspAutoMap(void)
+uint32_t cpuGetMspAutoMap(void)
 {
   if (cpuGetFlagSupervisor() && cpuGetFlagMaster())
   {
@@ -121,7 +121,7 @@ ULO cpuGetMspAutoMap(void)
 /// <summary>
 /// Sets the master stack pointer.
 /// </summary>
-void cpuSetMspAutoMap(ULO new_msp)
+void cpuSetMspAutoMap(uint32_t new_msp)
 {
   if (cpuGetFlagSupervisor() && cpuGetFlagMaster())
   {
@@ -136,7 +136,7 @@ void cpuSetMspAutoMap(ULO new_msp)
 /// <summary>
 /// Returns the interrupt stack pointer. ssp is used as isp.
 /// </summary>
-ULO cpuGetIspAutoMap(void)
+uint32_t cpuGetIspAutoMap(void)
 {
   if (cpuGetFlagSupervisor() && !cpuGetFlagMaster())
   {
@@ -148,7 +148,7 @@ ULO cpuGetIspAutoMap(void)
 /// <summary>
 /// Sets the interrupt stack pointer. ssp is used as isp.
 /// </summary>
-void cpuSetIspAutoMap(ULO new_isp)
+void cpuSetIspAutoMap(uint32_t new_isp)
 {
   if (cpuGetFlagSupervisor() && !cpuGetFlagMaster())
   {
@@ -160,64 +160,64 @@ void cpuSetIspAutoMap(ULO new_isp)
   }
 }
 
-void cpuSetPC(ULO address) {cpu_pc = address;}
-ULO cpuGetPC(void) {return cpu_pc;}
+void cpuSetPC(uint32_t address) {cpu_pc = address;}
+uint32_t cpuGetPC(void) {return cpu_pc;}
 
 void cpuSetStop(BOOLE stop) {cpu_stop = stop;}
 BOOLE cpuGetStop(void) {return cpu_stop;}
 
-void cpuSetVbr(ULO vbr) {cpu_vbr = vbr;}
-ULO cpuGetVbr(void) {return cpu_vbr;}
+void cpuSetVbr(uint32_t vbr) {cpu_vbr = vbr;}
+uint32_t cpuGetVbr(void) {return cpu_vbr;}
 
-void cpuSetSfc(ULO sfc) {cpu_sfc = sfc;}
-ULO cpuGetSfc(void) {return cpu_sfc;}
+void cpuSetSfc(uint32_t sfc) {cpu_sfc = sfc;}
+uint32_t cpuGetSfc(void) {return cpu_sfc;}
 
-void cpuSetDfc(ULO dfc) {cpu_dfc = dfc;}
-ULO cpuGetDfc(void) {return cpu_dfc;}
+void cpuSetDfc(uint32_t dfc) {cpu_dfc = dfc;}
+uint32_t cpuGetDfc(void) {return cpu_dfc;}
 
-void cpuSetCacr(ULO cacr) {cpu_cacr = cacr;}
-ULO cpuGetCacr(void) {return cpu_cacr;}
+void cpuSetCacr(uint32_t cacr) {cpu_cacr = cacr;}
+uint32_t cpuGetCacr(void) {return cpu_cacr;}
 
-void cpuSetCaar(ULO caar) {cpu_caar = caar;}
-ULO cpuGetCaar(void) {return cpu_caar;}
+void cpuSetCaar(uint32_t caar) {cpu_caar = caar;}
+uint32_t cpuGetCaar(void) {return cpu_caar;}
 
-void cpuSetSR(ULO sr) {cpu_sr = sr;}
-ULO cpuGetSR(void) {return cpu_sr;}
+void cpuSetSR(uint32_t sr) {cpu_sr = sr;}
+uint32_t cpuGetSR(void) {return cpu_sr;}
 
-void cpuSetInstructionTime(ULO cycles) {cpu_instruction_time = cycles;}
-ULO cpuGetInstructionTime(void) {return cpu_instruction_time;}
+void cpuSetInstructionTime(uint32_t cycles) {cpu_instruction_time = cycles;}
+uint32_t cpuGetInstructionTime(void) {return cpu_instruction_time;}
 
-void cpuSetOriginalPC(ULO pc) {cpu_original_pc = pc;}
-ULO cpuGetOriginalPC(void) {return cpu_original_pc;}
+void cpuSetOriginalPC(uint32_t pc) {cpu_original_pc = pc;}
+uint32_t cpuGetOriginalPC(void) {return cpu_original_pc;}
 
 void cpuSetInstructionAborted(bool aborted) {cpu_instruction_aborted = aborted;}
 bool cpuGetInstructionAborted() {return cpu_instruction_aborted;}
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
-void cpuSetCurrentOpcode(UWO opcode) {cpu_current_opcode = opcode;}
-UWO cpuGetCurrentOpcode(void) {return cpu_current_opcode;}
+void cpuSetCurrentOpcode(uint16_t opcode) {cpu_current_opcode = opcode;}
+uint16_t cpuGetCurrentOpcode(void) {return cpu_current_opcode;}
 
 #endif
 
 void cpuSetRaiseInterrupt(BOOLE raise_irq) {cpu_raise_irq = raise_irq;}
 BOOLE cpuGetRaiseInterrupt(void) {return cpu_raise_irq;}
-void cpuSetRaiseInterruptLevel(ULO raise_irq_level) {cpu_raise_irq_level = raise_irq_level;}
-ULO cpuGetRaiseInterruptLevel(void) {return cpu_raise_irq_level;}
+void cpuSetRaiseInterruptLevel(uint32_t raise_irq_level) {cpu_raise_irq_level = raise_irq_level;}
+uint32_t cpuGetRaiseInterruptLevel(void) {return cpu_raise_irq_level;}
 
-ULO cpuGetIrqLevel(void) {return (cpu_sr & 0x0700) >> 8;}
+uint32_t cpuGetIrqLevel(void) {return (cpu_sr & 0x0700) >> 8;}
 
-void cpuSetInitialPC(ULO pc) {cpu_initial_pc = pc;}
-ULO cpuGetInitialPC(void) {return cpu_initial_pc;}
+void cpuSetInitialPC(uint32_t pc) {cpu_initial_pc = pc;}
+uint32_t cpuGetInitialPC(void) {return cpu_initial_pc;}
 
-void cpuSetInitialSP(ULO sp) {cpu_initial_sp = sp;}
-ULO cpuGetInitialSP(void) {return cpu_initial_sp;}
+void cpuSetInitialSP(uint32_t sp) {cpu_initial_sp = sp;}
+uint32_t cpuGetInitialSP(void) {return cpu_initial_sp;}
 
-void cpuSetModelMask(UBY model_mask) {cpu_model_mask = model_mask;}
-UBY cpuGetModelMask(void) {return cpu_model_mask;}
+void cpuSetModelMask(uint8_t model_mask) {cpu_model_mask = model_mask;}
+uint8_t cpuGetModelMask(void) {return cpu_model_mask;}
 
-ULO cpuGetModelMajor(void) {return cpu_model_major;}
-ULO cpuGetModelMinor(void) {return cpu_model_minor;}
+uint32_t cpuGetModelMajor(void) {return cpu_model_major;}
+uint32_t cpuGetModelMinor(void) {return cpu_model_minor;}
 
 static void cpuCalculateModelMask(void)
 {
@@ -238,7 +238,7 @@ static void cpuCalculateModelMask(void)
   }
 }
 
-void cpuSetModel(ULO major, ULO minor)
+void cpuSetModel(uint32_t major, uint32_t minor)
 {
   BOOLE makeOpcodeTable = (cpu_model_major != major);
   cpu_model_major = major;
@@ -248,53 +248,53 @@ void cpuSetModel(ULO major, ULO minor)
   if (makeOpcodeTable) cpuMakeOpcodeTableForModel();
 }
 
-void cpuSetDRegWord(ULO regno, UWO val) {*((WOR*)&cpu_regs[0][regno]) = val;}
-void cpuSetDRegByte(ULO regno, UBY val) {*((UBY*)&cpu_regs[0][regno]) = val;}
-UWO cpuGetRegWord(ULO i, ULO regno) {return (UWO)cpu_regs[i][regno];}
+void cpuSetDRegWord(uint32_t regno, uint16_t val) {*((int16_t*)&cpu_regs[0][regno]) = val;}
+void cpuSetDRegByte(uint32_t regno, uint8_t val) {*((uint8_t*)&cpu_regs[0][regno]) = val;}
+uint16_t cpuGetRegWord(uint32_t i, uint32_t regno) {return (uint16_t)cpu_regs[i][regno];}
 
-UWO cpuGetDRegWord(ULO regno) {return (UWO)cpu_regs[0][regno];}
-UBY cpuGetDRegByte(ULO regno) {return (UBY)cpu_regs[0][regno];}
+uint16_t cpuGetDRegWord(uint32_t regno) {return (uint16_t)cpu_regs[0][regno];}
+uint8_t cpuGetDRegByte(uint32_t regno) {return (uint8_t)cpu_regs[0][regno];}
 
-ULO cpuGetDRegWordSignExtLong(ULO regno) {return cpuSignExtWordToLong(cpuGetDRegWord(regno));}
-UWO cpuGetDRegByteSignExtWord(ULO regno) {return cpuSignExtByteToWord(cpuGetDRegByte(regno));}
-ULO cpuGetDRegByteSignExtLong(ULO regno) {return cpuSignExtByteToLong(cpuGetDRegByte(regno));}
+uint32_t cpuGetDRegWordSignExtLong(uint32_t regno) {return cpuSignExtWordToLong(cpuGetDRegWord(regno));}
+uint16_t cpuGetDRegByteSignExtWord(uint32_t regno) {return cpuSignExtByteToWord(cpuGetDRegByte(regno));}
+uint32_t cpuGetDRegByteSignExtLong(uint32_t regno) {return cpuSignExtByteToLong(cpuGetDRegByte(regno));}
 
-UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
-UBY cpuGetARegByte(ULO regno) {return (UBY)cpu_regs[1][regno];}
+uint16_t cpuGetARegWord(uint32_t regno) {return (uint16_t)cpu_regs[1][regno];}
+uint8_t cpuGetARegByte(uint32_t regno) {return (uint8_t)cpu_regs[1][regno];}
 
-typedef UWO (*cpuGetWordFunc)(void);
-typedef ULO (*cpuGetLongFunc)(void);
+typedef uint16_t (*cpuGetWordFunc)(void);
+typedef uint32_t (*cpuGetLongFunc)(void);
 
-static UWO cpuGetNextWordInternal(void)
+static uint16_t cpuGetNextWordInternal(void)
 {
-  UWO data = memoryReadWord(cpuGetPC() + 2);
+  uint16_t data = memoryReadWord(cpuGetPC() + 2);
   return data;
 }
 
-static ULO cpuGetNextLongInternal(void)
+static uint32_t cpuGetNextLongInternal(void)
 {
-  ULO data = memoryReadLong(cpuGetPC() + 2);
+  uint32_t data = memoryReadLong(cpuGetPC() + 2);
   return data;
 }
 
-UWO cpuGetNextWord(void)
+uint16_t cpuGetNextWord(void)
 {
-  UWO tmp = cpu_prefetch_word;
+  uint16_t tmp = cpu_prefetch_word;
   cpu_prefetch_word = cpuGetNextWordInternal();
   cpuSetPC(cpuGetPC() + 2);
   return tmp;
 }
 
-ULO cpuGetNextWordSignExt(void)
+uint32_t cpuGetNextWordSignExt(void)
 {
   return cpuSignExtWordToLong(cpuGetNextWord());
 }
 
-ULO cpuGetNextLong(void)
+uint32_t cpuGetNextLong(void)
 {
-  ULO tmp = cpu_prefetch_word << 16;
-  ULO data = cpuGetNextLongInternal();
-  cpu_prefetch_word = (UWO) data;
+  uint32_t tmp = cpu_prefetch_word << 16;
+  uint32_t data = cpuGetNextLongInternal();
+  cpu_prefetch_word = (uint16_t) data;
   cpuSetPC(cpuGetPC() + 4);
   return tmp | (data >> 16);
 }
@@ -321,7 +321,7 @@ void cpuSkipNextLong(void)
   cpuInitializePrefetch();
 }
 
-void cpuInitializeFromNewPC(ULO new_pc)
+void cpuInitializeFromNewPC(uint32_t new_pc)
 {
   cpuSetPC(new_pc);
   cpuInitializePrefetch();
@@ -329,7 +329,7 @@ void cpuInitializeFromNewPC(ULO new_pc)
 
 void cpuSaveState(FILE *F)
 {
-  ULO i, j;
+  uint32_t i, j;
 
   fwrite(&cpu_model_major, sizeof(cpu_model_major), 1, F);
   fwrite(&cpu_model_minor, sizeof(cpu_model_minor), 1, F);
@@ -357,7 +357,7 @@ void cpuSaveState(FILE *F)
 
 void cpuLoadState(FILE *F)
 {
-  ULO i, j;
+  uint32_t i, j;
 
   fread(&cpu_model_major, sizeof(cpu_model_major), 1, F);
   fread(&cpu_model_minor, sizeof(cpu_model_minor), 1, F);

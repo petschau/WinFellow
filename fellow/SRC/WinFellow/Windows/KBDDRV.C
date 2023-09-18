@@ -94,7 +94,7 @@ bool kbd_in_task_switcher = false;
 /* Map symbolic key to a description string                                  */
 /*===========================================================================*/
 
-STR *kbd_drv_pc_symbol_to_string[106] = 
+char *kbd_drv_pc_symbol_to_string[106] = 
 {
   "NONE",
   "ESCAPE",
@@ -203,7 +203,7 @@ STR *kbd_drv_pc_symbol_to_string[106] =
   "NUMPAD_0",
   "NUMPAD_DOT"};
 
-STR *symbol_pretty_name[106] = {
+char *symbol_pretty_name[106] = {
   "none",
   "Escape",
   "F1",
@@ -432,7 +432,7 @@ int symbol_to_DIK_kbddrv[PCK_LAST_KEY] =
 /* Map symbolic pc key to amiga scancode                                     */
 /*===========================================================================*/
 
-UBY kbd_drv_pc_symbol_to_amiga_scancode[106] = 
+uint8_t kbd_drv_pc_symbol_to_amiga_scancode[106] = 
 {
   /* 0x00 */
 
@@ -622,7 +622,7 @@ void kbdDrvClearPressedKeys(void)
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *kbdDrvDInputErrorString(HRESULT hResult) 
+char *kbdDrvDInputErrorString(HRESULT hResult) 
 {
   switch (hResult) 
   {
@@ -652,7 +652,7 @@ STR *kbdDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
-STR* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
+char* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -666,12 +666,12 @@ STR* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void kbdDrvDInputFailure(STR *header, HRESULT err)
+void kbdDrvDInputFailure(char *header, HRESULT err)
 {
   fellowAddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
-void kbdDrvDInputUnacquireFailure(STR* header, HRESULT err)
+void kbdDrvDInputUnacquireFailure(char* header, HRESULT err)
 {
   fellowAddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
 }
@@ -691,7 +691,7 @@ bool kbdDrvDInputSetCooperativeLevel(void)
   return true;
 }
 
-void kbdDrvDInputAcquireFailure(STR* header, HRESULT err)
+void kbdDrvDInputAcquireFailure(char* header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -730,7 +730,7 @@ void kbdDrvEOFHandler(void)
     ULONGLONG tCurrentTime = RP.GetTime();
 
     if(t < tCurrentTime) {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
+      uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
       fellowAddLog("RetroPlatform escape key simulation interval ended.\n");
       RP.SetEscapeKeySimulatedTargetTime(0);
@@ -934,10 +934,10 @@ void kbdDrvStateHasChanged(BOOLE active)
 
 BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 {
-  ULO eol_evpos = kbd_state.eventsEOL.inpos;
-  ULO eof_evpos = kbd_state.eventsEOF.inpos;
+  uint32_t eol_evpos = kbd_state.eventsEOL.inpos;
+  uint32_t eof_evpos = kbd_state.eventsEOF.inpos;
   
-  ULO port, setting;
+  uint32_t port, setting;
   
   for (;;)
   {
@@ -1010,7 +1010,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
           
           if((t != 0) && (t < RP.GetEscapeKeyHoldTime())) 
 	  {
-            UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
+            uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
 	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
               t);
@@ -1105,7 +1105,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 /* Handle one specific keycode change                                        */
 /*===========================================================================*/
     
-void kbdDrvKeypress(ULO keycode, BOOL pressed)
+void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
 {
   kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
   BOOLE keycode_pressed = pressed;
@@ -1161,7 +1161,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
     {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+      uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
       kbdKeyAdd(a_code | 0x80);
     }
   }
@@ -1170,7 +1170,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
     {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+      uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
       kbdKeyAdd(a_code);
     }
   }
@@ -1182,7 +1182,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 /* Handle one specific RAW keycode change                                    */
 /*===========================================================================*/
 
-void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
+void kbdDrvKeypressRaw(uint32_t lRawKeyCode, BOOL pressed)
 {
 #ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
   BOOLE keycode_was_pressed = prevkeys[lRawKeyCode];
@@ -1261,7 +1261,7 @@ void kbdDrvKeypressHandler(void)
   }
   else
   {	
-    for (ULO i = 0; i < itemcount; i++)
+    for (uint32_t i = 0; i < itemcount; i++)
     {
       kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
     }
@@ -1272,7 +1272,7 @@ void kbdDrvKeypressHandler(void)
 /* Return string describing the given symbolic key                           */
 /*===========================================================================*/
 
-STR *kbdDrvKeyString(ULO symbolickey)
+char *kbdDrvKeyString(uint32_t symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1281,7 +1281,7 @@ STR *kbdDrvKeyString(ULO symbolickey)
   return kbd_drv_pc_symbol_to_string[symbolickey];
 }
 
-STR *kbdDrvKeyPrettyString(ULO symbolickey)
+char *kbdDrvKeyPrettyString(uint32_t symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1290,7 +1290,7 @@ STR *kbdDrvKeyPrettyString(ULO symbolickey)
   return symbol_pretty_name[symbolickey];
 }
 
-STR *DikKeyString(int dikkey)
+char *DikKeyString(int dikkey)
 {
   for (int j = 0; j < PCK_LAST_KEY; j++ )
   {
@@ -1307,7 +1307,7 @@ STR *DikKeyString(int dikkey)
 /* Set joystick replacement for a given joystick and direction               */
 /*===========================================================================*/
 
-void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey)
+void kbdDrvJoystickReplacementSet(kbd_event event, uint32_t symbolickey)
 {
   switch (event)
   {
@@ -1366,7 +1366,7 @@ void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey)
 /* Get joystick replacement for a given joystick and direction               */
 /*===========================================================================*/
 
-ULO kbdDrvJoystickReplacementGet(kbd_event event)
+uint32_t kbdDrvJoystickReplacementGet(kbd_event event)
 {
   switch (event)
   {
@@ -1523,7 +1523,7 @@ void kbdDrvInitializeDIKToSymbolKeyTable(void)
   kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
 }
 
-void kbdDrvSetJoyKeyEnabled(ULO lGameport, ULO lSetting, BOOLE bEnabled)
+void kbdDrvSetJoyKeyEnabled(uint32_t lGameport, uint32_t lSetting, BOOLE bEnabled)
 {
   kbd_drv_joykey_enabled[lGameport][lSetting] = bEnabled;
 }
@@ -1543,7 +1543,7 @@ void kbdDrvHardReset(void)
 
 void kbdDrvEmulationStart(void)
 {
-  for (ULO port = 0; port < 2; port++)
+  for (uint32_t port = 0; port < 2; port++)
   {
     kbd_drv_joykey_enabled[port][0] = (gameport_input[port] == GP_JOYKEY0);
     kbd_drv_joykey_enabled[port][1] = (gameport_input[port] == GP_JOYKEY1);
@@ -1620,9 +1620,9 @@ void kbdDrvStartup(void)
   kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = PCK_A;
   kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = PCK_S;
   
-  for (ULO port = 0; port < 2; port++)
+  for (uint32_t port = 0; port < 2; port++)
   {
-    for (ULO setting = 0; setting < 2; setting++)
+    for (uint32_t setting = 0; setting < 2; setting++)
     {
       kbd_drv_joykey_enabled[port][setting] = FALSE;
     }

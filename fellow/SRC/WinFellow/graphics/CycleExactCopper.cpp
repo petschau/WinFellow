@@ -7,7 +7,7 @@
 #include "CycleExactCopper.h"
 #include "GRAPH.H"
 
-UWO CycleExactCopper::ReadWord()
+uint16_t CycleExactCopper::ReadWord()
 {
   return chipmemReadWord(copper_registers.copper_pc);
 }
@@ -17,7 +17,7 @@ void CycleExactCopper::IncreasePtr()
   copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
 }
 
-void CycleExactCopper::SetState(CopperStates newState, ULO cycle)
+void CycleExactCopper::SetState(CopperStates newState, uint32_t cycle)
 {
   if ((cycle % busGetCyclesInThisLine()) & 1)
   {
@@ -32,12 +32,12 @@ void CycleExactCopper::SetState(CopperStates newState, ULO cycle)
   }
 }
 
-void CycleExactCopper::Load(ULO new_copper_ptr)
+void CycleExactCopper::Load(uint32_t new_copper_ptr)
 {
   copper_registers.copper_pc = new_copper_ptr;
 
   _skip_next = false;
-  ULO start_cycle = busGetCycle() + 6;
+  uint32_t start_cycle = busGetCycle() + 6;
   if ((start_cycle % busGetCyclesInThisLine()) & 1)
   {
     start_cycle++;
@@ -53,15 +53,15 @@ void CycleExactCopper::SetStateNone()
   copperEvent.cycle = BUS_CYCLE_DISABLE;
 }
 
-bool CycleExactCopper::IsRegisterAllowed(ULO regno)
+bool CycleExactCopper::IsRegisterAllowed(uint32_t regno)
 {
   return (regno >= 0x80) || ((regno >= 0x40) && ((copper_registers.copcon & 0xffff) != 0x0));
 }
 
 void CycleExactCopper::Move()
 {
-  ULO regno = (ULO) (_first & 0x1fe);
-  UWO value = _second;
+  uint32_t regno = (uint32_t) (_first & 0x1fe);
+  uint16_t value = _second;
 
   if (IsRegisterAllowed(regno))
   {
@@ -81,15 +81,15 @@ void CycleExactCopper::Move()
 void CycleExactCopper::Wait()
 {
   bool blitter_finish_disable = (_second & 0x8000) == 0x8000;
-  ULO ve = (((ULO) _second >> 8) & 0x7f) | 0x80;
-  ULO he = (ULO) _second & 0xfe;
+  uint32_t ve = (((uint32_t) _second >> 8) & 0x7f) | 0x80;
+  uint32_t he = (uint32_t) _second & 0xfe;
 
-  ULO vp = (ULO) (_first >> 8);
-  ULO hp = (ULO) (_first & 0xfe);
+  uint32_t vp = (uint32_t) (_first >> 8);
+  uint32_t hp = (uint32_t) (_first & 0xfe);
 
-  ULO test_cycle = busGetCycle() + 2;
-  ULO rasterY = test_cycle / busGetCyclesInThisLine();
-  ULO rasterX = test_cycle % busGetCyclesInThisLine();
+  uint32_t test_cycle = busGetCycle() + 2;
+  uint32_t rasterY = test_cycle / busGetCyclesInThisLine();
+  uint32_t rasterX = test_cycle % busGetCyclesInThisLine();
 
   if (rasterX & 1)
   {
@@ -109,7 +109,7 @@ void CycleExactCopper::Wait()
   // Is the vertical position an exact match? Examine the rest of the line for matching horisontal positions.
   if ((rasterY & ve) == (vp & ve))
   {
-    ULO initial_wait_rasterX = rasterX;
+    uint32_t initial_wait_rasterX = rasterX;
     while ((rasterX <= 0xe2) && ((rasterX & he) < (hp & he))) rasterX += 2;
     if (rasterX < 0xe4)
     {
@@ -156,15 +156,15 @@ void CycleExactCopper::Wait()
 
 void CycleExactCopper::Skip()
 {
-  ULO ve = (((ULO) _second >> 8) & 0x7f) | 0x80;
-  ULO he = (ULO) _second & 0xfe;
+  uint32_t ve = (((uint32_t) _second >> 8) & 0x7f) | 0x80;
+  uint32_t he = (uint32_t) _second & 0xfe;
 
-  ULO vp = (ULO) (_first >> 8);
-  ULO hp = (ULO) (_first & 0xfe);
+  uint32_t vp = (uint32_t) (_first >> 8);
+  uint32_t hp = (uint32_t) (_first & 0xfe);
 
-  ULO test_cycle = busGetCycle();
-  ULO rasterY = test_cycle / busGetCyclesInThisLine();
-  ULO rasterX = test_cycle % busGetCyclesInThisLine();
+  uint32_t test_cycle = busGetCycle();
+  uint32_t rasterY = test_cycle / busGetCyclesInThisLine();
+  uint32_t rasterX = test_cycle % busGetCyclesInThisLine();
 
   if (rasterX & 1)
   {

@@ -33,42 +33,42 @@ using namespace CustomChipset;
 typedef struct blitter_state_
 {
   // Actual registers
-  ULO bltcon;
-  ULO bltafwm;
-  ULO bltalwm;
-  ULO bltapt;
-  ULO bltbpt;
-  ULO bltcpt;
-  ULO bltdpt;
-  ULO bltamod;
-  ULO bltbmod;
-  ULO bltcmod;
-  ULO bltdmod;
-  ULO bltadat;
-  ULO bltbdat;
-  ULO bltbdat_original;
-  ULO bltcdat;
-  ULO bltzero;
+  uint32_t bltcon;
+  uint32_t bltafwm;
+  uint32_t bltalwm;
+  uint32_t bltapt;
+  uint32_t bltbpt;
+  uint32_t bltcpt;
+  uint32_t bltdpt;
+  uint32_t bltamod;
+  uint32_t bltbmod;
+  uint32_t bltcmod;
+  uint32_t bltdmod;
+  uint32_t bltadat;
+  uint32_t bltbdat;
+  uint32_t bltbdat_original;
+  uint32_t bltcdat;
+  uint32_t bltzero;
 
   // Calculated by the set-functions based on the state above
-  ULO height;
-  ULO width;
+  uint32_t height;
+  uint32_t width;
 
   // Line mode alters these and the state remains after the line is done.
   // ie. the next line continues where the last left off if the shifts are not re-initialised
   // by Amiga code.
-  ULO a_shift_asc;
-  ULO a_shift_desc;
-  ULO b_shift_asc;
-  ULO b_shift_desc;
+  uint32_t a_shift_asc;
+  uint32_t a_shift_desc;
+  uint32_t b_shift_asc;
+  uint32_t b_shift_desc;
 
   // Information about an ongoing blit
   // dma_pending is a flag showing that a blit has been activated (a write to BLTSIZE)
   // but at the time of activation the blit DMA was turned off
   BOOLE started;
   BOOLE dma_pending;
-  ULO cycle_length; // Estimate for how many cycles the started blit will take
-  ULO cycle_free;   // How many of these cycles are free to use by the CPU
+  uint32_t cycle_length; // Estimate for how many cycles the started blit will take
+  uint32_t cycle_free;   // How many of these cycles are free to use by the CPU
 
 } blitter_state;
 
@@ -79,7 +79,7 @@ blitter_state blitter;
 /* Unit is bus cycles (3.58MHz)						      */
 /*============================================================================*/
 
-ULO blit_cyclelength[16] =
+uint32_t blit_cyclelength[16] =
 {
   2, 2, 2, 3, /* How long it takes for a blit to complete */
   3, 3, 3, 4,
@@ -87,7 +87,7 @@ ULO blit_cyclelength[16] =
   3, 3, 3, 4
 };
 
-ULO blit_cyclefree[16] =
+uint32_t blit_cyclefree[16] =
 {
   2, 1, 1, 1, /* Free cycles during blit */
   2, 1, 1, 1,
@@ -99,7 +99,7 @@ ULO blit_cyclefree[16] =
 /* Blitter fill-mode lookup tables                                            */
 /*============================================================================*/
 
-UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data] */
+uint8_t blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data] */
 
 #ifdef BLIT_VERIFY_MINTERMS
 BOOLE blit_minterm_seen[256];
@@ -131,7 +131,7 @@ BOOLE blitterGetZeroFlag(void)
   return (blitter.bltzero & 0xffff) == 0;
 }
 
-ULO blitterGetFreeCycles(void)
+uint32_t blitterGetFreeCycles(void)
 {
   return blitter.cycle_free;
 }
@@ -159,7 +159,7 @@ void blitterRemoveEvent(void)
   }
 }
 
-void blitterInsertEvent(ULO cycle)
+void blitterInsertEvent(uint32_t cycle)
 {
   if (cycle != BUS_CYCLE_DISABLE)
   {
@@ -848,7 +848,7 @@ void blitterOperationLog(void) {
 
 #define blitterReadA(pt, dat, dat_preload, enabled, ascending, shift, prev, is_fwm, is_lwm, fwm, lwm) \
 { \
-  ULO a_tmp; \
+  uint32_t a_tmp; \
   blitterReadWord(pt, a_tmp, dat_preload, enabled, ascending); \
   dat_preload = a_tmp; /* Need to remember unWMed value */ \
   blitterFLWM(a_tmp, is_fwm, fwm); \
@@ -881,40 +881,40 @@ void blitterOperationLog(void) {
 { \
   if (fill) \
   { \
-    UBY dat1 = (UBY) dat; \
-    UBY dat2 = (UBY) (dat >> 8); \
-    ULO fc2 = blit_fill[exclusive][fc][dat1][0]; \
-    dat = ((ULO) blit_fill[exclusive][fc][dat1][1]) | (((ULO) blit_fill[exclusive][fc2][dat2][1]) << 8); \
+    uint8_t dat1 = (uint8_t) dat; \
+    uint8_t dat2 = (uint8_t) (dat >> 8); \
+    uint32_t fc2 = blit_fill[exclusive][fc][dat1][0]; \
+    dat = ((uint32_t) blit_fill[exclusive][fc][dat1][1]) | (((uint32_t) blit_fill[exclusive][fc2][dat2][1]) << 8); \
     fc = blit_fill[exclusive][fc2][dat2][0]; \
   } \
 }
 
 #define blitterBlit(a_enabled, b_enabled, c_enabled, d_enabled, ascending, fill) \
 { \
-  LON x, y; \
-  ULO a_pt = blitter.bltapt; \
-  ULO b_pt = blitter.bltbpt; \
-  ULO c_pt = blitter.bltcpt; \
-  ULO d_pt = blitter.bltdpt; \
-  ULO d_pt_tmp = 0xffffffff; \
-  ULO a_shift = (ascending) ? blitter.a_shift_asc : blitter.a_shift_desc; \
-  ULO b_shift = (ascending) ? blitter.b_shift_asc : blitter.b_shift_desc; \
-  ULO a_dat, b_dat = (b_enabled) ? 0 : blitter.bltbdat, c_dat = blitter.bltcdat, d_dat; \
-  ULO a_dat_preload = blitter.bltadat; \
-  ULO b_dat_preload = 0; \
-  ULO a_prev = 0; \
-  ULO b_prev = 0; \
-  ULO a_mod = (ascending) ? blitter.bltamod : ((ULO) - (LON) blitter.bltamod); \
-  ULO b_mod = (ascending) ? blitter.bltbmod : ((ULO) - (LON) blitter.bltbmod); \
-  ULO c_mod = (ascending) ? blitter.bltcmod : ((ULO) - (LON) blitter.bltcmod); \
-  ULO d_mod = (ascending) ? blitter.bltdmod : ((ULO) - (LON) blitter.bltdmod); \
-  ULO fwm[2]; \
-  ULO lwm[2]; \
-  UBY minterms = (UBY) (blitter.bltcon >> 16); \
-  ULO fill_exclusive = (blitter.bltcon & 0x8) ? 0 : 1; \
-  ULO zero_flag = 0; \
-  LON height = blitter.height; \
-  LON width = blitter.width; \
+  int32_t x, y; \
+  uint32_t a_pt = blitter.bltapt; \
+  uint32_t b_pt = blitter.bltbpt; \
+  uint32_t c_pt = blitter.bltcpt; \
+  uint32_t d_pt = blitter.bltdpt; \
+  uint32_t d_pt_tmp = 0xffffffff; \
+  uint32_t a_shift = (ascending) ? blitter.a_shift_asc : blitter.a_shift_desc; \
+  uint32_t b_shift = (ascending) ? blitter.b_shift_asc : blitter.b_shift_desc; \
+  uint32_t a_dat, b_dat = (b_enabled) ? 0 : blitter.bltbdat, c_dat = blitter.bltcdat, d_dat; \
+  uint32_t a_dat_preload = blitter.bltadat; \
+  uint32_t b_dat_preload = 0; \
+  uint32_t a_prev = 0; \
+  uint32_t b_prev = 0; \
+  uint32_t a_mod = (ascending) ? blitter.bltamod : ((uint32_t) - (int32_t) blitter.bltamod); \
+  uint32_t b_mod = (ascending) ? blitter.bltbmod : ((uint32_t) - (int32_t) blitter.bltbmod); \
+  uint32_t c_mod = (ascending) ? blitter.bltcmod : ((uint32_t) - (int32_t) blitter.bltcmod); \
+  uint32_t d_mod = (ascending) ? blitter.bltdmod : ((uint32_t) - (int32_t) blitter.bltdmod); \
+  uint32_t fwm[2]; \
+  uint32_t lwm[2]; \
+  uint8_t minterms = (uint8_t) (blitter.bltcon >> 16); \
+  uint32_t fill_exclusive = (blitter.bltcon & 0x8) ? 0 : 1; \
+  uint32_t zero_flag = 0; \
+  int32_t height = blitter.height; \
+  int32_t width = blitter.width; \
   BOOLE fc_original = !!(blitter.bltcon & 0x4); \
   BOOLE fill_carry; \
   fwm[0] = lwm[0] = 0xffff; \
@@ -944,7 +944,7 @@ void blitterOperationLog(void) {
     blitter.bltapt = a_pt; \
   } \
   if (b_enabled) { \
-    ULO x_tmp = 0; \
+    uint32_t x_tmp = 0; \
     blitterShiftWord(blitter.bltbdat, b_dat_preload, ascending, b_shift, x_tmp); \
     blitter.bltbdat_original = b_dat_preload; \
     blitter.bltbpt = b_pt; \
@@ -1088,33 +1088,33 @@ void blitterCopyABCD(void)
 
 void blitterLineMode(void)
 {
-  ULO bltadat_local;
-  ULO bltbdat_local;
-  ULO bltcdat_local = blitter.bltcdat;
-  ULO bltddat_local;
-  UWO mask = (UWO)((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
+  uint32_t bltadat_local;
+  uint32_t bltbdat_local;
+  uint32_t bltcdat_local = blitter.bltcdat;
+  uint32_t bltddat_local;
+  uint16_t mask = (uint16_t)((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
   BOOLE a_enabled = blitter.bltcon & 0x08000000;
   BOOLE c_enabled = blitter.bltcon & 0x02000000;
 
   BOOLE decision_is_signed = (((blitter.bltcon >> 6) & 1) == 1);
-  LON decision_variable = (LON)(WOR)blitter.bltapt;
+  int32_t decision_variable = (int32_t)(int16_t)blitter.bltapt;
 
   // Quirk: Set decision increases to 0 if a is disabled, ensures bltapt remains unchanged
-  WOR decision_inc_signed = (a_enabled) ? ((WOR)blitter.bltbmod) : 0;
-  WOR decision_inc_unsigned = (a_enabled) ? ((WOR)blitter.bltamod) : 0;
+  int16_t decision_inc_signed = (a_enabled) ? ((int16_t)blitter.bltbmod) : 0;
+  int16_t decision_inc_unsigned = (a_enabled) ? ((int16_t)blitter.bltamod) : 0;
 
-  ULO bltcpt_local = blitter.bltcpt;
-  ULO bltdpt_local = blitter.bltdpt;
-  ULO blit_a_shift_local = blitter.a_shift_asc;
-  ULO bltzero_local = 0;
-  ULO i;
+  uint32_t bltcpt_local = blitter.bltcpt;
+  uint32_t bltdpt_local = blitter.bltdpt;
+  uint32_t blit_a_shift_local = blitter.a_shift_asc;
+  uint32_t bltzero_local = 0;
+  uint32_t i;
 
-  ULO sulsudaul = (blitter.bltcon >> 2) & 0x7;
+  uint32_t sulsudaul = (blitter.bltcon >> 2) & 0x7;
   BOOLE x_independent = (sulsudaul & 4);
   BOOLE x_inc = ((!x_independent) && !(sulsudaul & 2)) || (x_independent && !(sulsudaul & 1));
   BOOLE y_inc = ((!x_independent) && !(sulsudaul & 1)) || (x_independent && !(sulsudaul & 2));
   BOOLE single_dot = FALSE;
-  UBY minterm = (UBY)(blitter.bltcon >> 16);
+  uint8_t minterm = (uint8_t)(blitter.bltcon >> 16);
 
   for (i = 0; i < blitter.height; ++i)
   {
@@ -1202,7 +1202,7 @@ void blitterLineMode(void)
 	single_dot = FALSE;
       }
     }
-    decision_is_signed = ((WOR)decision_variable < 0);
+    decision_is_signed = ((int16_t)decision_variable < 0);
 
     if (!x_independent)
     {
@@ -1254,8 +1254,8 @@ void blitClearBlitterBusy()
 
 void blitInitiate(void)
 {
-  ULO channels = (blitter.bltcon >> 24) & 0xf;
-  ULO cycle_length, cycle_free;
+  uint32_t channels = (blitter.bltcon >> 24) & 0xf;
+  uint32_t cycle_length, cycle_free;
 
 #ifdef BLIT_OPERATION_LOG
   if (blitter_operation_log) blitterOperationLog();
@@ -1309,7 +1309,7 @@ void blitInitiate(void)
   blitter.cycle_free = cycle_free;
   if (blitter.cycle_free != 0)
   {
-    ULO chip_slowdown = (blitter.cycle_length / blitter.cycle_free);
+    uint32_t chip_slowdown = (blitter.cycle_length / blitter.cycle_free);
     if (chip_slowdown > 1) chip_slowdown--;
     cpuIntegrationSetChipSlowdown(chip_slowdown);
   }
@@ -1370,10 +1370,10 @@ void blitterCopy(void)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltcon0(UWO data, ULO address)
+void wbltcon0(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcon = (blitter.bltcon & 0x0000FFFF) | (((ULO)data) << 16);
+  blitter.bltcon = (blitter.bltcon & 0x0000FFFF) | (((uint32_t)data) << 16);
   blitter.a_shift_asc = data >> 12;
   blitter.a_shift_desc = 16 - blitter.a_shift_asc;
 }
@@ -1388,10 +1388,10 @@ void wbltcon0(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltcon1(UWO data, ULO address)
+void wbltcon1(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcon = (blitter.bltcon & 0xFFFF0000) | ((ULO)data);
+  blitter.bltcon = (blitter.bltcon & 0xFFFF0000) | ((uint32_t)data);
   blitter.b_shift_asc = data >> 12;
   blitter.b_shift_desc = 16 - blitter.b_shift_asc;
 }
@@ -1406,7 +1406,7 @@ void wbltcon1(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltafwm(UWO data, ULO address)
+void wbltafwm(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltafwm = data;
@@ -1422,7 +1422,7 @@ void wbltafwm(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltalwm(UWO data, ULO address)
+void wbltalwm(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltalwm = data;
@@ -1438,7 +1438,7 @@ void wbltalwm(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltcpth(UWO data, ULO address)
+void wbltcpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcpt = chipsetReplaceHighPtr(blitter.bltcpt, data);
@@ -1454,7 +1454,7 @@ void wbltcpth(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)     */
 /*=========================================================*/
 
-void wbltcptl(UWO data, ULO address)
+void wbltcptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcpt = chipsetReplaceLowPtr(blitter.bltcpt, data);
@@ -1470,7 +1470,7 @@ void wbltcptl(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltbpth(UWO data, ULO address)
+void wbltbpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltbpt = chipsetReplaceHighPtr(blitter.bltbpt, data);
@@ -1486,7 +1486,7 @@ void wbltbpth(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)     */
 /*=========================================================*/
 
-void wbltbptl(UWO data, ULO address)
+void wbltbptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltbpt = chipsetReplaceLowPtr(blitter.bltbpt, data);
@@ -1502,7 +1502,7 @@ void wbltbptl(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)  */
 /*======================================================*/
 
-void wbltapth(UWO data, ULO address)
+void wbltapth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltapt = chipsetReplaceHighPtr(blitter.bltapt, data);
@@ -1518,7 +1518,7 @@ void wbltapth(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)     */
 /*=========================================================*/
 
-void wbltaptl(UWO data, ULO address)
+void wbltaptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltapt = chipsetReplaceLowPtr(blitter.bltapt, data);
@@ -1534,7 +1534,7 @@ void wbltaptl(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)       */
 /*===========================================================*/
 
-void wbltdpth(UWO data, ULO address)
+void wbltdpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltdpt = chipsetReplaceHighPtr(blitter.bltdpt, data);
@@ -1550,7 +1550,7 @@ void wbltdpth(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltdptl(UWO data, ULO address)
+void wbltdptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltdpt = chipsetReplaceLowPtr(blitter.bltdpt, data);
@@ -1566,7 +1566,7 @@ void wbltdptl(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltsize(UWO data, ULO address)
+void wbltsize(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   if ((data & 0x003F) != 0)
@@ -1606,10 +1606,10 @@ void wbltsize(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltcon0l(UWO data, ULO address)
+void wbltcon0l(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcon = (blitter.bltcon & 0xFF00FFFF) | ((((ULO)data) << 16) & 0x00FF0000);
+  blitter.bltcon = (blitter.bltcon & 0xFF00FFFF) | ((((uint32_t)data) << 16) & 0x00FF0000);
 }
 
 /*==============================================================*/
@@ -1622,7 +1622,7 @@ void wbltcon0l(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltsizv(UWO data, ULO address)
+void wbltsizv(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   if ((data & 0x00007FFF) != 0)
@@ -1647,7 +1647,7 @@ void wbltsizv(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltsizh(UWO data, ULO address)
+void wbltsizh(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   if ((data & 0x000007FF) != 0)
@@ -1681,10 +1681,10 @@ void wbltsizh(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltcmod(UWO data, ULO address)
+void wbltcmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltcmod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1697,10 +1697,10 @@ void wbltcmod(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltbmod(UWO data, ULO address)
+void wbltbmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltbmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltbmod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1713,10 +1713,10 @@ void wbltbmod(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltamod(UWO data, ULO address)
+void wbltamod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltamod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltamod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1729,10 +1729,10 @@ void wbltamod(UWO data, ULO address)
 /* only used by CPU or blitter (not by DMA controller)          */
 /*==============================================================*/
 
-void wbltdmod(UWO data, ULO address)
+void wbltdmod(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltdmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltdmod = (uint32_t)(int32_t)(int16_t)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1745,7 +1745,7 @@ void wbltdmod(UWO data, ULO address)
 /* only used by DMA controller (not by CPU or blitter)          */
 /*==============================================================*/
 
-void wbltcdat(UWO data, ULO address)
+void wbltcdat(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltcdat = data;
@@ -1761,10 +1761,10 @@ void wbltcdat(UWO data, ULO address)
 /* only used by DMA controller (not by CPU or blitter)          */
 /*==============================================================*/
 
-void wbltbdat(UWO data, ULO address)
+void wbltbdat(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltbdat_original = (ULO)(data & 0x0000FFFF);
+  blitter.bltbdat_original = (uint32_t)(data & 0x0000FFFF);
   if (blitterIsDescending())
   {
     blitter.bltbdat = (blitter.bltbdat_original << blitter.b_shift_asc);
@@ -1785,7 +1785,7 @@ void wbltbdat(UWO data, ULO address)
 /* only used by DMA controller (not by CPU or blitter)          */
 /*==============================================================*/
 
-void wbltadat(UWO data, ULO address)
+void wbltadat(uint16_t data, uint32_t address)
 {
   blitForceFinish();
   blitter.bltadat = data;
@@ -1797,7 +1797,7 @@ void wbltadat(UWO data, ULO address)
 
 static void blitterFillTableInit(void)
 {
-  ULO i, data, bit, fc_tmp, fc, mode;
+  uint32_t i, data, bit, fc_tmp, fc, mode;
 
   for (mode = 0; mode < 2; mode++)
     for (fc = 0; fc < 2; fc++)
@@ -1811,8 +1811,8 @@ static void blitterFillTableInit(void)
 	  else data ^= fc_tmp << bit;
 	  if ((i & (0x1 << bit))) fc_tmp = (fc_tmp == 1) ? 0 : 1;
 	}
-	blit_fill[mode][fc][i][0] = (UBY)fc_tmp;
-	blit_fill[mode][fc][i][1] = (UBY)data;
+	blit_fill[mode][fc][i][0] = (uint8_t)fc_tmp;
+	blit_fill[mode][fc][i][1] = (uint8_t)data;
       }
 }
 
@@ -1896,7 +1896,7 @@ void blitterEndOfFrame(void)
 {
   if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
   {
-    LON cycle = blitterEvent.cycle -= busGetCyclesInThisFrame();
+    int32_t cycle = blitterEvent.cycle -= busGetCyclesInThisFrame();
     blitterRemoveEvent();
     blitterInsertEvent(cycle);
   }
@@ -1983,24 +1983,24 @@ void blitterEmulationStop(void)
 
 #ifdef BLIT_VERIFY_MINTERMS
 
-ULO optimizedMinterms(UBY minterm, ULO a_dat, ULO b_dat, ULO c_dat)
+uint32_t optimizedMinterms(uint8_t minterm, uint32_t a_dat, uint32_t b_dat, uint32_t c_dat)
 {
-  ULO d_dat = 0;
+  uint32_t d_dat = 0;
   blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterm);
   return d_dat;
 }
 
-ULO correctMinterms(UBY minterm, ULO a_dat, ULO b_dat, ULO c_dat)
+uint32_t correctMinterms(uint8_t minterm, uint32_t a_dat, uint32_t b_dat, uint32_t c_dat)
 {
-  ULO d_dat = 0;
+  uint32_t d_dat = 0;
   blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, minterm);
   return d_dat;
 }
 
 void verifyMinterms()
 {
-  UBY minterm;
-  ULO a_dat, b_dat, c_dat;
+  uint8_t minterm;
+  uint32_t a_dat, b_dat, c_dat;
   for (minterm = 0xff; minterm < 0xff; minterm++)
   {
     BOOLE minterm_had_error = FALSE;
@@ -2036,7 +2036,7 @@ void blitterStartup(void)
 
 #ifdef BLIT_VERIFY_MINTERMS
   {
-    ULO i;
+    uint32_t i;
     for (i = 0; i < 256; i++) blit_minterm_seen[i] = FALSE;
     verifyMinterms();
   }

@@ -8,13 +8,13 @@
 
 typedef struct {
 
-  STR	m_description[256];
+  char	m_description[256];
 	
   /*==========================================================================*/
   /* Holds current used configuration filename                                */
   /*==========================================================================*/
 
-  STR  m_current_configuration[CFG_FILENAME_LENGTH];
+  char  m_current_configuration[CFG_FILENAME_LENGTH];
 
   /*==========================================================================*/
   /* Window positions (Main Window, Emulation Window)                         */
@@ -29,21 +29,21 @@ typedef struct {
   /* History of used config files                                             */
   /*==========================================================================*/
 
-  STR  m_configuration_history[4][CFG_FILENAME_LENGTH];
+  char  m_configuration_history[4][CFG_FILENAME_LENGTH];
   
   /*==========================================================================*/
   /* Holds last used directories                                              */
   /*==========================================================================*/
 
-  STR  m_lastusedkeydir[CFG_FILENAME_LENGTH];
-  STR  m_lastusedkickimagedir[CFG_FILENAME_LENGTH];
-  STR  m_lastusedconfigurationdir[CFG_FILENAME_LENGTH];
-  ULO  m_lastusedconfigurationtab;
-  STR  m_lastusedglobaldiskdir[CFG_FILENAME_LENGTH];
-  STR  m_lastusedhdfdir[CFG_FILENAME_LENGTH];
-  STR  m_lastusedmoddir[CFG_FILENAME_LENGTH];
-  STR  m_lastusedstatefiledir[CFG_FILENAME_LENGTH];
-  STR  m_lastusedpresetromdir[CFG_FILENAME_LENGTH];
+  char  m_lastusedkeydir[CFG_FILENAME_LENGTH];
+  char  m_lastusedkickimagedir[CFG_FILENAME_LENGTH];
+  char  m_lastusedconfigurationdir[CFG_FILENAME_LENGTH];
+  uint32_t  m_lastusedconfigurationtab;
+  char  m_lastusedglobaldiskdir[CFG_FILENAME_LENGTH];
+  char  m_lastusedhdfdir[CFG_FILENAME_LENGTH];
+  char  m_lastusedmoddir[CFG_FILENAME_LENGTH];
+  char  m_lastusedstatefiledir[CFG_FILENAME_LENGTH];
+  char  m_lastusedpresetromdir[CFG_FILENAME_LENGTH];
   
   /*==========================================================================*/
   /* pause emulation when window loses focus                                  */
@@ -63,36 +63,36 @@ extern int iniGetMainWindowYPos(ini *);
 extern int iniGetEmulationWindowXPos(ini *);
 extern int iniGetEmulationWindowYPos(ini *);
  
-extern void iniSetMainWindowPosition(ini *initdata, ULO mainwindowxpos, ULO mainwindowypos);
-extern void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO emulationwindowypos);
-extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO position);
-extern void iniSetConfigurationHistoryFilename(ini *initdata, ULO position, STR *configuration);
-extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO position);
-extern void iniSetConfigurationHistoryFilename(ini *initdata, ULO position, STR *cfgfilename);
-extern STR *iniGetCurrentConfigurationFilename(ini *initdata);
-extern void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration);
-extern void iniSetLastUsedCfgDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedCfgDir(ini *initdata);
-extern void iniSetLastUsedKickImageDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedKickImageDir(ini *initdata);
-extern void iniSetLastUsedKeyDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedKeyDir(ini *initdata);
-extern void iniSetLastUsedGlobalDiskDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedGlobalDiskDir(ini *initdata);
-extern void iniSetLastUsedHdfDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedHdfDir(ini *initdata);
-extern void iniSetLastUsedModDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedModDir(ini *initdata);
-extern void iniSetLastUsedCfgTab(ini *initdata, ULO cfgTab);
-extern ULO iniGetLastUsedCfgTab(ini *initdata);
-extern void iniSetLastUsedStateFileDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedStateFileDir(ini *initdata);
-extern void iniSetLastUsedPresetROMDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedPresetROMDir(ini *initdata);
+extern void iniSetMainWindowPosition(ini *initdata, uint32_t mainwindowxpos, uint32_t mainwindowypos);
+extern void iniSetEmulationWindowPosition(ini *initdata, uint32_t emulationwindowxpos, uint32_t emulationwindowypos);
+extern char *iniGetConfigurationHistoryFilename(ini *initdata, uint32_t position);
+extern void iniSetConfigurationHistoryFilename(ini *initdata, uint32_t position, char *configuration);
+extern char *iniGetConfigurationHistoryFilename(ini *initdata, uint32_t position);
+extern void iniSetConfigurationHistoryFilename(ini *initdata, uint32_t position, char *cfgfilename);
+extern char *iniGetCurrentConfigurationFilename(ini *initdata);
+extern void iniSetCurrentConfigurationFilename(ini *initdata, char *configuration);
+extern void iniSetLastUsedCfgDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedCfgDir(ini *initdata);
+extern void iniSetLastUsedKickImageDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedKickImageDir(ini *initdata);
+extern void iniSetLastUsedKeyDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedKeyDir(ini *initdata);
+extern void iniSetLastUsedGlobalDiskDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedGlobalDiskDir(ini *initdata);
+extern void iniSetLastUsedHdfDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedHdfDir(ini *initdata);
+extern void iniSetLastUsedModDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedModDir(ini *initdata);
+extern void iniSetLastUsedCfgTab(ini *initdata, uint32_t cfgTab);
+extern uint32_t iniGetLastUsedCfgTab(ini *initdata);
+extern void iniSetLastUsedStateFileDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedStateFileDir(ini *initdata);
+extern void iniSetLastUsedPresetROMDir(ini *initdata, char *directory);
+extern char *iniGetLastUsedPresetROMDir(ini *initdata);
 extern BOOLE iniGetPauseEmulationWhenWindowLosesFocus(ini* initdata);
 extern void  iniSetPauseEmulationWhenWindowLosesFocus(ini* initdata, BOOLE pause);
 
-extern BOOLE iniSetOption(ini *initdata, STR *initoptionstr);
+extern BOOLE iniSetOption(ini *initdata, char *initoptionstr);
 extern BOOLE iniSaveOptions(ini *initdata, FILE *inifile);
 
 /*============================================================================*/

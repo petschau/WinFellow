@@ -16,14 +16,14 @@ namespace fellow::hardfile
     HardfileDevice _devices[FHFILE_MAX_DEVICES];
     std::vector<std::unique_ptr<HardfileFileSystemEntry>> _fileSystems;
     std::vector<std::unique_ptr<HardfileMountListEntry>> _mountList;
-    ULO _devicename = 0;
-    ULO _romstart = 0;
-    ULO _bootcode = 0;
-    ULO _configdev = 0;
-    ULO _fsname = 0;
-    ULO _endOfDmem = 0;
-    ULO _dosDevPacketListStart = 0;
-    UBY _rom[65536] = {};
+    uint32_t _devicename = 0;
+    uint32_t _romstart = 0;
+    uint32_t _bootcode = 0;
+    uint32_t _configdev = 0;
+    uint32_t _fsname = 0;
+    uint32_t _endOfDmem = 0;
+    uint32_t _dosDevPacketListStart = 0;
+    uint8_t _rom[65536] = {};
     bool _enabled = false;
     unsigned int _deviceNameStartNumber = 0;
 
@@ -33,32 +33,32 @@ namespace fellow::hardfile
     std::string MakeDeviceName();
     std::string MakeDeviceName(const std::string& preferredName);
     bool PreferredNameExists(const std::string& preferredName);
-    bool FindOlderOrSameFileSystemVersion(ULO DOSType, ULO version, unsigned int& olderOrSameFileSystemIndex);
-    HardfileFileSystemEntry *GetFileSystemForDOSType(ULO DOSType);
+    bool FindOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version, unsigned int& olderOrSameFileSystemIndex);
+    HardfileFileSystemEntry *GetFileSystemForDOSType(uint32_t DOSType);
     void AddFileSystemsFromRdb(HardfileDevice& device);
     void AddFileSystemsFromRdb();
-    void EraseOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
+    void EraseOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version);
     void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration& config, rdb::RDB* rdb, bool readonly);
     bool OpenHardfileFile(HardfileDevice& device);
     void InitializeHardfile(unsigned int index);
     void RebuildHardfileConfiguration();
     void ClearDeviceRuntimeInfo(HardfileDevice& device);
 
-    void SetIOError(BYT errorCode);
-    void SetIOActual(ULO ioActual);
-    ULO GetUnitNumber();
-    UWO GetCommand();
-    unsigned int GetIndexFromUnitNumber(ULO unit);
-    ULO GetUnitNumberFromIndex(unsigned int index);
+    void SetIOError(int8_t errorCode);
+    void SetIOActual(uint32_t ioActual);
+    uint32_t GetUnitNumber();
+    uint16_t GetCommand();
+    unsigned int GetIndexFromUnitNumber(uint32_t unit);
+    uint32_t GetUnitNumberFromIndex(unsigned int index);
 
     // BeginIO commands
-    void IgnoreOK(ULO index);
-    BYT Read(ULO index);
-    BYT Write(ULO index);
-    BYT GetNumberOfTracks(ULO index);
-    BYT GetDiskDriveType(ULO index);
-    void WriteProt(ULO index);
-    BYT ScsiDirect(ULO index);
+    void IgnoreOK(uint32_t index);
+    int8_t Read(uint32_t index);
+    int8_t Write(uint32_t index);
+    int8_t GetNumberOfTracks(uint32_t index);
+    int8_t GetDiskDriveType(uint32_t index);
+    void WriteProt(uint32_t index);
+    int8_t ScsiDirect(uint32_t index);
 
     void DoDiag();
     void DoOpen();
@@ -68,38 +68,38 @@ namespace fellow::hardfile
     void DoBeginIO();
     void DoAbortIO();
 
-    ULO DoGetRDBFileSystemCount();
-    ULO DoGetRDBFileSystemHunkCount(ULO fileSystemIndex);
-    ULO DoGetRDBFileSystemHunkSize(ULO fileSystemIndex, ULO hunkIndex);
-    void DoCopyRDBFileSystemHunk(ULO destinationAddress, ULO fileSystemIndex, ULO hunkIndex);
-    void DoRelocateFileSystem(ULO fileSystemIndex);
-    void DoInitializeRDBFileSystemEntry(ULO fileSystemEntry, ULO fileSystemIndex);
-    void DoPatchDOSDeviceNode(ULO node, ULO packet);
-    void DoUnknownOperation(ULO operation);
-    ULO DoGetDosDevPacketListStart();
+    uint32_t DoGetRDBFileSystemCount();
+    uint32_t DoGetRDBFileSystemHunkCount(uint32_t fileSystemIndex);
+    uint32_t DoGetRDBFileSystemHunkSize(uint32_t fileSystemIndex, uint32_t hunkIndex);
+    void DoCopyRDBFileSystemHunk(uint32_t destinationAddress, uint32_t fileSystemIndex, uint32_t hunkIndex);
+    void DoRelocateFileSystem(uint32_t fileSystemIndex);
+    void DoInitializeRDBFileSystemEntry(uint32_t fileSystemEntry, uint32_t fileSystemIndex);
+    void DoPatchDOSDeviceNode(uint32_t node, uint32_t packet);
+    void DoUnknownOperation(uint32_t operation);
+    uint32_t DoGetDosDevPacketListStart();
 
-    std::string LogGetStringFromMemory(ULO address);
+    std::string LogGetStringFromMemory(uint32_t address);
 
-    void DoLogAvailableFileSystems(ULO fileSystemResource);
+    void DoLogAvailableFileSystems(uint32_t fileSystemResource);
     void DoLogAvailableResources();
-    void DoLogAllocMemResult(ULO result);
-    void DoLogOpenResourceResult(ULO result);
-    void DoRemoveRDBFileSystemsAlreadySupportedBySystem(ULO filesystemResource);
+    void DoLogAllocMemResult(uint32_t result);
+    void DoLogOpenResourceResult(uint32_t result);
+    void DoRemoveRDBFileSystemsAlreadySupportedBySystem(uint32_t filesystemResource);
 
-    void CreateDOSDevPackets(ULO devicename);
-    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
-    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
+    void CreateDOSDevPackets(uint32_t devicename);
+    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, uint32_t deviceNameAddress);
+    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, uint32_t deviceNameAddress);
 
   public:
     // Autoconfig and ROM memory
     void CardInit() override;
-    void CardMap(ULO mapping) override;
-    UBY ReadByte(ULO address) override;
-    UWO ReadWord(ULO address) override;
-    ULO ReadLong(ULO address) override;
+    void CardMap(uint32_t mapping) override;
+    uint8_t ReadByte(uint32_t address) override;
+    uint16_t ReadWord(uint32_t address) override;
+    uint32_t ReadLong(uint32_t address) override;
 
     // Native callback
-    void Do(ULO data) override;
+    void Do(uint32_t data) override;
 
     // Configuration
     void SetEnabled(bool enabled) override;
@@ -111,7 +111,7 @@ namespace fellow::hardfile
     unsigned int GetMaxHardfileCount() override;
 
     // UI helper function
-    bool Create(const fellow::api::module::HardfileConfiguration& configuration, ULO size) override;
+    bool Create(const fellow::api::module::HardfileConfiguration& configuration, uint32_t size) override;
     fellow::api::module::rdb_status HasRDB(const std::string& filename) override;
     fellow::api::module::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) override;
 

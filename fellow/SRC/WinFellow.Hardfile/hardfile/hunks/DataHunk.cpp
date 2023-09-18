@@ -5,7 +5,7 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::hunks
 {
-  ULO DataHunk::GetID()
+  uint32_t DataHunk::GetID()
   {
     return ID;
   }
@@ -18,7 +18,7 @@ namespace fellow::hardfile::hunks
     Service->Log.AddLogDebug("fhfile: RDB filesystem - Data hunk (%u), content length in bytes %u, allocate size in bytes %u\n", ID, GetContentSizeInBytes(), GetAllocateSizeInBytes());
   }
 
-  DataHunk::DataHunk(ULO allocateSizeInLongwords)
+  DataHunk::DataHunk(uint32_t allocateSizeInLongwords)
     : InitialHunk(allocateSizeInLongwords)
   {
   }

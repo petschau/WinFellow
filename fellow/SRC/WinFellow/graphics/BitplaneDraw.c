@@ -33,20 +33,20 @@
 
 using namespace CustomChipset;
 
-extern UBY draw_dual_translate[2][256][256];
-extern ULO draw_HAM_modify_table[4][2];
+extern uint8_t draw_dual_translate[2][256][256];
+extern uint32_t draw_HAM_modify_table[4][2];
 
 #define draw_HAM_modify_table_bitindex 0
 #define draw_HAM_modify_table_holdmask 4
 
-void BitplaneDraw::TempLores(ULO rasterY, ULO pixel_index, ULO pixel_count)
+void BitplaneDraw::TempLores(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  ULO *tmpline = _tmpframe[rasterY] + pixel_index;
-  UBY *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
+  uint8_t *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
 
-  for (ULO i = 0; i < pixel_count; i++)
+  for (uint32_t i = 0; i < pixel_count; i++)
   {
-    ULO pixel_color = graph_color_shadow[playfield[i]>>2];
+    uint32_t pixel_color = graph_color_shadow[playfield[i]>>2];
 
     tmpline[0] = pixel_color;
     tmpline[1] = pixel_color;
@@ -54,36 +54,36 @@ void BitplaneDraw::TempLores(ULO rasterY, ULO pixel_index, ULO pixel_count)
   }
 }
 
-void BitplaneDraw::TempLoresDual(ULO rasterY, ULO pixel_index, ULO pixel_count)
+void BitplaneDraw::TempLoresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
-  ULO *tmpline = _tmpframe[rasterY] + pixel_index;
+  uint8_t *draw_dual_translate_ptr = (uint8_t *) draw_dual_translate;
+  uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
 
   if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
   {
     draw_dual_translate_ptr += 0x10000;
   }
 
-  UBY *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
-  UBY *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
-  for (ULO i = 0; i < pixel_count; i++)
+  uint8_t *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
+  for (uint32_t i = 0; i < pixel_count; i++)
   {
-    ULO pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];
+    uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];
     tmpline[0] = pixel_color;
     tmpline[1] = pixel_color;
     tmpline += 2;
   }
 }
 
-void BitplaneDraw::TempLoresHam(ULO rasterY, ULO pixel_index, ULO pixel_count)
+void BitplaneDraw::TempLoresHam(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  ULO bitindex;
-  UBY *holdmask;
-  ULO *tmpline = _tmpframe[rasterY] + pixel_index;
-  static ULO pixel_color;
-  UBY* playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint32_t bitindex;
+  uint8_t *holdmask;
+  uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
+  static uint32_t pixel_color;
+  uint8_t* playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
 
-  for (ULO i = 0; i < pixel_count; i++)
+  for (uint32_t i = 0; i < pixel_count; i++)
   {
     if ((GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[i] & 0xc0) == 0)
     {
@@ -91,9 +91,9 @@ void BitplaneDraw::TempLoresHam(ULO rasterY, ULO pixel_index, ULO pixel_count)
     }
     else
     {
-      holdmask = ((UBY *) draw_HAM_modify_table + ((playfield[i] & 0xc0) >> 3));
-      bitindex = *((ULO *) (holdmask + draw_HAM_modify_table_bitindex));
-      pixel_color &= *((ULO *) (holdmask + draw_HAM_modify_table_holdmask));
+      holdmask = ((uint8_t *) draw_HAM_modify_table + ((playfield[i] & 0xc0) >> 3));
+      bitindex = *((uint32_t *) (holdmask + draw_HAM_modify_table_bitindex));
+      pixel_color &= *((uint32_t *) (holdmask + draw_HAM_modify_table_holdmask));
       pixel_color |= (((playfield[i] & 0x3c) >> 2) << (bitindex & 0xff));
     }
     tmpline[0] = pixel_color;
@@ -102,43 +102,43 @@ void BitplaneDraw::TempLoresHam(ULO rasterY, ULO pixel_index, ULO pixel_count)
   }
 }
 
-void BitplaneDraw::TempHires(ULO rasterY, ULO pixel_index, ULO pixel_count)
+void BitplaneDraw::TempHires(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  ULO *tmpline = _tmpframe[rasterY] + pixel_index;
-  UBY *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
+  uint8_t *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
 
-  for (ULO i = 0; i < pixel_count; i++)
+  for (uint32_t i = 0; i < pixel_count; i++)
   {
-    ULO pixel_color = graph_color_shadow[playfield[i]>>2];
+    uint32_t pixel_color = graph_color_shadow[playfield[i]>>2];
     tmpline[i] = pixel_color;
   }
 }
 
-void BitplaneDraw::TempHiresDual(ULO rasterY, ULO pixel_index, ULO pixel_count)
+void BitplaneDraw::TempHiresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
-  ULO *tmpline = _tmpframe[rasterY] + pixel_index;
+  uint8_t *draw_dual_translate_ptr = (uint8_t *) draw_dual_translate;
+  uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
 
   if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
   {
     draw_dual_translate_ptr += 0x10000;
   }
 
-  UBY *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
-  UBY *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
-  for (ULO i = 0; i < pixel_count; i++)
+  uint8_t *playfield_odd = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
+  for (uint32_t i = 0; i < pixel_count; i++)
   {
-    ULO pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];
+    uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];
     tmpline[i] = pixel_color;
   }
 }
 
-void BitplaneDraw::TempNothing(ULO rasterY, ULO pixel_index, ULO pixel_count)
+void BitplaneDraw::TempNothing(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  ULO *tmpline = _tmpframe[rasterY] + pixel_index;
-  ULO pixel_color = graph_color_shadow[0];
+  uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
+  uint32_t pixel_color = graph_color_shadow[0];
 
-  for (ULO i = 0; i < pixel_count; i++)
+  for (uint32_t i = 0; i < pixel_count; i++)
   {
     tmpline[0] = pixel_color;
     tmpline[1] = pixel_color;
@@ -146,10 +146,10 @@ void BitplaneDraw::TempNothing(ULO rasterY, ULO pixel_index, ULO pixel_count)
   }
 }
 
-void BitplaneDraw::DrawBatch(ULO rasterY, ULO start_cylinder)
+void BitplaneDraw::DrawBatch(uint32_t rasterY, uint32_t start_cylinder)
 {
-  ULO pixel_index = start_cylinder*2;
-  ULO pixel_count = GraphicsContext.Planar2ChunkyDecoder.GetBatchSize();
+  uint32_t pixel_index = start_cylinder*2;
+  uint32_t pixel_count = GraphicsContext.Planar2ChunkyDecoder.GetBatchSize();
 
   if (!GraphicsContext.DIWXStateMachine.IsVisible())
   {
@@ -188,23 +188,23 @@ void BitplaneDraw::DrawBatch(ULO rasterY, ULO start_cylinder)
   }
 }
 
-void BitplaneDraw::TmpFrame(ULO next_line_offset)
+void BitplaneDraw::TmpFrame(uint32_t next_line_offset)
 {
-  ULO real_pitch_in_bytes = next_line_offset/2;
+  uint32_t real_pitch_in_bytes = next_line_offset/2;
 
-  ULO *draw_buffer_first_ptr_local = (ULO *) draw_buffer_info.current_ptr;
-  ULO *draw_buffer_second_ptr_local = (ULO *) (draw_buffer_info.current_ptr + real_pitch_in_bytes);
+  uint32_t *draw_buffer_first_ptr_local = (uint32_t *) draw_buffer_info.current_ptr;
+  uint32_t *draw_buffer_second_ptr_local = (uint32_t *) (draw_buffer_info.current_ptr + real_pitch_in_bytes);
 
-  ULO startx = drawGetInternalClip().left*2;
-  ULO stopx = drawGetInternalClip().right*2;
+  uint32_t startx = drawGetInternalClip().left*2;
+  uint32_t stopx = drawGetInternalClip().right*2;
 
-  for (ULO y = drawGetInternalClip().top; y < drawGetInternalClip().bottom; y++)
+  for (uint32_t y = drawGetInternalClip().top; y < drawGetInternalClip().bottom; y++)
   {
-    ULO *tmpline = _tmpframe[y];
-    for (ULO x = startx; x < stopx; x++)
+    uint32_t *tmpline = _tmpframe[y];
+    for (uint32_t x = startx; x < stopx; x++)
     {
-      ULO index = (x-startx);
-      ULO pixel_color = tmpline[x];
+      uint32_t index = (x-startx);
+      uint32_t pixel_color = tmpline[x];
       draw_buffer_first_ptr_local[index] = pixel_color;
       draw_buffer_second_ptr_local[index] = pixel_color;
     }
@@ -215,7 +215,7 @@ void BitplaneDraw::TmpFrame(ULO next_line_offset)
 
 BitplaneDraw::BitplaneDraw()
 {
-  _tmpframe = new ULO[313][1024];
+  _tmpframe = new uint32_t[313][1024];
 }
 
 BitplaneDraw::~BitplaneDraw()

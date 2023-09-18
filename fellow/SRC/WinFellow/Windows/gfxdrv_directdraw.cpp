@@ -101,17 +101,17 @@ using namespace fellow::api;
 
 struct gfx_drv_ddraw_fullscreen_mode
 {
-  ULO width;
-  ULO height;
-  ULO depth;
-  ULO refresh;
-  ULO redpos;
-  ULO redsize;
-  ULO greenpos;
-  ULO greensize;
-  ULO bluepos;
-  ULO bluesize;
-  ULO pitch;
+  uint32_t width;
+  uint32_t height;
+  uint32_t depth;
+  uint32_t refresh;
+  uint32_t redpos;
+  uint32_t redsize;
+  uint32_t greenpos;
+  uint32_t greensize;
+  uint32_t bluepos;
+  uint32_t bluesize;
+  uint32_t pitch;
 };
 
 typedef struct
@@ -130,8 +130,8 @@ typedef struct
   LPDIRECTDRAWCLIPPER  lpDDClipper;
   felist               *fullscreen_modes;
   gfx_drv_ddraw_fullscreen_mode   *fullscreen_mode;
-  ULO		       buffercount;
-  ULO		       maxbuffercount;
+  uint32_t	       buffercount;
+  uint32_t	       maxbuffercount;
   RECT		       hwnd_clientrect_screen;
   RECT		       hwnd_clientrect_win;
   draw_mode            *drawmode;
@@ -147,14 +147,14 @@ felist               *gfx_drv_ddraw_devices;
 
 bool gfx_drv_ddraw_initialized;
 bool gfx_drv_ddraw_clear_borders;
-ULO gfx_drv_output_width;
-ULO gfx_drv_output_height;
+uint32_t gfx_drv_output_width;
+uint32_t gfx_drv_output_height;
 
 /*==========================================================================*/
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-const STR *gfxDrvDDrawErrorString(HRESULT hResult)
+const char *gfxDrvDDrawErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -263,7 +263,7 @@ const STR *gfxDrvDDrawErrorString(HRESULT hResult)
   return "Not a DirectDraw Error";
 }
 
-void gfxDrvDDrawPrintPixelFlags(DWORD flags, STR *s)
+void gfxDrvDDrawPrintPixelFlags(DWORD flags, char *s)
 {
   s[0] = '\0';
   if (flags & DDPF_ALPHAPIXELS) strcat(s, "(DDPF_ALPHAPIXELS)");
@@ -291,7 +291,7 @@ void gfxDrvDDrawPrintPixelFlags(DWORD flags, STR *s)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void gfxDrvDDrawFailure(const STR *header, HRESULT err)
+void gfxDrvDDrawFailure(const char *header, HRESULT err)
 {
   char s[255];
   sprintf(s, "gfxdrv: %s %s\n", header, gfxDrvDDrawErrorString(err));
@@ -426,7 +426,7 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
 
 void gfxDrvDDrawDeviceInformationDump()
 {
-  STR s[120];
+  char s[120];
 
   sprintf(s, "gfxdrv: DirectDraw devices found: %u\n", listCount(gfx_drv_ddraw_devices));
   fellowAddLog(s);
@@ -618,7 +618,7 @@ bool gfxDrvDDrawObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
 /* Returns fullscreen mode information                                      */
 /*==========================================================================*/
 
-gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawFindFullScreenMode(gfx_drv_ddraw_device *ddraw_device, ULO width, ULO height, ULO depth)
+gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawFindFullScreenMode(gfx_drv_ddraw_device *ddraw_device, uint32_t width, uint32_t height, uint32_t depth)
 {
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
@@ -641,7 +641,7 @@ gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawFindFullScreenMode(gfx_drv_ddraw_devic
 
 void gfxDrvDDrawRegisterFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 {
-  ULO id = 0;
+  uint32_t id = 0;
 
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
@@ -676,9 +676,9 @@ void gfxDrvDDrawRegisterFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_de
 /* Called on emulator startup                                               */
 /*==========================================================================*/
 
-ULO gfxDrvRGBMaskPos(ULO mask)
+uint32_t gfxDrvRGBMaskPos(uint32_t mask)
 {
-  for (ULO i = 0; i < 32; i++)
+  for (uint32_t i = 0; i < 32; i++)
   {
     if (mask & (1 << i))
     {
@@ -688,11 +688,11 @@ ULO gfxDrvRGBMaskPos(ULO mask)
   return 0;
 }
 
-ULO gfxDrvRGBMaskSize(ULO mask)
+uint32_t gfxDrvRGBMaskSize(uint32_t mask)
 {
-  ULO sz = 0;
+  uint32_t sz = 0;
 
-  for (ULO i = 0; i < 32; i++)
+  for (uint32_t i = 0; i < 32; i++)
   {
     if (mask & (1 << i))
     {
@@ -709,7 +709,7 @@ ULO gfxDrvRGBMaskSize(ULO mask)
 void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 {
   list<string> logmessages;
-  STR s[255];
+  char s[255];
 
   sprintf(s, "gfxdrv: DirectDraw fullscreen modes found: %u", listCount(ddraw_device->fullscreen_modes));
   logmessages.emplace_back(s);
@@ -738,16 +738,16 @@ void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 /* Called on emulator startup                                               */
 /*==========================================================================*/
 
-gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawNewFullScreenMode(ULO width,
-  ULO height,
-  ULO depth,
-  ULO refresh,
-  ULO redpos,
-  ULO redsize,
-  ULO greenpos,
-  ULO greensize,
-  ULO bluepos,
-  ULO bluesize)
+gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawNewFullScreenMode(uint32_t width,
+  uint32_t height,
+  uint32_t depth,
+  uint32_t refresh,
+  uint32_t redpos,
+  uint32_t redsize,
+  uint32_t greenpos,
+  uint32_t greensize,
+  uint32_t bluepos,
+  uint32_t bluesize)
 {
   gfx_drv_ddraw_fullscreen_mode *tmpmode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode*>(malloc(sizeof(gfx_drv_ddraw_fullscreen_mode)));
   tmpmode->width = width;
@@ -946,7 +946,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
   return err;
 }
 
-void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_height, gfx_drv_ddraw_device *ddraw_device, RECT& dstwin)
+void gfxDrvDDrawCalculateDestinationRectangle(uint32_t output_width, uint32_t output_height, gfx_drv_ddraw_device *ddraw_device, RECT& dstwin)
 {
   int upscaled_clip_width = 0;
   int upscaled_clip_height = 0;
@@ -1125,7 +1125,7 @@ void gfxDrvDDrawSurfacesRelease(gfx_drv_ddraw_device *ddraw_device)
 /* near full stop depending on the card and driver.                         */
 /*==========================================================================*/
 
-const char *gfxDrvDDrawVideomemLocationStr(ULO pass)
+const char *gfxDrvDDrawVideomemLocationStr(uint32_t pass)
 {
   switch (pass)
   {
@@ -1136,7 +1136,7 @@ const char *gfxDrvDDrawVideomemLocationStr(ULO pass)
   return "unknown memory";
 }
 
-ULO gfxDrvDDrawVideomemLocationFlags(ULO pass)
+uint32_t gfxDrvDDrawVideomemLocationFlags(uint32_t pass)
 {
   switch (pass)
   {
@@ -1151,7 +1151,7 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
 {
   bool result = true;
 
-  ULO pass = 0;
+  uint32_t pass = 0;
   bool buffer_allocated = false;
   while ((pass < 3) && !buffer_allocated)
   {
@@ -1188,7 +1188,7 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
 /* Called before emulation start                                            */
 /*==========================================================================*/
 
-ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
+uint32_t gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
 {
   HRESULT err;
   DDSCAPS ddscaps;
@@ -1204,7 +1204,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
   }
 
   /* Want x backbuffers first, then reduce it until it succeeds */
-  ULO buffer_count_want = (ddraw_device->use_blitter) ? 1 : ddraw_device->maxbuffercount;
+  uint32_t buffer_count_want = (ddraw_device->use_blitter) ? 1 : ddraw_device->maxbuffercount;
   success = false;
   while (buffer_count_want > 0 && !success)
   {
@@ -1295,7 +1295,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
           (ddpf.dwRGBBitCount == 24) ||
           (ddpf.dwRGBBitCount == 32))))
       {
-        STR pixelFormats[512];
+        char pixelFormats[512];
         gfxDrvDDrawPrintPixelFlags(ddpf.dwFlags, pixelFormats);
         fellowAddLog("gfxdrv: Surface has pixelformat flags %s (%.8X), (%d, %d, %d, %d, %d, %d, %d)\n",
           pixelFormats, ddpf.dwFlags, ddpf.dwRGBBitCount, gfxDrvRGBMaskPos(ddpf.dwRBitMask), gfxDrvRGBMaskSize(ddpf.dwRBitMask), gfxDrvRGBMaskPos(ddpf.dwGBitMask), 
@@ -1390,7 +1390,7 @@ void gfxDrvDDrawClearWindowBorders(gfx_drv_ddraw_device *ddraw_device)
 /* Lock the current drawing surface                                         */
 /*==========================================================================*/
 
-UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch)
+uint8_t *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, uint32_t *pitch)
 {
   LPDIRECTDRAWSURFACE lpDDS;
   LPDDSURFACEDESC lpDDSD;
@@ -1441,7 +1441,7 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch)
     }
   }
   *pitch = lpDDSD->lPitch;
-  return (UBY*)lpDDSD->lpSurface;
+  return (uint8_t*)lpDDSD->lpSurface;
 }
 
 
@@ -1529,7 +1529,7 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 // The internal back buffer is always exactly the size of the internal clip times the internal scale factor
 void gfxDrvDDrawGetBufferInformation(draw_buffer_information *buffer_information)
 {
-  ULO internal_scale_factor = drawGetInternalScaleFactor();
+  uint32_t internal_scale_factor = drawGetInternalScaleFactor();
   buffer_information->width = drawGetInternalClip().GetWidth()*internal_scale_factor;
   buffer_information->height = drawGetInternalClip().GetHeight()*internal_scale_factor;
   // color information set later by the surface init code
@@ -1596,10 +1596,10 @@ void gfxDrvDDrawClearCurrentBuffer()
 /* Locks surface and puts a valid framebuffer pointer in framebuffer        */
 /*==========================================================================*/
 
-UBY *gfxDrvDDrawValidateBufferPointer()
+uint8_t *gfxDrvDDrawValidateBufferPointer()
 {
-  ULO pitch;
-  UBY *buffer = gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device_current, &pitch);
+  uint32_t pitch;
+  uint8_t *buffer = gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device_current, &pitch);
   if (buffer != nullptr)
   {
     draw_buffer_info.pitch = pitch;
@@ -1610,14 +1610,14 @@ UBY *gfxDrvDDrawValidateBufferPointer()
     {
       if ((PTR_TO_INT(buffer) & 0x7) != 0)
       {
-        buffer = (UBY *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(7)) + 8;
+        buffer = (uint8_t *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(7)) + 8;
       }
     }
     if (gfx_drv_ddraw_device_current->drawmode->bits == 15 || gfx_drv_ddraw_device_current->drawmode->bits == 16)
     {
       if ((PTR_TO_INT(buffer) & 0x3) != 0)
       {
-        buffer = (UBY *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(3)) + 4;
+        buffer = (uint8_t *)(PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(3)) + 4;
       }
     }
   }
@@ -1696,7 +1696,7 @@ void gfxDrvDDrawSetMode(draw_mode *dm, bool windowed)
   * That is why gfxDrvEmulationStart is split in two.
   ***************************************************************************/
 
-bool gfxDrvDDrawEmulationStart(ULO maxbuffercount)
+bool gfxDrvDDrawEmulationStart(uint32_t maxbuffercount)
 {
   gfx_drv_ddraw_device_current->maxbuffercount = maxbuffercount;
   return true;
@@ -1710,7 +1710,7 @@ bool gfxDrvDDrawEmulationStart(ULO maxbuffercount)
 
 unsigned int gfxDrvDDrawEmulationStartPost()
 {
-  ULO buffers = gfxDrvDDrawSetMode(gfx_drv_ddraw_device_current);
+  uint32_t buffers = gfxDrvDDrawSetMode(gfx_drv_ddraw_device_current);
 
   if (buffers == 0)
   {
@@ -1760,7 +1760,7 @@ void gfxDrvDDrawShutdown()
   }
 }
 
-bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, ULO lDisplayScale, DWORD bits, const STR *filename)
+bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, DWORD bits, const char *filename)
 {
   BITMAPFILEHEADER bfh;
   BITMAPINFOHEADER bih;
@@ -1838,7 +1838,7 @@ cleanup:
 }
 
 static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface,
-  DWORD x, DWORD y, DWORD width, DWORD height, ULO lDisplayScale, const STR *filename) {
+  DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, const char *filename) {
   DDSURFACEDESC ddsd;
   HRESULT hResult = DD_OK;
   HDC surfDC = NULL;
@@ -1861,11 +1861,11 @@ static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface
   return bSuccess;
 }
 
-bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const STR *filename) 
+bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char *filename) 
 {
   bool bResult;
   DWORD width = 0, height = 0, x = 0, y = 0;
-  ULO lDisplayScale;
+  uint32_t lDisplayScale;
 
   if (bTakeFilteredScreenshot) {
 #ifdef RETRO_PLATFORM

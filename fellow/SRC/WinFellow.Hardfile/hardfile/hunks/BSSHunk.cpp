@@ -7,7 +7,7 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::hunks
 {
-  ULO BSSHunk::GetID()
+  uint32_t BSSHunk::GetID()
   {
     return ID;
   }
@@ -15,14 +15,14 @@ namespace fellow::hardfile::hunks
   void BSSHunk::Parse(RawDataReader& rawDataReader)
   {
     _contentSizeInLongwords = rawDataReader.GetNextByteswappedLong();
-    ULO size = GetContentSizeInBytes();
-    _rawData.reset(new UBY[size]);
+    uint32_t size = GetContentSizeInBytes();
+    _rawData.reset(new uint8_t[size]);
     memset(_rawData.get(), 0, size);
 
     Service->Log.AddLogDebug("fhfile: RDB filesystem - BSS hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, size, GetAllocateSizeInBytes());
   }
 
-  BSSHunk::BSSHunk(ULO allocateSizeInLongwords)
+  BSSHunk::BSSHunk(uint32_t allocateSizeInLongwords)
     : InitialHunk(allocateSizeInLongwords)
   {
   }

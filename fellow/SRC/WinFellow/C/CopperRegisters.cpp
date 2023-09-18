@@ -17,7 +17,7 @@ COPCON
 $dff02e
 */
 
-void wcopcon(UWO data, ULO address)
+void wcopcon(uint16_t data, uint32_t address)
 {
   copper_registers.copcon = data;
 }
@@ -29,7 +29,7 @@ COP1LC
 $dff080
 */
 
-void wcop1lch(UWO data, ULO address)
+void wcop1lch(uint16_t data, uint32_t address)
 {
   copper_registers.cop1lc = chipsetReplaceHighPtr(copper_registers.cop1lc, data);
   copper->NotifyCop1lcChanged();
@@ -37,7 +37,7 @@ void wcop1lch(UWO data, ULO address)
 
 /* $dff082 */
 
-void wcop1lcl(UWO data, ULO address)
+void wcop1lcl(uint16_t data, uint32_t address)
 {
   copper_registers.cop1lc = chipsetReplaceLowPtr(copper_registers.cop1lc, data);
   copper->NotifyCop1lcChanged();
@@ -51,14 +51,14 @@ COP2LC
 $dff084
 */
 
-void wcop2lch(UWO data, ULO address)
+void wcop2lch(uint16_t data, uint32_t address)
 {
   copper_registers.cop2lc = chipsetReplaceHighPtr(copper_registers.cop2lc, data);
 }
 
 /* $dff082 */
 
-void wcop2lcl(UWO data, ULO address)
+void wcop2lcl(uint16_t data, uint32_t address)
 {
   copper_registers.cop2lc = chipsetReplaceLowPtr(copper_registers.cop2lc, data);
 }
@@ -70,12 +70,12 @@ COPJMP1
 $dff088
 */
 
-void wcopjmp1(UWO data, ULO address)
+void wcopjmp1(uint16_t data, uint32_t address)
 {
   copper->Load(copper_registers.cop1lc);
 }
 
-UWO rcopjmp1(ULO address)
+uint16_t rcopjmp1(uint32_t address)
 {
   copper->Load(copper_registers.cop1lc);
   return 0;
@@ -89,12 +89,12 @@ $dff08A
 */
 
 
-void wcopjmp2(UWO data, ULO address)
+void wcopjmp2(uint16_t data, uint32_t address)
 {
   copper->Load(copper_registers.cop2lc);
 }
 
-UWO rcopjmp2(ULO address)
+uint16_t rcopjmp2(uint32_t address)
 {
   copper->Load(copper_registers.cop2lc);
   return 0;

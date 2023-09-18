@@ -6,23 +6,23 @@
 class LineExactCopper : public Copper
 {
 private:
-  static ULO cycletable[16];
+  static uint32_t cycletable[16];
 
   /*============================================================================*/
   /* Translation table for raster ypos to cycle translation                     */
   /*============================================================================*/
 
-  ULO ytable[512];
+  uint32_t ytable[512];
 
   void YTableInit();
-  ULO GetCheckedWaitCycle(ULO waitCycle);
+  uint32_t GetCheckedWaitCycle(uint32_t waitCycle);
   void RemoveEvent();
-  void InsertEvent(ULO cycle);
+  void InsertEvent(uint32_t cycle);
 
 public:
   virtual void NotifyDMAEnableChanged(bool new_dma_enable_state);
   virtual void NotifyCop1lcChanged();
-  virtual void Load(ULO new_copper_pc);
+  virtual void Load(uint32_t new_copper_pc);
   virtual void EventHandler();
 
   virtual void EndOfFrame();

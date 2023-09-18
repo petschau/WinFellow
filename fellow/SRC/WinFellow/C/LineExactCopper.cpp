@@ -7,7 +7,7 @@
 #include "BLIT.H"
 #include "CoreHost.h"
 
-ULO LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
+uint32_t LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
 
 void LineExactCopper::YTableInit()
 {
@@ -28,7 +28,7 @@ void LineExactCopper::RemoveEvent()
   }
 }
 
-void LineExactCopper::InsertEvent(ULO cycle)
+void LineExactCopper::InsertEvent(uint32_t cycle)
 {
   if (cycle != BUS_CYCLE_DISABLE)
   {
@@ -37,7 +37,7 @@ void LineExactCopper::InsertEvent(ULO cycle)
   }
 }
 
-void LineExactCopper::Load(ULO new_copper_pc)
+void LineExactCopper::Load(uint32_t new_copper_pc)
 {
   copper_registers.copper_pc = new_copper_pc;
 
@@ -56,7 +56,7 @@ void LineExactCopper::Load(ULO new_copper_pc)
   }
 }
 
-ULO LineExactCopper::GetCheckedWaitCycle(ULO waitCycle)
+uint32_t LineExactCopper::GetCheckedWaitCycle(uint32_t waitCycle)
 {
   if (waitCycle <= bus.cycle)
   {
@@ -129,14 +129,14 @@ void LineExactCopper::NotifyCop1lcChanged()
 
 void LineExactCopper::EventHandler()
 {
-  ULO bswapRegC;
-  ULO bswapRegD;
+  uint32_t bswapRegC;
+  uint32_t bswapRegD;
   bool correctLine;
-  ULO maskedY;
-  ULO maskedX;
-  ULO waitY;
-  ULO currentY = busGetRasterY();
-  ULO currentX = busGetRasterX();
+  uint32_t maskedY;
+  uint32_t maskedX;
+  uint32_t waitY;
+  uint32_t currentY = busGetRasterY();
+  uint32_t currentX = busGetRasterX();
 
   copperEvent.cycle = BUS_CYCLE_DISABLE;
   if (cpuEvent.cycle != BUS_CYCLE_DISABLE)
@@ -163,7 +163,7 @@ void LineExactCopper::EventHandler()
       {
         // move data to Blitter register
         InsertEvent(cycletable[(_core.Registers.BplCon0 >> 12) & 0xf] + bus.cycle);
-        memory_iobank_write[bswapRegC >> 1]((UWO)bswapRegD, bswapRegC);
+        memory_iobank_write[bswapRegC >> 1]((uint16_t)bswapRegD, bswapRegC);
       }
     }
     else
@@ -206,8 +206,8 @@ void LineExactCopper::EventHandler()
           //maskedY = graph_raster_y;
           maskedY = currentY;
 
-          *((UBY*)&maskedY) &= (UBY)(bswapRegD >> 8);
-          if (*((UBY*)&maskedY) > ((UBY)(bswapRegC >> 8)))
+          *((uint8_t*)&maskedY) &= (uint8_t)(bswapRegD >> 8);
+          if (*((uint8_t*)&maskedY) > ((uint8_t)(bswapRegC >> 8)))
           {
             // we have passed the line, set up next instruction immediately
             // cexit
@@ -245,9 +245,9 @@ void LineExactCopper::EventHandler()
 
                 // get missing bits
                 maskedY = (currentY | 0x100);
-                *((UBY*)&maskedY) &= (bswapRegD >> 8);
+                *((uint8_t*)&maskedY) &= (bswapRegD >> 8);
                 // mask them into vertical position
-                *((UBY*)&maskedY) |= (bswapRegC >> 8);
+                *((uint8_t*)&maskedY) |= (bswapRegC >> 8);
                 maskedY *= busGetCyclesInThisLine();
                 bswapRegC &= 0xfe;
                 bswapRegD &= 0xfe;
@@ -265,7 +265,7 @@ void LineExactCopper::EventHandler()
               }
             }
           }
-          else if (*((UBY*)&maskedY) < (UBY)(bswapRegC >> 8))
+          else if (*((uint8_t*)&maskedY) < (uint8_t)(bswapRegC >> 8))
           {
             // we are above the line, calculate the cycle when wait is true
             // notnever
@@ -275,9 +275,9 @@ void LineExactCopper::EventHandler()
 
             // get bits that is not masked out
             maskedY = currentY;
-            *((UBY*)&maskedY) &= (bswapRegD >> 8);
+            *((uint8_t*)&maskedY) &= (bswapRegD >> 8);
             // mask in bits from waitgraph_raster_y
-            *((UBY*)&maskedY) |= (bswapRegC >> 8);
+            *((uint8_t*)&maskedY) |= (bswapRegC >> 8);
             waitY = ytable[maskedY];
 
             // when wait is on same line, use masking stuff on graph_raster_x
@@ -313,9 +313,9 @@ void LineExactCopper::EventHandler()
             correctLine = true;
             // use mask on graph_raster_x
             maskedX = currentX;
-            *((UBY*)&maskedX) &= (bswapRegD & 0xff);
+            *((uint8_t*)&maskedX) &= (bswapRegD & 0xff);
             // compare masked x with wait x
-            if (*((UBY*)&maskedX) < (UBY)(bswapRegC & 0xff))
+            if (*((uint8_t*)&maskedX) < (uint8_t)(bswapRegC & 0xff))
             {
               // here the wait position is not reached yet, calculate cycle when wait is true
               // previous position checks should assure that a calculated position is not less than the current cycle
@@ -327,9 +327,9 @@ void LineExactCopper::EventHandler()
 
               // get bits that is not masked out
               maskedY = currentY;
-              *((UBY*)&maskedY) &= (UBY)(bswapRegD >> 8);
+              *((uint8_t*)&maskedY) &= (uint8_t)(bswapRegD >> 8);
               // mask in bits from waitgraph_raster_y
-              *((UBY*)&maskedY) |= (UBY)(bswapRegC >> 8);
+              *((uint8_t*)&maskedY) |= (uint8_t)(bswapRegC >> 8);
               waitY = ytable[maskedY];
 
               // when wait is on same line, use masking stuff on graph_raster_x
@@ -396,9 +396,9 @@ void LineExactCopper::EventHandler()
 
                   // get missing bits
                   maskedY = (currentY | 0x100);
-                  *((UBY*)&maskedY) &= (bswapRegD >> 8);
+                  *((uint8_t*)&maskedY) &= (bswapRegD >> 8);
                   // mask them into vertical position
-                  *((UBY*)&maskedY) |= (bswapRegC >> 8);
+                  *((uint8_t*)&maskedY) |= (bswapRegC >> 8);
                   maskedY *= busGetCyclesInThisLine();
                   bswapRegC &= 0xfe;
                   bswapRegD &= 0xfe;
@@ -433,15 +433,15 @@ void LineExactCopper::EventHandler()
           // used to indicate correct line or not
           correctLine = false;
           maskedY = currentY;
-          *((UBY*)&maskedY) &= ((bswapRegD >> 8));
-          if (*((UBY*)&maskedY) > (UBY)(bswapRegC >> 8))
+          *((uint8_t*)&maskedY) &= ((bswapRegD >> 8));
+          if (*((uint8_t*)&maskedY) > (uint8_t)(bswapRegC >> 8))
           {
             // do skip
             // we have passed the line, set up next instruction immediately
             copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
             InsertEvent(bus.cycle + 4);
           }
-          else if (*((UBY *)&maskedY) < (UBY)(bswapRegC >> 8))
+          else if (*((uint8_t *)&maskedY) < (uint8_t)(bswapRegC >> 8))
           {
             // above line, don't skip
             InsertEvent(bus.cycle + 4);
@@ -457,8 +457,8 @@ void LineExactCopper::EventHandler()
             // use mask on graph_raster_x
             // Compare masked x with wait x
             maskedX = currentX;
-            *((UBY*)&maskedX) &= bswapRegD;
-            if (*((UBY*)&maskedX) >= (UBY)(bswapRegC & 0xff))
+            *((uint8_t*)&maskedX) &= bswapRegD;
+            if (*((uint8_t*)&maskedX) >= (uint8_t)(bswapRegC & 0xff))
             {
               // position reached, set up next instruction immediately
               copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);

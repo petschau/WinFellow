@@ -164,9 +164,9 @@ void cgProfileLogFooter()
 
 void cgProfileDeclare(char *name)
 {
-  fprintf(dataf, "LLO %s_profile_tmp = 0;\n", name);
-  fprintf(dataf, "LLO %s_profile = 0;\n", name);
-  fprintf(dataf, "LON %s_profile_times = 0;\n", name);
+  fprintf(dataf, "int64_t %s_profile_tmp = 0;\n", name);
+  fprintf(dataf, "int64_t %s_profile = 0;\n", name);
+  fprintf(dataf, "int32_t %s_profile_times = 0;\n", name);
 }
 
 void cgProfileLogLine(char *name)
@@ -197,7 +197,7 @@ void cgSetDisassemblyFunction(unsigned int opcode, char *dis_func_no)
 void cgDisFunc(void)
 {
   unsigned int opcode;
-  fprintf(disfuncf, "static UBY cpu_dis_func_tab[65536] = \n{");
+  fprintf(disfuncf, "static uint8_t cpu_dis_func_tab[65536] = \n{");
   for (opcode = 0; opcode < 65536; opcode += 16)
   {
     fprintf(disfuncf,
@@ -234,12 +234,12 @@ void cgMakeFunctionName(char *fname, char *name, unsigned int opcode)
 
 void cgDeclareFunction(char *fname)
 {
-  fprintf(declf, "static void %s(ULO*opc_data);\n", fname);
+  fprintf(declf, "static void %s(uint32_t*opc_data);\n", fname);
 }
 
 void cgMakeFunctionHeader(char *fname, char *templ_name)
 {
-  fprintf(codef, "static void %s(ULO*opc_data)\n", fname);
+  fprintf(codef, "static void %s(uint32_t*opc_data)\n", fname);
   fprintf(codef, "{\n");
   //cgProfileIn(templ_name);
   cgProfileIn(fname);
@@ -308,17 +308,17 @@ unsigned int cgEAReg2(unsigned int eano, unsigned int eareg)
 
 char *cgSize(unsigned int size)
 {
-  if (size == 1) return "UBY";
-  else if (size == 2) return "UWO";
-  else if (size == 4) return "ULO";
+  if (size == 1) return "uint8_t";
+  else if (size == 2) return "uint16_t";
+  else if (size == 4) return "uint32_t";
   return "ERROR_cgSize()";
 }
 
 char *cgCastSize(unsigned int size)
 {
-  if (size == 1) return "(UBY)";
-  else if (size == 2) return "(UWO)";
-  else if (size == 4) return "(ULO)";
+  if (size == 1) return "(uint8_t)";
+  else if (size == 2) return "(uint16_t)";
+  else if (size == 4) return "(uint32_t)";
   return "ERROR_cgCastSize()";
 }
 
@@ -370,13 +370,13 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
     // The source value is read from the specified ea mode below.
     // Declare 32-bit and set up sign extension from the specified size.
     // The source size will never be a byte.
-    fprintf(codef, "\tULO src = %s%s", (size == 4) ? "" : "(ULO)(LON)", (size == 2) ? "(WOR)" : "");
+    fprintf(codef, "\tuint32_t src = %s%s", (size == 4) ? "" : "(uint32_t)(int32_t)", (size == 2) ? "(int16_t)" : "");
     if (size == 1) fprintf(codef, "BUG! cgFetchSrc(), byte size used with regtype 'A'");
   }
   else if (regtype == 'B')
   {
     // The source value is a Quick constant, to be used on an address register. (Always 32-bit)
-    fprintf(codef, "\tULO src = opc_data[%d];\n", reg_cpu_data_index);
+    fprintf(codef, "\tuint32_t src = opc_data[%d];\n", reg_cpu_data_index);
     return;
   }
   else if (regtype == 'Q')
@@ -395,7 +395,7 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   if (regtype == 'I' || cg_ea_immediate[eano])
   {
     // Read source value from an immediate word.
-    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
+    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(uint8_t)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (regtype == '2')
   {
@@ -439,17 +439,17 @@ void cgFetchDstEa(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned
   if (eano >= 3 && eano <= 4)
   {
     // Save destination ea, pre or post increment mode.
-    fprintf(codef, "\tULO dstea = %s(opc_data[%d], %d);\n", cgCalculateEA(eano), eareg_cpu_data_index, size);
+    fprintf(codef, "\tuint32_t dstea = %s(opc_data[%d], %d);\n", cgCalculateEA(eano), eareg_cpu_data_index, size);
   }
   else if (eano == 2 || eano == 5 || eano == 6)
   {
     // Save destination ea.
-    fprintf(codef, "\tULO dstea = %s(opc_data[%d]);\n", cgCalculateEA(eano), eareg_cpu_data_index);
+    fprintf(codef, "\tuint32_t dstea = %s(opc_data[%d]);\n", cgCalculateEA(eano), eareg_cpu_data_index);
   }
   else if (eano >= 7 && eano < 11)
   {
     // Save destination ea.
-    fprintf(codef, "\tULO dstea = %s();\n", cgCalculateEA(eano));
+    fprintf(codef, "\tuint32_t dstea = %s();\n", cgCalculateEA(eano));
   }
 }
 
@@ -457,13 +457,13 @@ void cgFetchDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
 {
   cgFetchDstEa(eano, eareg_cpu_data_index, size);
 
-  // Declare dst value and a cast, for address register, use ULO for all.
-  fprintf(codef, "\t%s dst = ", (eano == 1) ? "ULO" : cgSize(size));
+  // Declare dst value and a cast, for address register, use uint32_t for all.
+  fprintf(codef, "\t%s dst = ", (eano == 1) ? "uint32_t" : cgSize(size));
 
   // Fetch operand
   if (cg_ea_immediate[eano])
   {
-    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
+    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(uint8_t)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (eano == 1)
   {
@@ -800,7 +800,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
+	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\uint16_t ext = cpuGetNextWord();\n");
 	    cgFetchSrc(eano, eareg_cpu_data_index, size, regtype, reg_cpu_data_index);
 	    if (stricmp(i.instruction_name, "DIVL") != 0) cgFetchDst((regtype=='A') ? 1:0, reg_cpu_data_index, (regtype == 'V') ? 4 : size);
 	  }
@@ -836,7 +836,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  else if ((stricmp(i.instruction_name, "MULU") == 0) ||
 		   (stricmp(i.instruction_name, "MULS") == 0))
 	  {
-	    fprintf(codef, "\tULO res = %s(dst, src, %d);\n", i.function, cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
+	    fprintf(codef, "\tuint32_t res = %s(dst, src, %d);\n", i.function, cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
 	    cgStoreDst(0, reg_cpu_data_index, 4, "res");
 	  }
 	  else
@@ -1066,7 +1066,7 @@ unsigned int cgMove(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (ULO)(LON)(WOR)src);\n", dstreg_cpu_data_index);
+	    if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (uint32_t)(int32_t)(int16_t)src);\n", dstreg_cpu_data_index);
 	    else fprintf(codef, "\tcpuSetAReg(opc_data[%d], src);\n", dstreg_cpu_data_index);
 	  }
 	  cgMakeInstructionTimeAbs(cgGetMoveTime(size, srceano, dsteano));
@@ -1138,7 +1138,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 
       if (stricmp(i.instruction_name, "MOVEM") == 0)
       {
-	fprintf(codef, "\tUWO regs = cpuGetNextWord();\n");
+	fprintf(codef, "\uint16_t regs = cpuGetNextWord();\n");
       }
       else if ((stricmp(i.instruction_name, "MULL") == 0)
 	       || (stricmp(i.instruction_name, "MOVES") == 0)
@@ -1149,7 +1149,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	       || (strnicmp(i.instruction_name, "BF", 2) == 0))
       {
 	// Read extension word _before_ ea calculation.
-	  fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
+	  fprintf(codef, "\uint16_t ext = cpuGetNextWord();\n");
       }
 
       // Generate fetch
@@ -1197,7 +1197,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	if (stricmp(i.instruction_name, "TST") == 0 && size == 2 && eano == 1)
 	{
 	  // Special case, TST.W Ax
-	  fprintf(codef, "\tUWO dst = (UWO)cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
+	  fprintf(codef, "\uint16_t dst = (uint16_t)cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
 	}
 	else
 	{
@@ -1389,7 +1389,7 @@ unsigned int cgMoveQ(cpu_data *cpudata, cpu_instruction_info i)
   cgMakeFunctionHeader(fname, templ_name);
 
   fprintf(codef, "\tcpuSetDReg(opc_data[%d], opc_data[%d]);\n", reg_cpu_data_index, imm_cpu_data_index);
-  fprintf(codef, "\tcpuSetFlagsAbs((UWO)opc_data[%d]);\n", flags_cpu_data_index);
+  fprintf(codef, "\tcpuSetFlagsAbs((uint16_t)opc_data[%d]);\n", flags_cpu_data_index);
   cgMakeInstructionTimeAbs(4);
   cgMakeFunctionFooter(fname, templ_name);
 
@@ -1832,10 +1832,10 @@ void cgData()
 {
   unsigned int i;
 
-  fprintf(dataf, "typedef void (*cpuInstructionFunction)(ULO*);\n");
+  fprintf(dataf, "typedef void (*cpuInstructionFunction)(uint32_t*);\n");
   fprintf(dataf, "typedef struct cpu_data_struct\n{\n");
   fprintf(dataf, "\tcpuInstructionFunction instruction_func;\n");
-  fprintf(dataf, "\tULO data[3];\n} cpuOpcodeData;\n\n");
+  fprintf(dataf, "\tuint32_t data[3];\n} cpuOpcodeData;\n\n");
 
   fprintf(dataf, "cpuOpcodeData cpu_opcode_data[65536] = {\n");
   for (i = 0; i < 65536; ++i)
@@ -1843,7 +1843,7 @@ void cgData()
     fprintf(dataf, "{%s,{%uU,%uU,%uU}}%s\n", cpu_opcode_data[i].name, cpu_opcode_data[i].data[0], cpu_opcode_data[i].data[1], cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
   }
   fprintf(dataf, "};\n");
-  fprintf(dataf, "UBY cpu_opcode_model_mask[65536] = {\n");
+  fprintf(dataf, "uint8_t cpu_opcode_model_mask[65536] = {\n");
   for (i = 0; i < 65536; i = i + 16)
   {
     fprintf(dataf, 

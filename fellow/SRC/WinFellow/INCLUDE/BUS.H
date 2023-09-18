@@ -19,8 +19,8 @@ void busEndOfLine(void);
 void busEndOfFrame(void);
 
 #ifdef ENABLE_BUS_EVENT_LOGGING
-extern void busLogCpu(STR *s);
-extern void busLogCpuException(STR *s);
+extern void busLogCpu(char *s);
+extern void busLogCpuException(char *s);
 #endif
 
 typedef void (*busEventHandler)(void);
@@ -28,8 +28,8 @@ typedef struct bus_event_struct
 {
   struct bus_event_struct *next;
   struct bus_event_struct *prev;
-  ULO cycle;
-  ULO priority;
+  uint32_t cycle;
+  uint32_t priority;
   busEventHandler handler;
 } bus_event;
 
@@ -39,17 +39,17 @@ extern void busRemoveEvent(bus_event *event);
 
 typedef struct bus_screen_limits_
 {
-  ULO cycles_in_this_line;
-  ULO cycles_in_this_frame;
-  ULO lines_in_this_frame;
-  ULO max_cycles_in_line;
-  ULO max_lines_in_frame;
+  uint32_t cycles_in_this_line;
+  uint32_t cycles_in_this_frame;
+  uint32_t lines_in_this_frame;
+  uint32_t max_cycles_in_line;
+  uint32_t max_lines_in_frame;
 } bus_screen_limits;
 
 typedef struct bus_state_
 {
-  ULL frame_no;
-  ULO cycle;
+  uint64_t frame_no;
+  uint32_t cycle;
   bus_screen_limits *screen_limits;
   bus_event *events;
 } bus_state;
@@ -59,16 +59,16 @@ extern bus_state bus;
 extern void busRun(void);
 extern void busDebugStepOneInstruction(void);
 
-extern ULO busGetCycle(void);
-extern ULO busGetRasterX(void);
-extern ULO busGetRasterY(void);
-extern ULL busGetRasterFrameCount(void);
+extern uint32_t busGetCycle(void);
+extern uint32_t busGetRasterX(void);
+extern uint32_t busGetRasterY(void);
+extern uint64_t busGetRasterFrameCount(void);
 
-extern ULO busGetCyclesInThisLine(void);
-extern ULO busGetLinesInThisFrame(void);
-extern ULO busGetCyclesInThisFrame(void);
+extern uint32_t busGetCyclesInThisLine(void);
+extern uint32_t busGetLinesInThisFrame(void);
+extern uint32_t busGetCyclesInThisFrame(void);
 
-extern ULO busGetMaxLinesInFrame(void);
+extern uint32_t busGetMaxLinesInFrame(void);
 
 extern void busSetScreenLimits(bool is_long_frame);
 

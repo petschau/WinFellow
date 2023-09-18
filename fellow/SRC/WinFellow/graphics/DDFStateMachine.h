@@ -38,25 +38,25 @@ class DDFStateMachine : public GraphicsEvent
 {
 private:
   DDFStates _state;
-  ULO _minValidX;
-  ULO _maxValidX;
+  uint32_t _minValidX;
+  uint32_t _maxValidX;
 
-  void Log(ULO line, ULO cylinder);
-  ULO GetStartPosition(void);
-  ULO GetStopPosition(void);
-  ULO GetFetchSize(void);
-  void SetState(DDFStates newState, ULO arriveTime);
-  void SetStateWaitingForFirstFetch(ULO rasterY, ULO cylinder);
-  void SetStateWaitingForNextFetch(ULO rasterY, ULO cylinder);
-  void DoStateWaitingForFirstFetch(ULO rasterY, ULO cylinder);
-  void DoStateWaitingForNextFetch(ULO rasterY, ULO cylinder);
+  void Log(uint32_t line, uint32_t cylinder);
+  uint32_t GetStartPosition(void);
+  uint32_t GetStopPosition(void);
+  uint32_t GetFetchSize(void);
+  void SetState(DDFStates newState, uint32_t arriveTime);
+  void SetStateWaitingForFirstFetch(uint32_t rasterY, uint32_t cylinder);
+  void SetStateWaitingForNextFetch(uint32_t rasterY, uint32_t cylinder);
+  void DoStateWaitingForFirstFetch(uint32_t rasterY, uint32_t cylinder);
+  void DoStateWaitingForNextFetch(uint32_t rasterY, uint32_t cylinder);
 
 public:
   bool CanRead(void);
   void ChangedValue(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO cylinder);
+  virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
   void SoftReset(void);
   void HardReset(void);

@@ -17,7 +17,7 @@ class Copper
 public:
   virtual void NotifyDMAEnableChanged(bool new_dma_enable_state) = 0;
   virtual void NotifyCop1lcChanged() = 0;
-  virtual void Load(ULO new_copper_pc) = 0;
+  virtual void Load(uint32_t new_copper_pc) = 0;
   virtual void EventHandler() = 0;
 
   virtual void EndOfFrame() = 0;

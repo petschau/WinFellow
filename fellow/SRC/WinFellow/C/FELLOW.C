@@ -109,7 +109,7 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode(void) {
 
 #define WRITE_LOG_BUF_SIZE 512
 
-void fellowAddLog2(STR* msg)
+void fellowAddLog2(char* msg)
 {
   Service->Log.AddLog2(msg);
 }
@@ -398,8 +398,8 @@ void fellowStepOver(void)
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
-    ULO current_pc = cpuGetPC();
-    ULO over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
+    uint32_t current_pc = cpuGetPC();
+    uint32_t over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
     while ((cpuGetPC() != over_pc) && !fellow_request_emulation_stop)
     {
       busDebugStepOneInstruction();
@@ -414,7 +414,7 @@ void fellowStepOver(void)
 /* Run until we crash or is exited in debug-mode                              */
 /*============================================================================*/
 
-void fellowRunDebug(ULO breakpoint) {
+void fellowRunDebug(uint32_t breakpoint) {
   fellowRequestEmulationStopClear();
   if (fellowGetPreStartReset()) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
@@ -455,7 +455,7 @@ static void fellowDrawFailed(void) {
 /* Save statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowSaveState(STR *filename)
+BOOLE fellowSaveState(char *filename)
 {
   FILE *F = fopen(filename, "wb");
   
@@ -476,7 +476,7 @@ BOOLE fellowSaveState(STR *filename)
 /* Load statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowLoadState(STR *filename)
+BOOLE fellowLoadState(char *filename)
 {
   FILE *F = fopen(filename, "rb");
   

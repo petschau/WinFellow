@@ -50,14 +50,14 @@
  *    This hook points to interruptRaisePending(). Continues as Case 1.
  */
 
-UWO intena;
-UWO intreq;
-ULO interrupt_pending_cpu_level;
-ULO interrupt_pending_chip_interrupt_number;
+uint16_t intena;
+uint16_t intreq;
+uint32_t interrupt_pending_cpu_level;
+uint32_t interrupt_pending_chip_interrupt_number;
 static unsigned int interrupt_cpu_level[16] = {1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7};
 
 
-STR *interruptGetInterruptName(ULO interrupt_number)
+char *interruptGetInterruptName(uint32_t interrupt_number)
 {
   switch (interrupt_number)
   {
@@ -81,22 +81,22 @@ STR *interruptGetInterruptName(ULO interrupt_number)
   return "Illegal interrupt source!";
 }
 
-void interruptSetPendingChipInterruptNumber(ULO pending_chip_interrupt_number)
+void interruptSetPendingChipInterruptNumber(uint32_t pending_chip_interrupt_number)
 {
   interrupt_pending_chip_interrupt_number = pending_chip_interrupt_number;
 }
 
-ULO interruptGetPendingChipInterruptNumber(void)
+uint32_t interruptGetPendingChipInterruptNumber(void)
 {
   return interrupt_pending_chip_interrupt_number;
 }
 
-void interruptSetPendingCpuLevel(ULO pending_cpu_level)
+void interruptSetPendingCpuLevel(uint32_t pending_cpu_level)
 {
   interrupt_pending_cpu_level = pending_cpu_level;
 }
 
-ULO interruptGetPendingCpuLevel(void)
+uint32_t interruptGetPendingCpuLevel(void)
 {
   return interrupt_pending_cpu_level;
 }
@@ -121,27 +121,27 @@ bool interruptMasterSwitchIsEnabled(void)
   return !!(intena & 0x4000);
 }
 
-bool interruptHasSetModeBit(UWO interrupt_bitmask)
+bool interruptHasSetModeBit(uint16_t interrupt_bitmask)
 {
   return !!(interrupt_bitmask & 0x8000);
 }
 
-UWO interruptGetPendingBitMask(void)
+uint16_t interruptGetPendingBitMask(void)
 {
   return intena & intreq;
 }
 
-UWO interruptSetBits(UWO original, UWO set_bitmask)
+uint16_t interruptSetBits(uint16_t original, uint16_t set_bitmask)
 {
   return original | (set_bitmask & 0x7fff);
 }
 
-UWO interruptClearBits(UWO original, UWO clear_bitmask)
+uint16_t interruptClearBits(uint16_t original, uint16_t clear_bitmask)
 {
   return original & ~(clear_bitmask & 0x7fff);
 }
 
-BOOLE interruptIsRequested(UWO bitmask)
+BOOLE interruptIsRequested(uint16_t bitmask)
 {
   return !!(intreq & bitmask);
 }
@@ -165,7 +165,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
     return;
   }
 
-  UWO pending_chip_interrupts = interruptGetPendingBitMask();
+  uint16_t pending_chip_interrupts = interruptGetPendingBitMask();
   if (pending_chip_interrupts == 0)
   {
     return;
@@ -194,7 +194,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
   }
 
   // Evaluate which interrupt is next
-  ULO current_cpu_level = cpuGetIrqLevel();
+  uint32_t current_cpu_level = cpuGetIrqLevel();
   if (current_cpu_level == 7)
   {
     return;
@@ -252,12 +252,12 @@ $dff09c (Write) / $dff01e (Read)
 Paula
 */
 
-UWO rintreqr(ULO address)
+uint16_t rintreqr(uint32_t address)
 {
   return intreq;
 }
 
-void wintreq_direct(UWO data, ULO address, bool delayIRQ)
+void wintreq_direct(uint16_t data, uint32_t address, bool delayIRQ)
 {
   if (interruptHasSetModeBit(data))
   {
@@ -275,7 +275,7 @@ void wintreq_direct(UWO data, ULO address, bool delayIRQ)
   }
 }
 
-void wintreq(UWO data, ULO address)
+void wintreq(uint16_t data, uint32_t address)
 {
   wintreq_direct(data, address, false);
 }
@@ -290,7 +290,7 @@ $dff09a (Write) / $dff01c (Read)
 Paula
 */
 
-UWO rintenar(ULO address)
+uint16_t rintenar(uint32_t address)
 {
   return intena;
 }
@@ -299,7 +299,7 @@ UWO rintenar(ULO address)
 // The master bit can not be read, the memory test in the kickstart
 // depends on this.
 
-void wintena(UWO data, ULO address)
+void wintena(uint16_t data, uint32_t address)
 {
   if (interruptHasSetModeBit(data))
   {

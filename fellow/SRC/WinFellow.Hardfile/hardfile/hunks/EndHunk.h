@@ -8,10 +8,10 @@ namespace fellow::hardfile::hunks
   class EndHunk : public AdditionalHunk
   {
   private:
-    static const ULO ID = EndHunkID;
+    static const uint32_t ID = EndHunkID;
 
   public:
-    ULO GetID() override;
+    uint32_t GetID() override;
     void Parse(RawDataReader& rawDataReader) override;
 
     EndHunk();

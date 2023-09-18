@@ -301,7 +301,7 @@ ID3D11Texture2D *GfxDrvDXGI::GetCurrentAmigaScreenTexture()
 
 void GfxDrvDXGI::GetBufferInformation(draw_buffer_information *buffer_information)
 {
-  ULO internal_scale_factor = drawGetInternalScaleFactor();
+  uint32_t internal_scale_factor = drawGetInternalScaleFactor();
   buffer_information->width = drawGetInternalClip().GetWidth()*internal_scale_factor;
   buffer_information->height = drawGetInternalClip().GetHeight()*internal_scale_factor;
   buffer_information->pitch = 0;  // Replaced later by actual value
@@ -608,7 +608,7 @@ struct VertexType
   XMFLOAT2 texture;
 };
 
-void GfxDrvDXGI::CalculateDestinationRectangle(ULO output_width, ULO output_height, float& dstHalfWidth, float& dstHalfHeight)
+void GfxDrvDXGI::CalculateDestinationRectangle(uint32_t output_width, uint32_t output_height, float& dstHalfWidth, float& dstHalfHeight)
 {
   float srcClipWidth = drawGetBufferClipWidthAsFloat();
   float srcClipHeight = drawGetBufferClipHeightAsFloat();
@@ -982,13 +982,13 @@ void GfxDrvDXGI::RegisterModes()
 
 void GfxDrvDXGI::ClearCurrentBuffer()
 {
-  UBY* buffer = ValidateBufferPointer();
+  uint8_t* buffer = ValidateBufferPointer();
 
   if (buffer != nullptr)
   {
     for (unsigned int y = 0; y < draw_buffer_info.height; y++)
     {
-      ULO *line_ptr = (ULO *)buffer;
+      uint32_t *line_ptr = (uint32_t *)buffer;
       for (unsigned int x = 0; x < draw_buffer_info.width; x++)
       {
         *line_ptr++ = 0;
@@ -1108,11 +1108,11 @@ GfxDrvDXGI::~GfxDrvDXGI()
   Shutdown();
 }
 
-bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *filename)
+bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *filename)
 {
   bool bResult = false;
   DWORD width = 0, height = 0, x = 0, y = 0;
-  ULO lDisplayScale;
+  uint32_t lDisplayScale;
   IDXGISurface1* pSurface1 = nullptr;
   HDC hDC = nullptr;
 

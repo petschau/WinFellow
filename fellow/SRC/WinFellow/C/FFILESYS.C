@@ -61,7 +61,7 @@ string ffilesys_device_name_prefix;
 
 /* Returns TRUE if a hardfile was inserted */
 
-BOOLE ffilesysRemoveFilesys(ULO index)
+BOOLE ffilesysRemoveFilesys(uint32_t index)
 {
   BOOLE result = FALSE;
 
@@ -83,7 +83,7 @@ bool ffilesysGetEnabled()
   return ffilesys_enabled;
 }
 
-void ffilesysSetFilesys(ffilesys_dev filesys, ULO index)
+void ffilesysSetFilesys(ffilesys_dev filesys, uint32_t index)
 {
   if (index >= FFILESYS_MAX_DEVICES)
     return;
@@ -91,7 +91,7 @@ void ffilesysSetFilesys(ffilesys_dev filesys, ULO index)
   ffilesys_devs[index] = filesys;
 }
 
-BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index)
+BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, uint32_t index)
 {
   size_t len;
 
@@ -133,8 +133,8 @@ const string& ffilesysGetDeviceNamePrefix()
 
 static BOOLE ffilesysHasZeroDevices(void)
 {
-  ULO i;
-  ULO dev_count = 0;
+  uint32_t i;
+  uint32_t dev_count = 0;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
@@ -144,7 +144,7 @@ static BOOLE ffilesysHasZeroDevices(void)
 
 void ffilesysClear(void)
 {
-  ULO i;
+  uint32_t i;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
     ffilesysRemoveFilesys(i);
@@ -156,7 +156,7 @@ void ffilesysClear(void)
 
 void ffilesysDumpConfig(void)
 {
-  ULO i;
+  uint32_t i;
   char filename[MAX_PATH];
   FILE *F;
 
@@ -181,7 +181,7 @@ void ffilesysDumpConfig(void)
 
 void ffilesysInstall(void)
 {
-  ULO i;
+  uint32_t i;
   size_t len;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)

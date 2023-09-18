@@ -12,7 +12,7 @@ namespace fellow::service
     fellow::api::service::fs_wrapper_file_types MapFileType(fs_navig_file_types type);
 
   public:
-    fellow::api::service::fs_wrapper_point *MakePoint(const STR *point) override;
+    fellow::api::service::fs_wrapper_point *MakePoint(const char *point) override;
     FSWrapper();
   };
 }

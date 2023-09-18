@@ -38,26 +38,26 @@ class DIWXStateMachine : public GraphicsEvent
 {
 private:
   DIWXStates _state;
-  ULO _maxValidX;
+  uint32_t _maxValidX;
 
-  void Log(ULO line, ULO cylinder);
-  ULO GetStartPosition(void);
-  ULO GetStopPosition(void);
-  void SetState(DIWXStates newState, ULO arriveTime);
-  void SetStateWaitingForStartPos(ULO rasterY, ULO cylinder);
-  void SetStateWaitingForStopPos(ULO rasterY, ULO cylinder);
-  void DoStateWaitingForStartPos(ULO rasterY, ULO cylinder);
-  void DoStateWaitingForStopPos(ULO rasterY, ULO cylinder);
+  void Log(uint32_t line, uint32_t cylinder);
+  uint32_t GetStartPosition(void);
+  uint32_t GetStopPosition(void);
+  void SetState(DIWXStates newState, uint32_t arriveTime);
+  void SetStateWaitingForStartPos(uint32_t rasterY, uint32_t cylinder);
+  void SetStateWaitingForStopPos(uint32_t rasterY, uint32_t cylinder);
+  void DoStateWaitingForStartPos(uint32_t rasterY, uint32_t cylinder);
+  void DoStateWaitingForStopPos(uint32_t rasterY, uint32_t cylinder);
 
-  void OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cylinder);
+  void OutputCylindersUntilPreviousCylinder(uint32_t rasterY, uint32_t cylinder);
 
 public:
-  //UBY GetOutputMask(ULO rasterX);
+  //uint8_t GetOutputMask(uint32_t rasterX);
   bool IsVisible(void);
   void ChangedValue(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO cylinder);
+  virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
   void SoftReset(void);
   void HardReset(void);

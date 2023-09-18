@@ -40,20 +40,20 @@
 #include "fmem.h"
 
 char uaehf0[256];
-ULO hardfile_size = 0;
+uint32_t hardfile_size = 0;
 char warning_buffer[256];
 
-ULO do_get_mem_byte(uae_u8 *address) {
+uint32_t do_get_mem_byte(uae_u8 *address) {
   unsigned char *addr = (unsigned char *) address;
   return *addr;
 }
 
-ULO do_get_mem_word(uae_u16 *address) {
+uint32_t do_get_mem_word(uae_u16 *address) {
   unsigned char *addr = (unsigned char *) address;
   return ((*addr)<<8) | *(addr + 1);
 }
 
-ULO do_get_mem_long(uae_u32 *address) {
+uint32_t do_get_mem_long(uae_u32 *address) {
   unsigned char *addr = (unsigned char *) address;
   return ((*addr)<<24) | ((*(addr + 1))<<16) | ((*(addr + 2))<<8) | *(addr+3);
 }

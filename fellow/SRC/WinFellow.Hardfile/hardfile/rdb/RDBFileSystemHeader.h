@@ -10,33 +10,33 @@ namespace fellow::hardfile::rdb
   class RDBFileSystemHeader
   {
   public:
-    ULO SizeInLongs;
-    LON CheckSum;
-    ULO HostID;
-    ULO Next;
-    ULO Flags;
-    ULO DOSType;
-    ULO Version;
-    ULO PatchFlags;
+    uint32_t SizeInLongs;
+    int32_t CheckSum;
+    uint32_t HostID;
+    uint32_t Next;
+    uint32_t Flags;
+    uint32_t DOSType;
+    uint32_t Version;
+    uint32_t PatchFlags;
 
     // Device node
-    ULO DnType;
-    ULO DnTask;
-    ULO DnLock;
-    ULO DnHandler;
-    ULO DnStackSize;
-    ULO DnPriority;
-    ULO DnStartup;
-    ULO DnSegListBlock;
-    ULO DnGlobalVec;
-    ULO Reserved2[23];
+    uint32_t DnType;
+    uint32_t DnTask;
+    uint32_t DnLock;
+    uint32_t DnHandler;
+    uint32_t DnStackSize;
+    uint32_t DnPriority;
+    uint32_t DnStartup;
+    uint32_t DnSegListBlock;
+    uint32_t DnGlobalVec;
+    uint32_t Reserved2[23];
 
     bool HasValidCheckSum;
     bool HasFileSystemDataErrors;
 
     RDBFileSystemHandler FileSystemHandler;
 
-    void ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize);
+    void ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize);
     void Log();
 
     RDBFileSystemHeader();

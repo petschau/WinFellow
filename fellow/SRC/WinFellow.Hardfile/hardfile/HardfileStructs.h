@@ -17,7 +17,7 @@ namespace fellow::hardfile
     unsigned int DeviceIndex;
     int PartitionIndex;
     std::string Name;
-    ULO NameAddress;
+    uint32_t NameAddress;
 
     HardfileMountListEntry(unsigned int deviceIndex, int partitionIndex, const std::string& name)
       : DeviceIndex(deviceIndex), PartitionIndex(partitionIndex), Name(name), NameAddress(0)
@@ -28,19 +28,19 @@ namespace fellow::hardfile
   struct HardfileFileSystemEntry
   {
     rdb::RDBFileSystemHeader* Header;
-    ULO SegListAddress;
+    uint32_t SegListAddress;
 
-    bool IsOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
+    bool IsOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version);
 
-    bool IsDOSType(ULO DOSType);
-    bool IsOlderVersion(ULO version);
-    bool IsOlderOrSameVersion(ULO version);
+    bool IsDOSType(uint32_t DOSType);
+    bool IsOlderVersion(uint32_t version);
+    bool IsOlderOrSameVersion(uint32_t version);
 
-    ULO GetDOSType();
-    ULO GetVersion();
-    void CopyHunkToAddress(ULO destinationAddress, ULO hunkIndex);
+    uint32_t GetDOSType();
+    uint32_t GetVersion();
+    void CopyHunkToAddress(uint32_t destinationAddress, uint32_t hunkIndex);
 
-    HardfileFileSystemEntry(rdb::RDBFileSystemHeader* header, ULO segListAddress);
+    HardfileFileSystemEntry(rdb::RDBFileSystemHeader* header, uint32_t segListAddress);
   };
 
   class HardfileDevice

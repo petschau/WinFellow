@@ -68,7 +68,7 @@ BOOLE *fsWrapGetDriveMap(void) {
 /* Returns the absolute full path for a filename                             */
 /*===========================================================================*/
 
-void fsWrapFullPath(STR *dst, STR *src) {
+void fsWrapFullPath(char *dst, char *src) {
   _fullpath(dst, src, FS_WRAP_MAX_PATH_LENGTH);
 }
 
@@ -77,9 +77,9 @@ void fsWrapFullPath(STR *dst, STR *src) {
 /*===========================================================================*/
 
 /*
-void fsWrapMakeRelativePath(STR *root_dir, STR *file_path) {
-  STR tmpdst[MAX_PATH];
-  STR tmpsrc[MAX_PATH];
+void fsWrapMakeRelativePath(char *root_dir, char *file_path) {
+  char tmpdst[MAX_PATH];
+  char tmpsrc[MAX_PATH];
   if (stricmp(file_path, "") == 0) return;
   fsWrapFullPath(tmpsrc, file_path);
   if (PathRelativePathTo(tmpdst,
@@ -208,7 +208,7 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
 /* Return NULL on error                                                      */
 /*===========================================================================*/
 
-fs_navig_point *fsWrapMakePoint(const STR *point) {
+fs_navig_point *fsWrapMakePoint(const char *point) {
   struct stat mystat;
   fs_navig_point *fsnp = NULL;
   FILE *file_ptr;
@@ -243,7 +243,7 @@ fs_navig_point *fsWrapMakePoint(const STR *point) {
   }
   else
   {
-    STR* strError = strerror(errno);
+    char* strError = strerror(errno);
     fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "fsWrapMakePoint(): ERROR getting file information for %s: error code %i (%s)\n", point, errno, strError);
   }
   return fsnp;
@@ -264,7 +264,7 @@ BOOLE fsWrapSetCWD(fs_navig_point *fs_point) {
 /*===========================================================================*/
 
 fs_navig_point *fsWrapGetCWD(void) {
-  STR tmpcwd[FS_WRAP_MAX_PATH_LENGTH];
+  char tmpcwd[FS_WRAP_MAX_PATH_LENGTH];
 
   _getcwd(tmpcwd, FS_WRAP_MAX_PATH_LENGTH);
   return fsWrapMakePoint(tmpcwd);
@@ -284,7 +284,7 @@ void fsWrapDirentsFree(void) {
 /*===========================================================================*/
 
 BOOLE fsWrapOpenDir(fs_navig_point *fs_point) {
-  STR srcpath[256];
+  char srcpath[256];
   fsWrapCloseDir();
   strcpy(srcpath, fs_point->name);
   strcat(srcpath, "\\*.*");

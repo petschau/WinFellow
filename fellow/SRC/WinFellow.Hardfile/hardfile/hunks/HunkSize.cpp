@@ -2,7 +2,7 @@
 
 namespace fellow::hardfile::hunks
 {
-  const STR* HunkSize::GetMemoryFlagsToString()
+  const char* HunkSize::GetMemoryFlagsToString()
   {
     switch (MemoryFlags)
     {
@@ -13,7 +13,7 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  HunkSize::HunkSize(ULO sizeInLongwords, ULO memoryFlags, ULO additionalFlags)
+  HunkSize::HunkSize(uint32_t sizeInLongwords, uint32_t memoryFlags, uint32_t additionalFlags)
     : SizeInLongwords(sizeInLongwords), MemoryFlags(memoryFlags), AdditionalFlags(additionalFlags)
   {
   }

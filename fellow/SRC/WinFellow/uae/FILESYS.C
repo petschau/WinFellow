@@ -332,23 +332,23 @@ char *set_filesys_unit (struct uaedev_mount_info *mountinfo, int nr,
 }
 
 /* FELLOW IN (START) Added some get functions */
-ULO getNumUnits(void) {
+uint32_t getNumUnits(void) {
   return mountinfo.num_units;
 }
 
-STR *getVolName(ULO index) {
+char *getVolName(uint32_t index) {
   return mountinfo.ui[index].volname;
 }
 
-STR *getRootDir(ULO index) {
+char *getRootDir(uint32_t index) {
   return mountinfo.ui[index].rootdir;
 }
 
-BOOLE getVFSModule(ULO index) {
+BOOLE getVFSModule(uint32_t index) {
   return FALSE;
 }
 
-BOOLE getReadOnly(ULO index) {
+BOOLE getReadOnly(uint32_t index) {
   return mountinfo.ui[index].readonly;
 }
 /* FELLOW IN (END) */
@@ -1363,7 +1363,7 @@ static uae_u32 startup_handler (void)
     put_long (unit->volume + 28, 0); /* lock list */
     put_long (unit->volume + 40, (unit->volume + 44) >> 2); /* Name */
     namelen = strlen (unit->ui.volname);
-    put_byte (unit->volume + 44, (UBY)namelen);
+    put_byte (unit->volume + 44, (uint8_t)namelen);
     for (j = 0; j < namelen; j++)
 	put_byte (unit->volume + 45 + j, unit->ui.volname[j]);
 
@@ -1801,7 +1801,7 @@ get_fileinfo (Unit *unit, dpacket packet, uaecptr info, a_inode *aino)
     if (n > 106)
 	n = 106;
     i = 8;
-    put_byte (info + i, (UBY)n); i++;
+    put_byte (info + i, (uint8_t)n); i++;
     while (n--)
 	put_byte (info + i, *x), i++, x++;
     while (i < 108)
@@ -1829,7 +1829,7 @@ get_fileinfo (Unit *unit, dpacket packet, uaecptr info, a_inode *aino)
 	n = strlen (x);
 	if (n > 78)
 	    n = 78;
-	put_byte (info + i, (UBY)n); i++;
+	put_byte (info + i, (uint8_t)n); i++;
 	while (n--)
 	    put_byte (info + i, *x), i++, x++;
 	while (i < 224)

@@ -29,30 +29,30 @@
 
 #include "Graphics.h"
 
-static STR *DIWYStateNames[2] = {"WAITING_FOR_START_LINE",
+static char *DIWYStateNames[2] = {"WAITING_FOR_START_LINE",
 				 "WAITING_FOR_STOP_LINE"};
 
-void DIWYStateMachine::Log(ULO line, ULO cylinder)
+void DIWYStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "DIWY: %s\n", DIWYStateNames[_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
 
-ULO DIWYStateMachine::GetStartLine(void)
+uint32_t DIWYStateMachine::GetStartLine(void)
 {
   return (diwytop < _minValidY) ? _minValidY : diwytop;
 }
 
-ULO DIWYStateMachine::GetStopLine(void)
+uint32_t DIWYStateMachine::GetStopLine(void)
 {
   return diwybottom;
 }
 
-void DIWYStateMachine::SetState(DIWYStates newState, ULO arriveTime)
+void DIWYStateMachine::SetState(DIWYStates newState, uint32_t arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
@@ -60,7 +60,7 @@ void DIWYStateMachine::SetState(DIWYStates newState, ULO arriveTime)
   _queue->Insert(this);
 }
 
-void DIWYStateMachine::SetStateWaitingForStartLine(ULO rasterY)
+void DIWYStateMachine::SetStateWaitingForStartLine(uint32_t rasterY)
 {
   if ((GetStartLine() > _maxValidY) || (GetStartLine() < rasterY))
   {
@@ -74,7 +74,7 @@ void DIWYStateMachine::SetStateWaitingForStartLine(ULO rasterY)
   }
 }
 
-void DIWYStateMachine::SetStateWaitingForStopLine(ULO rasterY)
+void DIWYStateMachine::SetStateWaitingForStopLine(uint32_t rasterY)
 {
   if ((GetStopLine() > _maxValidY) || (GetStopLine() <= rasterY))
   {
@@ -87,12 +87,12 @@ void DIWYStateMachine::SetStateWaitingForStopLine(ULO rasterY)
   }
 }
 
-void DIWYStateMachine::DoStateWaitingForStartLine(ULO rasterY)
+void DIWYStateMachine::DoStateWaitingForStartLine(uint32_t rasterY)
 {
   SetStateWaitingForStopLine(rasterY);
 }
 
-void DIWYStateMachine::DoStateWaitingForStopLine(ULO rasterY)
+void DIWYStateMachine::DoStateWaitingForStopLine(uint32_t rasterY)
 {
   SetStateWaitingForStartLine(rasterY);
 }
@@ -123,7 +123,7 @@ void DIWYStateMachine::InitializeEvent(GraphicsEventQueue *queue)
   SetStateWaitingForStartLine(0);
 }
 
-void DIWYStateMachine::Handler(ULO rasterY, ULO cylinder)
+void DIWYStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 {
   Log(rasterY, cylinder);
 

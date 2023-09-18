@@ -47,19 +47,19 @@ Tuesday, September 19, 2000: nova
 /*===========================================================================*/
 
 kbd_state_type kbd_state;
-ULO kbd_time_to_wait;
+uint32_t kbd_time_to_wait;
 
 
 /*===========================================================================*/
 /* Stuff that later goes other places                                        */
 /*===========================================================================*/
 
-UBY insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
+uint8_t insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
 
 
 /* Add an EOL event to the core, used by kbddrv */
 
-void kbdEventEOLAdd(UBY eventId)
+void kbdEventEOLAdd(uint8_t eventId)
 {
   kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.inpos & KBDBUFFERMASK] = eventId;
   kbd_state.eventsEOL.inpos++;
@@ -67,7 +67,7 @@ void kbdEventEOLAdd(UBY eventId)
 
 /* Add an EOF event to the core, used by kbddrv */
 
-void kbdEventEOFAdd(UBY eventId)
+void kbdEventEOFAdd(uint8_t eventId)
 {
   kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.inpos & KBDBUFFERMASK] = eventId;
   kbd_state.eventsEOF.inpos++;
@@ -75,7 +75,7 @@ void kbdEventEOFAdd(UBY eventId)
 
 /* Add a key to the core, used by kbddrv */
 
-void kbdKeyAdd(UBY keyCode)
+void kbdKeyAdd(uint8_t keyCode)
 {
   automator.RecordKey(keyCode);
 
@@ -83,7 +83,7 @@ void kbdKeyAdd(UBY keyCode)
   kbd_state.scancodes.inpos++;
 }
 
-void kbdEventDFxIntoDF0(ULO driveNumber)
+void kbdEventDFxIntoDF0(uint32_t driveNumber)
 {
   char tmp[CFG_FILENAME_LENGTH];
   cfg *currentConfig = cfgManagerGetCurrentConfig(&cfg_manager);
@@ -182,7 +182,7 @@ void kbdEventEOLHandler(void) {
   BOOLE left[2], up[2], right[2], down[2], fire0[2], fire1[2];
   BOOLE left_changed[2], up_changed[2], right_changed[2], down_changed[2];
   BOOLE fire0_changed[2], fire1_changed[2];
-  ULO i;
+  uint32_t i;
 
   for (i = 0; i < 2; i++)
     left_changed[i] = up_changed[i] = right_changed[i] = down_changed[i] =
@@ -317,7 +317,7 @@ void kbdEventEOLHandler(void) {
 void kbdQueueHandler(void) {
   if (kbd_state.scancodes.outpos < kbd_state.scancodes.inpos) {
     if (--kbd_time_to_wait <= 0) {
-      ULO scode;
+      uint32_t scode;
 
       kbd_time_to_wait = 10;
       scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos & KBDBUFFERMASK];
@@ -326,7 +326,7 @@ void kbdQueueHandler(void) {
 #ifdef _DEBUG
         fellowAddLog("   kbdQueueHandler(): writing scancode 0x%x to CIA and raising interrupt.\n", scode);
 #endif
-	      ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
+	      ciaWritesp(0, (uint8_t) ~(((scode >> 7) & 1) | (scode << 1)));
 	      ciaRaiseIRQ(0, 8);
       }
     }
@@ -352,7 +352,7 @@ void kbdHardReset(void) {
 }
 
 void kbdEmulationStart(void) {
-  ULO i;
+  uint32_t i;
 
   for (i = 0; i < 4; i++) insert_dfX[i] = FALSE;
   kbdDrvEmulationStart();

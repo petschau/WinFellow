@@ -108,7 +108,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Reads next two longwords as byte array")
     {
-      unique_ptr<UBY> value(_instance->GetNextBytes(2));
+      unique_ptr<uint8_t> value(_instance->GetNextBytes(2));
       REQUIRE(value.get()[0] == 0x41);
       REQUIRE(value.get()[1] == 0x42);
       REQUIRE(value.get()[2] == 0x43);
@@ -121,8 +121,8 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Reads twice and second byte array contains data from the correct index")
     {
-      unique_ptr<UBY> value1(_instance->GetNextBytes(1));
-      unique_ptr<UBY> value2(_instance->GetNextBytes(2));
+      unique_ptr<uint8_t> value1(_instance->GetNextBytes(1));
+      unique_ptr<uint8_t> value2(_instance->GetNextBytes(2));
       REQUIRE(value2.get()[0] == 0x41);
       REQUIRE(value2.get()[1] == 0x42);
       REQUIRE(value2.get()[2] == 0x43);

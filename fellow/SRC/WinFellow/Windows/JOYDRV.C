@@ -143,10 +143,10 @@ BOOLE		      joy_drv_in_use;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *joyDrvDInputErrorString(HRESULT hResult)
+char *joyDrvDInputErrorString(HRESULT hResult)
 {
 #ifdef _DEBUG
-  STR *UnErr = NULL;
+  char *UnErr = NULL;
 #endif
 
   switch (hResult)
@@ -176,7 +176,7 @@ STR *joyDrvDInputErrorString(HRESULT hResult)
   }
 
 #ifdef _DEBUG
-  UnErr = (STR*)malloc( 255 * sizeof( STR ));
+  UnErr = (char*)malloc( 255 * sizeof( char ));
   sprintf( UnErr, "Not a DirectInput Error [%08x]", hResult );
   return UnErr;
 #else
@@ -190,7 +190,7 @@ STR *joyDrvDInputErrorString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void joyDrvDInputFailure(STR *header, HRESULT err)
+void joyDrvDInputFailure(char *header, HRESULT err)
 {
   fellowAddLog("%s %s\n", header, joyDrvDInputErrorString(err));
 }

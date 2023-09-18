@@ -22,7 +22,7 @@ void Automator::TakeSnapshot()
   }
 }
 
-void Automator::RecordKey(UBY keyCode)
+void Automator::RecordKey(uint8_t keyCode)
 {
   if (RecordScript)
   {
@@ -30,7 +30,7 @@ void Automator::RecordKey(UBY keyCode)
   }
 }
 
-void Automator::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
+void Automator::RecordMouse(gameport_inputs mousedev, int32_t x, int32_t y, BOOLE button1, BOOLE button2, BOOLE button3)
 {
   if (RecordScript)
   {
@@ -58,8 +58,8 @@ void Automator::EndOfLine()
 {
   if (!RecordScript)
   {
-    ULL frameNumber = busGetRasterFrameCount();
-    ULO line = busGetRasterY();
+    uint64_t frameNumber = busGetRasterFrameCount();
+    uint32_t line = busGetRasterY();
     _script.ExecuteUntil(frameNumber, line);
   }
 }

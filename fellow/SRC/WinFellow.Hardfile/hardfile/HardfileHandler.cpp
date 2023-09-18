@@ -67,37 +67,37 @@ namespace fellow::hardfile
     fellow::api::module::HardfileHandler->CardInit();
   }
 
-  void HardfileHandler_CardMap(ULO mapping)
+  void HardfileHandler_CardMap(uint32_t mapping)
   {
     fellow::api::module::HardfileHandler->CardMap(mapping);
   }
 
-  UBY HardfileHandler_ReadByte(ULO address)
+  uint8_t HardfileHandler_ReadByte(uint32_t address)
   {
     return fellow::api::module::HardfileHandler->ReadByte(address);
   }
 
-  UWO HardfileHandler_ReadWord(ULO address)
+  uint16_t HardfileHandler_ReadWord(uint32_t address)
   {
     return fellow::api::module::HardfileHandler->ReadWord(address);
   }
 
-  ULO HardfileHandler_ReadLong(ULO address)
+  uint32_t HardfileHandler_ReadLong(uint32_t address)
   {
     return fellow::api::module::HardfileHandler->ReadLong(address);
   }
 
-  void HardfileHandler_WriteByte(UBY data, ULO address)
+  void HardfileHandler_WriteByte(uint8_t data, uint32_t address)
   {
     // Deliberately left blank
   }
 
-  void HardfileHandler_WriteWord(UWO data, ULO address)
+  void HardfileHandler_WriteWord(uint16_t data, uint32_t address)
   {
     // Deliberately left blank
   }
 
-  void HardfileHandler_WriteLong(ULO data, ULO address)
+  void HardfileHandler_WriteLong(uint32_t data, uint32_t address)
   {
     // Deliberately left blank
   }
@@ -129,10 +129,10 @@ namespace fellow::hardfile
   /* The rom must be remapped to the location specified.*/
   /*====================================================*/
 
-  void HardfileHandler::CardMap(ULO mapping)
+  void HardfileHandler::CardMap(uint32_t mapping)
   {
     _romstart = (mapping << 8) & 0xff0000;
-    ULO bank = _romstart >> 16;
+    uint32_t bank = _romstart >> 16;
     VM->Memory.BankSet(HardfileHandler_ReadByte,
       HardfileHandler_ReadWord,
       HardfileHandler_ReadLong,
@@ -149,21 +149,21 @@ namespace fellow::hardfile
   /* Functions to get and set data in the fhfile memory area                    */
   /*============================================================================*/
 
-  UBY HardfileHandler::ReadByte(ULO address)
+  uint8_t HardfileHandler::ReadByte(uint32_t address)
   {
     return _rom[address & 0xffff];
   }
 
-  UWO HardfileHandler::ReadWord(ULO address)
+  uint16_t HardfileHandler::ReadWord(uint32_t address)
   {
-    UBY *p = _rom + (address & 0xffff);
-    return (static_cast<UWO>(p[0]) << 8) | static_cast<UWO>(p[1]);
+    uint8_t *p = _rom + (address & 0xffff);
+    return (static_cast<uint16_t>(p[0]) << 8) | static_cast<uint16_t>(p[1]);
   }
 
-  ULO HardfileHandler::ReadLong(ULO address)
+  uint32_t HardfileHandler::ReadLong(uint32_t address)
   {
-    UBY *p = _rom + (address & 0xffff);
-    return (static_cast<ULO>(p[0]) << 24) | (static_cast<ULO>(p[1]) << 16) | (static_cast<ULO>(p[2]) << 8) | static_cast<ULO>(p[3]);
+    uint8_t *p = _rom + (address & 0xffff);
+    return (static_cast<uint32_t>(p[0]) << 24) | (static_cast<uint32_t>(p[1]) << 16) | (static_cast<uint32_t>(p[2]) << 8) | static_cast<uint32_t>(p[3]);
   }
 
   bool HardfileHandler::HasZeroDevices()
@@ -234,7 +234,7 @@ namespace fellow::hardfile
     }
   }
 
-  bool HardfileHandler::FindOlderOrSameFileSystemVersion(ULO DOSType, ULO version, unsigned int& olderOrSameFileSystemIndex)
+  bool HardfileHandler::FindOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version, unsigned int& olderOrSameFileSystemIndex)
   {
     unsigned int size = (unsigned int) _fileSystems.size();
     for (unsigned int index = 0; index < size; index++)
@@ -248,7 +248,7 @@ namespace fellow::hardfile
     return false;
   }
 
-  HardfileFileSystemEntry *HardfileHandler::GetFileSystemForDOSType(ULO DOSType)
+  HardfileFileSystemEntry *HardfileHandler::GetFileSystemForDOSType(uint32_t DOSType)
   {
     for (auto& fileSystemEntry : _fileSystems)
     {
@@ -292,7 +292,7 @@ namespace fellow::hardfile
     }
   }
 
-  void HardfileHandler::EraseOlderOrSameFileSystemVersion(ULO DOSType, ULO version)
+  void HardfileHandler::EraseOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version)
   {
     unsigned int olderOrSameFileSystemIndex = 0;
     bool hasOlderOrSameFileSystemVersion = FindOlderOrSameFileSystemVersion(DOSType, version, olderOrSameFileSystemIndex);
@@ -355,7 +355,7 @@ namespace fellow::hardfile
     }
 
     const auto& geometry = device.Configuration.Geometry;
-    ULO cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
+    uint32_t cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
     if (device.FileSize < cylinderSize)
     {
       fclose(device.F);
@@ -437,8 +437,8 @@ namespace fellow::hardfile
       if (!device.HasRDB)
       {
         // Manually configured hardfile
-        ULO cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
-        ULO cylinders = device.FileSize / cylinderSize;
+        uint32_t cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
+        uint32_t cylinders = device.FileSize / cylinderSize;
         geometry.Tracks = cylinders * geometry.Surfaces;
         geometry.LowCylinder = 0;
         geometry.HighCylinder = cylinders - 1;
@@ -477,10 +477,10 @@ namespace fellow::hardfile
     return _enabled;
   }
 
-  unsigned int HardfileHandler::GetIndexFromUnitNumber(ULO unit)
+  unsigned int HardfileHandler::GetIndexFromUnitNumber(uint32_t unit)
   {
-    ULO address = unit % 10;
-    ULO lun = (unit / 10) % 10;
+    uint32_t address = unit % 10;
+    uint32_t lun = (unit / 10) % 10;
 
     if (lun > 7)
     {
@@ -490,10 +490,10 @@ namespace fellow::hardfile
     return lun + address * 8;
   }
 
-  ULO HardfileHandler::GetUnitNumberFromIndex(unsigned int index)
+  uint32_t HardfileHandler::GetUnitNumberFromIndex(unsigned int index)
   {
-    ULO address = index / 8;
-    ULO lun = index % 8;
+    uint32_t address = index / 8;
+    uint32_t lun = index % 8;
 
     return lun * 10 + address;
   }
@@ -535,22 +535,22 @@ namespace fellow::hardfile
     _deviceNameStartNumber = 0;
   }
 
-  void HardfileHandler::SetIOError(BYT errorCode)
+  void HardfileHandler::SetIOError(int8_t errorCode)
   {
     VM->Memory.WriteByte(errorCode, VM->CPU.GetAReg(1) + 31);
   }
 
-  void HardfileHandler::SetIOActual(ULO ioActual)
+  void HardfileHandler::SetIOActual(uint32_t ioActual)
   {
     VM->Memory.WriteLong(ioActual, VM->CPU.GetAReg(1) + 32);
   }
 
-  ULO HardfileHandler::GetUnitNumber()
+  uint32_t HardfileHandler::GetUnitNumber()
   {
     return VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 24);
   }
 
-  UWO HardfileHandler::GetCommand()
+  uint16_t HardfileHandler::GetCommand()
   {
     return VM->Memory.ReadWord(VM->CPU.GetAReg(1) + 28);
   }
@@ -559,12 +559,12 @@ namespace fellow::hardfile
   /* BeginIO Commands */
   /*==================*/
 
-  void HardfileHandler::IgnoreOK(ULO index)
+  void HardfileHandler::IgnoreOK(uint32_t index)
   {
     SetIOError(0); // io_Error - 0 - success
   }
 
-  BYT HardfileHandler::Read(ULO index)
+  int8_t HardfileHandler::Read(uint32_t index)
   {
     if (index == 2)
     {
@@ -578,9 +578,9 @@ namespace fellow::hardfile
       return 32; // TDERR_BadUnitNum
     }
 
-    ULO dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
-    ULO offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
-    ULO length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
+    uint32_t dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
+    uint32_t offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
+    uint32_t length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
 
     Service->Log.AddLogDebug("CMD_READ Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
 
@@ -600,7 +600,7 @@ namespace fellow::hardfile
     return 0;
   }
 
-  BYT HardfileHandler::Write(ULO index)
+  int8_t HardfileHandler::Write(uint32_t index)
   {
     if (_devices[index].F == nullptr)
     {
@@ -608,9 +608,9 @@ namespace fellow::hardfile
       return 32; // TDERR_BadUnitNum
     }
 
-    ULO dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
-    ULO offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
-    ULO length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
+    uint32_t dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
+    uint32_t offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
+    uint32_t length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
 
     Service->Log.AddLogDebug("CMD_WRITE Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
 
@@ -630,7 +630,7 @@ namespace fellow::hardfile
     return 0;
   }
 
-  BYT HardfileHandler::GetNumberOfTracks(ULO index)
+  int8_t HardfileHandler::GetNumberOfTracks(uint32_t index)
   {
     if (_devices[index].F == nullptr)
     {
@@ -641,7 +641,7 @@ namespace fellow::hardfile
     return 0;
   }
 
-  BYT HardfileHandler::GetDiskDriveType(ULO index)
+  int8_t HardfileHandler::GetDiskDriveType(uint32_t index)
   {
     if (_devices[index].F == nullptr)
     {
@@ -653,20 +653,20 @@ namespace fellow::hardfile
     return 0;
   }
 
-  void HardfileHandler::WriteProt(ULO index)
+  void HardfileHandler::WriteProt(uint32_t index)
   {
     SetIOActual(_devices[index].Readonly ? 1 : 0);
   }
 
-  BYT HardfileHandler::ScsiDirect(ULO index)
+  int8_t HardfileHandler::ScsiDirect(uint32_t index)
   {
-    BYT error = 0;
-    ULO scsiCmdStruct = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40); // io_Data
+    int8_t error = 0;
+    uint32_t scsiCmdStruct = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40); // io_Data
 
     Service->Log.AddLogDebug("HD_SCSICMD Unit %d (%d) ScsiCmd at %.8X\n", GetUnitNumberFromIndex(index), index, scsiCmdStruct);
 
-    ULO scsiCommand = VM->Memory.ReadLong(scsiCmdStruct + 12);
-    UWO scsiCommandLength = VM->Memory.ReadWord(scsiCmdStruct + 16);
+    uint32_t scsiCommand = VM->Memory.ReadLong(scsiCmdStruct + 12);
+    uint16_t scsiCommandLength = VM->Memory.ReadWord(scsiCmdStruct + 16);
 
     Service->Log.AddLogDebug("HD_SCSICMD Command length %d, data", scsiCommandLength);
 
@@ -676,19 +676,19 @@ namespace fellow::hardfile
     }
     Service->Log.AddLogDebug("\n");
 
-    UBY commandNumber = VM->Memory.ReadByte(scsiCommand);
-    ULO returnData = VM->Memory.ReadLong(scsiCmdStruct);
+    uint8_t commandNumber = VM->Memory.ReadByte(scsiCommand);
+    uint32_t returnData = VM->Memory.ReadLong(scsiCmdStruct);
     switch (commandNumber)
     {
     case 0x25: // Read capacity (10)
       Service->Log.AddLogDebug("SCSI direct command 0x25 Read Capacity\n");
       {
-        ULO bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
+        uint32_t bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
         bool pmi = !!(VM->Memory.ReadByte(scsiCommand + 8) & 1);
 
         if (pmi)
         {
-          ULO blocksPerCylinder = (_devices[index].Configuration.Geometry.SectorsPerTrack * _devices[index].Configuration.Geometry.Surfaces) - 1;
+          uint32_t blocksPerCylinder = (_devices[index].Configuration.Geometry.SectorsPerTrack * _devices[index].Configuration.Geometry.Surfaces) - 1;
           VM->Memory.WriteByte(blocksPerCylinder >> 24, returnData);
           VM->Memory.WriteByte(blocksPerCylinder >> 16, returnData + 1);
           VM->Memory.WriteByte(blocksPerCylinder >> 8, returnData + 2);
@@ -696,7 +696,7 @@ namespace fellow::hardfile
         }
         else
         {
-          ULO blocksOnDevice = (_devices[index].GeometrySize / _devices[index].Configuration.Geometry.BytesPerSector) - 1;
+          uint32_t blocksOnDevice = (_devices[index].GeometrySize / _devices[index].Configuration.Geometry.BytesPerSector) - 1;
           VM->Memory.WriteByte(blocksOnDevice >> 24, returnData);
           VM->Memory.WriteByte(blocksOnDevice >> 16, returnData + 1);
           VM->Memory.WriteByte(blocksOnDevice >> 8, returnData + 2);
@@ -781,15 +781,15 @@ namespace fellow::hardfile
       Service->Log.AddLogDebug("SCSI direct command 0x1a Mode sense\n");
       {
         // Show values for debug
-        ULO senseData = VM->Memory.ReadLong(scsiCmdStruct + 22); // senseData and related fields are only used for autosensing error condition when the command fail
-        UWO senseLengthAllocated = VM->Memory.ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
-        UBY scsciCommandFlags = VM->Memory.ReadByte(scsiCmdStruct + 20);
+        uint32_t senseData = VM->Memory.ReadLong(scsiCmdStruct + 22); // senseData and related fields are only used for autosensing error condition when the command fail
+        uint16_t senseLengthAllocated = VM->Memory.ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
+        uint8_t scsciCommandFlags = VM->Memory.ReadByte(scsiCmdStruct + 20);
 
-        UBY pageCode = VM->Memory.ReadByte(scsiCommand + 2) & 0x3f;
+        uint8_t pageCode = VM->Memory.ReadByte(scsiCommand + 2) & 0x3f;
         if (pageCode == 3)
         {
-          UWO sectorsPerTrack = _devices[index].Configuration.Geometry.SectorsPerTrack;
-          UWO bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
+          uint16_t sectorsPerTrack = _devices[index].Configuration.Geometry.SectorsPerTrack;
+          uint16_t bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
 
           // Header
           VM->Memory.WriteByte(24 + 3, returnData);
@@ -798,7 +798,7 @@ namespace fellow::hardfile
           VM->Memory.WriteByte(0, returnData + 3);
 
           // Page
-          ULO destination = returnData + 4;
+          uint32_t destination = returnData + 4;
           VM->Memory.WriteByte(3, destination);         // Page 3 format device
           VM->Memory.WriteByte(0x16, destination + 1);  // Page length
           VM->Memory.WriteByte(0, destination + 2);     // Tracks per zone
@@ -835,8 +835,8 @@ namespace fellow::hardfile
         }
         else if (pageCode == 4)
         {
-          ULO numberOfCylinders = _devices[index].Configuration.Geometry.HighCylinder + 1;
-          UBY surfaces = _devices[index].Configuration.Geometry.Surfaces;
+          uint32_t numberOfCylinders = _devices[index].Configuration.Geometry.HighCylinder + 1;
+          uint8_t surfaces = _devices[index].Configuration.Geometry.Surfaces;
 
           // Header
           VM->Memory.WriteByte(24 + 3, returnData);
@@ -845,7 +845,7 @@ namespace fellow::hardfile
           VM->Memory.WriteByte(0, returnData + 3);
 
           // Page
-          ULO destination = returnData + 4;
+          uint32_t destination = returnData + 4;
           VM->Memory.WriteByte(4, destination);         // Page 4 Rigid disk geometry
           VM->Memory.WriteByte(0x16, destination + 1);  // Page length
           VM->Memory.WriteByte(numberOfCylinders >> 16, destination + 2);     // Number of cylinders (3 bytes)
@@ -928,7 +928,7 @@ namespace fellow::hardfile
   // Returns D0 - 0 - Success, non-zero - Error
   void HardfileHandler::DoOpen()
   {
-    ULO unit = VM->CPU.GetDReg(0);
+    uint32_t unit = VM->CPU.GetDReg(0);
     unsigned int index = GetIndexFromUnitNumber(unit);
 
     if (index < FHFILE_MAX_DEVICES && _devices[index].F != nullptr)
@@ -941,9 +941,9 @@ namespace fellow::hardfile
     }
     else
     {
-      VM->Memory.WriteLong(static_cast<ULO>(-1), VM->CPU.GetAReg(1) + 20);
+      VM->Memory.WriteLong(static_cast<uint32_t>(-1), VM->CPU.GetAReg(1) + 20);
       SetIOError(-1);                                                      /* io_error */
-      VM->CPU.SetDReg(0, static_cast<ULO>(-1));                            /* Fail */
+      VM->CPU.SetDReg(0, static_cast<uint32_t>(-1));                            /* Fail */
     }
   }
 
@@ -966,10 +966,10 @@ namespace fellow::hardfile
   // void BeginIO(io_req)
   void HardfileHandler::DoBeginIO()
   {
-    BYT error = 0;
-    ULO unit = GetUnitNumber();
+    int8_t error = 0;
+    uint32_t unit = GetUnitNumber();
     unsigned int index = GetIndexFromUnitNumber(unit);
-    UWO cmd = GetCommand();
+    uint16_t cmd = GetCommand();
 
     switch (cmd)
     {
@@ -1067,33 +1067,33 @@ namespace fellow::hardfile
   void HardfileHandler::DoAbortIO()
   {
     // Set some more success values here, this is ok, we never have pending io.
-    VM->CPU.SetDReg(0, static_cast<ULO>(-3));
+    VM->CPU.SetDReg(0, static_cast<uint32_t>(-3));
   }
 
   // RDB support functions, native callbacks
 
-  ULO HardfileHandler::DoGetRDBFileSystemCount()
+  uint32_t HardfileHandler::DoGetRDBFileSystemCount()
   {
-    ULO count = (ULO)_fileSystems.size();
+    uint32_t count = (uint32_t)_fileSystems.size();
     Service->Log.AddLogDebug("fhfile: DoGetRDBFilesystemCount() - Returns %u\n", count);
     return count;
   }
 
-  ULO HardfileHandler::DoGetRDBFileSystemHunkCount(ULO fileSystemIndex)
+  uint32_t HardfileHandler::DoGetRDBFileSystemHunkCount(uint32_t fileSystemIndex)
   {
-    ULO hunkCount = (ULO)_fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunkCount();
+    uint32_t hunkCount = (uint32_t)_fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunkCount();
     Service->Log.AddLogDebug("fhfile: DoGetRDBFileSystemHunkCount(fileSystemIndex: %u) Returns %u\n", fileSystemIndex, hunkCount);
     return hunkCount;
   }
 
-  ULO HardfileHandler::DoGetRDBFileSystemHunkSize(ULO fileSystemIndex, ULO hunkIndex)
+  uint32_t HardfileHandler::DoGetRDBFileSystemHunkSize(uint32_t fileSystemIndex, uint32_t hunkIndex)
   {
-    ULO hunkSize = _fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex)->GetAllocateSizeInBytes();
+    uint32_t hunkSize = _fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex)->GetAllocateSizeInBytes();
     Service->Log.AddLogDebug("fhfile: DoGetRDBFileSystemHunkSize(fileSystemIndex: %u, hunkIndex: %u) Returns %u\n", fileSystemIndex, hunkIndex, hunkSize);
     return hunkSize;
   }
 
-  void HardfileHandler::DoCopyRDBFileSystemHunk(ULO destinationAddress, ULO fileSystemIndex, ULO hunkIndex)
+  void HardfileHandler::DoCopyRDBFileSystemHunk(uint32_t destinationAddress, uint32_t fileSystemIndex, uint32_t hunkIndex)
   {
     Service->Log.AddLogDebug("fhfile: DoCopyRDBFileSystemHunk(destinationAddress: %.8X, fileSystemIndex: %u, hunkIndex: %u)\n", destinationAddress, fileSystemIndex, hunkIndex);
 
@@ -1106,12 +1106,12 @@ namespace fellow::hardfile
       fileSystem->SegListAddress = destinationAddress + 4;
     }
 
-    ULO hunkSize = fileSystem->Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex)->GetAllocateSizeInBytes();
+    uint32_t hunkSize = fileSystem->Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex)->GetAllocateSizeInBytes();
     VM->Memory.WriteLong(hunkSize + 8, destinationAddress); // Total size of allocation
     VM->Memory.WriteLong(0, destinationAddress + 4);  // No next segment for now
   }
 
-  void HardfileHandler::DoRelocateFileSystem(ULO fileSystemIndex)
+  void HardfileHandler::DoRelocateFileSystem(uint32_t fileSystemIndex)
   {
     Service->Log.AddLogDebug("fhfile: DoRelocateFileSystem(fileSystemIndex: %u\n", fileSystemIndex);
     HardfileFileSystemEntry* fsEntry = _fileSystems[fileSystemIndex].get();
@@ -1119,7 +1119,7 @@ namespace fellow::hardfile
     hunkRelocator.RelocateHunks();
   }
 
-  void HardfileHandler::DoInitializeRDBFileSystemEntry(ULO fileSystemEntry, ULO fileSystemIndex)
+  void HardfileHandler::DoInitializeRDBFileSystemEntry(uint32_t fileSystemEntry, uint32_t fileSystemIndex)
   {
     Service->Log.AddLogDebug("fhfile: DoInitializeRDBFileSystemEntry(fileSystemEntry: %.8X, fileSystemIndex: %u\n", fileSystemEntry, fileSystemIndex);
 
@@ -1147,12 +1147,12 @@ namespace fellow::hardfile
     }
   }
 
-  ULO HardfileHandler::DoGetDosDevPacketListStart()
+  uint32_t HardfileHandler::DoGetDosDevPacketListStart()
   {
     return _dosDevPacketListStart;
   }
 
-  string HardfileHandler::LogGetStringFromMemory(ULO address)
+  string HardfileHandler::LogGetStringFromMemory(uint32_t address)
   {
     if (address == 0)
     {
@@ -1175,8 +1175,8 @@ namespace fellow::hardfile
   {
     Service->Log.AddLogDebug("fhfile: DoLogAvailableResources()\n");
 
-    ULO execBase = VM->Memory.ReadLong(4);  // Fetch list from exec
-    ULO rsListHeader = VM->Memory.ReadLong(execBase + 0x150);
+    uint32_t execBase = VM->Memory.ReadLong(4);  // Fetch list from exec
+    uint32_t rsListHeader = VM->Memory.ReadLong(execBase + 0x150);
 
     Service->Log.AddLogDebug("fhfile: Resource list header (%.8X): Head %.8X Tail %.8X TailPred %.8X Type %d\n",
       rsListHeader,
@@ -1191,7 +1191,7 @@ namespace fellow::hardfile
       return;
     }
 
-    ULO fsNode = VM->Memory.ReadLong(rsListHeader);
+    uint32_t fsNode = VM->Memory.ReadLong(rsListHeader);
     while (fsNode != 0 && (fsNode != rsListHeader + 4))
     {
       Service->Log.AddLogDebug("fhfile: ResourceEntry Node (%.8X): Succ %.8X Pred %.8X Type %d Pri %d NodeName '%s'\n",
@@ -1206,33 +1206,33 @@ namespace fellow::hardfile
     }
   }
 
-  void HardfileHandler::DoLogAllocMemResult(ULO result)
+  void HardfileHandler::DoLogAllocMemResult(uint32_t result)
   {
     Service->Log.AddLogDebug("fhfile: AllocMem() returned %.8X\n", result);
   }
 
-  void HardfileHandler::DoLogOpenResourceResult(ULO result)
+  void HardfileHandler::DoLogOpenResourceResult(uint32_t result)
   {
     Service->Log.AddLogDebug("fhfile: OpenResource() returned %.8X\n", result);
   }
 
-  void HardfileHandler::DoRemoveRDBFileSystemsAlreadySupportedBySystem(ULO filesystemResource)
+  void HardfileHandler::DoRemoveRDBFileSystemsAlreadySupportedBySystem(uint32_t filesystemResource)
   {
     Service->Log.AddLogDebug("fhfile: DoRemoveRDBFileSystemsAlreadySupportedBySystem(filesystemResource: %.8X)\n", filesystemResource);
 
-    ULO fsList = filesystemResource + 18;
+    uint32_t fsList = filesystemResource + 18;
     if (fsList == VM->Memory.ReadLong(fsList + 8))
     {
       Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
-    ULO fsNode = VM->Memory.ReadLong(fsList);
+    uint32_t fsNode = VM->Memory.ReadLong(fsList);
     while (fsNode != 0 && (fsNode != fsList + 4))
     {
-      ULO fsEntry = fsNode + 14;
-      ULO dosType = VM->Memory.ReadLong(fsEntry);
-      ULO version = VM->Memory.ReadLong(fsEntry + 4);
+      uint32_t fsEntry = fsNode + 14;
+      uint32_t dosType = VM->Memory.ReadLong(fsEntry);
+      uint32_t version = VM->Memory.ReadLong(fsEntry + 4);
 
       Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", VM->Memory.ReadLong(fsEntry));
       Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", VM->Memory.ReadLong(fsEntry + 4));
@@ -1253,24 +1253,24 @@ namespace fellow::hardfile
   }
 
   // D0 - pointer to FileSystem.resource
-  void HardfileHandler::DoLogAvailableFileSystems(ULO fileSystemResource)
+  void HardfileHandler::DoLogAvailableFileSystems(uint32_t fileSystemResource)
   {
     Service->Log.AddLogDebug("fhfile: DoLogAvailableFileSystems(fileSystemResource: %.8X)\n", fileSystemResource);
 
-    ULO fsList = fileSystemResource + 18;
+    uint32_t fsList = fileSystemResource + 18;
     if (fsList == VM->Memory.ReadLong(fsList + 8))
     {
       Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
-    ULO fsNode = VM->Memory.ReadLong(fsList);
+    uint32_t fsNode = VM->Memory.ReadLong(fsList);
     while (fsNode != 0 && (fsNode != fsList + 4))
     {
-      ULO fsEntry = fsNode + 14;
+      uint32_t fsEntry = fsNode + 14;
 
-      ULO dosType = VM->Memory.ReadLong(fsEntry);
-      ULO version = VM->Memory.ReadLong(fsEntry + 4);
+      uint32_t dosType = VM->Memory.ReadLong(fsEntry);
+      uint32_t version = VM->Memory.ReadLong(fsEntry + 4);
 
       Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", dosType);
       Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", version);
@@ -1288,13 +1288,13 @@ namespace fellow::hardfile
     }
   }
 
-  void HardfileHandler::DoPatchDOSDeviceNode(ULO node, ULO packet)
+  void HardfileHandler::DoPatchDOSDeviceNode(uint32_t node, uint32_t packet)
   {
     Service->Log.AddLogDebug("fhfile: DoPatchDOSDeviceNode(node: %.8X, packet: %.8X)\n", node, packet);
 
     VM->Memory.WriteLong(0, node + 8); // dn_Task = 0
     VM->Memory.WriteLong(0, node + 16); // dn_Handler = 0
-    VM->Memory.WriteLong(static_cast<ULO>(-1), node + 36); // dn_GlobalVec = -1
+    VM->Memory.WriteLong(static_cast<uint32_t>(-1), node + 36); // dn_GlobalVec = -1
 
     HardfileFileSystemEntry *fs = GetFileSystemForDOSType(VM->Memory.ReadLong(packet + 80));
     if (fs != nullptr)
@@ -1314,7 +1314,7 @@ namespace fellow::hardfile
     }
   }
 
-  void HardfileHandler::DoUnknownOperation(ULO operation)
+  void HardfileHandler::DoUnknownOperation(uint32_t operation)
   {
     Service->Log.AddLogDebug("fhfile: Unknown operation called %X\n", operation);
   }
@@ -1328,10 +1328,10 @@ namespace fellow::hardfile
   /* RDB filesystem commands by 0x0002XXXX           */
   /*=================================================*/
 
-  void HardfileHandler::Do(ULO data)
+  void HardfileHandler::Do(uint32_t data)
   {
-    ULO type = data >> 16;
-    ULO operation = data & 0xffff;
+    uint32_t type = data >> 16;
+    uint32_t operation = data & 0xffff;
     if (type == 1)
     {
       switch (operation)
@@ -1416,12 +1416,12 @@ namespace fellow::hardfile
   /* Make a dosdevice packet about the device layout */
   /*=================================================*/
 
-  void HardfileHandler::MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress)
+  void HardfileHandler::MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, uint32_t deviceNameAddress)
   {
     const HardfileDevice& device = _devices[mountListEntry.DeviceIndex];
     if (device.F != nullptr)
     {
-      ULO unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
+      uint32_t unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
       const HardfileGeometry& geometry = device.Configuration.Geometry;
       VM->Memory.DmemSetLong(mountListEntry.DeviceIndex);   /* Flag to initcode */
 
@@ -1446,19 +1446,19 @@ namespace fellow::hardfile
       VM->Memory.DmemSetLong(0);                            /* 64 Type of memory for buffers */
       VM->Memory.DmemSetLong(0x7fffffff);                   /* 68 Largest transfer */
       VM->Memory.DmemSetLong(~1U);                          /* 72 Add mask */
-      VM->Memory.DmemSetLong(static_cast<ULO>(-1));         /* 76 Boot priority */
+      VM->Memory.DmemSetLong(static_cast<uint32_t>(-1));         /* 76 Boot priority */
       VM->Memory.DmemSetLong(0x444f5300);                   /* 80 DOS file handler name */
       VM->Memory.DmemSetLong(0);
     }
   }
 
-  void HardfileHandler::MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress)
+  void HardfileHandler::MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, uint32_t deviceNameAddress)
   {
     HardfileDevice& device = _devices[mountListEntry.DeviceIndex];
     RDBPartition* partition = device.RDB->Partitions[mountListEntry.PartitionIndex].get();
     if (device.F != nullptr)
     {
-      ULO unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
+      uint32_t unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
 
       VM->Memory.DmemSetLong(mountListEntry.DeviceIndex);            /* Flag to initcode */
 
@@ -1520,44 +1520,44 @@ namespace fellow::hardfile
 
       _devicename = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetString("fhfile.device");
-      ULO idstr = VM->Memory.DmemGetCounter();
+      uint32_t idstr = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetString("Fellow Hardfile device V5");
-      ULO doslibname = VM->Memory.DmemGetCounter();
+      uint32_t doslibname = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetString("dos.library");
       _fsname = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetString("Fellow hardfile RDB fs");
 
       /* fhfile.open */
 
-      ULO fhfile_t_open = VM->Memory.DmemGetCounter();
+      uint32_t fhfile_t_open = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010002); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010002,$f40000 */
       VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.close */
 
-      ULO fhfile_t_close = VM->Memory.DmemGetCounter();
+      uint32_t fhfile_t_close = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010003); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010003,$f40000 */
       VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.expunge */
 
-      ULO fhfile_t_expunge = VM->Memory.DmemGetCounter();
+      uint32_t fhfile_t_expunge = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010004); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010004,$f40000 */
       VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.null */
 
-      ULO fhfile_t_null = VM->Memory.DmemGetCounter();
+      uint32_t fhfile_t_null = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010005); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010005,$f40000 */
       VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.beginio */
 
-      ULO fhfile_t_beginio = VM->Memory.DmemGetCounter();
+      uint32_t fhfile_t_beginio = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010006); VM->Memory.DmemSetLong(0xf40000);   /* move.l #$00010006,$f40000  BeginIO */
       VM->Memory.DmemSetLong(0x48e78002);                                     /* movem.l d0/a6,-(a7)    push        */
@@ -1570,14 +1570,14 @@ namespace fellow::hardfile
 
       /* fhfile.abortio */
 
-      ULO fhfile_t_abortio = VM->Memory.DmemGetCounter();
+      uint32_t fhfile_t_abortio = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010007); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010007,$f40000 */
       VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* Func-table */
 
-      ULO functable = VM->Memory.DmemGetCounter();
+      uint32_t functable = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetLong(fhfile_t_open);
       VM->Memory.DmemSetLong(fhfile_t_close);
       VM->Memory.DmemSetLong(fhfile_t_expunge);
@@ -1588,7 +1588,7 @@ namespace fellow::hardfile
 
       /* Data-table */
 
-      ULO datatable = VM->Memory.DmemGetCounter();
+      uint32_t datatable = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0xE000);          /* INITBYTE */
       VM->Memory.DmemSetWord(0x0008);          /* LN_TYPE */
       VM->Memory.DmemSetWord(0x0300);          /* NT_DEVICE */
@@ -1622,7 +1622,7 @@ namespace fellow::hardfile
 
       /* fhfile.init */
 
-      ULO fhfile_t_init = VM->Memory.DmemGetCounter();
+      uint32_t fhfile_t_init = VM->Memory.DmemGetCounter();
 
       VM->Memory.DmemSetByte(0x48); VM->Memory.DmemSetByte(0xE7); VM->Memory.DmemSetByte(0xFF); VM->Memory.DmemSetByte(0xFE);
       VM->Memory.DmemSetByte(0x61); VM->Memory.DmemSetByte(0x00); VM->Memory.DmemSetByte(0x00); VM->Memory.DmemSetByte(0xF6);
@@ -1792,7 +1792,7 @@ namespace fellow::hardfile
 
       /* Init-struct */
 
-      ULO initstruct = VM->Memory.DmemGetCounter();
+      uint32_t initstruct = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetLong(0x100);                   /* Data-space size, min LIB_SIZE */
       VM->Memory.DmemSetLong(functable);               /* Function-table */
       VM->Memory.DmemSetLong(datatable);               /* Data-table */
@@ -1800,7 +1800,7 @@ namespace fellow::hardfile
 
       /* RomTag structure */
 
-      ULO romtagstart = VM->Memory.DmemGetCounter();
+      uint32_t romtagstart = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x4afc);                  /* Start of structure */
       VM->Memory.DmemSetLong(romtagstart);             /* Pointer to start of structure */
       VM->Memory.DmemSetLong(romtagstart + 26);        /* Pointer to end of code */
@@ -1850,10 +1850,10 @@ namespace fellow::hardfile
 
       _rom[0x1090] = 0x4e; /* BootPoint */
       _rom[0x1091] = 0xf9; /* JMP fhfile_bootcode */
-      _rom[0x1092] = static_cast<UBY>(_bootcode >> 24);
-      _rom[0x1093] = static_cast<UBY>(_bootcode >> 16);
-      _rom[0x1094] = static_cast<UBY>(_bootcode >> 8);
-      _rom[0x1095] = static_cast<UBY>(_bootcode);
+      _rom[0x1092] = static_cast<uint8_t>(_bootcode >> 24);
+      _rom[0x1093] = static_cast<uint8_t>(_bootcode >> 16);
+      _rom[0x1094] = static_cast<uint8_t>(_bootcode >> 8);
+      _rom[0x1095] = static_cast<uint8_t>(_bootcode);
 
       /* NULLIFY pointer to configdev */
 
@@ -1866,7 +1866,7 @@ namespace fellow::hardfile
     }
   }
 
-  void HardfileHandler::CreateDOSDevPackets(ULO devicename)
+  void HardfileHandler::CreateDOSDevPackets(uint32_t devicename)
   {
     VM->Memory.DmemSetCounter(_endOfDmem);
 
@@ -1893,7 +1893,7 @@ namespace fellow::hardfile
         MakeDOSDevPacketForRDBPartition(*mountListEntry, devicename);
       }
     }
-    VM->Memory.DmemSetLong(static_cast<ULO>(-1));  // Terminate list
+    VM->Memory.DmemSetLong(static_cast<uint32_t>(-1));  // Terminate list
   }
 
   void HardfileHandler::EmulationStart()
@@ -1933,7 +1933,7 @@ namespace fellow::hardfile
   /* Create hardfile          */
   /*==========================*/
 
-  bool HardfileHandler::Create(const fellow::api::module::HardfileConfiguration& configuration, ULO size)
+  bool HardfileHandler::Create(const fellow::api::module::HardfileConfiguration& configuration, uint32_t size)
   {
     bool result = false;
 

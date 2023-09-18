@@ -81,7 +81,7 @@ int num_mouse_attached = 0;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *mouseDrvDInputErrorString(HRESULT hResult)
+char *mouseDrvDInputErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -110,7 +110,7 @@ STR *mouseDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
-STR* mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
+char* mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -124,17 +124,17 @@ STR* mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void mouseDrvDInputFailure(STR *header, HRESULT err)
+void mouseDrvDInputFailure(char *header, HRESULT err)
 {
   fellowAddLog("%s %s\n", header, mouseDrvDInputErrorString(err));
 }
 
-void mouseDrvDInputUnacquireFailure(STR* header, HRESULT err)
+void mouseDrvDInputUnacquireFailure(char* header, HRESULT err)
 {
   fellowAddLog("%s %s\n", header, mouseDrvDInputUnaquireReturnValueString(err));
 }
 
-void mouseDrvDInputAcquireFailure(STR* header, HRESULT err)
+void mouseDrvDInputAcquireFailure(char* header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -424,8 +424,8 @@ void mouseDrvMovementHandler(void)
 {
   if (mouse_drv_in_use)
   {
-    static LON lx = 0;
-    static LON ly = 0;
+    static int32_t lx = 0;
+    static int32_t ly = 0;
     HRESULT res;
 	
     DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
@@ -447,7 +447,7 @@ void mouseDrvMovementHandler(void)
 	
     if (res == DI_OK || res == DI_BUFFEROVERFLOW)
     {
-      ULO i = 0;
+      uint32_t i = 0;
       DWORD oldSequence = 0;
 	  
       /*

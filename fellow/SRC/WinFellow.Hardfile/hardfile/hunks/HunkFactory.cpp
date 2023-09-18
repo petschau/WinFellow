@@ -8,7 +8,7 @@
 
 namespace fellow::hardfile::hunks
 {
-  InitialHunk* HunkFactory::CreateInitialHunk(ULO type, ULO allocateSizeInLongwords)
+  InitialHunk* HunkFactory::CreateInitialHunk(uint32_t type, uint32_t allocateSizeInLongwords)
   {
     // The lower 29 bits are used, except on header
     switch (type & 0x1fffffff)
@@ -20,7 +20,7 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  AdditionalHunk* HunkFactory::CreateAdditionalHunk(ULO type, ULO sourceHunkIndex)
+  AdditionalHunk* HunkFactory::CreateAdditionalHunk(uint32_t type, uint32_t sourceHunkIndex)
   {
     // The lower 29 bits are used, except on header
     switch (type & 0x1fffffff)

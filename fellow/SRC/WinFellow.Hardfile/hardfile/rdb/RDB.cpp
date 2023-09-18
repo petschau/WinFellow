@@ -11,34 +11,34 @@ namespace fellow::hardfile::rdb
   void RDB::ReadFromFile(RDBFileReader& reader, unsigned int index, bool geometryOnly)
   {
     ID = reader.ReadString(index + 0, 4);
-    SizeInLongs = reader.ReadULO(index + 4);
-    CheckSum = reader.ReadLON(index + 8);
-    HostID = reader.ReadULO(index + 12);
-    BlockSize = reader.ReadULO(index + 16);
-    Flags = reader.ReadULO(index + 20);
-    BadBlockList = reader.ReadULO(index + 24);
-    PartitionList = reader.ReadULO(index + 28);
-    FilesystemHeaderList = reader.ReadULO(index + 32);
-    DriveInitCode = reader.ReadULO(index + 36);
+    SizeInLongs = reader.ReadUint32(index + 4);
+    CheckSum = reader.ReadInt32(index + 8);
+    HostID = reader.ReadUint32(index + 12);
+    BlockSize = reader.ReadUint32(index + 16);
+    Flags = reader.ReadUint32(index + 20);
+    BadBlockList = reader.ReadUint32(index + 24);
+    PartitionList = reader.ReadUint32(index + 28);
+    FilesystemHeaderList = reader.ReadUint32(index + 32);
+    DriveInitCode = reader.ReadUint32(index + 36);
 
     // Physical drive characteristics
-    Cylinders = reader.ReadULO(index + 64);
-    SectorsPerTrack = reader.ReadULO(index + 68);
-    Heads = reader.ReadULO(index + 72);
-    Interleave = reader.ReadULO(index + 76);
-    ParkingZone = reader.ReadULO(index + 80);
-    WritePreComp = reader.ReadULO(index + 96);
-    ReducedWrite = reader.ReadULO(index + 100);
-    StepRate = reader.ReadULO(index + 104);
+    Cylinders = reader.ReadUint32(index + 64);
+    SectorsPerTrack = reader.ReadUint32(index + 68);
+    Heads = reader.ReadUint32(index + 72);
+    Interleave = reader.ReadUint32(index + 76);
+    ParkingZone = reader.ReadUint32(index + 80);
+    WritePreComp = reader.ReadUint32(index + 96);
+    ReducedWrite = reader.ReadUint32(index + 100);
+    StepRate = reader.ReadUint32(index + 104);
 
     // Logical drive characteristics
-    RDBBlockLow = reader.ReadULO(index + 128);
-    RDBBlockHigh = reader.ReadULO(index + 132);
-    LowCylinder = reader.ReadULO(index + 136);
-    HighCylinder = reader.ReadULO(index + 140);
-    CylinderBlocks = reader.ReadULO(index + 144);
-    AutoParkSeconds = reader.ReadULO(index + 148);
-    HighRDSKBlock = reader.ReadULO(index + 152);
+    RDBBlockLow = reader.ReadUint32(index + 128);
+    RDBBlockHigh = reader.ReadUint32(index + 132);
+    LowCylinder = reader.ReadUint32(index + 136);
+    HighCylinder = reader.ReadUint32(index + 140);
+    CylinderBlocks = reader.ReadUint32(index + 144);
+    AutoParkSeconds = reader.ReadUint32(index + 148);
+    HighRDSKBlock = reader.ReadUint32(index + 152);
 
     // Drive identification
     DiskVendor = reader.ReadString(index + 160, 8);
@@ -56,7 +56,7 @@ namespace fellow::hardfile::rdb
       return;
     }
 
-    ULO nextPartition = PartitionList;
+    uint32_t nextPartition = PartitionList;
     while (nextPartition != 0xffffffff)
     {
       RDBPartition* partition = new RDBPartition();
@@ -85,7 +85,7 @@ namespace fellow::hardfile::rdb
 
     if (!geometryOnly)
     {
-      ULO nextFilesystemHeader = FilesystemHeaderList;
+      uint32_t nextFilesystemHeader = FilesystemHeaderList;
       while (nextFilesystemHeader != 0xffffffff)
       {
         RDBFileSystemHeader* fileSystemHeader = new RDBFileSystemHeader();

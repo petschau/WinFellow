@@ -4,7 +4,7 @@
 #include "graph.h"
 
 extern void spriteInitializeFromEmulationMode();
-extern void spriteEndOfLine(ULO rasterY);
+extern void spriteEndOfLine(uint32_t rasterY);
 extern void spriteEndOfFrame();
 extern void spriteHardReset();
 extern void spriteEmulationStart();
@@ -15,14 +15,14 @@ extern void spriteShutdown();
 class Sprites
 {
 public:
-  virtual void NotifySprpthChanged(UWO data, unsigned int sprite_number) = 0;
-  virtual void NotifySprptlChanged(UWO data, unsigned int sprite_number) = 0;
-  virtual void NotifySprposChanged(UWO data, unsigned int sprite_number) = 0;
-  virtual void NotifySprctlChanged(UWO data, unsigned int sprite_number) = 0;
-  virtual void NotifySprdataChanged(UWO data, unsigned int sprite_number) = 0;
-  virtual void NotifySprdatbChanged(UWO data, unsigned int sprite_number) = 0;
+  virtual void NotifySprpthChanged(uint16_t data, unsigned int sprite_number) = 0;
+  virtual void NotifySprptlChanged(uint16_t data, unsigned int sprite_number) = 0;
+  virtual void NotifySprposChanged(uint16_t data, unsigned int sprite_number) = 0;
+  virtual void NotifySprctlChanged(uint16_t data, unsigned int sprite_number) = 0;
+  virtual void NotifySprdataChanged(uint16_t data, unsigned int sprite_number) = 0;
+  virtual void NotifySprdatbChanged(uint16_t data, unsigned int sprite_number) = 0;
 
-  virtual void EndOfLine(ULO rasterY) = 0;
+  virtual void EndOfLine(uint32_t rasterY) = 0;
   virtual void EndOfFrame() = 0;
   virtual void HardReset() = 0;
   virtual void EmulationStart() = 0;

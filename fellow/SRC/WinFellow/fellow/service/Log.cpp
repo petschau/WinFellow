@@ -79,7 +79,7 @@ namespace fellow::service
 
     for (const string& msg : messages)
     {
-      STR* buffer2 = LogTime(buffer);
+      char* buffer2 = LogTime(buffer);
       _snprintf(buffer2, WRITE_LOG_BUF_SIZE - 1, "%s\n", msg.c_str());
       AddLogInternal(F, buffer);
     }
@@ -87,7 +87,7 @@ namespace fellow::service
     CloseLogFile(F);
   }
 
-  void Log::AddLog2(STR *msg)
+  void Log::AddLog2(char *msg)
   {
     if (!_enabled)
     {
@@ -102,13 +102,13 @@ namespace fellow::service
     }
   }
 
-  void Log::AddLogInternal(FILE *F, STR* msg)
+  void Log::AddLogInternal(FILE *F, char* msg)
   {
     fprintf(F, "%s", msg);
     _new_line = (msg[strlen(msg) - 1] == '\n');
   }
 
-  STR *Log::LogTime(STR* buffer)
+  char *Log::LogTime(char* buffer)
   {
     if (_new_line)
     {
@@ -132,7 +132,7 @@ namespace fellow::service
 
     if (_first_time)
     {
-      STR logfilename[MAX_PATH];
+      char logfilename[MAX_PATH];
       fileopsGetFellowLogfileName(logfilename);
       _logfilename = logfilename;
       fopen_s(&F, _logfilename.c_str(), "w");

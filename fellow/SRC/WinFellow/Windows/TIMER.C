@@ -29,9 +29,9 @@
 #include "TIMER.H"
 
 bool timer_running;
-ULO timer_mmresolution;
-ULO timer_mmtimer;
-ULO timer_ticks;
+uint32_t timer_mmresolution;
+uint32_t timer_mmtimer;
+uint32_t timer_ticks;
 
 std::list<timerCallbackFunction> timerCallbacks;
 
@@ -39,7 +39,7 @@ std::list<timerCallbackFunction> timerCallbacks;
 /* Returns current time in ms                                                */
 /*===========================================================================*/
 
-ULO timerGetTimeMs()
+uint32_t timerGetTimeMs()
 {
   return timeGetTime();
 }

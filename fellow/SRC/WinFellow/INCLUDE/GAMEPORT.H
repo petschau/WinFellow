@@ -45,8 +45,8 @@ extern gameport_inputs gameport_input[2];
 /*===========================================================================*/
 
 extern void gameportMouseHandler(gameport_inputs mousedev,
-								 LON x,
-								 LON y,
+								 int32_t x,
+								 int32_t y,
 								 BOOLE button1,
 								 BOOLE button2,
 								 BOOLE button3);
@@ -57,7 +57,7 @@ extern void gameportJoystickHandler(gameport_inputs joydev,
 									BOOLE down,
 									BOOLE button1,
 									BOOLE button2);
-extern void gameportSetInput(ULO index, gameport_inputs gameportinput);
+extern void gameportSetInput(uint32_t index, gameport_inputs gameportinput);
 
 extern BOOLE gameportGetAnalogJoystickInUse(void);
 

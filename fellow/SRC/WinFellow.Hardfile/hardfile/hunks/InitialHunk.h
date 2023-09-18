@@ -9,22 +9,22 @@ namespace fellow::hardfile::hunks
   class InitialHunk : public HunkBase
   {
   protected:
-    ULO _allocateSizeInLongwords;
-    ULO _contentSizeInLongwords;
-    ULO _vmAddress;
-    std::unique_ptr<UBY> _rawData;
+    uint32_t _allocateSizeInLongwords;
+    uint32_t _contentSizeInLongwords;
+    uint32_t _vmAddress;
+    std::unique_ptr<uint8_t> _rawData;
 
   public:
     void Parse(RawDataReader& rawReader) override = 0;
-    ULO GetAllocateSizeInLongwords();
-    ULO GetAllocateSizeInBytes();
-    ULO GetContentSizeInLongwords();
-    ULO GetContentSizeInBytes();
-    UBY *GetContent();
-    void SetVMAddress(ULO vmAddress);
-    ULO GetVMAddress();
+    uint32_t GetAllocateSizeInLongwords();
+    uint32_t GetAllocateSizeInBytes();
+    uint32_t GetContentSizeInLongwords();
+    uint32_t GetContentSizeInBytes();
+    uint8_t *GetContent();
+    void SetVMAddress(uint32_t vmAddress);
+    uint32_t GetVMAddress();
 
-    InitialHunk(ULO allocateSizeInLongwords);
+    InitialHunk(uint32_t allocateSizeInLongwords);
   };
 }
 

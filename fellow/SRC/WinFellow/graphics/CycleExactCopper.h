@@ -16,17 +16,17 @@ class CycleExactCopper : public Copper
 {
 private:
   CopperStates _state;
-  UWO _first;
-  UWO _second;
+  uint16_t _first;
+  uint16_t _second;
   bool _skip_next;
 
-  UWO ReadWord();
+  uint16_t ReadWord();
   void IncreasePtr();
 
-  void SetState(CopperStates newState, ULO cycle);
+  void SetState(CopperStates newState, uint32_t cycle);
   void SetStateNone();
   
-  bool IsRegisterAllowed(ULO regno);
+  bool IsRegisterAllowed(uint32_t regno);
   
   void Move();
   void Wait();
@@ -41,7 +41,7 @@ private:
 public:
   virtual void NotifyDMAEnableChanged(bool new_dma_enable_state);
   virtual void NotifyCop1lcChanged();
-  virtual void Load(ULO new_copper_pc);
+  virtual void Load(uint32_t new_copper_pc);
   virtual void EventHandler();
 
   virtual void EndOfFrame();

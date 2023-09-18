@@ -9,13 +9,13 @@ namespace fellow::hardfile::rdb
 {
   struct RDBFileSystemHandler
   {
-    ULO Size;
-    std::unique_ptr<UBY> RawData;
+    uint32_t Size;
+    std::unique_ptr<uint8_t> RawData;
     fellow::hardfile::hunks::FileImage FileImage;
 
     RDBFileSystemHandler();
 
-    bool ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize);
+    bool ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize);
   };
 }
 

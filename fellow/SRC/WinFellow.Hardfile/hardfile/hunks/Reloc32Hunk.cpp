@@ -7,27 +7,27 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::hunks
 {
-  ULO Reloc32Hunk::GetID()
+  uint32_t Reloc32Hunk::GetID()
   {
     return ID;
   }
 
-  ULO Reloc32Hunk::GetOffsetTableCount()
+  uint32_t Reloc32Hunk::GetOffsetTableCount()
   {
-    return (ULO) _offsetTables.size();
+    return (uint32_t) _offsetTables.size();
   }
 
-  Reloc32OffsetTable* Reloc32Hunk::GetOffsetTable(ULO index)
+  Reloc32OffsetTable* Reloc32Hunk::GetOffsetTable(uint32_t index)
   {
     return _offsetTables[index].get();
   }
 
   void Reloc32Hunk::Parse(RawDataReader& rawDataReader)
   {
-    ULO offsetCount = rawDataReader.GetNextByteswappedLong();
+    uint32_t offsetCount = rawDataReader.GetNextByteswappedLong();
     while (offsetCount != 0)
     {
-      ULO relatedHunk = rawDataReader.GetNextByteswappedLong();
+      uint32_t relatedHunk = rawDataReader.GetNextByteswappedLong();
       Reloc32OffsetTable* offsetTable = new Reloc32OffsetTable(relatedHunk);
       offsetTable->Parse(rawDataReader, offsetCount);
       _offsetTables.push_back(unique_ptr<Reloc32OffsetTable>(offsetTable));
@@ -37,7 +37,7 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  Reloc32Hunk::Reloc32Hunk(ULO sourceHunkIndex)
+  Reloc32Hunk::Reloc32Hunk(uint32_t sourceHunkIndex)
     : AdditionalHunk(sourceHunkIndex)
   {
   }

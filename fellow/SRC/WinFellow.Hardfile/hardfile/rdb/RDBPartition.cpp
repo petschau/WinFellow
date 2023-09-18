@@ -6,41 +6,41 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::rdb
 {
-  void RDBPartition::ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize)
+  void RDBPartition::ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize)
   {
-    ULO index = blockSize * blockChainStart;
+    uint32_t index = blockSize * blockChainStart;
 
     ID = reader.ReadString(index, 4);
-    SizeInLongs = reader.ReadULO(index + 4);
-    CheckSum = reader.ReadLON(index + 8);
-    HostID = reader.ReadULO(index + 12);
-    Next = reader.ReadULO(index + 16);
-    Flags = reader.ReadULO(index + 20);
-    DevFlags = reader.ReadULO(index + 32);
-    DriveNameLength = reader.ReadUBY(index + 36);
+    SizeInLongs = reader.ReadUint32(index + 4);
+    CheckSum = reader.ReadInt32(index + 8);
+    HostID = reader.ReadUint32(index + 12);
+    Next = reader.ReadUint32(index + 16);
+    Flags = reader.ReadUint32(index + 20);
+    DevFlags = reader.ReadUint32(index + 32);
+    DriveNameLength = reader.ReadUint8(index + 36);
     DriveName = reader.ReadString(index + 37, DriveNameLength);
 
     // DOS Environment vector
-    SizeOfVector = reader.ReadULO(index + 128);
-    SizeBlock = reader.ReadULO(index + 132);
-    SecOrg = reader.ReadULO(index + 136);
-    Surfaces = reader.ReadULO(index + 140);
-    SectorsPerBlock = reader.ReadULO(index + 144);
-    BlocksPerTrack = reader.ReadULO(index + 148);
-    Reserved = reader.ReadULO(index + 152);
-    PreAlloc = reader.ReadULO(index + 156);
-    Interleave = reader.ReadULO(index + 160);
-    LowCylinder = reader.ReadULO(index + 164);
-    HighCylinder = reader.ReadULO(index + 168);
-    NumBuffer = reader.ReadULO(index + 172);
-    BufMemType = reader.ReadULO(index + 176);
-    MaxTransfer = reader.ReadULO(index + 180);
-    Mask = reader.ReadULO(index + 184);
-    BootPri = reader.ReadULO(index + 188);
-    DOSType = reader.ReadULO(index + 192);
-    Baud = reader.ReadULO(index + 196);
-    Control = reader.ReadULO(index + 200);
-    Bootblocks = reader.ReadULO(index + 204);
+    SizeOfVector = reader.ReadUint32(index + 128);
+    SizeBlock = reader.ReadUint32(index + 132);
+    SecOrg = reader.ReadUint32(index + 136);
+    Surfaces = reader.ReadUint32(index + 140);
+    SectorsPerBlock = reader.ReadUint32(index + 144);
+    BlocksPerTrack = reader.ReadUint32(index + 148);
+    Reserved = reader.ReadUint32(index + 152);
+    PreAlloc = reader.ReadUint32(index + 156);
+    Interleave = reader.ReadUint32(index + 160);
+    LowCylinder = reader.ReadUint32(index + 164);
+    HighCylinder = reader.ReadUint32(index + 168);
+    NumBuffer = reader.ReadUint32(index + 172);
+    BufMemType = reader.ReadUint32(index + 176);
+    MaxTransfer = reader.ReadUint32(index + 180);
+    Mask = reader.ReadUint32(index + 184);
+    BootPri = reader.ReadUint32(index + 188);
+    DOSType = reader.ReadUint32(index + 192);
+    Baud = reader.ReadUint32(index + 196);
+    Control = reader.ReadUint32(index + 200);
+    Bootblocks = reader.ReadUint32(index + 204);
 
     HasValidCheckSum = (SizeInLongs == 64) && CheckSumCalculator::HasValidCheckSum(reader, 64, index);
   }

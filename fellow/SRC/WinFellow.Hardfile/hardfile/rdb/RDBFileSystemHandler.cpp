@@ -15,17 +15,17 @@ namespace fellow::hardfile::rdb
   {
   }
 
-  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize)
+  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize)
   {
     vector<RDBLSegBlock> blocks;
-    LON nextBlock = blockChainStart;
+    int32_t nextBlock = blockChainStart;
 
     Service->Log.AddLogDebug("Reading filesystem handler from block-chain at %d\n", blockChainStart);
 
     Size = 0;
     while (nextBlock != -1)
     {
-      LON index = nextBlock * blockSize;
+      int32_t index = nextBlock * blockSize;
       blocks.emplace_back();
       RDBLSegBlock &block = blocks.back();
       block.ReadFromFile(reader, index);
@@ -50,11 +50,11 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("%d LSegBlocks read\n", blocks.size());
     Service->Log.AddLogDebug("Total filesystem size was %d bytes\n", Size);
 
-    RawData.reset(new UBY[Size]);
-    ULO nextCopyPosition = 0;
+    RawData.reset(new uint8_t[Size]);
+    uint32_t nextCopyPosition = 0;
     for (const RDBLSegBlock& block : blocks)
     {
-      LON size = block.GetDataSize();
+      int32_t size = block.GetDataSize();
       memcpy(RawData.get() + nextCopyPosition, block.GetData(), size);
       nextCopyPosition += size;
     }

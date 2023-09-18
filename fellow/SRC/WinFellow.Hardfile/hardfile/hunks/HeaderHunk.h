@@ -11,20 +11,20 @@ namespace fellow::hardfile::hunks
   class HeaderHunk : public HunkBase
   {
   private:
-    static const ULO ID = HeaderHunkID;
+    static const uint32_t ID = HeaderHunkID;
     std::vector<std::string> _residentLibraries;
     std::vector<HunkSize> _hunkSizes;
-    ULO _firstLoadHunk;
-    ULO _lastLoadHunk;
+    uint32_t _firstLoadHunk;
+    uint32_t _lastLoadHunk;
 
   public:
-    ULO GetID() override;
-    ULO GetHunkSizeCount();
-    const HunkSize& GetHunkSize(ULO index);
-    ULO GetResidentLibraryCount();
-    const std::string& GetResidentLibrary(ULO index);
-    ULO GetFirstLoadHunk();
-    ULO GetLastLoadHunk();
+    uint32_t GetID() override;
+    uint32_t GetHunkSizeCount();
+    const HunkSize& GetHunkSize(uint32_t index);
+    uint32_t GetResidentLibraryCount();
+    const std::string& GetResidentLibrary(uint32_t index);
+    uint32_t GetFirstLoadHunk();
+    uint32_t GetLastLoadHunk();
 
     void Parse(RawDataReader& rawDataReader) override;
 

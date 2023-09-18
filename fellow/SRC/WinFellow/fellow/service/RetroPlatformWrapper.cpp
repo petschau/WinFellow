@@ -6,7 +6,7 @@
 
 namespace fellow::service
 {
-  bool RetroPlatformWrapper::SendHardDriveContent(const ULO lHardDriveNo, const STR *szImageName, const bool bWriteProtected)
+  bool RetroPlatformWrapper::SendHardDriveContent(const uint32_t lHardDriveNo, const char *szImageName, const bool bWriteProtected)
   {
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
@@ -15,7 +15,7 @@ namespace fellow::service
     return true;
   }
 
-  bool RetroPlatformWrapper::PostHardDriveLED(const ULO lHardDriveNo, const bool bActive, const bool bWriteActivity)
+  bool RetroPlatformWrapper::PostHardDriveLED(const uint32_t lHardDriveNo, const bool bActive, const bool bWriteActivity)
   {
 
 #ifdef RETRO_PLATFORM

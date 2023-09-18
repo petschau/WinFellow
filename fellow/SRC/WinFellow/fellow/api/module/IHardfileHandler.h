@@ -89,13 +89,13 @@ namespace fellow::api::module
 
     // Autoconfig and ROM memory
     virtual void CardInit() = 0;
-    virtual void CardMap(ULO mapping) = 0;
-    virtual UBY ReadByte(ULO address) = 0;
-    virtual UWO ReadWord(ULO address) = 0;
-    virtual ULO ReadLong(ULO address) = 0;
+    virtual void CardMap(uint32_t mapping) = 0;
+    virtual uint8_t ReadByte(uint32_t address) = 0;
+    virtual uint16_t ReadWord(uint32_t address) = 0;
+    virtual uint32_t ReadLong(uint32_t address) = 0;
 
     // Native callback
-    virtual void Do(ULO data) = 0;
+    virtual void Do(uint32_t data) = 0;
 
     // Configuration
     virtual void SetEnabled(bool enabled) = 0;
@@ -107,7 +107,7 @@ namespace fellow::api::module
     virtual unsigned int GetMaxHardfileCount() = 0;
 
     // UI helper function
-    virtual bool Create(const HardfileConfiguration& configuration, ULO size) = 0;
+    virtual bool Create(const HardfileConfiguration& configuration, uint32_t size) = 0;
     virtual rdb_status HasRDB(const std::string& filename) = 0;
     virtual HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) = 0;
     

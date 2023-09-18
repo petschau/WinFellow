@@ -1,5 +1,4 @@
-#ifndef PORTABLE_H
-#define PORTABLE_H
+#pragma once
 
 /*====================================================*/
 /* Wrapper definitions for system dependent functions */
@@ -64,13 +63,3 @@
 /*========*/
 
 #include <setjmp.h>
-
-
-/*=====================*/
-/* Integer types       */
-/*=====================*/
-
-#define FELLOW_LONG_LONG __int64
-
-#endif /* PORTABLE_H */
-

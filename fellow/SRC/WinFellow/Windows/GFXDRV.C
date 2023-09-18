@@ -23,7 +23,7 @@ void gfxDrvClearCurrentBuffer()
   }
 }
 
-UBY* gfxDrvValidateBufferPointer()
+uint8_t* gfxDrvValidateBufferPointer()
 {
   gfxDrvCommon->RunEventWait();
 
@@ -136,7 +136,7 @@ bool gfxDrvEmulationStart(unsigned int maxbuffercount)
   return gfxDrvDDrawEmulationStart(maxbuffercount);
 }
 
-ULO gfxDrvEmulationStartPost()
+uint32_t gfxDrvEmulationStartPost()
 {
   gfxDrvCommon->EmulationStartPost();
 
@@ -162,9 +162,9 @@ void gfxDrvEmulationStop()
   gfxDrvCommon->EmulationStop();
 }
 
-bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilename)
+bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const char *szFilename)
 {
-  STR szActualFilename[MAX_PATH] = "";
+  char szActualFilename[MAX_PATH] = "";
   bool result = false;
 
   if (szFilename[0] == 0)

@@ -41,7 +41,7 @@ char       ini_default_config_filename[MAX_PATH];
 /* Remove unwanted newline chars on the end of a string                       */
 /*============================================================================*/
 
-static void iniStripTrailingNewlines(STR *line) {
+static void iniStripTrailingNewlines(char *line) {
   size_t length = strlen(line);
   while ((length > 0) && 
     ((line[length - 1] == '\n') || (line[length - 1] == '\r')))
@@ -53,15 +53,15 @@ static void iniStripTrailingNewlines(STR *line) {
 /* These verify the options, or at least return a default value on error      */
 /*============================================================================*/
 
-static ULO iniGetULOFromString(STR *value) {
+static uint32_t iniGetUint32FromString(char *value) {
   return atoi(value);
 }
 
-static int iniGetintFromString(STR *value) {
+static int iniGetintFromString(char *value) {
   return atoi(value);
 }
 
-static BOOLE iniGetBOOLEFromString(STR *value) {
+static BOOLE iniGetBOOLEFromString(char *value) {
   return (atoi(value) == 1);
 }
 
@@ -69,19 +69,19 @@ static BOOLE iniGetBOOLEFromString(STR *value) {
 /* struct ini property access functions                                       */
 /*============================================================================*/
 
-void iniSetDescription(ini *initdata, STR *description) {
+void iniSetDescription(ini *initdata, char *description) {
   strcpy(initdata->m_description, description);
 }
 
-STR *iniGetDescription(ini *initdata) {
+char *iniGetDescription(ini *initdata) {
   return initdata->m_description;
 }
 
-void iniSetConfigurationHistoryFilename(ini *initdata, ULO index, STR *cfgfilename) {
+void iniSetConfigurationHistoryFilename(ini *initdata, uint32_t index, char *cfgfilename) {
   strncpy(initdata->m_configuration_history[index], cfgfilename, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO index) {
+char *iniGetConfigurationHistoryFilename(ini *initdata, uint32_t index) {
   return initdata->m_configuration_history[index];
 }
 
@@ -117,93 +117,93 @@ int iniGetEmulationWindowYPos(ini *initdata) {
   return initdata->m_emulationwindowyposition;
 }
 
-void iniSetMainWindowPosition(ini *initdata, ULO mainwindowxpos, ULO mainwindowypos) {
+void iniSetMainWindowPosition(ini *initdata, uint32_t mainwindowxpos, uint32_t mainwindowypos) {
   iniSetMainWindowXPos(initdata, mainwindowxpos);
   iniSetMainWindowYPos(initdata, mainwindowypos);
 } 
 
-void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO emulationwindowypos) {
+void iniSetEmulationWindowPosition(ini *initdata, uint32_t emulationwindowxpos, uint32_t emulationwindowypos) {
   iniSetEmulationWindowXPos(initdata, emulationwindowxpos);
   iniSetEmulationWindowYPos(initdata, emulationwindowypos);
 }
 
-void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration) {
+void iniSetCurrentConfigurationFilename(ini *initdata, char *configuration) {
   strncpy(initdata->m_current_configuration, configuration, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetCurrentConfigurationFilename(ini *initdata) {
+char *iniGetCurrentConfigurationFilename(ini *initdata) {
   return initdata->m_current_configuration;
 }
 
-void iniSetLastUsedCfgDir(ini *initdata, STR *directory) {
+void iniSetLastUsedCfgDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedconfigurationdir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedCfgDir(ini *initdata) {
+char *iniGetLastUsedCfgDir(ini *initdata) {
   return initdata->m_lastusedconfigurationdir;
 }
 
-void iniSetLastUsedCfgTab(ini *initdata, ULO cfgTab) {
+void iniSetLastUsedCfgTab(ini *initdata, uint32_t cfgTab) {
   initdata->m_lastusedconfigurationtab = cfgTab;
 }
 
-ULO iniGetLastUsedCfgTab(ini *initdata) {
+uint32_t iniGetLastUsedCfgTab(ini *initdata) {
   return initdata->m_lastusedconfigurationtab;
 }
 
-void iniSetLastUsedStateFileDir(ini *initdata, STR *directory) {
+void iniSetLastUsedStateFileDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedstatefiledir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedStateFileDir(ini *initdata) {
+char *iniGetLastUsedStateFileDir(ini *initdata) {
   return initdata->m_lastusedstatefiledir;
 }
 
-void iniSetLastUsedPresetROMDir(ini *initdata, STR *directory) {
+void iniSetLastUsedPresetROMDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedpresetromdir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedPresetROMDir(ini *initdata) {
+char *iniGetLastUsedPresetROMDir(ini *initdata) {
   return initdata->m_lastusedpresetromdir;
 }
 
-void iniSetLastUsedKickImageDir(ini *initdata, STR *directory) {
+void iniSetLastUsedKickImageDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedkickimagedir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedKickImageDir(ini *initdata) {
+char *iniGetLastUsedKickImageDir(ini *initdata) {
   return initdata->m_lastusedkickimagedir;
 }
 
-void iniSetLastUsedKeyDir(ini *initdata, STR *directory) {
+void iniSetLastUsedKeyDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedkeydir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedKeyDir(ini *initdata) {
+char *iniGetLastUsedKeyDir(ini *initdata) {
   return initdata->m_lastusedkeydir;
 }
 
-void iniSetLastUsedGlobalDiskDir(ini *initdata, STR *directory) {
+void iniSetLastUsedGlobalDiskDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedglobaldiskdir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedGlobalDiskDir(ini *initdata) {
+char *iniGetLastUsedGlobalDiskDir(ini *initdata) {
   return initdata->m_lastusedglobaldiskdir;
 }
 
-void iniSetLastUsedHdfDir(ini *initdata, STR *directory) {
+void iniSetLastUsedHdfDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedhdfdir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedHdfDir(ini *initdata) {
+char *iniGetLastUsedHdfDir(ini *initdata) {
   return initdata->m_lastusedhdfdir;
 }
 
-void iniSetLastUsedModDir(ini *initdata, STR *directory) {
+void iniSetLastUsedModDir(ini *initdata, char *directory) {
   strncpy(initdata->m_lastusedmoddir, directory, CFG_FILENAME_LENGTH);
 }
 
-STR *iniGetLastUsedModDir(ini *initdata) {
+char *iniGetLastUsedModDir(ini *initdata) {
   return initdata->m_lastusedmoddir;
 }
 
@@ -242,7 +242,7 @@ ini *iniManagerGetDefaultInitdata(iniManager *inimanager) {
 /*============================================================================*/
 
 void iniSetDefaults(ini *initdata) {
-  ULO i;
+  uint32_t i;
 
   /*==========================================================================*/
   /* Default ini-file description                                             */
@@ -299,7 +299,7 @@ static BOOLE iniLoadIniFile(ini *initdata, FILE *inifile) {
   return TRUE;
 }
 
-BOOLE iniLoadIniFromFilename(ini *inidata, STR *filename) {
+BOOLE iniLoadIniFromFilename(ini *inidata, char *filename) {
   FILE *inifile;
   BOOLE result;
 
@@ -320,7 +320,7 @@ static BOOLE iniSaveToFile(ini *initdata, FILE *inifile) {
   return iniSaveOptions(initdata, inifile);
 }
 
-BOOLE iniSaveToFilename(ini *initdata, STR *filename) {
+BOOLE iniSaveToFilename(ini *initdata, char *filename) {
   FILE *inifile;
   BOOLE result;
 
@@ -338,8 +338,8 @@ BOOLE iniSaveToFilename(ini *initdata, STR *filename) {
 /* Returns TRUE if the option was recognized                                  */
 /*============================================================================*/
 
-BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
-  STR *option, *value;
+BOOLE iniSetOption(ini *initdata, char *initoptionstr) {
+  char *option, *value;
   BOOLE result;
   struct stat bla; 
 
@@ -408,7 +408,7 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
       iniSetLastUsedModDir(initdata, value);
     }
     else if (stricmp(option, "last_used_cfg_tab") == 0) {
-      iniSetLastUsedCfgTab(initdata, iniGetULOFromString(value));
+      iniSetLastUsedCfgTab(initdata, iniGetUint32FromString(value));
     }
     else if (stricmp(option, "last_used_statefile_dir") == 0) {
       iniSetLastUsedStateFileDir(initdata, value);

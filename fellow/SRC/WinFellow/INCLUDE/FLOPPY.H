@@ -53,20 +53,20 @@ typedef enum {
 /* Info about a track */
 
 typedef struct {
-  ULO file_offset;/* Track starts at this offset in image file, used for writing back */
-  ULO mfm_length; /* Length of mfm data in bytes */
-  UBY *mfm_data;  /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
+  uint32_t file_offset;/* Track starts at this offset in image file, used for writing back */
+  uint32_t mfm_length; /* Length of mfm data in bytes */
+  uint8_t *mfm_data;  /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
 } floppytrackinfostruct;
 
 /* Info about a drive */
 
 typedef struct {
   FILE *F;                /* Open file for disk image */
-  ULO tracks;             /* Number of tracks on drive */
+  uint32_t tracks;             /* Number of tracks on drive */
   BOOLE zipped;           /* This image is zipped */
-  ULO compress_serno;     /* Tmp file serial number */
+  uint32_t compress_serno;     /* Tmp file serial number */
   BOOLE sel;              /* Drive selected when TRUE */
-  ULO track;              /* Current head position */
+  uint32_t track;              /* Current head position */
   BOOLE writeprotconfig;  /* Drive is write-protected via user configuration */
   BOOLE writeprotenforce; /* Drive is write-protected because of read-only filesystem or IPF image */
   BOOLE dir;              /* Direction for step */
@@ -77,27 +77,27 @@ typedef struct {
   BOOLE changed;          /* Disk has been changed */
   BOOLE idmode;           /* Drive is in ID-mode */
   BOOLE inserted;         /* Disk is inserted */
-  ULO motor_ticks;	      /* EOLs since motor was started */
-  ULO insertedframe;      /* Will not be detected until some time after this */
-  ULO idcount;            /* Number of times ID has been read */
-  UBY *mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
+  uint32_t motor_ticks;	      /* EOLs since motor was started */
+  uint32_t insertedframe;      /* Will not be detected until some time after this */
+  uint32_t idcount;            /* Number of times ID has been read */
+  uint8_t *mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
   floppytrackinfostruct trackinfo[FLOPPY_TRACKS]; /* Info about each track */
   FLOPPY_STATUS_CODE imagestatus; /* Status of drive (kind of image inserted) */
-  ULO imageerror;         /* What kind of error if status reports error */
-  STR imagename[CFG_FILENAME_LENGTH];     /* Image name presented to user */
-  STR imagenamereal[CFG_FILENAME_LENGTH]; /* Image name used internally */
+  uint32_t imageerror;         /* What kind of error if status reports error */
+  char imagename[CFG_FILENAME_LENGTH];     /* Image name presented to user */
+  char imagenamereal[CFG_FILENAME_LENGTH]; /* Image name used internally */
 #ifdef FELLOW_SUPPORT_CAPS
   BOOLE flakey;  /* introduced for CAPS support */
-  ULO *timebuf;        /* dito */
+  uint32_t *timebuf;        /* dito */
 #endif
 } floppyinfostruct;
   
 /* Info about a started disk transfer */
 
 typedef struct {
-  ULO dskpt;			/* Amiga memory pt */
-  ULO wordsleft;		/* Words left to transfer */
-  ULO wait;			/* Used to delay irq for writes */
+  uint32_t dskpt;			/* Amiga memory pt */
+  uint32_t wordsleft;		/* Words left to transfer */
+  uint32_t wait;			/* Used to delay irq for writes */
   BOOLE wait_for_sync;
   BOOLE sync_found;
   BOOLE dont_use_gap;
@@ -111,29 +111,29 @@ extern floppyinfostruct floppy[4];
 extern floppyDMAinfostruct floppy_DMA;
 extern BOOLE floppy_fast;
 extern BOOLE floppy_DMA_started;
-extern ULO diskDMAen;   /* Counts the number of writes to dsklen */
+extern uint32_t diskDMAen;   /* Counts the number of writes to dsklen */
 
 extern void floppyDMAStart(void);
 extern void floppyStartup(void);
 extern void floppyShutdown(void);
-extern LON floppySelectedGet(void);
-extern void floppySelectedSet(ULO selbits);
-extern BOOLE floppyIsTrack0(ULO drive);
-extern BOOLE floppyIsWriteProtected(ULO drive);
-extern BOOLE floppyIsReady(ULO drive);
-extern BOOLE floppyIsChanged(ULO drive);
-extern void floppyMotorSet(ULO drive, BOOLE mtr);
+extern int32_t floppySelectedGet(void);
+extern void floppySelectedSet(uint32_t selbits);
+extern BOOLE floppyIsTrack0(uint32_t drive);
+extern BOOLE floppyIsWriteProtected(uint32_t drive);
+extern BOOLE floppyIsReady(uint32_t drive);
+extern BOOLE floppyIsChanged(uint32_t drive);
+extern void floppyMotorSet(uint32_t drive, BOOLE mtr);
 extern void floppySideSet(BOOLE s);
 extern void floppyDirSet(BOOLE dr);
 extern void floppyStepSet(BOOLE stp);
-extern bool floppyImageADFCreate(STR *, STR *, bool, bool, bool);
-extern void floppyImageRemove(ULO drive);
-extern bool floppyValidateAmigaDOSVolumeName(const STR *);
+extern bool floppyImageADFCreate(char *, char *, bool, bool, bool);
+extern void floppyImageRemove(uint32_t drive);
+extern bool floppyValidateAmigaDOSVolumeName(const char *);
 /* Configuration */
 
-extern void floppySetDiskImage(ULO drive, STR *diskname);
-extern void floppySetEnabled(ULO drive, BOOLE enabled);
-extern void floppySetReadOnlyConfig(ULO drive, BOOLE readonly);
+extern void floppySetDiskImage(uint32_t drive, char *diskname);
+extern void floppySetEnabled(uint32_t drive, BOOLE enabled);
+extern void floppySetReadOnlyConfig(uint32_t drive, BOOLE readonly);
 extern void floppySetFastDMA(BOOLE fastDMA);
 
 /* Module control */

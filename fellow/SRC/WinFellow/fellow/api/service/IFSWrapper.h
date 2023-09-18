@@ -15,11 +15,11 @@ namespace fellow::api::service
 
   typedef struct
   {
-    UBY drive;
+    uint8_t drive;
     std::string name;
     bool relative;
     bool writeable;
-    ULO size;
+    uint32_t size;
     fs_wrapper_file_types type;
   } fs_wrapper_point;
 
@@ -27,7 +27,7 @@ namespace fellow::api::service
   {
   public:
     virtual ~IFSWrapper() = default;
-    virtual fs_wrapper_point *MakePoint(const STR *point) = 0;
+    virtual fs_wrapper_point *MakePoint(const char *point) = 0;
   };
 }
 

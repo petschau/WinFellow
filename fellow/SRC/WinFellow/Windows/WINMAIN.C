@@ -100,7 +100,7 @@ DWORD WINAPI winDrvFellowStepOverStart(LPVOID in)
 DWORD WINAPI winDrvFellowRunDebugStart(LPVOID in)
 {
   winDrvSetThreadName(-1, "fellowRunDebug()");
-  fellowRunDebug((ULO) in);
+  fellowRunDebug((uint32_t) in);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
@@ -119,9 +119,9 @@ extern HANDLE mouse_drv_DIevent;
 extern bool kbd_drv_initialization_failed;
 extern HANDLE kbd_drv_DIevent;
 
-ULO winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *object_mapping) 
+uint32_t winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *object_mapping) 
 {
-  ULO event_count = 0;
+  uint32_t event_count = 0;
 
   multi_events[event_count] = win_drv_emulation_ended;
   object_mapping[event_count++] = met_emulation_ended;
@@ -165,7 +165,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   HANDLE FellowThread;
   DWORD dwEvt;
   HANDLE multi_events[3];
-  ULO event_count;
+  uint32_t event_count;
   enum MultiEventTypes object_mapping[4];
   BOOLE keep_on_waiting;
   
@@ -533,8 +533,8 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
 int winDrvDetectMemoryLeaks(void)
 {
   HANDLE hLogFile;
-  STR stOutputFileName[CFG_FILENAME_LENGTH];
-  STR strLogFileName[CFG_FILENAME_LENGTH];
+  char stOutputFileName[CFG_FILENAME_LENGTH];
+  char strLogFileName[CFG_FILENAME_LENGTH];
   SYSTEMTIME t;
 
   GetSystemTime(&t);

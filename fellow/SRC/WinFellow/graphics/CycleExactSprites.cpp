@@ -39,13 +39,13 @@
 
 using namespace CustomChipset;
 
-bool CycleExactSprites::Is16Color(ULO spriteNo)
+bool CycleExactSprites::Is16Color(uint32_t spriteNo)
 {
-  ULO evenSpriteNo = spriteNo & 0xe;
+  uint32_t evenSpriteNo = spriteNo & 0xe;
   return SpriteState[evenSpriteNo].attached || SpriteState[evenSpriteNo + 1].attached;
 }
 
-void CycleExactSprites::Arm(ULO sprite_number)
+void CycleExactSprites::Arm(uint32_t sprite_number)
 {
   // Actually this is kind of wrong since each sprite serialises independently
   bool is16Color = Is16Color(sprite_number);
@@ -71,32 +71,32 @@ void CycleExactSprites::Arm(ULO sprite_number)
   }
 }
 
-void CycleExactSprites::MergeLores(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+void CycleExactSprites::MergeLores(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeLores(spriteNo, playfield, sprite_data, pixel_count);
 }
 
-void CycleExactSprites::MergeHires(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+void CycleExactSprites::MergeHires(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHires(spriteNo, playfield, sprite_data, pixel_count);
 }
 
-void CycleExactSprites::MergeHam(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+void CycleExactSprites::MergeHam(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  UBY *ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
-  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHam(spriteNo, playfield, ham_sprites_playfield, sprite_data, pixel_count);
 }
 
-void CycleExactSprites::Merge(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+void CycleExactSprites::Merge(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
   if (_core.RegisterUtility.IsLoresEnabled())
   {
@@ -108,20 +108,20 @@ void CycleExactSprites::Merge(ULO spriteNo, ULO source_pixel_index, ULO pixel_in
   }
 }
 
-bool CycleExactSprites::InRange(ULO spriteNo, ULO startCylinder, ULO cylinderCount)
+bool CycleExactSprites::InRange(uint32_t spriteNo, uint32_t startCylinder, uint32_t cylinderCount)
 {
   // Comparison happens at x, sprite image visible one cylinder later
-  ULO visible_at_cylinder = SpriteState[spriteNo].x + 1;
+  uint32_t visible_at_cylinder = SpriteState[spriteNo].x + 1;
 
   return (visible_at_cylinder >= startCylinder)
     && (visible_at_cylinder < (startCylinder + cylinderCount));
 }
 
-void CycleExactSprites::OutputSprite(ULO spriteNo, ULO startCylinder, ULO cylinderCount)
+void CycleExactSprites::OutputSprite(uint32_t spriteNo, uint32_t startCylinder, uint32_t cylinderCount)
 {
   if (SpriteState[spriteNo].armed)
   {
-    ULO pixel_index = 0;
+    uint32_t pixel_index = 0;
 
     // Look for start of sprite output
     if (!SpriteState[spriteNo].serializing && InRange(spriteNo, startCylinder, cylinderCount))
@@ -132,8 +132,8 @@ void CycleExactSprites::OutputSprite(ULO spriteNo, ULO startCylinder, ULO cylind
     if (SpriteState[spriteNo].serializing)
     {
       // Some output of the sprite will occur in this range.
-      ULO pixel_count = cylinderCount - pixel_index;
-      ULO pixelsLeft = 16 - SpriteState[spriteNo].pixels_output;
+      uint32_t pixel_count = cylinderCount - pixel_index;
+      uint32_t pixelsLeft = 16 - SpriteState[spriteNo].pixels_output;
       if (pixel_count > pixelsLeft)
       {
         pixel_count = pixelsLeft;
@@ -151,9 +151,9 @@ void CycleExactSprites::OutputSprite(ULO spriteNo, ULO startCylinder, ULO cylind
   }
 }
 
-void CycleExactSprites::OutputSprites(ULO startCylinder, ULO cylinderCount)
+void CycleExactSprites::OutputSprites(uint32_t startCylinder, uint32_t cylinderCount)
 {
-  for (ULO spriteNo = 0; spriteNo < 8; spriteNo++)
+  for (uint32_t spriteNo = 0; spriteNo < 8; spriteNo++)
   {
     OutputSprite(spriteNo, startCylinder, cylinderCount);
   }
@@ -163,19 +163,19 @@ void CycleExactSprites::OutputSprites(ULO startCylinder, ULO cylinderCount)
 
 /* SPRXPT - $dff120 to $dff13e */
 
-void CycleExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprpthChanged(uint16_t data, unsigned int sprite_number)
 {
   // Nothing
 }
 
-void CycleExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprptlChanged(uint16_t data, unsigned int sprite_number)
 {
   SpriteState[sprite_number].DMAState.state = SPRITE_DMA_STATE_READ_CONTROL;
 }
 
 /* SPRXPOS - $dff140 to $dff178 */
 
-void CycleExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprposChanged(uint16_t data, unsigned int sprite_number)
 {
   SpriteState[sprite_number].x = (SpriteState[sprite_number].x & 1) | ((data & 0xff) << 1);
   SpriteState[sprite_number].DMAState.y_first = (SpriteState[sprite_number].DMAState.y_first & 0x100) | ((data & 0xff00) >> 8);
@@ -184,7 +184,7 @@ void CycleExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void CycleExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprctlChanged(uint16_t data, unsigned int sprite_number)
 {
   // retrieve the rest of the horizontal and vertical position bits
   SpriteState[sprite_number].x = (SpriteState[sprite_number].x & 0x1fe) | (data & 0x1);
@@ -202,57 +202,57 @@ void CycleExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number
 
 /* SPRXDATA $dff144 to $dff17c */
 
-void CycleExactSprites::NotifySprdataChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprdataChanged(uint16_t data, unsigned int sprite_number)
 {
   Arm(sprite_number);
 }
 
 /* SPRXDATB $dff146 to $dff17e */
 
-void CycleExactSprites::NotifySprdatbChanged(UWO data, unsigned int sprite_number)
+void CycleExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_number)
 {
   SpriteState[sprite_number].armed = false;
 }
 
 /* Sprite State Machine */
 
-UWO CycleExactSprites::ReadWord(ULO spriteNo)
+uint16_t CycleExactSprites::ReadWord(uint32_t spriteNo)
 {
-  UWO data = chipmemReadWord(sprite_registers.sprpt[spriteNo]);
+  uint16_t data = chipmemReadWord(sprite_registers.sprpt[spriteNo]);
   sprite_registers.sprpt[spriteNo] = chipsetMaskPtr(sprite_registers.sprpt[spriteNo] + 2);
   return data;
 }
 
-void CycleExactSprites::ReadControlWords(ULO spriteNo)
+void CycleExactSprites::ReadControlWords(uint32_t spriteNo)
 {
-  UWO pos = ReadWord(spriteNo);
-  UWO ctl = ReadWord(spriteNo);
+  uint16_t pos = ReadWord(spriteNo);
+  uint16_t ctl = ReadWord(spriteNo);
   wsprxpos(pos, 0x140 + spriteNo*8);
   wsprxctl(ctl, 0x142 + spriteNo*8);
 }
 
-void CycleExactSprites::ReadDataWords(ULO spriteNo)
+void CycleExactSprites::ReadDataWords(uint32_t spriteNo)
 {
   wsprxdatb(ReadWord(spriteNo), 0x146 + spriteNo*8);
   wsprxdata(ReadWord(spriteNo), 0x144 + spriteNo*8);
 }
 
-bool CycleExactSprites::IsFirstLine(ULO spriteNo, ULO rasterY)
+bool CycleExactSprites::IsFirstLine(uint32_t spriteNo, uint32_t rasterY)
 {
   return (rasterY >= 24) && (rasterY == SpriteState[spriteNo].DMAState.y_first);
 }
 
-bool CycleExactSprites::IsAboveFirstLine(ULO spriteNo, ULO rasterY)
+bool CycleExactSprites::IsAboveFirstLine(uint32_t spriteNo, uint32_t rasterY)
 {
   return rasterY > SpriteState[spriteNo].DMAState.y_first;
 }
 
-bool CycleExactSprites::IsLastLine(ULO spriteNo, ULO rasterY)
+bool CycleExactSprites::IsLastLine(uint32_t spriteNo, uint32_t rasterY)
 {
   return rasterY == SpriteState[spriteNo].DMAState.y_last;
 }
 
-void CycleExactSprites::DMAReadControl(ULO spriteNo, ULO rasterY)
+void CycleExactSprites::DMAReadControl(uint32_t spriteNo, uint32_t rasterY)
 {
   ReadControlWords(spriteNo);
 
@@ -266,7 +266,7 @@ void CycleExactSprites::DMAReadControl(ULO spriteNo, ULO rasterY)
   }
 }
 
-void CycleExactSprites::DMAWaitingForFirstLine(ULO spriteNo, ULO rasterY)
+void CycleExactSprites::DMAWaitingForFirstLine(uint32_t spriteNo, uint32_t rasterY)
 {
   if (IsFirstLine(spriteNo, rasterY))
   {
@@ -282,7 +282,7 @@ void CycleExactSprites::DMAWaitingForFirstLine(ULO spriteNo, ULO rasterY)
   }
 }
 
-void CycleExactSprites::DMAReadData(ULO spriteNo, ULO rasterY)
+void CycleExactSprites::DMAReadData(uint32_t spriteNo, uint32_t rasterY)
 {
   if (!IsLastLine(spriteNo, rasterY))
   {
@@ -302,7 +302,7 @@ void CycleExactSprites::DMAReadData(ULO spriteNo, ULO rasterY)
   }
 }
 
-void CycleExactSprites::DMAHandler(ULO rasterY)
+void CycleExactSprites::DMAHandler(uint32_t rasterY)
 {  
   if ((dmacon & 0x20) == 0 || rasterY < 0x18)
   {
@@ -311,7 +311,7 @@ void CycleExactSprites::DMAHandler(ULO rasterY)
 
   rasterY++; // Do DMA for next line
 
-  ULO spriteNo = 0;
+  uint32_t spriteNo = 0;
   while (spriteNo < 8) 
   {
     switch(SpriteState[spriteNo].DMAState.state) 
@@ -332,9 +332,9 @@ void CycleExactSprites::DMAHandler(ULO rasterY)
 
 /* Module management */
 
-void CycleExactSprites::EndOfLine(ULO rasterY)
+void CycleExactSprites::EndOfLine(uint32_t rasterY)
 {
-  for (ULO i = 0; i < 8; ++i)
+  for (uint32_t i = 0; i < 8; ++i)
   {
     SpriteState[i].serializing = false;
   }
@@ -343,7 +343,7 @@ void CycleExactSprites::EndOfLine(ULO rasterY)
 
 void CycleExactSprites::EndOfFrame()
 {
-  for (ULO spriteNo = 0; spriteNo < 8; ++spriteNo)
+  for (uint32_t spriteNo = 0; spriteNo < 8; ++spriteNo)
   {
     SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_CONTROL;
   }

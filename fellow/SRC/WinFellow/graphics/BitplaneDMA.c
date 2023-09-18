@@ -32,35 +32,35 @@
 
 using namespace CustomChipset;
 
-static STR *BPLDMA_StateNames[3] = {"NONE",
+static char *BPLDMA_StateNames[3] = {"NONE",
 				    "FETCH_LORES",
 				    "FETCH_HIRES"};
 
-void BitplaneDMA::Log(ULO line, ULO cylinder)
+void BitplaneDMA::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "BitplaneDMA %s\n", BPLDMA_StateNames[_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
 
-UWO BitplaneDMA::ReadWord(ULO address)
+uint16_t BitplaneDMA::ReadWord(uint32_t address)
 {
   return chipmemReadWord(address);
 }
 
-void BitplaneDMA::IncreaseBplPt(ULO *bplpt, ULO size)
+void BitplaneDMA::IncreaseBplPt(uint32_t *bplpt, uint32_t size)
 {
   *bplpt = chipsetMaskPtr((*bplpt) + size);
 }
 
-UWO BitplaneDMA::GetHold(ULO bplNo, ULO bplsEnabled, ULO *bplpt)
+uint16_t BitplaneDMA::GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt)
 {
   if (bplNo <= bplsEnabled)
   {
-    UWO hold = ReadWord(*bplpt);
+    uint16_t hold = ReadWord(*bplpt);
     IncreaseBplPt(bplpt, 2);
     return hold;
   }
@@ -86,7 +86,7 @@ void BitplaneDMA::Stop(void)
   _stopDDF = true;
 }
 
-void BitplaneDMA::SetState(BPLDMAStates newState, ULO arriveTime)
+void BitplaneDMA::SetState(BPLDMAStates newState, uint32_t arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
@@ -103,7 +103,7 @@ void BitplaneDMA::SetStateNone(void)
 
 // Called from outside the state machine
 // arrive_time points to the start of the fetch unit
-void BitplaneDMA::Start(ULO arriveTime)
+void BitplaneDMA::Start(uint32_t arriveTime)
 {
   if (_core.RegisterUtility.IsMasterDMAAndBitplaneDMAEnabled())
   {
@@ -124,7 +124,7 @@ void BitplaneDMA::Restart(bool ddfIsActive)
   if (ddfIsActive || !ddfIsActive && _stopDDF && _core.RegisterUtility.IsHiresEnabled())
   {
     _stopDDF = false;
-    ULO startOfNextFetchUnit = _arriveTime + 1;
+    uint32_t startOfNextFetchUnit = _arriveTime + 1;
     Start(startOfNextFetchUnit);
   }
   else
@@ -136,7 +136,7 @@ void BitplaneDMA::Restart(bool ddfIsActive)
 
 void BitplaneDMA::FetchLores(void)
 {
-  ULO bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
+  uint32_t bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
 
   GraphicsContext.PixelSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
 		                         GetHold(2, bplsEnabled, &bpl2pt),
@@ -148,7 +148,7 @@ void BitplaneDMA::FetchLores(void)
 
 void BitplaneDMA::FetchHires(void)
 {
-  ULO bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
+  uint32_t bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
 
   GraphicsContext.PixelSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
 		                         GetHold(2, bplsEnabled, &bpl2pt),
@@ -164,7 +164,7 @@ void BitplaneDMA::InitializeEvent(GraphicsEventQueue *queue)
   SetStateNone();
 }
 
-void BitplaneDMA::Handler(ULO rasterY, ULO cylinder)
+void BitplaneDMA::Handler(uint32_t rasterY, uint32_t cylinder)
 {
   Log(rasterY, cylinder);
 

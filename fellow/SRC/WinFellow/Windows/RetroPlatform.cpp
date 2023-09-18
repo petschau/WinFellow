@@ -116,7 +116,7 @@ RetroPlatform RP;
  *  returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
  */
 
-BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
+BOOL RetroPlatformHandleIncomingGuestEvent(char *strCurrentEvent)
 {
   if(strCurrentEvent == NULL)
   {
@@ -129,15 +129,15 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 #endif
 
   BOOL blnMatch = FALSE;
-  STR *strRawKeyCode = NULL;
-  ULO lRawKeyCode = 0;
+  char *strRawKeyCode = NULL;
+  uint32_t lRawKeyCode = 0;
   
   // handle key_raw_up and key_raw_down events
   if(!strnicmp(strCurrentEvent, "key_raw_down ", 13))
   {
     if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
-      lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+      lRawKeyCode = (uint32_t)strtol(strRawKeyCode, NULL, 0);
       kbdDrvKeypressRaw(lRawKeyCode, TRUE);
     }
     blnMatch = TRUE;
@@ -147,7 +147,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
   {
     if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
-      lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+      lRawKeyCode = (uint32_t)strtol(strRawKeyCode, NULL, 0);
       kbdDrvKeypressRaw(lRawKeyCode, FALSE);
     }
 
@@ -161,10 +161,10 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 	  return FALSE;
 }
 
-BOOL RetroPlatformHandleIncomingGuestEventMessageParser(STR *strEventMessage)
+BOOL RetroPlatformHandleIncomingGuestEventMessageParser(char *strEventMessage)
 {
-  STR *strNextEvent, *blank1, *blank2;
-  STR *strCurrentEvent = (STR *)strEventMessage;
+  char *strNextEvent, *blank1, *blank2;
+  char *strCurrentEvent = (char *)strEventMessage;
 
   for(;;)
   {
@@ -193,11 +193,11 @@ BOOL RetroPlatformHandleIncomingGuestEventMessageParser(STR *strEventMessage)
 
 BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 {
-  STR *strEventMessage = NULL;
+  char *strEventMessage = NULL;
   size_t lEventMessageLength = 0, lReturnCode = 0;
 
   lEventMessageLength = wcstombs(NULL, wcsEventMessage, 0); // first call to wcstombs() determines how long the output buffer needs to be
-  strEventMessage = (STR *)malloc(lEventMessageLength+1);
+  strEventMessage = (char *)malloc(lEventMessageLength+1);
   if(strEventMessage == NULL)
     return FALSE;
   lReturnCode = wcstombs(strEventMessage, wcsEventMessage, lEventMessageLength+1);
@@ -222,9 +222,9 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 
 BOOL RetroPlatformHandleIncomingDeviceActivity(WPARAM wParam, LPARAM lParam)
 {
-  ULO lGamePort       = HIBYTE(wParam);
-  ULO lDeviceCategory = LOBYTE(wParam);
-  ULO lMask           = lParam;
+  uint32_t lGamePort       = HIBYTE(wParam);
+  uint32_t lDeviceCategory = LOBYTE(wParam);
+  uint32_t lMask           = lParam;
   BOOL bButton1, bButton2, bLeft, bRight, bUp, bDown;
 
   fellowAddLog("RetroPlatformHandleIncomingDeviceActivity(): wParam=%04x, lParam=%08x, lGamePort=%u, lDeviceCategory=%u\n", wParam, lParam, lGamePort, lDeviceCategory);
@@ -304,7 +304,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_TURBO:
       if(wParam & RP_TURBO_CPU) 
       {
-        static ULO lOriginalSpeed = 0;
+        static uint32_t lOriginalSpeed = 0;
 
         if(lParam & RP_TURBO_CPU) 
         {
@@ -363,7 +363,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_DEVICECONTENT:
     {
       struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
-      STR name[CFG_FILENAME_LENGTH] = "";
+      char name[CFG_FILENAME_LENGTH] = "";
       wcstombs(name, dc->szContent, CFG_FILENAME_LENGTH);
   #ifdef _DEBUG
       fellowAddLog("RetroPlatform::HostMessageFunction(): RP_IPC_TO_GUEST_DEVICECONTENT Cat=%d Num=%d Flags=%08x '%s'\n",
@@ -400,7 +400,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_SCREENCAPTURE:
     {
       struct RPScreenCapture *rpsc = (struct RPScreenCapture*)pData;
-      STR szScreenFiltered[CFG_FILENAME_LENGTH] = "", szScreenRaw[CFG_FILENAME_LENGTH] = "";
+      char szScreenFiltered[CFG_FILENAME_LENGTH] = "", szScreenRaw[CFG_FILENAME_LENGTH] = "";
 
       wcstombs(szScreenFiltered, rpsc->szScreenFiltered, CFG_FILENAME_LENGTH);
       wcstombs(szScreenRaw, rpsc->szScreenRaw, CFG_FILENAME_LENGTH);
@@ -468,7 +468,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
  */
 BOOL FAR PASCAL RetroPlatform::EnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
-  STR strHostInputID[CFG_FILENAME_LENGTH];
+  char strHostInputID[CFG_FILENAME_LENGTH];
   WCHAR szHostInputID[CFG_FILENAME_LENGTH];
   WCHAR szHostInputName[CFG_FILENAME_LENGTH];
                                     
@@ -548,7 +548,7 @@ int RetroPlatform::EnumerateJoysticks(void)
 
 /** Set clipping offset that is applied to the left of the picture.
  */
-void RetroPlatform::SetClippingOffsetLeft(const ULO lOffsetLeft) 
+void RetroPlatform::SetClippingOffsetLeft(const uint32_t lOffsetLeft) 
 {
   lClippingOffsetLeftRP = lOffsetLeft;
 
@@ -559,7 +559,7 @@ void RetroPlatform::SetClippingOffsetLeft(const ULO lOffsetLeft)
 
 /** Set clipping offset that is applied to the top of the picture
  */
-void RetroPlatform::SetClippingOffsetTop(const ULO lOffsetTop)
+void RetroPlatform::SetClippingOffsetTop(const uint32_t lOffsetTop)
 {
   lClippingOffsetTopRP = lOffsetTop;
 
@@ -573,11 +573,11 @@ void RetroPlatform::SetClippingOffsetTop(const ULO lOffsetTop)
  * Gameport 0 is statically mapped to internal keyboard layout GP_JOYKEY0, 
  * gameport 1 to GP_JOYKEY1 as we reconfigure them anyway
  */
-void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszKeys) 
+void RetroPlatform::SetCustomKeyboardLayout(const uint32_t lGameport, const char *pszKeys) 
 {
   const char *CustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
   int l[RETRO_PLATFORM_KEYSET_COUNT], n;
-  STR *psz;
+  char *psz;
   size_t ln;
 
   fellowAddLog(" Configuring keyboard layout %d to %s.\n", lGameport, pszKeys);
@@ -629,7 +629,7 @@ void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszK
  * The device is selected in the RetroPlatform player and passed to the emulator
  * in form of an IPC message.
  */
-bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDeviceType, DWORD dwFlags, const STR *szName)
+bool RetroPlatform::ConnectInputDeviceToPort(const uint32_t lGameport, const uint32_t lDeviceType, DWORD dwFlags, const char *szName)
 {
   if(lGameport < 0 || lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)	
     return false;
@@ -702,7 +702,7 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
 
 /** Translate a RetroPlatform IPC message code into readable text.
  */
-const STR *RetroPlatform::GetMessageText(ULO iMsg)
+const char *RetroPlatform::GetMessageText(uint32_t iMsg)
 {
   switch(iMsg) {
     case RP_IPC_TO_HOST_FEATURES:           return TEXT("RP_IPC_TO_HOST_FEATURES");
@@ -773,7 +773,7 @@ ULONGLONG RetroPlatform::GetTime(void)
 /** Send an IPC message to RetroPlatform host.
  * @return true is sucessfully sent, false otherwise.
  */
-bool RetroPlatform::SendMessageToHost(ULO iMessage, WPARAM wParam, LPARAM lParam,
+bool RetroPlatform::SendMessageToHost(uint32_t iMessage, WPARAM wParam, LPARAM lParam,
   LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pGuestInfo, LRESULT *plResult) 
 {
   bool bResult;
@@ -791,9 +791,9 @@ bool RetroPlatform::SendMessageToHost(ULO iMessage, WPARAM wParam, LPARAM lParam
   return bResult;
 }
 
-ULO RetroPlatform::GetClippingOffsetLeftAdjusted(void) 
+uint32_t RetroPlatform::GetClippingOffsetLeftAdjusted(void) 
 {
-  ULO lClippingOffsetLeft = lClippingOffsetLeftRP;
+  uint32_t lClippingOffsetLeft = lClippingOffsetLeftRP;
     
   if(lClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
     lClippingOffsetLeft = (lClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT);
@@ -808,9 +808,9 @@ ULO RetroPlatform::GetClippingOffsetLeftAdjusted(void)
   return lClippingOffsetLeft;
 }
 
-ULO RetroPlatform::GetClippingOffsetTopAdjusted(void)
+uint32_t RetroPlatform::GetClippingOffsetTopAdjusted(void)
 {
-  ULO lClippingOffsetTop = lClippingOffsetTopRP;
+  uint32_t lClippingOffsetTop = lClippingOffsetTopRP;
 
   if(lClippingOffsetTop >= RETRO_PLATFORM_OFFSET_ADJUST_TOP)
     lClippingOffsetTop -= RETRO_PLATFORM_OFFSET_ADJUST_TOP;
@@ -823,50 +823,50 @@ ULO RetroPlatform::GetClippingOffsetTopAdjusted(void)
   return lClippingOffsetTop;
 }
 
-ULO RetroPlatform::GetClippingOffsetLeft(void) 
+uint32_t RetroPlatform::GetClippingOffsetLeft(void) 
 {
   return lClippingOffsetLeftRP;
 }
 
-ULO RetroPlatform::GetClippingOffsetTop(void) 
+uint32_t RetroPlatform::GetClippingOffsetTop(void) 
 {
   return lClippingOffsetTopRP;
 }
 
-ULO RetroPlatform::GetScreenHeightAdjusted(void) 
+uint32_t RetroPlatform::GetScreenHeightAdjusted(void) 
 {
-  ULO lScreenHeight = lScreenHeightRP;
+  uint32_t lScreenHeight = lScreenHeightRP;
 
   lScreenHeight *= RetroPlatform::GetDisplayScale();
 
   return lScreenHeight;
 }
 
-ULO RetroPlatform::GetSourceBufferHeight(void)
+uint32_t RetroPlatform::GetSourceBufferHeight(void)
 {
   return lScreenHeightRP;
 }
 
-ULO RetroPlatform::GetCPUSpeed(void)
+uint32_t RetroPlatform::GetCPUSpeed(void)
 {
   return cfgGetCPUSpeed(pConfig);
 }
 
-ULO RetroPlatform::GetScreenWidthAdjusted(void) 
+uint32_t RetroPlatform::GetScreenWidthAdjusted(void) 
 {
-  ULO lScreenWidth = 0;
+  uint32_t lScreenWidth = 0;
     
   lScreenWidth = lScreenWidthRP / 2 * RetroPlatform::GetDisplayScale();
 
   return lScreenWidth;
 }
 
-ULO RetroPlatform::GetSourceBufferWidth(void)
+uint32_t RetroPlatform::GetSourceBufferWidth(void)
 {
   return lScreenWidthRP / 2;
 }
 
-ULO RetroPlatform::GetScreenWidth(void) 
+uint32_t RetroPlatform::GetScreenWidth(void) 
 {
   return lScreenWidthRP;
 }
@@ -881,7 +881,7 @@ bool RetroPlatform::GetScanlines(void)
   return bScanlines;
 }
 
-ULO RetroPlatform::GetScreenHeight(void) 
+uint32_t RetroPlatform::GetScreenHeight(void) 
 {
    return lScreenHeightRP;
 }
@@ -922,7 +922,7 @@ bool RetroPlatform::GetEmulationPaused(void)
   return bEmulationPaused;
 }
 
-ULO RetroPlatform::GetDisplayScale(void)
+uint32_t RetroPlatform::GetDisplayScale(void)
 {
   return lDisplayScale;
 }
@@ -934,7 +934,7 @@ ULO RetroPlatform::GetDisplayScale(void)
  * @param[out] lpBuild build number
  * @return true is successful, false otherwise.
  */
-bool RetroPlatform::GetHostVersion(ULO *lpMainVersion, ULO *lpRevision, ULO *lpBuild)
+bool RetroPlatform::GetHostVersion(uint32_t *lpMainVersion, uint32_t *lpRevision, uint32_t *lpBuild)
 {
   LRESULT lResult = 0;
 
@@ -963,7 +963,7 @@ bool RetroPlatform::GetHeadlessMode(void)
  * A message is posted to the host asynchronously, i.e. without waiting for
  * results.
  */
-bool RetroPlatform::PostMessageToHost(ULO iMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pGuestInfo)
+bool RetroPlatform::PostMessageToHost(uint32_t iMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pGuestInfo)
 {
   bool bResult;
 
@@ -1011,7 +1011,7 @@ bool RetroPlatform::PostEscaped(void)
  * @return true if message sent successfully, false otherwise. 
  * @callergraph
  */
-bool RetroPlatform::PostHardDriveLED(const ULO lHardDriveNo, const bool bActive, const bool bWriteActivity)
+bool RetroPlatform::PostHardDriveLED(const uint32_t lHardDriveNo, const bool bActive, const bool bWriteActivity)
 {
   static int oldleds[FHFILE_MAX_DEVICES];
   static ULONGLONG lastsent[FHFILE_MAX_DEVICES];
@@ -1052,7 +1052,7 @@ bool RetroPlatform::PostHardDriveLED(const ULO lHardDriveNo, const bool bActive,
  * @return true if message sent successfully, false otherwise. 
  * @callergraph
  */
-bool RetroPlatform::PostFloppyDriveLED(const ULO lFloppyDriveNo, const bool bMotorActive, const bool bWriteActivity)
+bool RetroPlatform::PostFloppyDriveLED(const uint32_t lFloppyDriveNo, const bool bMotorActive, const bool bWriteActivity)
 {
   if(lFloppyDriveNo > 3) 
     return false;
@@ -1074,7 +1074,7 @@ bool RetroPlatform::PostFloppyDriveLED(const ULO lFloppyDriveNo, const bool bMot
  * @sa RetroPlatformSendFloppyDriveReadOnly
  * @callergraph
  */
-bool RetroPlatform::SendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *szImageName, const bool bWriteProtected) 
+bool RetroPlatform::SendFloppyDriveContent(const uint32_t lFloppyDriveNo, const char *szImageName, const bool bWriteProtected) 
 {
   bool bResult;
   struct RPDeviceContent rpDeviceContent = { 0 };
@@ -1119,7 +1119,7 @@ bool RetroPlatform::SendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *
  * @return true if message sent successfully, false otherwise.
  * @callergraph
  */
-bool RetroPlatform::SendFloppyDriveReadOnly(const ULO lFloppyDriveNo, const bool bWriteProtected)
+bool RetroPlatform::SendFloppyDriveReadOnly(const uint32_t lFloppyDriveNo, const bool bWriteProtected)
 {
   bool bResult;
 
@@ -1170,7 +1170,7 @@ bool RetroPlatform::SendFloppyTurbo(const bool bTurbo)
  * @return true if message sent successfully, false otherwise.
  * @callergraph
  */
-bool RetroPlatform::PostFloppyDriveSeek(const ULO lFloppyDriveNo, const ULO lTrackNo)
+bool RetroPlatform::PostFloppyDriveSeek(const uint32_t lFloppyDriveNo, const uint32_t lTrackNo)
 {
   if (!bInitialized)	
     return false;
@@ -1182,7 +1182,7 @@ bool RetroPlatform::PostFloppyDriveSeek(const ULO lFloppyDriveNo, const ULO lTra
 /** 
  * Send gameport activity to RetroPlatform host.
  */
-bool RetroPlatform::PostGameportActivity(const ULO lGameport, const ULO lGameportMask)
+bool RetroPlatform::PostGameportActivity(const uint32_t lGameport, const uint32_t lGameportMask)
 {
   bool bResult; 
 
@@ -1209,7 +1209,7 @@ bool RetroPlatform::PostGameportActivity(const ULO lGameport, const ULO lGamepor
  * @return true if message sent successfully, false otherwise.
  * @callergraph
  */
-bool RetroPlatform::SendHardDriveContent(const ULO lHardDriveNo, const STR *szImageName, const bool bWriteProtected) 
+bool RetroPlatform::SendHardDriveContent(const uint32_t lHardDriveNo, const char *szImageName, const bool bWriteProtected) 
 {
   bool bResult;
   struct RPDeviceContent rpDeviceContent = { 0 };
@@ -1263,13 +1263,13 @@ bool RetroPlatform::PostPowerLEDIntensityPercent(const WPARAM wIntensityPercent)
  * Called during parsing of the command-line parameters, which is why the keyboard modules
  * have to be initialized before the config modules, as we use the key mappings here.
  */
-void RetroPlatform::SetEscapeKey(const ULO lNewEscapeKey) 
+void RetroPlatform::SetEscapeKey(const uint32_t lNewEscapeKey) 
 {
   lEscapeKey = lNewEscapeKey;
   fellowAddLog("RetroPlatform::SetEscapeKey(): escape key configured to %s.\n", kbdDrvKeyString(lEscapeKey));
 }
 
-void RetroPlatform::SetEscapeKeyHoldTime(const ULO lNewEscapeKeyHoldtime) 
+void RetroPlatform::SetEscapeKeyHoldTime(const uint32_t lNewEscapeKeyHoldtime) 
 {
   lEscapeKeyHoldTime = lNewEscapeKeyHoldtime;
   fellowAddLog("RetroPlatform::SetEscapeKeyHoldTime(): escape hold time configured to %d.\n", lEscapeKeyHoldTime);
@@ -1353,7 +1353,7 @@ void RetroPlatform::SetScanlines(const bool bNewScanlines)
 
 /** Set screen height.
  */
-void RetroPlatform::SetScreenHeight(const ULO lHeight) 
+void RetroPlatform::SetScreenHeight(const uint32_t lHeight) 
 {
   lScreenHeightRP = lHeight;
 
@@ -1363,7 +1363,7 @@ void RetroPlatform::SetScreenHeight(const ULO lHeight)
 
 /** Set screen width.
  */
-void RetroPlatform::SetScreenWidth(const ULO lWidth) 
+void RetroPlatform::SetScreenWidth(const uint32_t lWidth) 
 {
   lScreenWidthRP = lWidth;
 
@@ -1384,7 +1384,7 @@ void RetroPlatform::SetScreenWindowed(const bool bWindowed)
     bWindowed ? "true" : "false");
 }
 
-void RetroPlatform::SetDisplayScale(const ULO lNewDisplayScale) 
+void RetroPlatform::SetDisplayScale(const uint32_t lNewDisplayScale) 
 {
   lDisplayScale = lNewDisplayScale;
 
@@ -1394,7 +1394,7 @@ void RetroPlatform::SetDisplayScale(const ULO lNewDisplayScale)
 
 void RetroPlatform::SetScreenMode(const char *szScreenMode)
 {
-  ULO lScalingFactor = 0;
+  uint32_t lScalingFactor = 0;
 
   lScreenMode = atol(szScreenMode);
   fellowAddLog("RetroPlatform::SetScreenMode(): screen mode configured to 0x%x.\n", lScreenMode);
@@ -1425,7 +1425,7 @@ void RetroPlatform::SetScreenMode(const char *szScreenMode)
 
 void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm) 
 {
-  ULO lScalingFactor = 0, lDisplay = 0;
+  uint32_t lScalingFactor = 0, lDisplay = 0;
 
   lScalingFactor = RP_SCREENMODE_SCALE  (sm->dwScreenMode);
   lDisplay       = RP_SCREENMODE_DISPLAY(sm->dwScreenMode);
@@ -1495,7 +1495,7 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
 
 void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
 {
-  ULO lHeight, lWidth, lDisplayScale;
+  uint32_t lHeight, lWidth, lDisplayScale;
 
   if (RP.GetScanlines())
     cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
@@ -1712,7 +1712,7 @@ bool RetroPlatform::SendEnabledHardDrives(void)
   DWORD dFeatureFlags = 0;
   LRESULT lResult;
   bool bResult;
-  ULO i;
+  uint32_t i;
 
   fellowAddLog("RetroPlatform::SendEnabledHardDrives(): %d hard drives are enabled.\n", 
     cfgGetHardfileCount(pConfig));
@@ -1729,7 +1729,7 @@ bool RetroPlatform::SendEnabledHardDrives(void)
   return bResult;
 }
 
-bool RetroPlatform::SendGameports(const ULO lNumGameports)
+bool RetroPlatform::SendGameports(const uint32_t lNumGameports)
 {
   LRESULT lResult;
   bool bResult;
@@ -1752,7 +1752,7 @@ bool RetroPlatform::SendInputDevice(const DWORD dwHostInputType,
 {
   LRESULT lResult;
   bool bResult;
-  STR szHostInputNameA[CFG_FILENAME_LENGTH];
+  char szHostInputNameA[CFG_FILENAME_LENGTH];
 	struct RPInputDeviceDescription rpInputDevDesc;
 
   wcscpy(rpInputDevDesc.szHostInputID, szHostInputID);
@@ -1865,12 +1865,12 @@ bool RetroPlatform::SendScreenMode(HWND hWnd)
   return bResult;
 }
 
-ULO RetroPlatform::GetEscapeKey(void) 
+uint32_t RetroPlatform::GetEscapeKey(void) 
 {
   return lEscapeKey;
 }
 
-ULO RetroPlatform::GetEscapeKeyHoldTime(void)
+uint32_t RetroPlatform::GetEscapeKeyHoldTime(void)
 {
   return lEscapeKeyHoldTime;
 }

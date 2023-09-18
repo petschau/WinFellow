@@ -15,32 +15,32 @@ namespace fellow::hardfile::rdb
   {
   public:
     std::string ID;
-    ULO SizeInLongs;
-    LON CheckSum;
-    ULO HostID;
-    ULO BlockSize;
-    ULO Flags;
-    ULO BadBlockList;
-    ULO PartitionList;
-    ULO FilesystemHeaderList;
-    ULO DriveInitCode;
+    uint32_t SizeInLongs;
+    int32_t CheckSum;
+    uint32_t HostID;
+    uint32_t BlockSize;
+    uint32_t Flags;
+    uint32_t BadBlockList;
+    uint32_t PartitionList;
+    uint32_t FilesystemHeaderList;
+    uint32_t DriveInitCode;
 
-    ULO Cylinders;
-    ULO SectorsPerTrack;
-    ULO Heads;
-    ULO Interleave;
-    ULO ParkingZone;
-    ULO WritePreComp;
-    ULO ReducedWrite;
-    ULO StepRate;
+    uint32_t Cylinders;
+    uint32_t SectorsPerTrack;
+    uint32_t Heads;
+    uint32_t Interleave;
+    uint32_t ParkingZone;
+    uint32_t WritePreComp;
+    uint32_t ReducedWrite;
+    uint32_t StepRate;
 
-    ULO RDBBlockLow;
-    ULO RDBBlockHigh;
-    ULO LowCylinder;
-    ULO HighCylinder;
-    ULO CylinderBlocks;
-    ULO AutoParkSeconds;
-    ULO HighRDSKBlock;
+    uint32_t RDBBlockLow;
+    uint32_t RDBBlockHigh;
+    uint32_t LowCylinder;
+    uint32_t HighCylinder;
+    uint32_t CylinderBlocks;
+    uint32_t AutoParkSeconds;
+    uint32_t HighRDSKBlock;
 
     std::string DiskVendor;
     std::string DiskProduct;

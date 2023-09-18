@@ -11,9 +11,9 @@ namespace fellow::hardfile::hunks
   private:
     FileImage& _fileImage;
 
-    void ProcessReloc32OffsetTable(Reloc32OffsetTable *offsetTable, ULO hunkBaseAddress);
-    void ProcessReloc32Hunk(Reloc32Hunk *reloc32Hunk, ULO hunkBaseAddress);
-    void RelocateHunk(ULO hunkIndex);
+    void ProcessReloc32OffsetTable(Reloc32OffsetTable *offsetTable, uint32_t hunkBaseAddress);
+    void ProcessReloc32Hunk(Reloc32Hunk *reloc32Hunk, uint32_t hunkBaseAddress);
+    void RelocateHunk(uint32_t hunkIndex);
 
   public:
     void RelocateHunks();

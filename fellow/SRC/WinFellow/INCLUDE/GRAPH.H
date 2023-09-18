@@ -18,70 +18,70 @@ extern void graphPlayfieldOnOff(void);
 
 /* IO register read and write */
 
-UWO rdmaconr(ULO address);
-UWO rvposr(ULO address);
-UWO rvhposr(ULO address);
-UWO rid(ULO address);
+uint16_t rdmaconr(uint32_t address);
+uint16_t rvposr(uint32_t address);
+uint16_t rvhposr(uint32_t address);
+uint16_t rid(uint32_t address);
 
-void wvpos(UWO data, ULO address);
-void wdiwstrt(UWO data, ULO address);
-void wdiwstop(UWO data, ULO address);
-void wddfstrt(UWO data, ULO address);
-void wddfstop(UWO data, ULO address);
-void wdmacon(UWO data, ULO address);
+void wvpos(uint16_t data, uint32_t address);
+void wdiwstrt(uint16_t data, uint32_t address);
+void wdiwstop(uint16_t data, uint32_t address);
+void wddfstrt(uint16_t data, uint32_t address);
+void wddfstop(uint16_t data, uint32_t address);
+void wdmacon(uint16_t data, uint32_t address);
 
-void wbpl1pth(UWO data, ULO address);
-void wbpl1ptl(UWO data, ULO address);
-void wbpl2pth(UWO data, ULO address);
-void wbpl2ptl(UWO data, ULO address);
-void wbpl3pth(UWO data, ULO address);
-void wbpl3ptl(UWO data, ULO address);
-void wbpl4pth(UWO data, ULO address);
-void wbpl4ptl(UWO data, ULO address);
-void wbpl5pth(UWO data, ULO address);
-void wbpl5ptl(UWO data, ULO address);
-void wbpl6pth(UWO data, ULO address);
-void wbpl6ptl(UWO data, ULO address);
-void wbplcon0(UWO data, ULO address);
-void wbplcon1(UWO data, ULO address);
-void wbplcon2(UWO data, ULO address);
-void wbpl1mod(UWO data, ULO address);
-void wbpl2mod(UWO data, ULO address);
-void wcolor(UWO data, ULO address);
+void wbpl1pth(uint16_t data, uint32_t address);
+void wbpl1ptl(uint16_t data, uint32_t address);
+void wbpl2pth(uint16_t data, uint32_t address);
+void wbpl2ptl(uint16_t data, uint32_t address);
+void wbpl3pth(uint16_t data, uint32_t address);
+void wbpl3ptl(uint16_t data, uint32_t address);
+void wbpl4pth(uint16_t data, uint32_t address);
+void wbpl4ptl(uint16_t data, uint32_t address);
+void wbpl5pth(uint16_t data, uint32_t address);
+void wbpl5ptl(uint16_t data, uint32_t address);
+void wbpl6pth(uint16_t data, uint32_t address);
+void wbpl6ptl(uint16_t data, uint32_t address);
+void wbplcon0(uint16_t data, uint32_t address);
+void wbplcon1(uint16_t data, uint32_t address);
+void wbplcon2(uint16_t data, uint32_t address);
+void wbpl1mod(uint16_t data, uint32_t address);
+void wbpl2mod(uint16_t data, uint32_t address);
+void wcolor(uint16_t data, uint32_t address);
 
 extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
 extern planar2chunkyroutine graph_decode_line_dual_tab[16];
 
-extern ULO graph_color_shadow[];
+extern uint32_t graph_color_shadow[];
 
-extern ULO diwstrt;
-extern ULO diwstop;
-extern ULO ddfstrt;
-extern ULO ddfstop;
-extern ULO bpl1pt;
-extern ULO bpl2pt;
-extern ULO bpl3pt;
-extern ULO bpl4pt;
-extern ULO bpl5pt;
-extern ULO bpl6pt;
-extern ULO bplcon1;
-extern ULO bpl1mod;
-extern ULO bpl2mod;
-extern ULO dmacon;
-extern ULO lof;
-extern ULO evenscroll;
-extern ULO evenhiscroll;
-extern ULO oddscroll;
-extern ULO oddhiscroll;
-extern ULO graph_DDF_start;
-extern ULO graph_DDF_word_count;
-extern ULO graph_DIW_first_visible;
-extern ULO graph_DIW_last_visible;
-extern ULO diwxleft;
-extern ULO diwxright;
-extern ULO diwytop;
-extern ULO diwybottom;
+extern uint32_t diwstrt;
+extern uint32_t diwstop;
+extern uint32_t ddfstrt;
+extern uint32_t ddfstop;
+extern uint32_t bpl1pt;
+extern uint32_t bpl2pt;
+extern uint32_t bpl3pt;
+extern uint32_t bpl4pt;
+extern uint32_t bpl5pt;
+extern uint32_t bpl6pt;
+extern uint32_t bplcon1;
+extern uint32_t bpl1mod;
+extern uint32_t bpl2mod;
+extern uint32_t dmacon;
+extern uint32_t lof;
+extern uint32_t evenscroll;
+extern uint32_t evenhiscroll;
+extern uint32_t oddscroll;
+extern uint32_t oddhiscroll;
+extern uint32_t graph_DDF_start;
+extern uint32_t graph_DDF_word_count;
+extern uint32_t graph_DIW_first_visible;
+extern uint32_t graph_DIW_last_visible;
+extern uint32_t diwxleft;
+extern uint32_t diwxright;
+extern uint32_t diwytop;
+extern uint32_t diwybottom;
 
 extern BOOLE graph_playfield_on;
 
@@ -94,19 +94,19 @@ typedef enum {
 
 typedef struct {
   graph_linetypes linetype;
-  UBY line1[1024];
-  UBY line2[1024];
-  ULO colors[64];
-  ULO DIW_first_draw;
-  ULO DIW_pixel_count;
-  ULO BG_pad_front;
-  ULO BG_pad_back;
+  uint8_t line1[1024];
+  uint8_t line2[1024];
+  uint32_t colors[64];
+  uint32_t DIW_first_draw;
+  uint32_t DIW_pixel_count;
+  uint32_t BG_pad_front;
+  uint32_t BG_pad_back;
   void *draw_line_routine;  /* Actually of type draw_line_func, circular definition */
   void *draw_line_BPL_res_routine; /* Ditto */
-  ULO DDF_start;
-  ULO frames_left_until_BG_skip;
-  ULO sprite_ham_slot;
-  ULO bplcon2;
+  uint32_t DDF_start;
+  uint32_t frames_left_until_BG_skip;
+  uint32_t sprite_ham_slot;
+  uint32_t bplcon2;
   bool has_ham_sprites_online;
 } graph_line;
 

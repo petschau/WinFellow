@@ -75,7 +75,7 @@ void spriteHardReset()
 /* Called on emulation end of line                                           */
 /*===========================================================================*/
 
-void spriteEndOfLine(ULO rasterY)
+void spriteEndOfLine(uint32_t rasterY)
 {
   sprites->EndOfLine(rasterY);
 }

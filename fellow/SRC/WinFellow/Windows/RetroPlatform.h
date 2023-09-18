@@ -57,56 +57,56 @@ public:
   void       EnterHeadlessMode(void);
 
   // getters
-  ULO        GetClippingOffsetLeftAdjusted(void);
-  ULO        GetClippingOffsetTopAdjusted(void);
-  ULO        GetDisplayScale(void);
+  uint32_t        GetClippingOffsetLeftAdjusted(void);
+  uint32_t        GetClippingOffsetTopAdjusted(void);
+  uint32_t        GetDisplayScale(void);
   bool       GetEmulationPaused(void);
-  ULO        GetEscapeKey(void);
+  uint32_t        GetEscapeKey(void);
   ULONGLONG  GetEscapeKeyHeldSince(void);
-  ULO        GetEscapeKeyHoldTime(void);
+  uint32_t        GetEscapeKeyHoldTime(void);
   ULONGLONG  GetEscapeKeySimulatedTargetTime(void);
   bool       GetHeadlessMode(void);
   HWND       GetParentWindowHandle(void);
   HWND       GetTopWindowHandle(void);
   bool       GetScanlines(void);
   
-  ULO        GetScreenHeightAdjusted(void);
-  ULO        GetScreenWidthAdjusted(void);
+  uint32_t        GetScreenHeightAdjusted(void);
+  uint32_t        GetScreenWidthAdjusted(void);
 
-  ULO        GetSourceBufferWidth(void);
-  ULO        GetSourceBufferHeight(void);
+  uint32_t        GetSourceBufferWidth(void);
+  uint32_t        GetSourceBufferHeight(void);
 
   ULONGLONG  GetTime(void);
 
   // IPC guest to host communication - asynchronous post
   bool       PostEscaped(void);
-  bool       PostFloppyDriveLED(const ULO, const bool, const bool);
-  bool       PostFloppyDriveSeek(const ULO, const ULO);
-  bool       PostGameportActivity(const ULO, const ULO);
-  bool       PostHardDriveLED(const ULO, const bool, const bool);
+  bool       PostFloppyDriveLED(const uint32_t, const bool, const bool);
+  bool       PostFloppyDriveSeek(const uint32_t, const uint32_t);
+  bool       PostGameportActivity(const uint32_t, const uint32_t);
+  bool       PostHardDriveLED(const uint32_t, const bool, const bool);
   
   // IPC guest to host communication - synchronous send
   bool       SendActivated(const bool, const LPARAM);
   bool       SendClose(void);
   bool       SendEnable(const bool);
-  bool       SendFloppyDriveContent(const ULO, const STR *, const bool);
-  bool       SendHardDriveContent(const ULO, const STR *, const bool);
-  bool       SendFloppyDriveReadOnly(const ULO, const bool);
+  bool       SendFloppyDriveContent(const uint32_t, const char *, const bool);
+  bool       SendHardDriveContent(const uint32_t, const char *, const bool);
+  bool       SendFloppyDriveReadOnly(const uint32_t, const bool);
   bool       SendFloppyTurbo(const bool);
   bool       SendMouseCapture(const bool);
 
   // setters
-  void       SetClippingOffsetLeft(const ULO);
-  void       SetClippingOffsetTop(const ULO);
-  void       SetEscapeKey(const ULO);
+  void       SetClippingOffsetLeft(const uint32_t);
+  void       SetClippingOffsetTop(const uint32_t);
+  void       SetEscapeKey(const uint32_t);
   ULONGLONG  SetEscapeKeyHeld(const bool);
-  void       SetEscapeKeyHoldTime(const ULO);
+  void       SetEscapeKeyHoldTime(const uint32_t);
   void       SetEscapeKeySimulatedTargetTime(const ULONGLONG);
   void       SetHeadlessMode(const bool);
   void       SetHostID(const char *);
-  void       SetScreenHeight(ULO);
+  void       SetScreenHeight(uint32_t);
   void       SetScreenMode(const char *);
-  void       SetScreenWidth(ULO);
+  void       SetScreenWidth(uint32_t);
   void       SetWindowInstance(HINSTANCE);
 
   void       RegisterRetroPlatformScreenMode(const bool bStartup);
@@ -124,29 +124,29 @@ public:
 private:
   // private functions
   bool       CheckEmulationNecessities(void);
-  bool       ConnectInputDeviceToPort(const ULO, const ULO, DWORD, const STR *);
+  bool       ConnectInputDeviceToPort(const uint32_t, const uint32_t, DWORD, const char *);
   void       DetermineScreenModeFromConfig(struct RPScreenMode *, cfg *);
   int        EnumerateJoysticks(void);
 
-  ULO        GetClippingOffsetLeft(void);
-  ULO        GetClippingOffsetTop(void);
-  ULO        GetCPUSpeed(void);
-  bool       GetHostVersion(ULO *, ULO *, ULO *);
-  const STR *GetMessageText(ULO);
-  ULO        GetScreenHeight(void);
-  ULO        GetScreenWidth(void);
+  uint32_t        GetClippingOffsetLeft(void);
+  uint32_t        GetClippingOffsetTop(void);
+  uint32_t        GetCPUSpeed(void);
+  bool       GetHostVersion(uint32_t *, uint32_t *, uint32_t *);
+  const char *GetMessageText(uint32_t);
+  uint32_t        GetScreenHeight(void);
+  uint32_t        GetScreenWidth(void);
   bool       GetScreenWindowed(void);
 
   // IPC guest to host communication - asynchronous post
-  bool       PostMessageToHost(ULO, WPARAM, LPARAM, const RPGUESTINFO *);
+  bool       PostMessageToHost(uint32_t, WPARAM, LPARAM, const RPGUESTINFO *);
   bool       PostPowerLEDIntensityPercent(const WPARAM);
 
   // IPC guest to host communication - synchronous send
-  bool       SendMessageToHost(ULO, WPARAM, LPARAM, LPCVOID, DWORD, const RPGUESTINFO *, LRESULT *);
+  bool       SendMessageToHost(uint32_t, WPARAM, LPARAM, LPCVOID, DWORD, const RPGUESTINFO *, LRESULT *);
 
   // setters
-  void       SetCustomKeyboardLayout(const ULO, const STR *);
-  void       SetDisplayScale(const ULO);
+  void       SetCustomKeyboardLayout(const uint32_t, const char *);
+  void       SetDisplayScale(const uint32_t);
   void       SetEmulationPaused(const bool);
   void       SetEmulationState(const bool);
   void       SetEmulatorQuit(const bool);
@@ -158,13 +158,13 @@ private:
   bool       SendEnabledFloppyDrives(void);
   bool       SendEnabledHardDrives(void);
   bool       SendFeatures(void);
-  bool       SendGameports(const ULO);
+  bool       SendGameports(const uint32_t);
   bool       SendInputDevice(const DWORD, const DWORD, const DWORD, const WCHAR *, const WCHAR *);
   bool       SendInputDevices(void);
   bool       SendScreenMode(HWND);
 
   // private variables
-  STR szHostID[CFG_FILENAME_LENGTH];  /// host ID that was passed over by the RetroPlatform player
+  char szHostID[CFG_FILENAME_LENGTH];  /// host ID that was passed over by the RetroPlatform player
   bool bRetroPlatformMode = false;    /// flag to indicate that emulator operates in RetroPlatform/"headless" mode
 
     // emulation/state settings
@@ -174,20 +174,20 @@ private:
   bool bEmulatorQuit = false;
   bool bMouseCaptureRequestedByHost = false;
 
-  ULO lMainVersion = 0, lRevision = 0, lBuild = 0;
+  uint32_t lMainVersion = 0, lRevision = 0, lBuild = 0;
 
   // screen settings
-  LON lClippingOffsetLeftRP = RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
-  LON lClippingOffsetTopRP  = RETRO_PLATFORM_OFFSET_ADJUST_TOP;
-  LON lScreenWidthRP        = 0, lScreenHeightRP      = 0;
-  ULO lScreenMode = 0;
+  int32_t lClippingOffsetLeftRP = RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
+  int32_t lClippingOffsetTopRP  = RETRO_PLATFORM_OFFSET_ADJUST_TOP;
+  int32_t lScreenWidthRP        = 0, lScreenHeightRP      = 0;
+  uint32_t lScreenMode = 0;
   bool bScreenWindowed = true;
-  ULO lDisplayScale = 1;
+  uint32_t lDisplayScale = 1;
   bool bScanlines = false;
 
   // escape key
-  ULO lEscapeKey = 1;
-  ULO lEscapeKeyHoldTime = 600;
+  uint32_t lEscapeKey = 1;
+  uint32_t lEscapeKeyHoldTime = 600;
   ULONGLONG lEscapeKeyHeldSince = 0;
   ULONGLONG lEscapeKeySimulatedTargetTime = 0;
 

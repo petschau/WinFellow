@@ -29,35 +29,35 @@
 
 using namespace CustomChipset;
 
-static STR *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH",
+static char *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH",
 				"WAITING_FOR_NEXT_FETCH"};
 
-void DDFStateMachine::Log(ULO line, ULO cylinder)
+void DDFStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    STR msg[256];
+    char msg[256];
     sprintf(msg, "DDF: %s\n", DDFStateNames[_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
 
-ULO DDFStateMachine::GetStartPosition(void)
+uint32_t DDFStateMachine::GetStartPosition(void)
 {
   return (ddfstrt < _minValidX) ? _minValidX : ddfstrt;
 }
 
-ULO DDFStateMachine::GetStopPosition(void)
+uint32_t DDFStateMachine::GetStopPosition(void)
 {
   return (ddfstop < _minValidX) ? _minValidX : ddfstop;
 }
 
-ULO DDFStateMachine::GetFetchSize(void)
+uint32_t DDFStateMachine::GetFetchSize(void)
 {
   return (_core.RegisterUtility.IsHiresEnabled()) ? 4 : 8;
 }
 
-void DDFStateMachine::SetState(DDFStates newState, ULO arriveTime)
+void DDFStateMachine::SetState(DDFStates newState, uint32_t arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
@@ -65,10 +65,10 @@ void DDFStateMachine::SetState(DDFStates newState, ULO arriveTime)
   _queue->Insert(this);
 }
 
-void DDFStateMachine::SetStateWaitingForFirstFetch(ULO rasterY, ULO cylinder)
+void DDFStateMachine::SetStateWaitingForFirstFetch(uint32_t rasterY, uint32_t cylinder)
 {
-  ULO start = GetStartPosition();
-  ULO currentCycle = cylinder / 2;
+  uint32_t start = GetStartPosition();
+  uint32_t currentCycle = cylinder / 2;
 
   if (start == currentCycle)
   {
@@ -85,11 +85,11 @@ void DDFStateMachine::SetStateWaitingForFirstFetch(ULO rasterY, ULO cylinder)
   }
 }
 
-void DDFStateMachine::SetStateWaitingForNextFetch(ULO rasterY, ULO cylinder)
+void DDFStateMachine::SetStateWaitingForNextFetch(uint32_t rasterY, uint32_t cylinder)
 {
-  ULO stop = GetStopPosition();
-  ULO start = GetStartPosition();
-  ULO currentCycle = cylinder / 2;
+  uint32_t stop = GetStopPosition();
+  uint32_t start = GetStartPosition();
+  uint32_t currentCycle = cylinder / 2;
 
   if ((stop & 7) != (start & 7)) stop += GetFetchSize();
   
@@ -109,12 +109,12 @@ void DDFStateMachine::SetStateWaitingForNextFetch(ULO rasterY, ULO cylinder)
   }
 }
 
-void DDFStateMachine::DoStateWaitingForFirstFetch(ULO rasterY, ULO cylinder)
+void DDFStateMachine::DoStateWaitingForFirstFetch(uint32_t rasterY, uint32_t cylinder)
 {
   SetStateWaitingForFirstFetch(rasterY, cylinder);
 }
 
-void DDFStateMachine::DoStateWaitingForNextFetch(ULO rasterY, ULO cylinder)
+void DDFStateMachine::DoStateWaitingForNextFetch(uint32_t rasterY, uint32_t cylinder)
 {
   SetStateWaitingForNextFetch(rasterY, cylinder);
 }
@@ -128,7 +128,7 @@ bool DDFStateMachine::CanRead(void)
 
 void DDFStateMachine::ChangedValue(void)
 {
-  ULO rasterY = busGetRasterY();
+  uint32_t rasterY = busGetRasterY();
   if (rasterY < 0x1a)
   {
     SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
@@ -154,7 +154,7 @@ void DDFStateMachine::InitializeEvent(GraphicsEventQueue *queue)
   SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
 }
 
-void DDFStateMachine::Handler(ULO rasterY, ULO cylinder)
+void DDFStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 {
   Log(rasterY, cylinder);
 

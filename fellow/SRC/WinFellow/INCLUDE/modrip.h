@@ -30,10 +30,10 @@
 #define MODRIP_MAXMODLEN (1024 * 1024)
 
 /* memory access wrapper functions */
-typedef UBY (*MemoryAccessFunc)(ULO);
+typedef uint8_t (*MemoryAccessFunc)(uint32_t);
 
 /* module type detection functions */
-typedef void (*ModuleDetectFunc)(ULO, MemoryAccessFunc); 
+typedef void (*ModuleDetectFunc)(uint32_t, MemoryAccessFunc); 
 
 /* structure to be filled with module information for passing on */
 struct ModuleInfo {
@@ -41,7 +41,7 @@ struct ModuleInfo {
   char modname[MODRIP_TEMPSTRLEN];  /* name of the module */
   char typedesc[MODRIP_TEMPSTRLEN]; /* detailed file format */
   char typesig[MODRIP_TEMPSTRLEN];  /* file format signature */
-  ULO start, end;                   /* start and end of the module in mem */
+  uint32_t start, end;                   /* start and end of the module in mem */
   unsigned samplesize; /* no. of all sample-data used in bytes */
   unsigned patternsize; /* no. of all pattern-data used in bytes */
   unsigned songlength; /* how many patterns does the song play? */

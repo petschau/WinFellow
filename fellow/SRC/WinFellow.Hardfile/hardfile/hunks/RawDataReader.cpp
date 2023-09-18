@@ -6,7 +6,7 @@ using namespace std;
 
 namespace fellow::hardfile::hunks
 {
-  void RawDataReader::AssertValidIndexAndLength(ULO length)
+  void RawDataReader::AssertValidIndexAndLength(uint32_t length)
   {
     if (_index + length > _rawDataLength)
     {
@@ -14,14 +14,14 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  char RawDataReader::GetByteAsChar(ULO index)
+  char RawDataReader::GetByteAsChar(uint32_t index)
   {
     return static_cast<char>(_rawData[index]);
   }
 
-  ULO RawDataReader::GetByteAsLong(ULO index)
+  uint32_t RawDataReader::GetByteAsLong(uint32_t index)
   {
-    return static_cast<ULO>(_rawData[index]);
+    return static_cast<uint32_t>(_rawData[index]);
   }
 
   char RawDataReader::GetNextChar()
@@ -33,21 +33,21 @@ namespace fellow::hardfile::hunks
     return c;
   }
 
-  ULO RawDataReader::GetNextByteswappedLong()
+  uint32_t RawDataReader::GetNextByteswappedLong()
   {
     AssertValidIndexAndLength(4);
-    ULO value = (GetByteAsLong(_index) << 24) | (GetByteAsLong(_index + 1) << 16) | (GetByteAsLong(_index + 2) << 8) | GetByteAsLong(_index + 3);
+    uint32_t value = (GetByteAsLong(_index) << 24) | (GetByteAsLong(_index + 1) << 16) | (GetByteAsLong(_index + 2) << 8) | GetByteAsLong(_index + 3);
     _index += 4;
     return value;
   }
 
-  string RawDataReader::GetNextString(ULO lengthInLongwords)
+  string RawDataReader::GetNextString(uint32_t lengthInLongwords)
   {
     string s;
-    ULO lengthInBytes = lengthInLongwords * 4;
+    uint32_t lengthInBytes = lengthInLongwords * 4;
     bool endOfStringFound = false;
 
-    for (ULO i = 0; i < lengthInBytes; i++)
+    for (uint32_t i = 0; i < lengthInBytes; i++)
     {
       char c = GetNextChar();
       if (c == '\0')
@@ -64,22 +64,22 @@ namespace fellow::hardfile::hunks
     return s;
   }
 
-  UBY *RawDataReader::GetNextBytes(ULO lengthInLongwords)
+  uint8_t *RawDataReader::GetNextBytes(uint32_t lengthInLongwords)
   {
-    ULO lengthInBytes = lengthInLongwords * 4;
+    uint32_t lengthInBytes = lengthInLongwords * 4;
     AssertValidIndexAndLength(lengthInBytes);
-    UBY *bytes = new UBY[lengthInBytes];
+    uint8_t *bytes = new uint8_t[lengthInBytes];
     memcpy(bytes, _rawData + _index, lengthInBytes);
     _index += lengthInBytes;
     return bytes;
   }
 
-  ULO RawDataReader::GetIndex()
+  uint32_t RawDataReader::GetIndex()
   {
     return _index;
   }
 
-  RawDataReader::RawDataReader(UBY *rawData, ULO rawDataLength)
+  RawDataReader::RawDataReader(uint8_t *rawData, uint32_t rawDataLength)
     : _rawData(rawData), _rawDataLength(rawDataLength), _index(0)
   {
   }

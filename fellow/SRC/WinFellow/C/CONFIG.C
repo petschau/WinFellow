@@ -71,22 +71,22 @@ cfgManager cfg_manager;
 /* Configuration                                                              */
 /*============================================================================*/
 
-void cfgSetConfigFileVersion(cfg *config, ULO version)
+void cfgSetConfigFileVersion(cfg *config, uint32_t version)
 {
   config->m_configfileversion = version;
 }
 
-ULO cfgGetConfigFileVersion(cfg *config)
+uint32_t cfgGetConfigFileVersion(cfg *config)
 {
   return config->m_configfileversion;
 }
 
-void cfgSetDescription(cfg *config, STR *description)
+void cfgSetDescription(cfg *config, char *description)
 {
   strncpy(config->m_description, description, 255);
 }
 
-STR *cfgGetDescription(cfg *config)
+char *cfgGetDescription(cfg *config)
 {
   return config->m_description;
 }
@@ -96,7 +96,7 @@ STR *cfgGetDescription(cfg *config)
 /* Floppy disk configuration property access                                  */
 /*============================================================================*/
 
-void cfgSetDiskImage(cfg *config, ULO index, STR *diskimage)
+void cfgSetDiskImage(cfg *config, uint32_t index, char *diskimage)
 {
   if (index < 4) 
   {
@@ -104,7 +104,7 @@ void cfgSetDiskImage(cfg *config, ULO index, STR *diskimage)
   }
 }
 
-STR *cfgGetDiskImage(cfg *config, ULO index) 
+char *cfgGetDiskImage(cfg *config, uint32_t index) 
 {
   if (index < 4)
   {
@@ -113,7 +113,7 @@ STR *cfgGetDiskImage(cfg *config, ULO index)
   return "";
 }
 
-void cfgSetDiskEnabled(cfg *config, ULO index, BOOLE enabled)
+void cfgSetDiskEnabled(cfg *config, uint32_t index, BOOLE enabled)
 {
   if (index < 4)
   {
@@ -121,7 +121,7 @@ void cfgSetDiskEnabled(cfg *config, ULO index, BOOLE enabled)
   }
 }
 
-BOOLE cfgGetDiskEnabled(cfg *config, ULO index)
+BOOLE cfgGetDiskEnabled(cfg *config, uint32_t index)
 {
   if (index < 4)
   {
@@ -130,7 +130,7 @@ BOOLE cfgGetDiskEnabled(cfg *config, ULO index)
   return FALSE;
 }
 
-void cfgSetDiskReadOnly(cfg *config, ULO index, BOOLE readonly)
+void cfgSetDiskReadOnly(cfg *config, uint32_t index, BOOLE readonly)
 {
   if (index < 4)
   {
@@ -138,7 +138,7 @@ void cfgSetDiskReadOnly(cfg *config, ULO index, BOOLE readonly)
   }
 }
 
-BOOLE cfgGetDiskReadOnly(cfg *config, ULO index)
+BOOLE cfgGetDiskReadOnly(cfg *config, uint32_t index)
 {
   if (index < 4)
   {
@@ -157,14 +157,14 @@ BOOLE cfgGetDiskFast(cfg *config)
   return config->m_diskfast;
 }
 
-void cfgSetLastUsedDiskDir(cfg *config, STR *directory)
+void cfgSetLastUsedDiskDir(cfg *config, char *directory)
 {
   if(directory != nullptr) {
     strncpy(config->m_lastuseddiskdir, directory, CFG_FILENAME_LENGTH);
   }
 }
 
-STR *cfgGetLastUsedDiskDir(cfg *config)
+char *cfgGetLastUsedDiskDir(cfg *config)
 {
   return config->m_lastuseddiskdir;
 }
@@ -174,7 +174,7 @@ STR *cfgGetLastUsedDiskDir(cfg *config)
 /* Memory configuration property access                                       */
 /*============================================================================*/
 
-void cfgSetChipSize(cfg *config, ULO chipsize)
+void cfgSetChipSize(cfg *config, uint32_t chipsize)
 {
   chipsize &= 0x3c0000;
   if (chipsize == 0)
@@ -188,12 +188,12 @@ void cfgSetChipSize(cfg *config, ULO chipsize)
   config->m_chipsize = chipsize;
 }
 
-ULO cfgGetChipSize(cfg *config)
+uint32_t cfgGetChipSize(cfg *config)
 {
   return config->m_chipsize;
 }
 
-void cfgSetFastSize(cfg *config, ULO fastsize)
+void cfgSetFastSize(cfg *config, uint32_t fastsize)
 {
   if (fastsize >= 0x800000)
   {
@@ -217,67 +217,67 @@ void cfgSetFastSize(cfg *config, ULO fastsize)
   }
 }
 
-ULO cfgGetFastSize(cfg *config)
+uint32_t cfgGetFastSize(cfg *config)
 {
   return config->m_fastsize;
 }
 
-void cfgSetBogoSize(cfg *config, ULO bogosize)
+void cfgSetBogoSize(cfg *config, uint32_t bogosize)
 {
   config->m_bogosize = bogosize & 0x1c0000;
 }
 
-ULO cfgGetBogoSize(cfg *config)
+uint32_t cfgGetBogoSize(cfg *config)
 {
   return config->m_bogosize;
 }
 
-void cfgSetKickImage(cfg *config, STR *kickimage)
+void cfgSetKickImage(cfg *config, char *kickimage)
 {
   strncpy(config->m_kickimage, kickimage, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKickImage(cfg *config)
+char *cfgGetKickImage(cfg *config)
 {
   return config->m_kickimage;
 }
 
-void cfgSetKickImageExtended(cfg *config, STR *kickimageext)
+void cfgSetKickImageExtended(cfg *config, char *kickimageext)
 {
   strncpy(config->m_kickimage_ext, kickimageext, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKickImageExtended(cfg *config)
+char *cfgGetKickImageExtended(cfg *config)
 {
   return config->m_kickimage_ext;
 }
 
-void cfgSetKickDescription(cfg *config, STR *kickdescription)
+void cfgSetKickDescription(cfg *config, char *kickdescription)
 {
   strncpy(config->m_kickdescription, kickdescription, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKickDescription(cfg *config)
+char *cfgGetKickDescription(cfg *config)
 {
   return config->m_kickdescription;
 }
 
-void cfgSetKickCRC32(cfg *config, ULO kickcrc32)
+void cfgSetKickCRC32(cfg *config, uint32_t kickcrc32)
 {
   config->m_kickcrc32 = kickcrc32;
 }
 
-ULO cfgGetKickCRC32(cfg *config)
+uint32_t cfgGetKickCRC32(cfg *config)
 {
   return config->m_kickcrc32;
 }
 
-void cfgSetKey(cfg *config, STR *key)
+void cfgSetKey(cfg *config, char *key)
 {
   strncpy(config->m_key, key, CFG_FILENAME_LENGTH);
 }
 
-STR *cfgGetKey(cfg *config)
+char *cfgGetKey(cfg *config)
 {
   return config->m_key;
 }
@@ -311,32 +311,32 @@ bool cfgGetRtc(cfg *config)
 /* Screen configuration property access                                       */
 /*============================================================================*/
 
-void cfgSetScreenWidth(cfg *config, ULO screenwidth)
+void cfgSetScreenWidth(cfg *config, uint32_t screenwidth)
 {
   config->m_screenwidth = screenwidth;
 }
 
-ULO cfgGetScreenWidth(cfg *config)
+uint32_t cfgGetScreenWidth(cfg *config)
 {
   return config->m_screenwidth;
 }
 
-void cfgSetScreenHeight(cfg *config, ULO screenheight)
+void cfgSetScreenHeight(cfg *config, uint32_t screenheight)
 {
   config->m_screenheight = screenheight;
 }
 
-ULO cfgGetScreenHeight(cfg *config)
+uint32_t cfgGetScreenHeight(cfg *config)
 {
   return config->m_screenheight;
 }
 
-void cfgSetScreenColorBits(cfg *config, ULO screencolorbits)
+void cfgSetScreenColorBits(cfg *config, uint32_t screencolorbits)
 {
   config->m_screencolorbits = screencolorbits;
 }
 
-ULO cfgGetScreenColorBits(cfg *config)
+uint32_t cfgGetScreenColorBits(cfg *config)
 {
   return config->m_screencolorbits;
 }
@@ -351,12 +351,12 @@ bool cfgGetScreenWindowed(cfg *config)
   return config->m_screenwindowed;
 }
 
-void cfgSetScreenRefresh(cfg *config, ULO screenrefresh)
+void cfgSetScreenRefresh(cfg *config, uint32_t screenrefresh)
 {
   config->m_screenrefresh = screenrefresh;
 }
 
-ULO cfgGetScreenRefresh(cfg *config)
+uint32_t cfgGetScreenRefresh(cfg *config)
 {
   return config->m_screenrefresh;
 }
@@ -402,52 +402,52 @@ DISPLAYDRIVER cfgGetDisplayDriver(cfg *config)
 /* Graphics emulation configuration property access                          */
 /*===========================================================================*/
 
-void cfgSetFrameskipRatio(cfg *config, ULO frameskipratio)
+void cfgSetFrameskipRatio(cfg *config, uint32_t frameskipratio)
 {
   config->m_frameskipratio = frameskipratio;
 }
 
-ULO cfgGetFrameskipRatio(cfg *config)
+uint32_t cfgGetFrameskipRatio(cfg *config)
 {
   return config->m_frameskipratio;
 }
 
-void cfgSetClipLeft(cfg *config, ULO left)
+void cfgSetClipLeft(cfg *config, uint32_t left)
 {
   config->m_clipleft = left;
 }
 
-ULO cfgGetClipLeft(cfg *config)
+uint32_t cfgGetClipLeft(cfg *config)
 {
   return config->m_clipleft;
 }
 
-void cfgSetClipTop(cfg *config, ULO top)
+void cfgSetClipTop(cfg *config, uint32_t top)
 {
   config->m_cliptop = top;
 }
 
-ULO cfgGetClipTop(cfg *config)
+uint32_t cfgGetClipTop(cfg *config)
 {
   return config->m_cliptop;
 }
 
-void cfgSetClipRight(cfg *config, ULO right)
+void cfgSetClipRight(cfg *config, uint32_t right)
 {
   config->m_clipright = right;
 }
 
-ULO cfgGetClipRight(cfg *config)
+uint32_t cfgGetClipRight(cfg *config)
 {
   return config->m_clipright;
 }
 
-void cfgSetClipBottom(cfg *config, ULO bottom)
+void cfgSetClipBottom(cfg *config, uint32_t bottom)
 {
   config->m_clipbottom = bottom;
 }
 
-ULO cfgGetClipBottom(cfg *config)
+uint32_t cfgGetClipBottom(cfg *config)
 {
   return config->m_clipbottom;
 }
@@ -547,12 +547,12 @@ sound_filters cfgGetSoundFilter(cfg *config)
   return config->m_soundfilter;
 }
 
-void cfgSetSoundVolume(cfg *config, const ULO soundvolume) 
+void cfgSetSoundVolume(cfg *config, const uint32_t soundvolume) 
 {
   config->m_soundvolume = soundvolume;
 }
 
-ULO cfgGetSoundVolume(cfg *config) 
+uint32_t cfgGetSoundVolume(cfg *config) 
 {
   return config->m_soundvolume;
 }
@@ -577,12 +577,12 @@ sound_notifications cfgGetSoundNotification(cfg *config)
   return config->m_notification;
 }
 
-void cfgSetSoundBufferLength(cfg *config, ULO buffer_length)
+void cfgSetSoundBufferLength(cfg *config, uint32_t buffer_length)
 {
   config->m_bufferlength = buffer_length;
 }
 
-ULO cfgGetSoundBufferLength(cfg *config)
+uint32_t cfgGetSoundBufferLength(cfg *config)
 {
   return config->m_bufferlength;
 }
@@ -601,12 +601,12 @@ cpu_integration_models cfgGetCPUType(cfg *config)
   return config->m_CPUtype;
 }
 
-void cfgSetCPUSpeed(cfg *config, ULO CPUspeed)
+void cfgSetCPUSpeed(cfg *config, uint32_t CPUspeed)
 {
   config->m_CPUspeed = CPUspeed;
 }
 
-ULO cfgGetCPUSpeed(cfg *config)
+uint32_t cfgGetCPUSpeed(cfg *config)
 {
   return config->m_CPUspeed;
 }
@@ -640,12 +640,12 @@ bool cfgGetECS(cfg *config)
 /* Hardfile configuration property access                                     */
 /*============================================================================*/
 
-cfg_hardfile cfgGetHardfile(cfg *config, ULO index)
+cfg_hardfile cfgGetHardfile(cfg *config, uint32_t index)
 {
   return *static_cast<cfg_hardfile *>(listNode(listIndex(config->m_hardfiles, index)));
 }
 
-ULO cfgGetHardfileCount(cfg *config)
+uint32_t cfgGetHardfileCount(cfg *config)
 {
   return listCount(config->m_hardfiles);
 }
@@ -657,7 +657,7 @@ void cfgHardfileAdd(cfg *config, cfg_hardfile *hardfile)
   config->m_hardfiles = listAddLast(config->m_hardfiles, listNew(hf));
 }
 
-void cfgHardfileRemove(cfg *config, ULO index)
+void cfgHardfileRemove(cfg *config, uint32_t index)
 {
   felist *node = listIndex(config->m_hardfiles, index);
   if (index == 0)
@@ -684,7 +684,7 @@ void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile)
   hardfile->reservedblocks = 2;
 }
 
-void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index)
+void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, uint32_t index)
 {
   felist *node = listIndex(config->m_hardfiles, index);
   cfg_hardfile *hf = static_cast<cfg_hardfile *>(listNode(node));
@@ -696,12 +696,12 @@ void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index)
 /* Filesystem configuration property access                                   */
 /*============================================================================*/
 
-cfg_filesys cfgGetFilesystem(cfg *config, ULO index)
+cfg_filesys cfgGetFilesystem(cfg *config, uint32_t index)
 {
   return *static_cast<cfg_filesys *>(listNode(listIndex(config->m_filesystems, index)));
 }
 
-ULO cfgGetFilesystemCount(cfg *config)
+uint32_t cfgGetFilesystemCount(cfg *config)
 {
   return listCount(config->m_filesystems);
 }
@@ -713,7 +713,7 @@ void cfgFilesystemAdd(cfg *config, cfg_filesys *filesystem)
   config->m_filesystems = listAddLast(config->m_filesystems, listNew(fsys));
 }
 
-void cfgFilesystemRemove(cfg *config, ULO index)
+void cfgFilesystemRemove(cfg *config, uint32_t index)
 {
   felist *node = listIndex(config->m_filesystems, index);
   if (index == 0)
@@ -736,7 +736,7 @@ void cfgSetFilesystemUnitDefaults(cfg_filesys *unit)
   unit->readonly = FALSE;
 }
 
-void cfgFilesystemChange(cfg *config, cfg_filesys *unit, ULO index)
+void cfgFilesystemChange(cfg *config, cfg_filesys *unit, uint32_t index)
 {
   felist *node = listIndex(config->m_filesystems, index);
   cfg_filesys *fsys = static_cast<cfg_filesys *>(listNode(node));
@@ -753,14 +753,14 @@ BOOLE cfgGetFilesystemAutomountDrives(cfg *config)
   return config->m_automount_drives;
 }
 
-void cfgSetFilesystemDeviceNamePrefix(cfg* config, STR* prefix)
+void cfgSetFilesystemDeviceNamePrefix(cfg* config, char* prefix)
 {
   if (prefix != nullptr) {
     strncpy(config->m_filesystem_device_name_prefix, prefix, CFG_FILENAME_LENGTH);
   }
 }
 
-STR* cfgGetFilesystemDeviceNamePrefix(cfg* config)
+char* cfgGetFilesystemDeviceNamePrefix(cfg* config)
 {
   return config->m_filesystem_device_name_prefix;
 }
@@ -769,7 +769,7 @@ STR* cfgGetFilesystemDeviceNamePrefix(cfg* config)
 /* Game port configuration property access                                    */
 /*============================================================================*/
 
-void cfgSetGameport(cfg *config, ULO index, gameport_inputs gameport)
+void cfgSetGameport(cfg *config, uint32_t index, gameport_inputs gameport)
 {
   if (index < 2)
   {
@@ -777,7 +777,7 @@ void cfgSetGameport(cfg *config, ULO index, gameport_inputs gameport)
   }
 }
 
-gameport_inputs cfgGetGameport(cfg *config, ULO index)
+gameport_inputs cfgGetGameport(cfg *config, uint32_t index)
 {
   if (index < 2)
   {
@@ -964,32 +964,32 @@ void cfgSetDefaults(cfg *config)
 /* These verify the options, or at least return a default value on error      */
 /*============================================================================*/
 
-static BOOLE cfgGetBOOLEFromString(STR *value)
+static BOOLE cfgGetBOOLEFromString(char *value)
 {
   return (value[0] == 'y' || value[0] == 't');
 }
 
-static const STR *cfgGetBOOLEToString(BOOLE value)
+static const char *cfgGetBOOLEToString(BOOLE value)
 {
   return (value) ? "yes" : "no";
 }
 
-static bool cfgGetboolFromString(STR *value)
+static bool cfgGetboolFromString(char *value)
 {
   return (value[0] == 'y' || value[0] == 't');
 }
 
-static const STR *cfgGetboolToString(bool value)
+static const char *cfgGetboolToString(bool value)
 {
   return (value) ? "yes" : "no";
 }
 
-static ULO cfgGetULOFromString(STR *value)
+static uint32_t cfgGetUint32FromString(char *value)
 {
   return atoi(value);
 }
 
-static gameport_inputs cfgGetGameportFromString(STR *value)
+static gameport_inputs cfgGetGameportFromString(char *value)
 {
   if (stricmp(value, "mouse") == 0)
   {
@@ -1014,7 +1014,7 @@ static gameport_inputs cfgGetGameportFromString(STR *value)
   return GP_NONE;
 }
 
-static STR *cfgGetGameportToString(gameport_inputs gameport)
+static char *cfgGetGameportToString(gameport_inputs gameport)
 {
   switch (gameport)
   {
@@ -1028,7 +1028,7 @@ static STR *cfgGetGameportToString(gameport_inputs gameport)
   return "none";
 }
 
-static cpu_integration_models cfgGetCPUTypeFromString(STR *value)
+static cpu_integration_models cfgGetCPUTypeFromString(char *value)
 {
   if (stricmp(value, "68000") == 0)
   {
@@ -1065,7 +1065,7 @@ static cpu_integration_models cfgGetCPUTypeFromString(STR *value)
   return M68000;
 }
 
-static STR *cfgGetCPUTypeToString(cpu_integration_models cputype)
+static char *cfgGetCPUTypeToString(cpu_integration_models cputype)
 {
   switch (cputype)
   {
@@ -1079,9 +1079,9 @@ static STR *cfgGetCPUTypeToString(cpu_integration_models cputype)
   return "68000";
 }
 
-static ULO cfgGetCPUSpeedFromString(STR *value)
+static uint32_t cfgGetCPUSpeedFromString(char *value)
 {
-  ULO speed;
+  uint32_t speed;
 
   if (stricmp(value, "real") == 0)
   {
@@ -1091,7 +1091,7 @@ static ULO cfgGetCPUSpeedFromString(STR *value)
   {
     return 1;
   }
-  speed = cfgGetULOFromString(value);
+  speed = cfgGetUint32FromString(value);
   if (speed > 20)
   {
     speed = 8;
@@ -1099,7 +1099,7 @@ static ULO cfgGetCPUSpeedFromString(STR *value)
   return speed;
 }
 
-static sound_notifications cfgGetSoundNotificationFromString(STR *value)
+static sound_notifications cfgGetSoundNotificationFromString(char *value)
 {
   if (stricmp(value, "directsound") == 0)
   {
@@ -1112,7 +1112,7 @@ static sound_notifications cfgGetSoundNotificationFromString(STR *value)
   return SOUND_MMTIMER_NOTIFICATION;
 }
 
-static STR *cfgGetSoundNotificationToString(sound_notifications soundnotification)
+static char *cfgGetSoundNotificationToString(sound_notifications soundnotification)
 {
   switch (soundnotification)
   {
@@ -1122,7 +1122,7 @@ static STR *cfgGetSoundNotificationToString(sound_notifications soundnotificatio
   return "mmtimer";
 }
 
-static sound_emulations cfgGetSoundEmulationFromString(STR *value)
+static sound_emulations cfgGetSoundEmulationFromString(char *value)
 {
   if (stricmp(value, "none") == 0)
   {
@@ -1142,7 +1142,7 @@ static sound_emulations cfgGetSoundEmulationFromString(STR *value)
   return SOUND_NONE;
 }
 
-static STR *cfgGetSoundEmulationToString(sound_emulations soundemulation)
+static char *cfgGetSoundEmulationToString(sound_emulations soundemulation)
 {
   switch (soundemulation)
   {
@@ -1153,7 +1153,7 @@ static STR *cfgGetSoundEmulationToString(sound_emulations soundemulation)
   return "none";
 }
 
-static bool cfgGetSoundStereoFromString(STR *value)
+static bool cfgGetSoundStereoFromString(char *value)
 {
   if (stricmp(value, "mono") == 0 ||
       stricmp(value, "m") == 0 ||
@@ -1170,24 +1170,24 @@ static bool cfgGetSoundStereoFromString(STR *value)
   return false;
 }
 
-static const STR *cfgGetSoundStereoToString(bool soundstereo)
+static const char *cfgGetSoundStereoToString(bool soundstereo)
 {
   return (soundstereo) ? "stereo" : "mono";
 }
 
-static bool cfgGetSound16BitsFromString(STR *value)
+static bool cfgGetSound16BitsFromString(char *value)
 {
   return stricmp(value, "16") == 0;
 }
 
-static const STR *cfgGetSound16BitsToString(bool sound16bits)
+static const char *cfgGetSound16BitsToString(bool sound16bits)
 {
   return (sound16bits) ? "16" : "8";
 }
 
-static sound_rates cfgGetSoundRateFromString(STR *value)
+static sound_rates cfgGetSoundRateFromString(char *value)
 {
-  ULO rate = cfgGetULOFromString(value);
+  uint32_t rate = cfgGetUint32FromString(value);
 
   if (rate < 22050)
   {
@@ -1204,7 +1204,7 @@ static sound_rates cfgGetSoundRateFromString(STR *value)
   return SOUND_44100;
 }
 
-static STR *cfgGetSoundRateToString(sound_rates soundrate)
+static char *cfgGetSoundRateToString(sound_rates soundrate)
 {
   switch (soundrate)
   {
@@ -1216,7 +1216,7 @@ static STR *cfgGetSoundRateToString(sound_rates soundrate)
   return "44100";
 }
 
-static sound_filters cfgGetSoundFilterFromString(STR *value)
+static sound_filters cfgGetSoundFilterFromString(char *value)
 {
   if (stricmp(value, "never") == 0)
   {
@@ -1233,7 +1233,7 @@ static sound_filters cfgGetSoundFilterFromString(STR *value)
   return SOUND_FILTER_ORIGINAL;
 }
 
-static STR *cfgGetSoundFilterToString(sound_filters filter)
+static char *cfgGetSoundFilterToString(sound_filters filter)
 {
   switch (filter)
   {
@@ -1244,9 +1244,9 @@ static STR *cfgGetSoundFilterToString(sound_filters filter)
   return "original";
 }
 
-static ULO cfgGetBufferLengthFromString(STR *value)
+static uint32_t cfgGetBufferLengthFromString(char *value)
 {
-  ULO buffer_length = cfgGetULOFromString(value);
+  uint32_t buffer_length = cfgGetUint32FromString(value);
 
   if (buffer_length < 10)
   {
@@ -1259,7 +1259,7 @@ static ULO cfgGetBufferLengthFromString(STR *value)
   return buffer_length;
 }
 
-static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
+static DISPLAYSCALE cfgGetDisplayScaleFromString(char *value)
 {
   if (stricmp(value, "auto") == 0)
   {
@@ -1284,7 +1284,7 @@ static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
   return DISPLAYSCALE_1X; // Default
 }
 
-static STR* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
+static char* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
 {
   switch (displayscale)
   {
@@ -1297,7 +1297,7 @@ static STR* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
   return "single";
 }
 
-static DISPLAYDRIVER cfgGetDisplayDriverFromString(STR *value)
+static DISPLAYDRIVER cfgGetDisplayDriverFromString(char *value)
 {
   if (stricmp(value, "directdraw") == 0)
   {
@@ -1310,7 +1310,7 @@ static DISPLAYDRIVER cfgGetDisplayDriverFromString(STR *value)
   return DISPLAYDRIVER_DIRECTDRAW; // Default
 }
 
-static STR *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
+static char *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
 {
   switch (displaydriver)
   {
@@ -1322,7 +1322,7 @@ static STR *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
   return "directdraw";
 }
 
-static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(STR *value)
+static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(char *value)
 {
   if (stricmp(value, "scanlines") == 0)
   {
@@ -1335,7 +1335,7 @@ static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(STR *value)
   return DISPLAYSCALE_STRATEGY_SOLID; // Default
 }
 
-static STR* cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscalestrategy)
+static char* cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscalestrategy)
 {
   switch (displayscalestrategy)
   {
@@ -1345,7 +1345,7 @@ static STR* cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscal
   return "solid";
 }
 
-static ULO cfgGetColorBitsFromString(STR *value)
+static uint32_t cfgGetColorBitsFromString(char *value)
 {
   if ((stricmp(value, "8bit") == 0) ||
     (stricmp(value, "8") == 0))
@@ -1375,7 +1375,7 @@ static ULO cfgGetColorBitsFromString(STR *value)
   return 16;
 }
 
-static STR *cfgGetColorBitsToString(ULO colorbits)
+static char *cfgGetColorBitsToString(uint32_t colorbits)
 {
   switch (colorbits)
   {
@@ -1386,7 +1386,7 @@ static STR *cfgGetColorBitsToString(ULO colorbits)
   return "8bit";
 }
 
-static bool cfgGetECSFromString(STR *value)
+static bool cfgGetECSFromString(char *value)
 {
   if ((stricmp(value, "ocs") == 0) ||
     (stricmp(value, "0") == 0))
@@ -1406,7 +1406,7 @@ static bool cfgGetECSFromString(STR *value)
   return false;
 }
 
-static const STR *cfgGetECSToString(bool chipset_ecs)
+static const char *cfgGetECSToString(bool chipset_ecs)
 {
   return (chipset_ecs) ? "ecs" : "ocs";
 }
@@ -1427,7 +1427,7 @@ BOOLE cfgGetConfigChangedSinceLastSave(cfg *config) {
   return config->m_config_changed_since_save;
 }
 
-static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(STR *value)
+static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(char *value)
 {
   if (stricmp(value, "lineexact") == 0)
   {
@@ -1440,7 +1440,7 @@ static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(STR *value)
   return GRAPHICSEMULATIONMODE_LINEEXACT;
 }
 
-static STR *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsemulationmode)
+static char *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsemulationmode)
 {
   switch (graphicsemulationmode)
   {
@@ -1472,9 +1472,9 @@ void cfgSynopsis(cfg *config)
 /* Returns TRUE if the option was recognized                                  */
 /*============================================================================*/
 
-BOOLE cfgSetOption(cfg *config, STR *optionstr)
+BOOLE cfgSetOption(cfg *config, char *optionstr)
 {
-  STR *option, *value;
+  char *option, *value;
   BOOLE result;
 
   value = strchr(optionstr, '=');
@@ -1497,7 +1497,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "config_version") == 0)
     {
-      cfgSetConfigFileVersion(config, cfgGetULOFromString(value));
+      cfgSetConfigFileVersion(config, cfgGetUint32FromString(value));
     }
     else if (stricmp(option, "config_description") == 0)
     {
@@ -1611,7 +1611,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "sound_volume") == 0)
     {
-      cfgSetSoundVolume(config, cfgGetULOFromString(value));
+      cfgSetSoundVolume(config, cfgGetUint32FromString(value));
     }
     else if ((stricmp(option, "fellow.sound_wav") == 0) ||
       (stricmp(option, "sound_wav") == 0))
@@ -1633,15 +1633,15 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "chipmem_size") == 0)
     {
-      cfgSetChipSize(config, cfgGetULOFromString(value)*262144);
+      cfgSetChipSize(config, cfgGetUint32FromString(value)*262144);
     }
     else if (stricmp(option, "fastmem_size") == 0)
     {
-      cfgSetFastSize(config, cfgGetULOFromString(value)*1048576);
+      cfgSetFastSize(config, cfgGetUint32FromString(value)*1048576);
     }
     else if (stricmp(option, "bogomem_size") == 0)
     {
-      cfgSetBogoSize(config, cfgGetULOFromString(value)*262144);
+      cfgSetBogoSize(config, cfgGetUint32FromString(value)*262144);
     }
     else if (stricmp(option, "kickstart_rom_file") == 0)
     {
@@ -1657,7 +1657,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "kickstart_rom_crc32") == 0)
     {
-      ULO crc32;
+      uint32_t crc32;
       sscanf(value,"%lX", &crc32); 
       cfgSetKickCRC32(config, crc32);
     }
@@ -1675,16 +1675,16 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "gfx_width") == 0)
     {
-      cfgSetScreenWidth(config, cfgGetULOFromString(value));
+      cfgSetScreenWidth(config, cfgGetUint32FromString(value));
     }
     else if (stricmp(option, "gfx_height") == 0)
     {
-      cfgSetScreenHeight(config, cfgGetULOFromString(value));
+      cfgSetScreenHeight(config, cfgGetUint32FromString(value));
     }
     else if ((stricmp(option, "fellow.gfx_refresh") == 0) ||
       (stricmp(option, "gfx_refresh") == 0))
     {
-      cfgSetScreenRefresh(config, cfgGetULOFromString(value));
+      cfgSetScreenRefresh(config, cfgGetUint32FromString(value));
     }
     else if (stricmp(option, "gfx_fullscreen_amiga") == 0)
     {
@@ -1712,19 +1712,19 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "gfx_clip_left") == 0)
     {
-      cfgSetClipLeft(config, cfgGetULOFromString(value));
+      cfgSetClipLeft(config, cfgGetUint32FromString(value));
     }
     else if (stricmp(option, "gfx_clip_top") == 0)
     {
-      cfgSetClipTop(config, cfgGetULOFromString(value));
+      cfgSetClipTop(config, cfgGetUint32FromString(value));
     }
     else if (stricmp(option, "gfx_clip_right") == 0)
     {
-      cfgSetClipRight(config, cfgGetULOFromString(value));
+      cfgSetClipRight(config, cfgGetUint32FromString(value));
     }
     else if (stricmp(option, "gfx_clip_bottom") == 0)
     {
-      cfgSetClipBottom(config, cfgGetULOFromString(value));
+      cfgSetClipBottom(config, cfgGetUint32FromString(value));
     }
     else if (stricmp(option, "gfx_display_scale") == 0)
     {
@@ -1736,7 +1736,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "gfx_framerate") == 0)
     {
-      cfgSetFrameskipRatio(config, cfgGetULOFromString(value));
+      cfgSetFrameskipRatio(config, cfgGetUint32FromString(value));
     }
     else if ((stricmp(option, "fellow.gfx_deinterlace") == 0) ||
       (stricmp(option, "gfx_deinterlace") == 0))
@@ -1754,8 +1754,8 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "hardfile") == 0)
     {
-      STR *curpos = value;
-      STR *nextpos;
+      char *curpos = value;
+      char *nextpos;
       cfg_hardfile hf;
 
       if ((nextpos = strchr(curpos, ',')) == nullptr)
@@ -1824,8 +1824,8 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "filesystem") == 0)
     {
-      STR *curpos = value;
-      STR *nextpos;
+      char *curpos = value;
+      char *nextpos;
       cfg_filesys fs;
 
       if ((nextpos = strchr(curpos, ',')) == nullptr)
@@ -1917,11 +1917,11 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
       {
 	if (stricmp(option, "gfx_offset_left") == 0)
 	{
-	  RP.SetClippingOffsetLeft(cfgGetULOFromString(value));
+	  RP.SetClippingOffsetLeft(cfgGetUint32FromString(value));
 	}
 	else if (stricmp(option, "gfx_offset_top") == 0)
 	{
-	  RP.SetClippingOffsetTop(cfgGetULOFromString(value));
+	  RP.SetClippingOffsetTop(cfgGetUint32FromString(value));
 	}
       }
       else
@@ -1944,7 +1944,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "config_version=%u\n", cfgGetConfigFileVersion(config));
   fprintf(cfgfile, "config_description=%s\n", cfgGetDescription(config));
   fprintf(cfgfile, "autoconfig=%s\n", cfgGetboolToString(cfgGetUseAutoconfig(config)));
-  for (ULO i = 0; i < 4; i++)
+  for (uint32_t i = 0; i < 4; i++)
   {
     fprintf(cfgfile, "floppy%u=%s\n", i, cfgGetDiskImage(config, i));
     fprintf(cfgfile, "fellow.floppy%u_enabled=%s\n", i, cfgGetBOOLEToString(cfgGetDiskEnabled(config, i)));
@@ -2004,7 +2004,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "rtc=%s\n", cfgGetboolToString(cfgGetRtc(config)));
   fprintf(cfgfile, "win32.map_drives=%s\n", cfgGetBOOLEToString(cfgGetFilesystemAutomountDrives(config)));
   fprintf(cfgfile, "filesystem_device_name_prefix=%s\n", cfgGetFilesystemDeviceNamePrefix(config));
-  for (ULO i = 0; i < cfgGetHardfileCount(config); i++)
+  for (uint32_t i = 0; i < cfgGetHardfileCount(config); i++)
   {
     cfg_hardfile hf = cfgGetHardfile(config, i);
     fprintf(cfgfile, "hardfile=%s,%u,%u,%u,%u,%s\n", 
@@ -2015,7 +2015,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
       hf.bytespersector,
       hf.filename);
   }
-  for (ULO i = 0; i < cfgGetFilesystemCount(config); i++)
+  for (uint32_t i = 0; i < cfgGetFilesystemCount(config); i++)
   {
     cfg_filesys fs = cfgGetFilesystem(config, i);
     fprintf(cfgfile, "filesystem=%s,%s:%s\n", (fs.readonly) ? "ro" : "rw", fs.volumename, fs.rootpath);
@@ -2078,7 +2078,7 @@ void cfgUpgradeConfig(cfg *config)
 /* Remove unwanted newline chars on the end of a string                       */
 /*============================================================================*/
 
-static void cfgStripTrailingNewlines(STR *line)
+static void cfgStripTrailingNewlines(char *line)
 {
   size_t length = strlen(line);
   while ((length > 0) && 
@@ -2106,9 +2106,9 @@ static bool cfgLoadFromFile(cfg *config, FILE *cfgfile)
   return true;
 }
 
-bool cfgLoadFromFilename(cfg *config, const STR *filename, const bool bIsPreset)
+bool cfgLoadFromFilename(cfg *config, const char *filename, const bool bIsPreset)
 {
-  STR newfilename[CFG_FILENAME_LENGTH];
+  char newfilename[CFG_FILENAME_LENGTH];
 
   fileopsResolveVariables(filename, newfilename);
 
@@ -2149,7 +2149,7 @@ static BOOLE cfgSaveToFile(cfg *config, FILE *cfgfile)
   return cfgSaveOptions(config, cfgfile);
 }
 
-BOOLE cfgSaveToFilename(cfg *config, STR *filename)
+BOOLE cfgSaveToFilename(cfg *config, char *filename)
 {
   FILE *cfgfile;
   BOOLE result;
@@ -2214,7 +2214,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {      
-        ULO lEscapeKey = atoi(argv[i]);
+        uint32_t lEscapeKey = atoi(argv[i]);
         lEscapeKey = kbddrv_DIK_to_symbol[lEscapeKey];
         RP.SetEscapeKey(lEscapeKey);
       }
@@ -2358,7 +2358,7 @@ void cfgManagerUseDefaultConfiguration(cfgManager *configmanager)
 BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
 {
   cfg *config = cfgManagerGetCurrentConfig(&cfg_manager);
-  ULO i;
+  uint32_t i;
   BOOLE needreset = FALSE;
 
 
