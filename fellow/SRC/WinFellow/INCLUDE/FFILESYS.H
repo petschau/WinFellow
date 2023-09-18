@@ -25,16 +25,16 @@ extern bool ffilesysGetEnabled();
 extern void ffilesysSetFilesys(ffilesys_dev filesys, uint32_t index);
 extern BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, uint32_t index);
 extern BOOLE ffilesysRemoveFilesys(uint32_t index);
-extern void ffilesysClear(void);
+extern void ffilesysClear();
 extern void ffilesysSetAutomountDrives(BOOLE automount_drives);
-extern BOOLE ffilesysGetAutomountDrives(void);
+extern BOOLE ffilesysGetAutomountDrives();
 extern void ffilesysSetDeviceNamePrefix(const std::string& prefix);
 extern const std::string& ffilesysGetDeviceNamePrefix();
 
 /* Starting and stopping the filesys */
 
-extern void ffilesysHardReset(void);
-extern void ffilesysEmulationStart(void);
-extern void ffilesysEmulationStop(void);
-extern void ffilesysStartup(void);
-extern void ffilesysShutdown(void);
+extern void ffilesysHardReset();
+extern void ffilesysEmulationStart();
+extern void ffilesysEmulationStop();
+extern void ffilesysStartup();
+extern void ffilesysShutdown();

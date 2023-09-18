@@ -1,6 +1,6 @@
 #pragma once
 
-void drawDualTranslationInitialize(void);
+void drawDualTranslationInitialize();
 void drawHAMTableInit();
-void drawWriteProfilingResultsToFile(void);
+void drawWriteProfilingResultsToFile();
 void drawModeFunctionsInitialize();

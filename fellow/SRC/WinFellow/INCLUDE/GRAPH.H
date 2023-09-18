@@ -2,18 +2,18 @@
 
 /* C declarations */
 
-extern void graphLineDescClear(void);
-extern void graphInitializeShadowColors(void);
-extern void graphHardReset(void);
-extern void graphEmulationStart(void);
-extern void graphEmulationStop(void);
-extern void graphStartup(void);
-extern void graphShutdown(void);
-extern void graphCalculateWindow(void);
-extern void graphCalculateWindowHires(void);
-extern void graphEndOfLine(void);
-extern void graphEndOfFrame(void);
-extern void graphPlayfieldOnOff(void);
+extern void graphLineDescClear();
+extern void graphInitializeShadowColors();
+extern void graphHardReset();
+extern void graphEmulationStart();
+extern void graphEmulationStop();
+extern void graphStartup();
+extern void graphShutdown();
+extern void graphCalculateWindow();
+extern void graphCalculateWindowHires();
+extern void graphEndOfLine();
+extern void graphEndOfFrame();
+extern void graphPlayfieldOnOff();
 
 /* IO register read and write */
 

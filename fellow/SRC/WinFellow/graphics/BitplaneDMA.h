@@ -46,21 +46,21 @@ private:
   uint16_t ReadWord(uint32_t address);
   void IncreaseBplPt(uint32_t *bplpt, uint32_t size);
   uint16_t GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt);
-  void AddModulo(void);
+  void AddModulo();
   void SetState(BPLDMAStates newState, uint32_t cycle);
-  void SetStateNone(void);
+  void SetStateNone();
   void Restart(bool ddfIsActive);
-  void FetchLores(void);
-  void FetchHires(void);
+  void FetchLores();
+  void FetchHires();
 
 public:
   void Start(uint32_t cycle);
-  void Stop(void);
+  void Stop();
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
   virtual void Handler(uint32_t rasterY, uint32_t cylinder);
 
-  void EndOfFrame(void);
+  void EndOfFrame();
 
   BitplaneDMA(void) : GraphicsEvent(), _stopDDF(false), _state(BPL_DMA_STATE_NONE) {};
 

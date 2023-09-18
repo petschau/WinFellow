@@ -60,13 +60,13 @@ public:
   virtual void Handler(uint32_t rasterY, uint32_t cylinder);
   virtual void InitializeEvent(GraphicsEventQueue *queue);
 
-  void EndOfFrame(void);
-  void SoftReset(void);
-  void HardReset(void);
-  void EmulationStart(void);
-  void EmulationStop(void);
-  void Startup(void);
-  void Shutdown(void);
+  void EndOfFrame();
+  void SoftReset();
+  void HardReset();
+  void EmulationStart();
+  void EmulationStop();
+  void Startup();
+  void Shutdown();
 
   PixelSerializer(void) : GraphicsEvent(), _lastCylinderOutput(FIRST_CYLINDER - 1), _newLine(true), _activated(false) {};
 };

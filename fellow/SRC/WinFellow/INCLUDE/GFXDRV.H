@@ -31,4 +31,4 @@ extern void gfxDrvShutdown();
 
 extern bool gfxDrvSaveScreenshot(const bool, const char *filename);
 
-extern bool gfxDrvDXGIValidateRequirements(void);
+extern bool gfxDrvDXGIValidateRequirements();

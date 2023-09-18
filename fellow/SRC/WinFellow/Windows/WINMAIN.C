@@ -568,7 +568,7 @@ int winDrvDetectMemoryLeaks(void)
 /* ensure winDrvDetectMemoryLeaks is called after main (CRT Link-Time Tables) */
 /*============================================================================*/
 
-typedef int cb(void);
+typedef int cb();
 
 #pragma data_seg(".CRT$XPU")
 static cb *autoexit[] = { winDrvDetectMemoryLeaks };

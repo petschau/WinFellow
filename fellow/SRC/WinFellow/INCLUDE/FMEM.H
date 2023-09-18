@@ -39,10 +39,10 @@ extern memoryIoWriteFunc memory_iobank_write[257];
 
 /* Expansion card functions */
 
-typedef void (*memoryEmemCardInitFunc)(void);
+typedef void (*memoryEmemCardInitFunc)();
 typedef void (*memoryEmemCardMapFunc)(uint32_t);
 
-extern void memoryEmemClear(void);
+extern void memoryEmemClear();
 extern void memoryEmemCardAdd(memoryEmemCardInitFunc cardinit,
 			      memoryEmemCardMapFunc cardmap);
 extern void memoryEmemSet(uint32_t index, uint32_t data);
@@ -56,21 +56,21 @@ extern void memoryDmemSetLong(uint32_t data);
 extern void memoryDmemSetLongNoCounter(uint32_t data, uint32_t offset);
 extern void memoryDmemSetString(const char *data);
 extern void memoryDmemSetCounter(uint32_t val);
-extern uint32_t memoryDmemGetCounter(void);
+extern uint32_t memoryDmemGetCounter();
 extern uint32_t memoryDmemGetCounterWithoutOffset();
-extern void memoryDmemClear(void);
+extern void memoryDmemClear();
 
 /* Module management functions */
 
 extern void memorySaveState(FILE *F);
 extern void memoryLoadState(FILE *F);
-extern void memorySoftReset(void);
-extern void memoryHardReset(void);
-extern void memoryHardResetPost(void);
-extern void memoryEmulationStart(void);
-extern void memoryEmulationStop(void);
-extern void memoryStartup(void);
-extern void memoryShutdown(void);
+extern void memorySoftReset();
+extern void memoryHardReset();
+extern void memoryHardResetPost();
+extern void memoryEmulationStart();
+extern void memoryEmulationStop();
+extern void memoryStartup();
+extern void memoryShutdown();
 
 /* Memory bank functions */
 
@@ -107,30 +107,30 @@ extern void memoryChipMap(bool overlay);
 /* Memory configuration properties */
 
 extern BOOLE memorySetChipSize(uint32_t chipsize);
-extern uint32_t memoryGetChipSize(void);
+extern uint32_t memoryGetChipSize();
 extern BOOLE memorySetFastSize(uint32_t fastsize);
-extern uint32_t memoryGetFastSize(void);
+extern uint32_t memoryGetFastSize();
 extern void memorySetFastAllocatedSize(uint32_t fastallocatedsize);
-extern uint32_t memoryGetFastAllocatedSize(void);
+extern uint32_t memoryGetFastAllocatedSize();
 extern BOOLE memorySetSlowSize(uint32_t bogosize);
-extern uint32_t memoryGetSlowSize(void);
+extern uint32_t memoryGetSlowSize();
 extern bool memorySetUseAutoconfig(bool useautoconfig);
 extern bool memoryGetUseAutoconfig();
 extern BOOLE memorySetAddress32Bit(BOOLE address32bit);
-extern BOOLE memoryGetAddress32Bit(void);
+extern BOOLE memoryGetAddress32Bit();
 extern BOOLE memorySetKickImage(char *kickimage);
 extern BOOLE memorySetKickImageExtended(char *kickimageext);
-extern char *memoryGetKickImage(void);
+extern char *memoryGetKickImage();
 extern void memorySetKey(char *key);
-extern char *memoryGetKey(void);
-extern BOOLE memoryGetKickImageOK(void);
+extern char *memoryGetKey();
+extern BOOLE memoryGetKickImageOK();
 
 /* Derived from memory configuration */
 
-extern uint32_t memoryGetKickImageBaseBank(void);
-extern uint32_t memoryGetKickImageVersion(void);
-extern uint32_t memoryInitialPC(void);
-extern uint32_t memoryInitialSP(void);
+extern uint32_t memoryGetKickImageBaseBank();
+extern uint32_t memoryGetKickImageVersion();
+extern uint32_t memoryInitialPC();
+extern uint32_t memoryInitialSP();
 
 /* Kickstart decryption */
 extern int memoryKickLoadAF2(char *filename, FILE *F, uint8_t *memory_kick, const bool);

@@ -14,6 +14,6 @@ extern chipset_information chipset;
 #define chipsetReplaceHighPtr(original_ptr, high_part) chipsetMaskPtr(((original_ptr) & 0xfffe) | (((uint32_t)high_part) << 16))
 
 extern BOOLE chipsetSetECS(bool ecs);
-extern bool chipsetGetECS(void);
+extern bool chipsetGetECS();
 
-extern void chipsetStartup(void);
+extern void chipsetStartup();

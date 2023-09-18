@@ -262,8 +262,8 @@ uint32_t cpuGetDRegByteSignExtLong(uint32_t regno) {return cpuSignExtByteToLong(
 uint16_t cpuGetARegWord(uint32_t regno) {return (uint16_t)cpu_regs[1][regno];}
 uint8_t cpuGetARegByte(uint32_t regno) {return (uint8_t)cpu_regs[1][regno];}
 
-typedef uint16_t (*cpuGetWordFunc)(void);
-typedef uint32_t (*cpuGetLongFunc)(void);
+typedef uint16_t (*cpuGetWordFunc)();
+typedef uint32_t (*cpuGetLongFunc)();
 
 static uint16_t cpuGetNextWordInternal(void)
 {

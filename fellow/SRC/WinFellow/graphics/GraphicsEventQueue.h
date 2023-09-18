@@ -15,8 +15,8 @@ public:
 
   static uint32_t GetCylindersPerLine() {return busGetCyclesInThisLine()*2;}
 
-  void Clear(void);
-  GraphicsEvent* Pop(void);
+  void Clear();
+  GraphicsEvent* Pop();
   void Insert(GraphicsEvent *graphics_event);
   void Remove(GraphicsEvent *graphics_event);
 

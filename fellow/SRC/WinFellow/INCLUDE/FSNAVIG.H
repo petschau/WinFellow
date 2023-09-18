@@ -19,12 +19,12 @@ typedef struct {
   felist *lnode;
 } fs_navig_point;
 
-extern BOOLE fsNavigHasDrives(void);
-extern BOOLE *fsNavigGetDriveMap(void);
-extern void fsNavigSetCWDInstallDir(void);
-extern void fsNavigSetCWDStartupDir(void);
+extern BOOLE fsNavigHasDrives();
+extern BOOLE *fsNavigGetDriveMap();
+extern void fsNavigSetCWDInstallDir();
+extern void fsNavigSetCWDStartupDir();
 extern void fsNavigStartup(char *argv[]);
-extern void fsNavigShutdown(void);
+extern void fsNavigShutdown();
 extern felist *fsNavigGetDirList(fs_navig_point *fs_point);
-extern fs_navig_point *fsNavigGetCWD(void);
+extern fs_navig_point *fsNavigGetCWD();
 extern void fsNavigSetCWD(fs_navig_point *fs_point);

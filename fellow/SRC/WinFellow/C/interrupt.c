@@ -146,7 +146,7 @@ BOOLE interruptIsRequested(uint16_t bitmask)
   return !!(intreq & bitmask);
 }
 
-extern BOOLE cpuGetRaiseInterrupt(void);
+extern BOOLE cpuGetRaiseInterrupt();
 
 /*=====================================================
   Raise any waiting interrupts

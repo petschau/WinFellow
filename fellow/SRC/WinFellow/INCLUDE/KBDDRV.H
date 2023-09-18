@@ -14,16 +14,16 @@ extern char *kbdDrvKeyString(uint32_t symbolickey);
 extern char *kbdDrvKeyPrettyString(uint32_t symbolickey);
 extern void kbdDrvJoystickReplacementSet(kbd_event event, uint32_t symbolickey);
 extern uint32_t  kbdDrvJoystickReplacementGet(kbd_event event);
-extern void kbdDrvHardReset(void);
-extern void kbdDrvEmulationStart(void);
-extern void kbdDrvEmulationStop(void);
+extern void kbdDrvHardReset();
+extern void kbdDrvEmulationStart();
+extern void kbdDrvEmulationStop();
 extern void kbdDrvKeypressRaw(uint32_t, BOOL);
-extern void kbdDrvStartup(void);
-extern void kbdDrvShutdown(void);
+extern void kbdDrvStartup();
+extern void kbdDrvShutdown();
 extern void kbdDrvStateHasChanged(BOOLE);
-extern void kbdDrvKeypressHandler(void);
+extern void kbdDrvKeypressHandler();
 
 #ifdef RETRO_PLATFORM
-extern void kbdDrvEOFHandler(void);
+extern void kbdDrvEOFHandler();
 extern void kbdDrvSetJoyKeyEnabled(uint32_t, uint32_t, BOOLE);
 #endif

@@ -262,7 +262,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
   "Kickstart Post-V3.1"};
 
-  void memoryKickSettingsClear(void);
+  void memoryKickSettingsClear();
 
 
 

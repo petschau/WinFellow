@@ -126,7 +126,7 @@ extern void iniManagerShutdown(iniManager *initdatamanager);
 
 extern iniManager ini_manager;
 
-extern void iniEmulationStart(void);
-extern void iniEmulationStop(void);
-extern void iniStartup(void);
-extern void iniShutdown(void);
+extern void iniEmulationStart();
+extern void iniEmulationStop();
+extern void iniStartup();
+extern void iniShutdown();

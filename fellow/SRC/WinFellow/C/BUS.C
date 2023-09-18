@@ -69,7 +69,7 @@ bus_event interruptEvent;
 /* Global end of line handler                                                   */
 /*==============================================================================*/
 
-void busEndOfLine(void)
+void busEndOfLine()
 {
 
   /*==============================================================*/
@@ -115,7 +115,7 @@ void busEndOfLine(void)
 /* Global end of frame handler                                                  */
 /*==============================================================================*/
 
-void busEndOfFrame(void)
+void busEndOfFrame()
 {
   /*==============================================================*/
   /* Draw the frame in the host buffer                            */
@@ -213,9 +213,8 @@ void busEndOfFrame(void)
 
 void busRemoveEvent(bus_event *ev)
 {
-  bus_event *tmp;
   BOOLE found = FALSE;
-  for (tmp = bus.events; tmp != nullptr; tmp = tmp->next)
+  for (bus_event* tmp = bus.events; tmp != nullptr; tmp = tmp->next)
   {
     if (tmp == ev)
     {
@@ -255,9 +254,8 @@ void busInsertEventWithNullCheck(bus_event *ev)
 
 void busInsertEvent(bus_event *ev)
 {
-  bus_event *tmp;
   bus_event *tmp_prev = nullptr;
-  for (tmp = bus.events; tmp != nullptr; tmp = tmp->next)
+  for (bus_event* tmp = bus.events; tmp != nullptr; tmp = tmp->next)
   {
       if (ev->cycle < tmp->cycle)
     {
@@ -275,7 +273,7 @@ void busInsertEvent(bus_event *ev)
   ev->next = nullptr;
 }
 
-bus_event *busPopEvent(void)
+bus_event *busPopEvent()
 {
   bus_event *tmp = bus.events;
   bus.events = tmp->next;
@@ -331,27 +329,27 @@ void busSetCycle(uint32_t cycle)
   bus.cycle = cycle;
 }
 
-uint32_t busGetCycle(void)
+uint32_t busGetCycle()
 {
   return bus.cycle;
 }
 
-uint32_t busGetRasterY(void)
+uint32_t busGetRasterY()
 {
   return bus.cycle / busGetCyclesInThisLine();
 }
 
-uint32_t busGetRasterX(void)
+uint32_t busGetRasterX()
 {
   return bus.cycle % busGetCyclesInThisLine();
 }
 
-uint64_t busGetRasterFrameCount(void)
+uint64_t busGetRasterFrameCount()
 {
   return bus.frame_no;
 }
 
-uint32_t busGetCyclesInThisLine(void)
+uint32_t busGetCyclesInThisLine()
 {
   return bus.screen_limits->cycles_in_this_line;
 }
@@ -447,7 +445,7 @@ void busRunGeneric(void)
   }
 }
 
-typedef void (*busRunHandlerFunc)(void);
+typedef void (*busRunHandlerFunc)();
 busRunHandlerFunc busGetRunHandler(void)
 {
   if (cpuGetModelMajor() <= 1)

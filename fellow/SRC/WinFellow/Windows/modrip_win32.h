@@ -30,14 +30,14 @@
 /* own includes */
 #include "modrip.h"
 
-extern BOOLE modripGuiInitialize(void);
-extern void modripGuiSetBusy(void);
-extern void modripGuiUnSetBusy(void);
+extern BOOLE modripGuiInitialize();
+extern void modripGuiSetBusy();
+extern void modripGuiUnSetBusy();
 extern BOOLE modripGuiSaveRequest(struct ModuleInfo *, MemoryAccessFunc);
 extern void modripGuiErrorSave(struct ModuleInfo *);
 extern BOOLE modripGuiRipFloppy(int);
-extern BOOLE modripGuiRipMemory(void);
-extern void modripGuiUnInitialize(void);
+extern BOOLE modripGuiRipMemory();
+extern void modripGuiUnInitialize();
 extern void modripGuiError(char *);
-extern BOOLE modripGuiDumpChipMem(void);
-extern BOOLE modripGuiRunProWiz(void);
+extern BOOLE modripGuiDumpChipMem();
+extern BOOLE modripGuiRunProWiz();

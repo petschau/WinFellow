@@ -18,5 +18,5 @@ public:
 
   virtual void InitializeEvent(GraphicsEventQueue *queue) = 0;
   virtual void Handler(uint32_t rasterY, uint32_t cylinder) = 0;
-  GraphicsEvent(void);
+  GraphicsEvent();
 };

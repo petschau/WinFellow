@@ -96,9 +96,9 @@ extern draw_mode_list& drawGetModes();
 extern void drawSetFullScreenMode(uint32_t width, uint32_t height, uint32_t colorbits, uint32_t refresh);
 extern void drawSetWindowedMode(uint32_t width, uint32_t height);
 extern void drawSetDisplayScale(DISPLAYSCALE displayscale);
-extern DISPLAYSCALE drawGetDisplayScale(void);
+extern DISPLAYSCALE drawGetDisplayScale();
 extern void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy);
-extern DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy(void);
+extern DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy();
 extern uint32_t drawGetInternalScaleFactor();
 extern uint32_t drawGetOutputScaleFactor();
 extern void drawSetFrameskipRatio(uint32_t frameskipratio);
@@ -106,7 +106,7 @@ extern void drawSetFPSCounterEnabled(bool enabled);
 extern void drawSetLEDsEnabled(bool enabled);
 extern void drawSetLED(int index, bool state);
 extern void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers);
-extern BOOLE drawGetAllowMultipleBuffers(void);
+extern BOOLE drawGetAllowMultipleBuffers();
 extern void drawSetDisplayDriver(DISPLAYDRIVER displaydriver);
 extern DISPLAYDRIVER drawGetDisplayDriver();
 extern void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode);
@@ -146,18 +146,18 @@ extern float drawGetBufferClipHeightAsFloat();
 /* When switching rendering (progressive->interlaced)                        */
 /*===========================================================================*/
 
-extern void drawReinitializeRendering(void);
+extern void drawReinitializeRendering();
 
 
 /*===========================================================================*/
 /* Draw statistics                                                           */
 /*===========================================================================*/
 
-extern void drawStatClear(void);
-extern void drawStatTimestamp(void);
-extern uint32_t drawStatLast50FramesFps(void);
-extern uint32_t drawStatLastFrameFps(void);
-extern uint32_t drawStatSessionFps(void);
+extern void drawStatClear();
+extern void drawStatTimestamp();
+extern uint32_t drawStatLast50FramesFps();
+extern uint32_t drawStatLastFrameFps();
+extern uint32_t drawStatSessionFps();
 
 
 /*===========================================================================*/
@@ -165,18 +165,18 @@ extern uint32_t drawStatSessionFps(void);
 /*===========================================================================*/
 
 extern uint32_t drawValidateBufferPointer(uint32_t amiga_line_number);
-extern void drawInvalidateBufferPointer(void);
+extern void drawInvalidateBufferPointer();
 
 
 /*===========================================================================*/
 /* Standard Fellow functions                                                 */
 /*===========================================================================*/
 
-extern void drawEndOfFrame(void);
-extern void drawHardReset(void);
-extern void drawEmulationStart(void);
-extern BOOLE drawEmulationStartPost(void);
-extern void drawEmulationStop(void);
-extern BOOLE drawStartup(void);
-extern void drawShutdown(void);
-void drawUpdateDrawmode(void);
+extern void drawEndOfFrame();
+extern void drawHardReset();
+extern void drawEmulationStart();
+extern BOOLE drawEmulationStartPost();
+extern void drawEmulationStop();
+extern BOOLE drawStartup();
+extern void drawShutdown();
+void drawUpdateDrawmode();

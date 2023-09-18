@@ -15,7 +15,7 @@
 
    FELLOW IN (END)------------------- */
 
-typedef uae_u32 (*TrapFunction) (void);
+typedef uae_u32 (*TrapFunction) ();
 
 extern int lasttrap;
 extern void do_emultrap (int nr);
@@ -27,7 +27,7 @@ extern void dl (uae_u32);
 extern uae_u32 ds (char *);
 extern void calltrap (uae_u32);
 extern void org (uae_u32);
-extern uae_u32 here (void);
+extern uae_u32 here ();
 extern int deftrap2 (TrapFunction func, int mode, const char *str);
 extern int deftrap (TrapFunction);
 extern void align (int);
@@ -35,7 +35,7 @@ extern uae_u32 CallLib (uaecptr base, uae_s16 offset);
 extern void call_calltrap (int nr) REGPARAM;
 
 extern volatile int uae_int_requested;
-extern void set_uae_int_flag (void);
+extern void set_uae_int_flag ();
 
 #define RTS 0x4e75
 #define RTE 0x4e73
@@ -70,21 +70,21 @@ extern int sprintf_filesys_unit (struct uaedev_mount_info *mountinfo, char *buff
 extern void write_filesys_config (struct uaedev_mount_info *mountinfo, const char *unexpanded,
 				  const char *defaultpath, FILE *f);
 
-extern struct uaedev_mount_info *alloc_mountinfo (void);
+extern struct uaedev_mount_info *alloc_mountinfo ();
 extern struct uaedev_mount_info *dup_mountinfo (struct uaedev_mount_info *);
 extern void free_mountinfo (struct uaedev_mount_info *);
 
-extern void filesys_reset (void);
-extern void filesys_prepare_reset (void);
-extern void filesys_start_threads (void);
+extern void filesys_reset ();
+extern void filesys_prepare_reset ();
+extern void filesys_start_threads ();
 
-extern void filesys_install (void);
-extern void filesys_install_code (void);
+extern void filesys_install ();
+extern void filesys_install_code ();
 extern void filesys_store_devinfo (uae_u8 *);
-extern void hardfile_install (void);
-extern void emulib_install (void);
-extern void expansion_init (void);
-extern void expansion_cleanup (void);
+extern void hardfile_install ();
+extern void emulib_install ();
+extern void expansion_init ();
+extern void expansion_cleanup ();
 
 #define TRAPFLAG_NO_REGSAVE 1
 #define TRAPFLAG_NO_RETVAL 2
@@ -98,8 +98,8 @@ extern uaecptr libemu_InstallFunctionFlags (TrapFunction, uaecptr, int, int, con
 
 /* these appear to be missing and are here to suppress compiler warnings */
 
-extern void rtarea_setup(void);
-extern void rtarea_init(void);
+extern void rtarea_setup();
+extern void rtarea_init();
 
 /* FELLOW IN (END)------------------- */
 

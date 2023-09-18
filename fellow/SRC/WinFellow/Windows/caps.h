@@ -30,8 +30,8 @@
 
 /* function prototypes */
 
-extern BOOLE capsStartup(void);
-extern BOOLE capsShutdown(void);
+extern BOOLE capsStartup();
+extern BOOLE capsShutdown();
 extern BOOLE capsLoadImage(uint32_t, FILE *, uint32_t *);
 extern BOOLE capsUnloadImage(uint32_t);
 extern BOOLE capsLoadNextRevolution(uint32_t, uint32_t, uint8_t *, uint32_t *);

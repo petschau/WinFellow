@@ -72,11 +72,11 @@ typedef struct {
 extern BOOLE wguiSaveFile(HWND, char *, uint32_t, char *, SelectFileFlags);
 extern char *wguiExtractPath(char *);
 
-extern void wguiStartup(void);
-extern void wguiStartupPost(void);
-extern void wguiShutdown(void);
-extern BOOLE wguiCheckEmulationNecessities(void);
-extern BOOLE wguiEnter(void);
+extern void wguiStartup();
+extern void wguiStartupPost();
+extern void wguiShutdown();
+extern BOOLE wguiCheckEmulationNecessities();
+extern BOOLE wguiEnter();
 extern void wguiRequester(char *szMessage, UINT uType);
 extern void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert);
 extern void wguiSetProcessDPIAwareness(const char *pszAwareness);

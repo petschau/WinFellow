@@ -9,12 +9,12 @@
 
 extern void fsWrapFullPath(char *dst, char *src);
 
-extern BOOLE fsWrapHasDrives(void);
-extern BOOLE *fsWrapGetDriveMap(void);
+extern BOOLE fsWrapHasDrives();
+extern BOOLE *fsWrapGetDriveMap();
 extern BOOLE fsWrapSetCWD(fs_navig_point *fs_point);
-fs_navig_point *fsWrapGetCWD(void);
+fs_navig_point *fsWrapGetCWD();
 extern BOOLE fsWrapOpenDir(fs_navig_point *fs_point);
-extern fs_navig_point *fsWrapReadDir(void);
-extern void fsWrapCloseDir(void);
+extern fs_navig_point *fsWrapReadDir();
+extern void fsWrapCloseDir();
 extern fs_navig_point *fsWrapMakePoint(const char *point);
 extern int fsWrapStat(const char *szFilename, struct stat *pStatBuffer);

@@ -3856,7 +3856,7 @@ void wguiSetProcessDPIAwareness(const char *pszAwareness)
   } Process_DPI_Awareness;
 #endif
   typedef HRESULT(WINAPI *PFN_SetProcessDpiAwareness)(Process_DPI_Awareness);
-  typedef BOOL(WINAPI *PFN_SetProcessDPIAware)(void);
+  typedef BOOL(WINAPI *PFN_SetProcessDPIAware)();
   PFN_SetProcessDpiAwareness pfnSetProcessDpiAwareness;
   PFN_SetProcessDPIAware pfnSetProcessDPIAware;
   Process_DPI_Awareness nAwareness;
