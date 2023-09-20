@@ -43,8 +43,8 @@ extern uint32_t graph_deco6[256][2];
 //
 //----------------------------------------------------------------------------
 
-uint32_t *Planar2ChunkyDecoder::GetEvenPlayfieldUint32Ptr(void) {return (uint32_t*) (_playfield_even.barray + _batch_size);}
-uint32_t *Planar2ChunkyDecoder::GetOddPlayfieldUint32Ptr(void) {return (uint32_t*) (_playfield_odd.barray + _batch_size);}
+uint32_t *Planar2ChunkyDecoder::GetEvenPlayfieldUint32Ptr() {return (uint32_t*) (_playfield_even.barray + _batch_size);}
+uint32_t *Planar2ChunkyDecoder::GetOddPlayfieldUint32Ptr() {return (uint32_t*) (_playfield_odd.barray + _batch_size);}
 
 // Decode the odd part of the first 4 pixels.
 // Normal lores/hires output
@@ -188,27 +188,27 @@ void Planar2ChunkyDecoder::P2CNext8Pixels(uint32_t dat1, uint32_t dat2, uint32_t
   }
 }
 
-void Planar2ChunkyDecoder::NewBatch(void)
+void Planar2ChunkyDecoder::NewBatch()
 {
   _batch_size = 0;
 }
 
-uint8_t *Planar2ChunkyDecoder::GetOddPlayfield(void)
+uint8_t *Planar2ChunkyDecoder::GetOddPlayfield()
 {
   return _playfield_odd.barray;
 }
 
-uint8_t *Planar2ChunkyDecoder::GetEvenPlayfield(void)
+uint8_t *Planar2ChunkyDecoder::GetEvenPlayfield()
 {
   return _playfield_even.barray;
 }
 
-uint8_t *Planar2ChunkyDecoder::GetHamSpritesPlayfield(void)
+uint8_t *Planar2ChunkyDecoder::GetHamSpritesPlayfield()
 {
   return _playfield_ham_sprites.barray;
 }
 
-uint32_t Planar2ChunkyDecoder::GetBatchSize(void)
+uint32_t Planar2ChunkyDecoder::GetBatchSize()
 {
   return _batch_size;
 }

@@ -82,7 +82,7 @@ uint32_t cpuGetReg(uint32_t da, uint32_t i) {return cpu_regs[da][i];}
 /// <summary>
 /// Get the supervisor bit from sr.
 /// </summary>
-BOOLE cpuGetFlagSupervisor(void)
+BOOLE cpuGetFlagSupervisor()
 {
   return cpu_sr & 0x2000;
 }
@@ -90,26 +90,26 @@ BOOLE cpuGetFlagSupervisor(void)
 /// <summary>
 /// Get the master/irq state bit from sr.
 /// </summary>
-BOOLE cpuGetFlagMaster(void)
+BOOLE cpuGetFlagMaster()
 {
   return cpu_sr & 0x1000;
 }
 
 void cpuSetUspDirect(uint32_t usp) {cpu_usp = usp;}
-uint32_t cpuGetUspDirect(void) {return cpu_usp;}
-uint32_t cpuGetUspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetUspDirect() : cpuGetAReg(7);}
+uint32_t cpuGetUspDirect() {return cpu_usp;}
+uint32_t cpuGetUspAutoMap() {return (cpuGetFlagSupervisor()) ? cpuGetUspDirect() : cpuGetAReg(7);}
 
 void cpuSetSspDirect(uint32_t ssp) {cpu_ssp = ssp;}
-uint32_t cpuGetSspDirect(void) {return cpu_ssp;}
-uint32_t cpuGetSspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetAReg(7) : cpuGetSspDirect();}
+uint32_t cpuGetSspDirect() {return cpu_ssp;}
+uint32_t cpuGetSspAutoMap() {return (cpuGetFlagSupervisor()) ? cpuGetAReg(7) : cpuGetSspDirect();}
 
 void cpuSetMspDirect(uint32_t msp) {cpu_msp = msp;}
-uint32_t cpuGetMspDirect(void) {return cpu_msp;}
+uint32_t cpuGetMspDirect() {return cpu_msp;}
 
 /// <summary>
 /// Returns the master stack pointer.
 /// </summary>
-uint32_t cpuGetMspAutoMap(void)
+uint32_t cpuGetMspAutoMap()
 {
   if (cpuGetFlagSupervisor() && cpuGetFlagMaster())
   {
@@ -136,7 +136,7 @@ void cpuSetMspAutoMap(uint32_t new_msp)
 /// <summary>
 /// Returns the interrupt stack pointer. ssp is used as isp.
 /// </summary>
-uint32_t cpuGetIspAutoMap(void)
+uint32_t cpuGetIspAutoMap()
 {
   if (cpuGetFlagSupervisor() && !cpuGetFlagMaster())
   {
@@ -161,34 +161,34 @@ void cpuSetIspAutoMap(uint32_t new_isp)
 }
 
 void cpuSetPC(uint32_t address) {cpu_pc = address;}
-uint32_t cpuGetPC(void) {return cpu_pc;}
+uint32_t cpuGetPC() {return cpu_pc;}
 
 void cpuSetStop(BOOLE stop) {cpu_stop = stop;}
-BOOLE cpuGetStop(void) {return cpu_stop;}
+BOOLE cpuGetStop() {return cpu_stop;}
 
 void cpuSetVbr(uint32_t vbr) {cpu_vbr = vbr;}
-uint32_t cpuGetVbr(void) {return cpu_vbr;}
+uint32_t cpuGetVbr() {return cpu_vbr;}
 
 void cpuSetSfc(uint32_t sfc) {cpu_sfc = sfc;}
-uint32_t cpuGetSfc(void) {return cpu_sfc;}
+uint32_t cpuGetSfc() {return cpu_sfc;}
 
 void cpuSetDfc(uint32_t dfc) {cpu_dfc = dfc;}
-uint32_t cpuGetDfc(void) {return cpu_dfc;}
+uint32_t cpuGetDfc() {return cpu_dfc;}
 
 void cpuSetCacr(uint32_t cacr) {cpu_cacr = cacr;}
-uint32_t cpuGetCacr(void) {return cpu_cacr;}
+uint32_t cpuGetCacr() {return cpu_cacr;}
 
 void cpuSetCaar(uint32_t caar) {cpu_caar = caar;}
-uint32_t cpuGetCaar(void) {return cpu_caar;}
+uint32_t cpuGetCaar() {return cpu_caar;}
 
 void cpuSetSR(uint32_t sr) {cpu_sr = sr;}
-uint32_t cpuGetSR(void) {return cpu_sr;}
+uint32_t cpuGetSR() {return cpu_sr;}
 
 void cpuSetInstructionTime(uint32_t cycles) {cpu_instruction_time = cycles;}
-uint32_t cpuGetInstructionTime(void) {return cpu_instruction_time;}
+uint32_t cpuGetInstructionTime() {return cpu_instruction_time;}
 
 void cpuSetOriginalPC(uint32_t pc) {cpu_original_pc = pc;}
-uint32_t cpuGetOriginalPC(void) {return cpu_original_pc;}
+uint32_t cpuGetOriginalPC() {return cpu_original_pc;}
 
 void cpuSetInstructionAborted(bool aborted) {cpu_instruction_aborted = aborted;}
 bool cpuGetInstructionAborted() {return cpu_instruction_aborted;}
@@ -196,30 +196,30 @@ bool cpuGetInstructionAborted() {return cpu_instruction_aborted;}
 #ifdef CPU_INSTRUCTION_LOGGING
 
 void cpuSetCurrentOpcode(uint16_t opcode) {cpu_current_opcode = opcode;}
-uint16_t cpuGetCurrentOpcode(void) {return cpu_current_opcode;}
+uint16_t cpuGetCurrentOpcode() {return cpu_current_opcode;}
 
 #endif
 
 void cpuSetRaiseInterrupt(BOOLE raise_irq) {cpu_raise_irq = raise_irq;}
-BOOLE cpuGetRaiseInterrupt(void) {return cpu_raise_irq;}
+BOOLE cpuGetRaiseInterrupt() {return cpu_raise_irq;}
 void cpuSetRaiseInterruptLevel(uint32_t raise_irq_level) {cpu_raise_irq_level = raise_irq_level;}
-uint32_t cpuGetRaiseInterruptLevel(void) {return cpu_raise_irq_level;}
+uint32_t cpuGetRaiseInterruptLevel() {return cpu_raise_irq_level;}
 
-uint32_t cpuGetIrqLevel(void) {return (cpu_sr & 0x0700) >> 8;}
+uint32_t cpuGetIrqLevel() {return (cpu_sr & 0x0700) >> 8;}
 
 void cpuSetInitialPC(uint32_t pc) {cpu_initial_pc = pc;}
-uint32_t cpuGetInitialPC(void) {return cpu_initial_pc;}
+uint32_t cpuGetInitialPC() {return cpu_initial_pc;}
 
 void cpuSetInitialSP(uint32_t sp) {cpu_initial_sp = sp;}
-uint32_t cpuGetInitialSP(void) {return cpu_initial_sp;}
+uint32_t cpuGetInitialSP() {return cpu_initial_sp;}
 
 void cpuSetModelMask(uint8_t model_mask) {cpu_model_mask = model_mask;}
-uint8_t cpuGetModelMask(void) {return cpu_model_mask;}
+uint8_t cpuGetModelMask() {return cpu_model_mask;}
 
-uint32_t cpuGetModelMajor(void) {return cpu_model_major;}
-uint32_t cpuGetModelMinor(void) {return cpu_model_minor;}
+uint32_t cpuGetModelMajor() {return cpu_model_major;}
+uint32_t cpuGetModelMinor() {return cpu_model_minor;}
 
-static void cpuCalculateModelMask(void)
+static void cpuCalculateModelMask()
 {
   switch (cpuGetModelMajor())
   {
@@ -265,19 +265,19 @@ uint8_t cpuGetARegByte(uint32_t regno) {return (uint8_t)cpu_regs[1][regno];}
 typedef uint16_t (*cpuGetWordFunc)();
 typedef uint32_t (*cpuGetLongFunc)();
 
-static uint16_t cpuGetNextWordInternal(void)
+static uint16_t cpuGetNextWordInternal()
 {
   uint16_t data = memoryReadWord(cpuGetPC() + 2);
   return data;
 }
 
-static uint32_t cpuGetNextLongInternal(void)
+static uint32_t cpuGetNextLongInternal()
 {
   uint32_t data = memoryReadLong(cpuGetPC() + 2);
   return data;
 }
 
-uint16_t cpuGetNextWord(void)
+uint16_t cpuGetNextWord()
 {
   uint16_t tmp = cpu_prefetch_word;
   cpu_prefetch_word = cpuGetNextWordInternal();
@@ -285,12 +285,12 @@ uint16_t cpuGetNextWord(void)
   return tmp;
 }
 
-uint32_t cpuGetNextWordSignExt(void)
+uint32_t cpuGetNextWordSignExt()
 {
   return cpuSignExtWordToLong(cpuGetNextWord());
 }
 
-uint32_t cpuGetNextLong(void)
+uint32_t cpuGetNextLong()
 {
   uint32_t tmp = cpu_prefetch_word << 16;
   uint32_t data = cpuGetNextLongInternal();
@@ -299,23 +299,23 @@ uint32_t cpuGetNextLong(void)
   return tmp | (data >> 16);
 }
 
-void cpuInitializePrefetch(void)
+void cpuInitializePrefetch()
 {
   cpu_prefetch_word = memoryReadWord(cpuGetPC());
 }
 
-void cpuClearPrefetch(void)
+void cpuClearPrefetch()
 {
   cpu_prefetch_word = 0;
 }
 
-void cpuSkipNextWord(void)
+void cpuSkipNextWord()
 {
   cpuSetPC(cpuGetPC() + 2);
   cpuInitializePrefetch();
 }
 
-void cpuSkipNextLong(void)
+void cpuSkipNextLong()
 {
   cpuSetPC(cpuGetPC() + 4);
   cpuInitializePrefetch();
@@ -329,13 +329,11 @@ void cpuInitializeFromNewPC(uint32_t new_pc)
 
 void cpuSaveState(FILE *F)
 {
-  uint32_t i, j;
-
   fwrite(&cpu_model_major, sizeof(cpu_model_major), 1, F);
   fwrite(&cpu_model_minor, sizeof(cpu_model_minor), 1, F);
-  for (i = 0; i < 2; i++)
+  for (uint32_t i = 0; i < 2; i++)
   {
-    for (j = 0; j < 7; j++)
+    for (uint32_t j = 0; j < 7; j++)
     {
       fwrite(&cpu_regs[i][j], sizeof(cpu_regs[i][j]), 1, F);
     }
@@ -357,13 +355,11 @@ void cpuSaveState(FILE *F)
 
 void cpuLoadState(FILE *F)
 {
-  uint32_t i, j;
-
   fread(&cpu_model_major, sizeof(cpu_model_major), 1, F);
   fread(&cpu_model_minor, sizeof(cpu_model_minor), 1, F);
-  for (i = 0; i < 2; i++)
+  for (uint32_t i = 0; i < 2; i++)
   {
-    for (j = 0; j < 7; j++)
+    for (uint32_t j = 0; j < 7; j++)
     {
       fread(&cpu_regs[i][j], sizeof(cpu_regs[i][j]), 1, F);
     }

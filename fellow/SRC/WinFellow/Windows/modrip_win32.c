@@ -40,7 +40,7 @@ extern HWND wdbg_hDialog;
 /* from the debug module                                  */
 /*========================================================*/
 
-BOOLE modripGuiInitialize(void)
+BOOLE modripGuiInitialize()
 {
 	modrip_hWnd = wdbg_hDialog;
 	return TRUE;
@@ -51,7 +51,7 @@ BOOLE modripGuiInitialize(void)
 /* for windows this sets a busy cursor              */
 /*==================================================*/
 
-void modripGuiSetBusy(void)
+void modripGuiSetBusy()
 {
   HCURSOR BusyCursor = LoadCursor(nullptr, MAKEINTRESOURCE(IDC_WAIT));
   if (BusyCursor) SetCursor(BusyCursor);
@@ -62,7 +62,7 @@ void modripGuiSetBusy(void)
 /* windows: set cursor to normal again                   */
 /*=======================================================*/
 
-void modripGuiUnSetBusy(void)
+void modripGuiUnSetBusy()
 {
   HCURSOR NormalCursor = LoadCursor(nullptr, MAKEINTRESOURCE(IDC_ARROW));
   if (NormalCursor) SetCursor(NormalCursor);
@@ -161,14 +161,13 @@ void modripGuiErrorSave(struct ModuleInfo *info)
 /* for modules                                              */
 /*==========================================================*/
 
-BOOLE modripGuiRipMemory(void)
+BOOLE modripGuiRipMemory()
 {
   char message[MODRIP_TEMPSTRLEN];
-  int result;
 
   sprintf(message, "Do you want to scan the memory for modules?");
-  result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
-    MB_ICONQUESTION);
+  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
+                          MB_ICONQUESTION);
   return(result == IDYES);
 }
 
@@ -179,7 +178,6 @@ BOOLE modripGuiRipMemory(void)
 BOOLE modripGuiRipFloppy(int driveNo)
 {
   char message[MODRIP_TEMPSTRLEN];
-  int result;
 
   if((0 <= driveNo) && (driveNo < 4)) {
     sprintf(message, "A floppy is inserted in drive DF%d and ", driveNo);
@@ -187,8 +185,8 @@ BOOLE modripGuiRipFloppy(int driveNo)
 	strcat(message, "Note that scanning a floppy will usually result in a ");
 	strcat(message, "damaged module when scanning AmigaDOS formatted floppies.\n\n");
 	strcat(message, "Do you want to do so?");
-    result = MessageBox(modrip_hWnd, message, "Drive scan possible.", MB_YESNO |
-	  MB_ICONQUESTION);
+    int result = MessageBox(modrip_hWnd, message, "Drive scan possible.", MB_YESNO |
+                            MB_ICONQUESTION);
 	return(result == IDYES);
   }
   else
@@ -200,7 +198,7 @@ BOOLE modripGuiRipFloppy(int driveNo)
 /* eventually show a final message          */
 /*==========================================*/
 
-void modripGuiUnInitialize(void)
+void modripGuiUnInitialize()
 {
   MessageBox(modrip_hWnd, "Module Ripper finished.", "Finished.", 
     MB_OK | MB_ICONINFORMATION);
@@ -220,31 +218,29 @@ void modripGuiError(char *message)
 /* ask the user whether to dump the chip memory */
 /*==============================================*/
 
-BOOLE modripGuiDumpChipMem(void)
+BOOLE modripGuiDumpChipMem()
 {
   char message[MODRIP_TEMPSTRLEN];
-  int result;
 
   sprintf(message, "You are about to dump the memory into the files \"chip.mem\",");
   strcat(message, " \"fast.mem\" and \"bogo.mem\".");
   strcat(message, " This feature can be used to run external module rippers over them.");
   strcat(message, " Do you really want to do that?");
-  result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
-    MB_ICONQUESTION);
+  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
+                          MB_ICONQUESTION);
   return(result == IDYES);
 }
 
 /*=====================================*/
 /* run Pro-Wizard over the saved file? */
 /*=====================================*/
-BOOLE modripGuiRunProWiz(void)
+BOOLE modripGuiRunProWiz()
 {
   char message[MODRIP_TEMPSTRLEN];
-  int result;
 
   sprintf(message, "You have Pro-Wizard installed in WinFellow's directory.");
   strcat(message, " Do you want to run it over the saved chip memory file?");
-  result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
-    MB_ICONQUESTION);
+  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
+                          MB_ICONQUESTION);
   return(result == IDYES);
 }

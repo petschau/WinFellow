@@ -242,8 +242,6 @@ ini *iniManagerGetDefaultInitdata(iniManager *inimanager) {
 /*============================================================================*/
 
 void iniSetDefaults(ini *initdata) {
-  uint32_t i;
-
   /*==========================================================================*/
   /* Default ini-file description                                             */
   /*==========================================================================*/
@@ -258,7 +256,7 @@ void iniSetDefaults(ini *initdata) {
   iniSetMainWindowYPos(initdata, 0);
   iniSetEmulationWindowXPos(initdata, 0);
   iniSetEmulationWindowYPos(initdata, 0);
-  for (i=0; i<4; i++) {
+  for (uint32_t i = 0; i<4; i++) {
     iniSetConfigurationHistoryFilename(initdata, i, "");
   }
 
@@ -300,11 +298,8 @@ static BOOLE iniLoadIniFile(ini *initdata, FILE *inifile) {
 }
 
 BOOLE iniLoadIniFromFilename(ini *inidata, char *filename) {
-  FILE *inifile;
-  BOOLE result;
-
-  inifile = fopen(filename, "r");
-  result = (inifile != nullptr);
+  FILE* inifile = fopen(filename, "r");
+  BOOLE result = (inifile != nullptr);
   if (result) {
     result = iniLoadIniFile(inidata, inifile);
     fclose(inifile);
@@ -321,11 +316,8 @@ static BOOLE iniSaveToFile(ini *initdata, FILE *inifile) {
 }
 
 BOOLE iniSaveToFilename(ini *initdata, char *filename) {
-  FILE *inifile;
-  BOOLE result;
-
-  inifile = fopen(filename, "w");
-  result = (inifile != nullptr);
+  FILE* inifile = fopen(filename, "w");
+  BOOLE result = (inifile != nullptr);
   if (result) {
     result = iniSaveToFile(initdata, inifile);
     fclose(inifile);
@@ -339,14 +331,12 @@ BOOLE iniSaveToFilename(ini *initdata, char *filename) {
 /*============================================================================*/
 
 BOOLE iniSetOption(ini *initdata, char *initoptionstr) {
-  char *option, *value;
-  BOOLE result;
   struct stat bla; 
 
-  value = strchr(initoptionstr, '=');
-  result = (value != nullptr);
+  char* value = strchr(initoptionstr, '=');
+  BOOLE result = (value != nullptr);
   if (result) {
-    option = initoptionstr;
+    char* option = initoptionstr;
     *value++ = '\0';
 
     /* Standard initialization options */
@@ -492,16 +482,16 @@ void iniManagerShutdown(iniManager *initdatamanager) {
   iniManagerFreeIni(initdatamanager, initdatamanager->m_current_ini);
 }
 
-void iniStartup(void) {
+void iniStartup() {
   iniManagerStartup(&ini_manager);
 }
 
-void iniShutdown(void) {
+void iniShutdown() {
   iniManagerShutdown(&ini_manager);
 }
 
-void iniEmulationStart(void) {
+void iniEmulationStart() {
 }
 
-void iniEmulationStop(void) {
+void iniEmulationStop() {
 }

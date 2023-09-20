@@ -125,17 +125,9 @@ void cpuSetFlagV(BOOLE f)
 }
 
 /// <summary>
-/// Clear the V flag.
-/// </summary>
-static void cpuClearFlagV(void)
-{
-  cpu_sr = cpu_sr & 0xfffd;
-}
-
-/// <summary>
 /// Get the V flag.
 /// </summary>
-BOOLE cpuGetFlagV(void)
+BOOLE cpuGetFlagV()
 {
   return cpu_sr & 0x2;
 }
@@ -159,25 +151,9 @@ void cpuSetFlagZ(BOOLE f)
 }
 
 /// <summary>
-/// Clear the Z flag.
-/// </summary>
-static void cpuClearFlagZ(void)
-{
-  cpu_sr = cpu_sr & 0xfffb;
-}
-
-/// <summary>
-/// Get the Z flag.
-/// </summary>
-static BOOLE cpuGetFlagZ(void)
-{
-  return cpu_sr & 0x4;
-}
-
-/// <summary>
 /// Get the X flag.
 /// </summary>
-BOOLE cpuGetFlagX(void)
+BOOLE cpuGetFlagX()
 {
   return cpu_sr & 0x10;
 }
@@ -185,7 +161,7 @@ BOOLE cpuGetFlagX(void)
 /// <summary>
 /// Set the flags.
 /// </summary>
-void cpuSetFlags0100(void)
+void cpuSetFlags0100()
 {
   cpu_sr = (cpu_sr & 0xfff0) | 4;
 }
@@ -193,7 +169,7 @@ void cpuSetFlags0100(void)
 /// <summary>
 /// Clear V and C.
 /// </summary>
-void cpuClearFlagsVC(void)
+void cpuClearFlagsVC()
 {
   cpu_sr = cpu_sr & 0xfffc;
 }
@@ -467,85 +443,85 @@ void cpuSetFlagsAbs(uint16_t f)
 /// Calculates the values for the condition codes.
 /// </summary>
 /// <returns>TRUE or FALSE</returns>
-BOOLE cpuCalculateConditionCode0(void)
+BOOLE cpuCalculateConditionCode0()
 {
   return TRUE;
 }
 
-BOOLE cpuCalculateConditionCode1(void)
+BOOLE cpuCalculateConditionCode1()
 {
   return FALSE;
 }
 
-BOOLE cpuCalculateConditionCode2(void)
+BOOLE cpuCalculateConditionCode2()
 {
   return !(cpu_sr & 5);     // HI - !C && !Z
 }
 
-BOOLE cpuCalculateConditionCode3(void)
+BOOLE cpuCalculateConditionCode3()
 {
   return cpu_sr & 5;	      // LS - C || Z
 }
 
-BOOLE cpuCalculateConditionCode4(void)
+BOOLE cpuCalculateConditionCode4()
 {
   return (~cpu_sr) & 1;	      // CC - !C
 }
 
-BOOLE cpuCalculateConditionCode5(void)
+BOOLE cpuCalculateConditionCode5()
 {
   return cpu_sr & 1;	      // CS - C
 }
 
-BOOLE cpuCalculateConditionCode6(void)
+BOOLE cpuCalculateConditionCode6()
 {
   return (~cpu_sr) & 4;	      // NE - !Z
 }
 
-BOOLE cpuCalculateConditionCode7(void)
+BOOLE cpuCalculateConditionCode7()
 {
   return cpu_sr & 4;	      // EQ - Z
 }
 
-BOOLE cpuCalculateConditionCode8(void)
+BOOLE cpuCalculateConditionCode8()
 {
   return (~cpu_sr) & 2;	      // VC - !V
 }
 
-BOOLE cpuCalculateConditionCode9(void)
+BOOLE cpuCalculateConditionCode9()
 {
   return cpu_sr & 2;	      // VS - V
 }
 
-BOOLE cpuCalculateConditionCode10(void)
+BOOLE cpuCalculateConditionCode10()
 {
   return (~cpu_sr) & 8;      // PL - !N
 }
 
-BOOLE cpuCalculateConditionCode11(void)
+BOOLE cpuCalculateConditionCode11()
 {
   return cpu_sr & 8;	      // MI - N
 }
 
-BOOLE cpuCalculateConditionCode12(void)
+BOOLE cpuCalculateConditionCode12()
 {
   uint32_t tmp = cpu_sr & 0xa;
   return (tmp == 0xa) || (tmp == 0);  // GE - (N && V) || (!N && !V)
 }
 
-BOOLE cpuCalculateConditionCode13(void)
+BOOLE cpuCalculateConditionCode13()
 {
   uint32_t tmp = cpu_sr & 0xa;
   return (tmp == 0x8) || (tmp == 0x2);	// LT - (N && !V) || (!N && V)
 }
 
-BOOLE cpuCalculateConditionCode14(void)
+BOOLE cpuCalculateConditionCode14()
 {
   uint32_t tmp = cpu_sr & 0xa;
   return (!(cpu_sr & 0x4)) && ((tmp == 0xa) || (tmp == 0)); // GT - (N && V && !Z) || (!N && !V && !Z) 
 }
 
-BOOLE cpuCalculateConditionCode15(void)
+BOOLE cpuCalculateConditionCode15()
 {
   uint32_t tmp = cpu_sr & 0xa;
   return (cpu_sr & 0x4) || (tmp == 0x8) || (tmp == 2);// LE - Z || (N && !V) || (!N && V)

@@ -1,5 +1,5 @@
 #pragma once
 
-void cpuProfileWrite(void)
+void cpuProfileWrite()
 {
 }

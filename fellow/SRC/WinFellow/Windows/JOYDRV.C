@@ -203,7 +203,6 @@ void joyDrvDInputSetCooperativeLevel(int port)
 {
   DIPROPRANGE diprg; 
   DIPROPDWORD dipdw;
-  HRESULT res;
 
   fellowAddLog( "joyDrvDInputSetCooperativeLevel(%d)\n", port );
 
@@ -212,7 +211,9 @@ void joyDrvDInputSetCooperativeLevel(int port)
     return;
   }
 
-  res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(), ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND );
+  HRESULT res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(),
+                                                        ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) |
+                                                        DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel():", res );
@@ -300,14 +301,12 @@ void joyDrvDInputAcquire(int port)
 
     if (joy_drv_in_use)
     {
-      HRESULT res;
-
       // joyDrvDInputUnacquire(port);
 
       /* A new window is sometimes created, so set new hwnd cooperative level */
       joyDrvDInputSetCooperativeLevel(port);
 
-      res = IDirectInputDevice8_Acquire(joy_drv_lpDID[port]);
+      HRESULT res = IDirectInputDevice8_Acquire(joy_drv_lpDID[port]);
       if (res != DI_OK)
       {
         joyDrvDInputFailure("joyDrvDInputAcquire():", res);
@@ -374,14 +373,14 @@ BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef
 /* Initialize DirectInput for joystick                                       */
 /*===========================================================================*/
 
-void joyDrvDInputInitialize(void)
+void joyDrvDInputInitialize()
 {
-  HRESULT res;
   fellowAddLog("joyDrvDInputInitialize()\n");
 
   if (!joy_drv_lpDI)
   {
-    res = CoCreateInstance(CLSID_DirectInput8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInput8, (LPVOID*) &joy_drv_lpDI);
+    HRESULT res = CoCreateInstance(CLSID_DirectInput8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInput8,
+                                   (LPVOID*)&joy_drv_lpDI);
     if (res != DI_OK)
     {
       joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance()", res );
@@ -416,13 +415,11 @@ void joyDrvDInputInitialize(void)
 /* Release DirectInput for joystick                                          */
 /*===========================================================================*/
 
-void joyDrvDInputRelease(void)
+void joyDrvDInputRelease()
 {
-  int port;
-	
   fellowAddLog("joyDrvDInputRelease()\n");
 
-  for( port = 0; port < MAX_JOY_PORT; port++ )
+  for(int port = 0; port < MAX_JOY_PORT; port++ )
   {
     if (joy_drv_lpDID[port] != nullptr)
     {
@@ -446,8 +443,6 @@ void joyDrvDInputRelease(void)
 
 void joyDrvStateHasChanged(BOOLE active)
 {
-  int port;
-	
   if( joy_drv_failed )
   {
     return;
@@ -463,7 +458,7 @@ void joyDrvStateHasChanged(BOOLE active)
     joy_drv_in_use = FALSE;
   }
 
-  for( port = 0; port < MAX_JOY_PORT; port++ )
+  for( int port = 0; port < MAX_JOY_PORT; port++ )
   {
     if(joy_drv_lpDID[port] != nullptr)
     {
@@ -477,7 +472,7 @@ void joyDrvStateHasChanged(BOOLE active)
 /* joystick toggle focus                                                     */
 /*===========================================================================*/
 
-void joyDrvToggleFocus(void)
+void joyDrvToggleFocus()
 {
   joy_drv_focus = !joy_drv_focus;
   joyDrvStateHasChanged(joy_drv_active);
@@ -588,16 +583,16 @@ BOOLE joyDrvCheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOL
 /* joystick movement handler                                                 */
 /*===========================================================================*/
 
-void joyDrvMovementHandler(void)
+void joyDrvMovementHandler()
 {
-  int gameport, joystickNo;
+  int joystickNo;
   
   if ( joy_drv_failed || !joy_drv_in_use )
   {
     return;
   }
 
-  for( gameport = 0; gameport < 2; gameport++ )
+  for(int gameport = 0; gameport < 2; gameport++ )
   {
     if (( gameport_input[gameport] == GP_ANALOG0) ||
 	( gameport_input[gameport] == GP_ANALOG1)) 
@@ -649,7 +644,7 @@ void joyDrvMovementHandler(void)
 /* Hard Reset                                                                */
 /*===========================================================================*/
 
-void joyDrvHardReset(void)
+void joyDrvHardReset()
 {
 }
 
@@ -658,7 +653,7 @@ void joyDrvHardReset(void)
 /* Emulation Starting                                                        */
 /*===========================================================================*/
 
-void joyDrvEmulationStart(void) 
+void joyDrvEmulationStart() 
 {
   joy_drv_failed = FALSE;
   joy_drv_focus = TRUE;
@@ -672,7 +667,7 @@ void joyDrvEmulationStart(void)
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
 
-void joyDrvEmulationStop(void) 
+void joyDrvEmulationStop() 
 {
   joyDrvDInputRelease();
   joy_drv_failed = TRUE;
@@ -683,7 +678,7 @@ void joyDrvEmulationStop(void)
 /* Emulation Startup                                                         */
 /*===========================================================================*/
 
-void joyDrvStartup(void) 
+void joyDrvStartup() 
 {
   joy_drv_failed = FALSE;
   joy_drv_focus = TRUE;
@@ -709,7 +704,7 @@ void joyDrvStartup(void)
 /* Emulation Shutdown                                                        */
 /*===========================================================================*/
 
-void joyDrvShutdown(void)
+void joyDrvShutdown()
 {
   CoUninitialize();
 }

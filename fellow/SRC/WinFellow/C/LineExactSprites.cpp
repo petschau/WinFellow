@@ -1353,11 +1353,10 @@ void LineExactSprites::DMASpriteHandler()
   uint32_t local_data_ctl;
   uint32_t local_data_pos;
   uint32_t i, count;
-  uint32_t sprnr;
   uint32_t currentY = busGetRasterY();
 
   sprites_online = false;
-  sprnr = 0;
+  uint32_t sprnr = 0;
 
   while (sprnr < 8)
   {
@@ -1610,22 +1609,19 @@ void LineExactSprites::DMASpriteHandler()
 
 void LineExactSprites::ProcessActionList()
 {
-  spr_action_list_item * action_item;
-  uint32_t x_pos;
-  uint32_t i, count;
   uint32_t sprnr = 0;
 
   sprites_online = false;
   while (sprnr < 8)
   {
-    x_pos = 0;
+    uint32_t x_pos = 0;
     sprite_online[sprnr] = FALSE;
     sprite_16col[sprnr] = FALSE;
 
-    count = ActionListCount(&spr_action_list[sprnr]);
-    for (i = 0; i < count; i++)
+    uint32_t count = ActionListCount(&spr_action_list[sprnr]);
+    for (uint32_t i = 0; i < count; i++)
     {
-      action_item = ActionListGet(&spr_action_list[sprnr], i);
+      spr_action_list_item* action_item = ActionListGet(&spr_action_list[sprnr], i);
       if (spr_arm_data[sprnr] == TRUE)
       {
         // flipflop is armed by a write to sprxdata
@@ -1739,25 +1735,20 @@ void LineExactSprites::ProcessActionList()
 
 void LineExactSprites::ProcessActionListNOP()
 {
-  spr_action_list_item * action_item;
-  uint32_t x_pos;
-  uint32_t i, count;
   uint32_t sprnr = 0;
 
   sprites_online = false;
   while (sprnr < 8)
   {
-    x_pos = 0;
     sprite_online[sprnr] = FALSE;
     sprite_16col[sprnr] = FALSE;
 
-    count = ActionListCount(&spr_action_list[sprnr]);
-    for (i = 0; i < count; i++)
+    uint32_t count = ActionListCount(&spr_action_list[sprnr]);
+    for (uint32_t i = 0; i < count; i++)
     {
-      action_item = ActionListGet(&spr_action_list[sprnr], i);
+      spr_action_list_item* action_item = ActionListGet(&spr_action_list[sprnr], i);
       // we can execute the coming action item
       (this->*(action_item->called_function))(action_item->data, action_item->address);
-      x_pos = action_item->raster_x;
     }
 
     // clear the list at the end

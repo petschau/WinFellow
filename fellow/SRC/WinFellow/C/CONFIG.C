@@ -1081,8 +1081,6 @@ static char *cfgGetCPUTypeToString(cpu_integration_models cputype)
 
 static uint32_t cfgGetCPUSpeedFromString(char *value)
 {
-  uint32_t speed;
-
   if (stricmp(value, "real") == 0)
   {
     return 4;
@@ -1091,7 +1089,7 @@ static uint32_t cfgGetCPUSpeedFromString(char *value)
   {
     return 1;
   }
-  speed = cfgGetUint32FromString(value);
+  uint32_t speed = cfgGetUint32FromString(value);
   if (speed > 20)
   {
     speed = 8;
@@ -1474,14 +1472,11 @@ void cfgSynopsis(cfg *config)
 
 BOOLE cfgSetOption(cfg *config, char *optionstr)
 {
-  char *option, *value;
-  BOOLE result;
-
-  value = strchr(optionstr, '=');
-  result = (value != nullptr);
+  char* value = strchr(optionstr, '=');
+  BOOLE result = (value != nullptr);
   if (result)
   {
-    option = optionstr;
+    char* option = optionstr;
     *value++ = '\0';
 
     /* Standard configuration options */
@@ -1567,11 +1562,6 @@ BOOLE cfgSetOption(cfg *config, char *optionstr)
       (stricmp(option, "floppy3_readonly") == 0))
     {
       cfgSetDiskReadOnly(config, 3, cfgGetBOOLEFromString(value));
-    }
-    else if ((stricmp(option, "fellow.floppy_fast_dma") == 0) ||
-      (stricmp(option, "floppy_fast_dma") == 0))
-    {
-      cfgSetDiskFast(config, cfgGetBOOLEFromString(value));
     }
     else if (stricmp(option, "joyport0") == 0)
     {
@@ -1867,8 +1857,6 @@ BOOLE cfgSetOption(cfg *config, char *optionstr)
     {
       cfgSetFilesystemDeviceNamePrefix(config, value);
     }
-    else if (stricmp(option, "gxfcard_size") == 0) {           /* Unsupported */
-    }
     else if (stricmp(option, "use_debugger") == 0) {           /* Unsupported */
     }
     else if (stricmp(option, "log_illegal_mem") == 0) {        /* Unsupported */
@@ -2151,11 +2139,8 @@ static BOOLE cfgSaveToFile(cfg *config, FILE *cfgfile)
 
 BOOLE cfgSaveToFilename(cfg *config, char *filename)
 {
-  FILE *cfgfile;
-  BOOLE result;
-
-  cfgfile = fopen(filename, "w");
-  result = (cfgfile != nullptr);
+  FILE* cfgfile = fopen(filename, "w");
+  BOOLE result = (cfgfile != nullptr);
   if (result)
   {
     result = cfgSaveToFile(config, cfgfile);
@@ -2506,9 +2491,8 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   {
     for (i = 0; i < cfgGetFilesystemCount(config); i++)
     {
-      cfg_filesys filesys;
       ffilesys_dev ffilesys;
-      filesys = cfgGetFilesystem(config, i);
+      cfg_filesys filesys = cfgGetFilesystem(config, i);
       strncpy(ffilesys.volumename, filesys.volumename, FFILESYS_MAX_VOLUMENAME);
       strncpy(ffilesys.rootpath, filesys.rootpath, CFG_FILENAME_LENGTH);
       ffilesys.readonly = filesys.readonly;
@@ -2581,7 +2565,7 @@ void cfgStartup(int argc, char **argv)
   cfgManagerStartup(&cfg_manager, argc, argv);
 }
 
-void cfgShutdown(void)
+void cfgShutdown()
 {
   cfgManagerShutdown(&cfg_manager);
 }

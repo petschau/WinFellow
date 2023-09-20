@@ -64,7 +64,7 @@ void Script::Execute(const ScriptLine& line)
 
 void Script::ExecuteUntil(uint64_t frameNumber, uint32_t lineNumber)
 {
-  if (_lines.size() == 0)
+  if (_lines.empty())
   {
     return;
   }
@@ -79,7 +79,7 @@ void Script::RecordKey(uint8_t keyCode)
 {
   char parameters[32];
   sprintf(parameters, "%u", (uint32_t)keyCode);
-  _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), KeyCommand, parameters));
+  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), KeyCommand, parameters);
 }
 
 void Script::RecordMouse(gameport_inputs mousedev, int32_t x, int32_t y, BOOLE button1, BOOLE button2, BOOLE button3)
@@ -87,7 +87,7 @@ void Script::RecordMouse(gameport_inputs mousedev, int32_t x, int32_t y, BOOLE b
   uint32_t port = (mousedev == GP_MOUSE0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %d %d %u %u %u", port, x, y, button1, button2, button3);
-  _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), MouseCommand, parameters));
+  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), MouseCommand, parameters);
 }
 
 void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
@@ -95,7 +95,7 @@ void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE 
   uint32_t port = (joydev == GP_JOYKEY0 || joydev == GP_ANALOG0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %u %u %u %u %u %u", port, left, up, right, down, button1, button2);
-  _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), JoystickCommand, parameters));
+  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), JoystickCommand, parameters);
 }
 
 string Script::GetStringForAction(kbd_event action)
@@ -139,12 +139,12 @@ uint8_t Script::GetIdForAction(const string& action)
 void Script::RecordEmulatorAction(kbd_event action)
 {
   string actionString = GetStringForAction(action);
-  if (actionString == "")
+  if (actionString.empty())
   {
     return;
   }
 
-  _lines.push_back(ScriptLine(busGetRasterFrameCount(), busGetRasterY(), EmulatorActionCommand, actionString));
+  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), EmulatorActionCommand, actionString);
 }
 
 void Script::Load(const string& filename)
@@ -174,7 +174,7 @@ void Script::Load(const string& filename)
       string command = s.substr(secondComma + 1, thirdComma - secondComma - 1);
       string parameters = s.substr(thirdComma + 1, s.length() - thirdComma - 2);
 
-      _lines.push_back(ScriptLine(_atoi64(frameNumber.c_str()), atoi(lineNumber.c_str()), command, parameters));
+      _lines.emplace_back(_atoi64(frameNumber.c_str()), atoi(lineNumber.c_str()), command, parameters);
     }
   }
   fclose(F);

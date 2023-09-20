@@ -174,7 +174,7 @@ int win32_truncate (const char *name, long int len)
  * Translate lasterror to valid AmigaDOS error code *
  * The mapping is probably not 100% correct yet     *
  ****************************************************/
-long dos_errno(void)
+long dos_errno()
 {
 	int i;
 	static DWORD errtbl[][2] = {

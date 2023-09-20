@@ -453,14 +453,9 @@ const char *memory_kickimage_versionstrings[14] = {
                      BOOLE pointer_can_write)
 
   {
+    uint32_t j = (memoryGetAddress32Bit()) ? 65536 : 256;
 
-    uint32_t i, j;
-
-
-
-    j = (memoryGetAddress32Bit()) ? 65536 : 256;
-
-    for (i = bank; i < 65536; i += j)
+    for (uint32_t i = bank; i < 65536; i += j)
 
     {
 
@@ -666,7 +661,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryBankClearAll(void)
+  void memoryBankClearAll()
 
   {
 
@@ -704,7 +699,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemClear(void)
+  void memoryEmemClear()
 
   {
 
@@ -752,7 +747,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemCardNext(void)
+  void memoryEmemCardNext()
 
   {
 
@@ -772,7 +767,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemCardInit(void)
+  void memoryEmemCardInit()
 
   {
 
@@ -820,7 +815,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemCardsReset(void)
+  void memoryEmemCardsReset()
 
   {
 
@@ -840,7 +835,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemCardsRemove(void)
+  void memoryEmemCardsRemove()
 
   {
 
@@ -1034,7 +1029,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryEmemMap(void)
+  void memoryEmemMap()
 
   {
 
@@ -1178,7 +1173,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemClear(void)
+  void memoryDmemClear()
 
   {
 
@@ -1208,7 +1203,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  uint32_t memoryDmemGetCounter(void)
+  uint32_t memoryDmemGetCounter()
 
   {
 
@@ -1276,7 +1271,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryDmemMap(void)
+  void memoryDmemMap()
 
   {
 
@@ -1424,7 +1419,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryChipClear(void)
+  void memoryChipClear()
 
   {
 
@@ -1500,7 +1495,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  uint32_t memoryChipGetLastBank(void)
+  uint32_t memoryChipGetLastBank()
 
   {
 
@@ -1762,7 +1757,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastCardInit(void)
+  void memoryFastCardInit()
 
   {
 
@@ -1808,7 +1803,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastClear(void)
+  void memoryFastClear()
 
   {
 
@@ -1820,7 +1815,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastFree(void)
+  void memoryFastFree()
 
   {
 
@@ -1842,7 +1837,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastAllocate(void)
+  void memoryFastAllocate()
 
   {
 
@@ -1878,7 +1873,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
   {
 
-    uint32_t bank, lastbank;
+    uint32_t lastbank;
 
 
 
@@ -1900,7 +1895,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
     }
 
-    for (bank = memory_fast_baseaddress>>16; bank < lastbank; bank++)
+    for (uint32_t bank = memory_fast_baseaddress >> 16; bank < lastbank; bank++)
 
     {
 
@@ -1932,7 +1927,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryFastCardAdd(void)
+  void memoryFastCardAdd()
 
   {
 
@@ -2024,7 +2019,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  bool memorySlowMapAsChip(void)
+  bool memorySlowMapAsChip()
 
   {
 
@@ -2034,7 +2029,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySlowClear(void)
+  void memorySlowClear()
 
   {
 
@@ -2052,7 +2047,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memorySlowMap(void)
+  void memorySlowMap()
 
   {
 
@@ -2178,7 +2173,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryMysteryMap(void)
+  void memoryMysteryMap()
 
   {
 
@@ -2338,7 +2333,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryIoMap(void)
+  void memoryIoMap()
 
   {
 
@@ -2428,17 +2423,12 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryIoClear(void)
+  void memoryIoClear()
 
   {
-
-    uint32_t i;
-
-
-
     // Array has 257 elements to account for long writes to the last address.
 
-    for (i = 0; i <= 512; i += 2) {
+    for (uint32_t i = 0; i <= 512; i += 2) {
 
       memorySetIoReadStub(i, rdefault);
 
@@ -2670,7 +2660,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickMap(void)
+  void memoryKickMap()
 
   {
 
@@ -2730,7 +2720,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedMap(void)
+  void memoryKickExtendedMap()
 
   {
 
@@ -2822,7 +2812,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickA1000BootstrapFree(void)
+  void memoryKickA1000BootstrapFree()
 
   {
 
@@ -2962,17 +2952,17 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  uint32_t memoryKickChksum(void)
+  uint32_t memoryKickChksum()
 
   {
 
-    uint32_t sum, lastsum, i;
+    uint32_t lastsum;
 
 
 
-    sum = lastsum = 0;
+    uint32_t sum = lastsum = 0;
 
-    for (i = 0; i < 0x80000; i += 4) {
+    for (uint32_t i = 0; i < 0x80000; i += 4) {
 
       uint8_t *p = memory_kick + i;
 
@@ -3004,13 +2994,10 @@ const char *memory_kickimage_versionstrings[14] = {
 
     uint8_t *rom = memory_kick;
 
-    uint32_t ver, rev;
 
+    uint32_t ver = (rom[12] << 8) | rom[13];
 
-
-    ver = (rom[12] << 8) | rom[13];
-
-    rev = (rom[14] << 8) | rom[15];
+    uint32_t rev = (rom[14] << 8) | rom[15];
 
     if (ver == 65535) memory_kickimage_version = 28;
 
@@ -3044,11 +3031,11 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickOK(void)
+  void memoryKickOK()
 
   {
 
-    uint32_t chksum, basebank;
+    uint32_t chksum;
 
     bool bVerifyChecksum = !memory_a1000_wcs;
 
@@ -3062,7 +3049,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
     {
 
-      basebank = memory_kick[5];
+      uint32_t basebank = memory_kick[5];
 
       if ((basebank == 0xf8) || (basebank == 0xfc)) {
 
@@ -3104,15 +3091,12 @@ const char *memory_kickimage_versionstrings[14] = {
 
     uint32_t keysize, filesize = 0, keypos = 0, c;
 
-    FILE *KF, *RF;
-
-
 
     /* Read key */
 
 
 
-    if ((KF = fopen(keyfile, "rb")) != nullptr)
+    if (FILE *KF; (KF = fopen(keyfile, "rb")) != nullptr)
 
     {
 
@@ -3272,7 +3256,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-    if ((RF = fopen(filename, "rb")) != nullptr)
+    if (FILE*RF; (RF = fopen(filename, "rb")) != nullptr)
 
     {
 
@@ -3329,9 +3313,6 @@ const char *memory_kickimage_versionstrings[14] = {
   int memoryKickLoadAF2(char *filename, FILE *F, uint8_t *memory_kick, const bool suppressgui)
 
   {
-
-    uint32_t version;
-
     char IDString[12];
 
 
@@ -3342,7 +3323,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
     fread(IDString, 11, 1, F);
 
-    version = IDString[10] - '0';
+    uint32_t version = IDString[10] - '0';
 
     IDString[10] = '\0';
 
@@ -3366,17 +3347,14 @@ const char *memory_kickimage_versionstrings[14] = {
 
       { /* Seems to be a file we can handle */
 
-	uint32_t size;
+
+        fclose(F);
 
 
 
-	fclose(F);
+	uint32_t size = memoryKickDecodeAF(filename,
 
-
-
-	size = memoryKickDecodeAF(filename,
-
-	  memory_key, memory_kick, suppressgui);
+                                           memory_key, memory_kick, suppressgui);
 
 	if (size == -1)
 
@@ -3538,15 +3516,13 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickLoad(void)
+  void memoryKickLoad()
 
   {
 
     FILE *F;
 
     BOOLE kickdisk = FALSE;
-
-    char *suffix, *lastsuffix;
 
     BOOLE afkick = FALSE;
 
@@ -3616,13 +3592,13 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-      suffix = strchr(memory_kickimage, '.');
+      char* suffix = strchr(memory_kickimage, '.');
 
       if (suffix != nullptr)
 
       {
 
-	lastsuffix = suffix;
+	char* lastsuffix = suffix;
 
 	while ((suffix = strchr(lastsuffix + 1, '.')) != nullptr)
 
@@ -3746,7 +3722,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickClear(void)
+  void memoryKickClear()
 
   {
 
@@ -3764,7 +3740,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedFree(void)
+  void memoryKickExtendedFree()
 
   {
 
@@ -3792,7 +3768,7 @@ const char *memory_kickimage_versionstrings[14] = {
 
 
 
-  void memoryKickExtendedLoad(void)
+  void memoryKickExtendedLoad()
 
   {
 
@@ -3826,32 +3802,19 @@ const char *memory_kickimage_versionstrings[14] = {
 
       return;
 
-    else
+    if (fsnp->type != FS_NAVIG_FILE)
 
-    {
+      return;
 
-      if (fsnp->type != FS_NAVIG_FILE)
+    /* File passed initial tests */
 
-        return;
+    if ((F = fopen(memory_kickimage_ext, "rb")) == nullptr)
 
-      else
+      return;
 
-      { /* File passed initial tests */
+    size = fsnp->size;
 
-        if ((F = fopen(memory_kickimage_ext, "rb")) == nullptr)
-
-          return;
-
-        else 
-
-          size = fsnp->size;
-
-      }
-
-      free(fsnp);
-
-    }
-
+    free(fsnp);
 
 
     if (F) {
@@ -3864,15 +3827,13 @@ const char *memory_kickimage_versionstrings[14] = {
 
         // Amiga Forever - encrypted ROM?
 
-        uint32_t version;
-
         char IDString[12];
 
 
 
         fread(IDString, 11, 1, F);
 
-        version = IDString[10] - '0';
+        uint32_t version = IDString[10] - '0';
 
         IDString[10] = '\0';
 
@@ -3884,18 +3845,13 @@ const char *memory_kickimage_versionstrings[14] = {
 
             return;
 
-          else
+          /* Seems to be a file we can handle */
 
-          { /* Seems to be a file we can handle */
+          memory_kick_ext = (uint8_t *) malloc(size - 11);
 
-            memory_kick_ext = (uint8_t *) malloc(size - 11);
+          size = memoryKickDecodeAF(memory_kickimage_ext, memory_key, memory_kick_ext, false);
 
-            size = memoryKickDecodeAF(memory_kickimage_ext, memory_key, memory_kick_ext, false);
-
-            memory_kickimage_ext_size = size;
-
-          }
-
+          memory_kickimage_ext_size = size;
         }
 
       }
@@ -4220,7 +4176,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryGetChipSize(void)
+  uint32_t memoryGetChipSize()
 
   {
 
@@ -4246,7 +4202,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryGetFastSize(void)
+  uint32_t memoryGetFastSize()
 
   {
 
@@ -4266,7 +4222,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryGetFastAllocatedSize(void)
+  uint32_t memoryGetFastAllocatedSize()
 
   {
 
@@ -4290,7 +4246,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryGetSlowSize(void)
+  uint32_t memoryGetSlowSize()
 
   {
 
@@ -4338,7 +4294,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  BOOLE memoryGetAddress32Bit(void)
+  BOOLE memoryGetAddress32Bit()
 
   {
 
@@ -4384,7 +4340,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  char *memoryGetKickImage(void)
+  char *memoryGetKickImage()
 
   {
 
@@ -4404,7 +4360,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  char *memoryGetKey(void)
+  char *memoryGetKey()
 
   {
 
@@ -4414,7 +4370,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryGetKickImageBaseBank(void)
+  uint32_t memoryGetKickImageBaseBank()
 
   {
 
@@ -4424,7 +4380,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryGetKickImageVersion(void)
+  uint32_t memoryGetKickImageVersion()
 
   {
 
@@ -4434,7 +4390,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  BOOLE memoryGetKickImageOK(void)
+  BOOLE memoryGetKickImageOK()
 
   {
 
@@ -4444,7 +4400,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryInitialPC(void)
+  uint32_t memoryInitialPC()
 
   {
 
@@ -4454,7 +4410,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  uint32_t memoryInitialSP(void)
+  uint32_t memoryInitialSP()
 
   {
 
@@ -4472,7 +4428,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryChipSettingsClear(void)
+  void memoryChipSettingsClear()
 
   {
 
@@ -4484,7 +4440,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryFastSettingsClear(void)
+  void memoryFastSettingsClear()
 
   {
 
@@ -4500,7 +4456,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memorySlowSettingsClear(void)
+  void memorySlowSettingsClear()
 
   {
 
@@ -4512,7 +4468,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryIoSettingsClear(void)
+  void memoryIoSettingsClear()
 
   {
 
@@ -4522,7 +4478,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryKickSettingsClear(void)
+  void memoryKickSettingsClear()
 
   {
 
@@ -4536,7 +4492,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryEmemSettingsClear(void)
+  void memoryEmemSettingsClear()
 
   {
 
@@ -4548,7 +4504,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryDmemSettingsClear(void)
+  void memoryDmemSettingsClear()
 
   {
 
@@ -4560,7 +4516,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryBankSettingsClear(void)
+  void memoryBankSettingsClear()
 
   {
 
@@ -4654,7 +4610,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryEmulationStart(void)
+  void memoryEmulationStart()
 
   {
 
@@ -4664,7 +4620,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryEmulationStop(void)
+  void memoryEmulationStop()
 
   {
 
@@ -4672,7 +4628,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memorySoftReset(void)
+  void memorySoftReset()
 
   {
 
@@ -4710,7 +4666,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryHardReset(void)
+  void memoryHardReset()
 
   {
 
@@ -4756,7 +4712,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryHardResetPost(void)
+  void memoryHardResetPost()
 
   {
 
@@ -4766,7 +4722,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryStartup(void)
+  void memoryStartup()
 
   {
 
@@ -4794,7 +4750,7 @@ __inline  uint16_t memoryReadWord(uint32_t address)
 
 
 
-  void memoryShutdown(void)
+  void memoryShutdown()
 
   {
 

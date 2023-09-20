@@ -42,17 +42,17 @@ void DDFStateMachine::Log(uint32_t line, uint32_t cylinder)
   }
 }
 
-uint32_t DDFStateMachine::GetStartPosition(void)
+uint32_t DDFStateMachine::GetStartPosition()
 {
   return (ddfstrt < _minValidX) ? _minValidX : ddfstrt;
 }
 
-uint32_t DDFStateMachine::GetStopPosition(void)
+uint32_t DDFStateMachine::GetStopPosition()
 {
   return (ddfstop < _minValidX) ? _minValidX : ddfstop;
 }
 
-uint32_t DDFStateMachine::GetFetchSize(void)
+uint32_t DDFStateMachine::GetFetchSize()
 {
   return (_core.RegisterUtility.IsHiresEnabled()) ? 4 : 8;
 }
@@ -119,14 +119,14 @@ void DDFStateMachine::DoStateWaitingForNextFetch(uint32_t rasterY, uint32_t cyli
   SetStateWaitingForNextFetch(rasterY, cylinder);
 }
 
-bool DDFStateMachine::CanRead(void)
+bool DDFStateMachine::CanRead()
 {
   return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH) 
     && _core.RegisterUtility.GetEnabledBitplaneCount() > 0 
     && GraphicsContext.DIWYStateMachine.IsVisible();
 }
 
-void DDFStateMachine::ChangedValue(void)
+void DDFStateMachine::ChangedValue()
 {
   uint32_t rasterY = busGetRasterY();
   if (rasterY < 0x1a)
@@ -179,33 +179,33 @@ void DDFStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
 /* Fellow events */
 
-void DDFStateMachine::EndOfFrame(void)
+void DDFStateMachine::EndOfFrame()
 {
   SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
 }
 
-void DDFStateMachine::SoftReset(void)
+void DDFStateMachine::SoftReset()
 {
 }
 
-void DDFStateMachine::HardReset(void)
+void DDFStateMachine::HardReset()
 {
 }
 
-void DDFStateMachine::EmulationStart(void)
+void DDFStateMachine::EmulationStart()
 {
 }
 
-void DDFStateMachine::EmulationStop(void)
+void DDFStateMachine::EmulationStop()
 {
 }
 
-void DDFStateMachine::Startup(void)
+void DDFStateMachine::Startup()
 {
   _minValidX = 0x18;
   _maxValidX = 0xd8;
 }
 
-void DDFStateMachine::Shutdown(void)
+void DDFStateMachine::Shutdown()
 {
 }

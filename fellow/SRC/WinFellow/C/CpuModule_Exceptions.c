@@ -31,7 +31,7 @@
 /* Function for exiting from mid-instruction exceptions */
 static cpuMidInstructionExceptionFunc cpu_mid_instruction_exception_func;
 
-static void cpuCallMidInstructionExceptionFunc(void)
+static void cpuCallMidInstructionExceptionFunc()
 {
   cpu_mid_instruction_exception_func();
 }
@@ -44,7 +44,7 @@ void cpuSetMidInstructionExceptionFunc(cpuMidInstructionExceptionFunc func)
 /* Function for notifying the emulator about a reset */
 static cpuResetExceptionFunc cpu_reset_exception_func;
 
-void cpuCallResetExceptionFunc(void)
+void cpuCallResetExceptionFunc()
 {
   cpu_reset_exception_func();
 }
@@ -194,7 +194,7 @@ void cpuThrowException(uint32_t vector_offset, uint32_t pc, BOOLE executejmp)
   }
 }
 
-void cpuThrowPrivilegeViolationException(void)
+void cpuThrowPrivilegeViolationException()
 {
   cpuSetInstructionAborted(true);
   // The saved pc points to the instruction causing the violation
@@ -216,21 +216,21 @@ void cpuThrowIllegalInstructionExceptionFromBreakpoint()
   cpuThrowException(0x10, cpuGetPC(), FALSE);
 }
 
-void cpuThrowALineException(void)
+void cpuThrowALineException()
 {
   cpuSetInstructionAborted(true);
   // The saved pc points to the a-line instruction
   cpuThrowException(0x28, cpuGetOriginalPC(), FALSE);
 }
 
-void cpuThrowFLineException(void)
+void cpuThrowFLineException()
 {
   cpuSetInstructionAborted(true);
   // The saved pc points to the f-line instruction
   cpuThrowException(0x2c, cpuGetOriginalPC(), FALSE);
 }
 
-void cpuThrowTrapVException(void)
+void cpuThrowTrapVException()
 {
   // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x1c, cpuGetPC(), FALSE);
@@ -248,19 +248,19 @@ void cpuThrowTrapException(uint32_t vector_no)
   cpuThrowException(0x80 + vector_no*4, cpuGetPC(), FALSE);
 }
 
-void cpuThrowChkException(void)
+void cpuThrowChkException()
 {
   // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x18, cpuGetPC(), FALSE);
 }
 
-void cpuThrowTraceException(void)
+void cpuThrowTraceException()
 {
   // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x24, cpuGetPC(), FALSE);
 }
 
-void cpuThrowAddressErrorException(void)
+void cpuThrowAddressErrorException()
 {
   cpuSetInstructionAborted(true);
   cpuThrowException(0xc, cpuGetPC() - 2, TRUE);
@@ -270,7 +270,7 @@ void cpuThrowAddressErrorException(void)
 /* Reset exception */
 /*=================*/
 
-static void cpuThrowResetException000(void)
+static void cpuThrowResetException000()
 {
   cpuSetSR(cpuGetSR() & 0x271f); /* T = 0 */
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
@@ -279,7 +279,7 @@ static void cpuThrowResetException000(void)
   cpuInitializeFromNewPC(cpuGetInitialPC()); /* pc = fake vector 1 */
 }
 
-static void cpuThrowResetException010(void)
+static void cpuThrowResetException010()
 {
   cpuSetSR(cpuGetSR() & 0x271f); /* T = 0 */
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
@@ -288,7 +288,7 @@ static void cpuThrowResetException010(void)
   cpuInitializeFromNewPC(cpuGetInitialPC()); /* pc = fake vector 1 */
 }
 
-static void cpuThrowResetException020(void)
+static void cpuThrowResetException020()
 {
   cpuSetSR(cpuGetSR() & 0x271f); /* T1T0 = 0, M = 0 */
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
@@ -300,7 +300,7 @@ static void cpuThrowResetException020(void)
   cpuInitializeFromNewPC(cpuGetInitialPC()); /* pc = fake vector 1 */
 }
 
-static void cpuThrowResetException030(void)
+static void cpuThrowResetException030()
 {
   cpuSetSR(cpuGetSR() & 0x271f); /* T1T0 = 0, M = 0 */
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
@@ -316,7 +316,7 @@ static void cpuThrowResetException030(void)
 /* Performs a Reset exception */
 /*============================*/
 
-void cpuThrowResetException(void)
+void cpuThrowResetException()
 {
   cpuSetStop(FALSE);
   switch (cpuGetModelMajor())

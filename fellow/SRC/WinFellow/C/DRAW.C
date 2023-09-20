@@ -22,7 +22,7 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 
 #include "defs.h"
@@ -229,20 +229,6 @@ draw_mode_list& drawGetModes()
 }
 
 /*============================================================================*/
-/* Dump mode list to log                                                      */
-/*============================================================================*/
-
-static void drawLogModeList()
-{
-  fellowAddLog("Draw module mode list:\n");
-  for (draw_mode* dm : draw_modes)
-  {
-    fellowAddLog(dm->name);
-    fellowAddLog("\n");
-  }
-}
-
-/*============================================================================*/
 /* Color table, 12 bit Amiga color to host display color                      */
 /*============================================================================*/
 
@@ -400,7 +386,7 @@ static void drawLED(int index, bool state)
   }
 }
 
-static void drawLEDs(void)
+static void drawLEDs()
 {
   if (draw_LEDs_enabled)
   {
@@ -481,7 +467,7 @@ static void drawFpsText(char *text)
 /* Copy FPS buffer to a 16 bit screen                                         */
 /*============================================================================*/
 
-static void drawFpsToFramebuffer16(void)
+static void drawFpsToFramebuffer16()
 {
   uint16_t *bufw = ((uint16_t *) draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
   for (int y = 0; y < 5; y++)
@@ -499,7 +485,7 @@ static void drawFpsToFramebuffer16(void)
 /* Copy FPS buffer to a 24 bit screen                                         */
 /*============================================================================*/
 
-static void drawFpsToFramebuffer24(void)
+static void drawFpsToFramebuffer24()
 {
   uint8_t *bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
 
@@ -521,7 +507,7 @@ static void drawFpsToFramebuffer24(void)
 /* Copy FPS buffer to a 32 bit screen                                         */
 /*============================================================================*/
 
-static void drawFpsToFramebuffer32(void)
+static void drawFpsToFramebuffer32()
 {
   uint32_t* bufl = ((uint32_t*)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
 
@@ -551,7 +537,7 @@ static void drawFpsToFramebuffer32(void)
 /* Draws FPS counter in current framebuffer                                   */
 /*============================================================================*/
 
-static void drawFpsCounter(void)
+static void drawFpsCounter()
 {
   if (draw_fps_counter_enabled)
   {
@@ -627,7 +613,7 @@ void drawSetDisplayScale(DISPLAYSCALE displayscale)
   draw_displayscale = displayscale;
 }
 
-DISPLAYSCALE drawGetDisplayScale(void)
+DISPLAYSCALE drawGetDisplayScale()
 {
   return draw_displayscale;
 }
@@ -679,7 +665,7 @@ void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy)
   draw_displayscale_strategy = displayscalestrategy;
 }
 
-DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy(void)
+DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy()
 {
   return draw_displayscale_strategy;
 }
@@ -740,7 +726,7 @@ void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers)
   draw_allow_multiple_buffers = allow_multiple_buffers;
 }
 
-BOOLE drawGetAllowMultipleBuffers(void)
+BOOLE drawGetAllowMultipleBuffers()
 {
   return draw_allow_multiple_buffers;
 }
@@ -754,16 +740,14 @@ uint32_t drawGetBufferCount()
 /* Color translation initialization                                           */
 /*============================================================================*/
 
-static void drawColorTranslationInitialize(void)
+static void drawColorTranslationInitialize()
 {
-  uint32_t k, r, g, b;
-
   /* create color translation table */
-  for (k = 0; k < 4096; k++) 
+  for (uint32_t k = 0; k < 4096; k++) 
   {
-    r = ((k & 0xf00) >> 8) << (draw_buffer_info.redpos + draw_buffer_info.redsize - 4);
-    g = ((k & 0xf0) >> 4) << (draw_buffer_info.greenpos + draw_buffer_info.greensize - 4);
-    b = (k & 0xf) << (draw_buffer_info.bluepos + draw_buffer_info.bluesize - 4);
+    uint32_t r = ((k & 0xf00) >> 8) << (draw_buffer_info.redpos + draw_buffer_info.redsize - 4);
+    uint32_t g = ((k & 0xf0) >> 4) << (draw_buffer_info.greenpos + draw_buffer_info.greensize - 4);
+    uint32_t b = (k & 0xf) << (draw_buffer_info.bluepos + draw_buffer_info.bluesize - 4);
     draw_color_table[k] = r | g | b;
     if (draw_buffer_info.bits <= 16)
     {
@@ -777,7 +761,7 @@ static void drawColorTranslationInitialize(void)
 /* Calculate the width of the screen in Amiga lores pixels                    */
 /*============================================================================*/
 
-const std::pair<uint32_t, uint32_t> drawCalculateHorizontalOutputClip(uint32_t buffer_width, uint32_t buffer_scale_factor)
+std::pair<uint32_t, uint32_t> drawCalculateHorizontalOutputClip(uint32_t buffer_width, uint32_t buffer_scale_factor)
 {
   uint32_t left, right;
   if (!RP.GetHeadlessMode() && drawGetDisplayScale() != DISPLAYSCALE::DISPLAYSCALE_AUTO)
@@ -821,7 +805,7 @@ const std::pair<uint32_t, uint32_t> drawCalculateHorizontalOutputClip(uint32_t b
 /* Calculate the height of the screen in Amiga lores pixels                   */
 /*============================================================================*/
 
-const std::pair<uint32_t, uint32_t> drawCalculateVerticalOutputClip(uint32_t buffer_height, uint32_t buffer_scale_factor)
+std::pair<uint32_t, uint32_t> drawCalculateVerticalOutputClip(uint32_t buffer_height, uint32_t buffer_scale_factor)
 {
   uint32_t top, bottom;
   if (!RP.GetHeadlessMode() && drawGetDisplayScale() != DISPLAYSCALE::DISPLAYSCALE_AUTO)
@@ -922,7 +906,7 @@ static void drawModeTablesInitialize()
 /* This routine flips to another drawing buffer, display the next complete    */
 /*============================================================================*/
 
-static void drawBufferFlip(void)
+static void drawBufferFlip()
 {
   if (++draw_buffer_show >= draw_buffer_count)
   {
@@ -975,7 +959,7 @@ uint32_t draw_stat_last_50_ms;
 uint32_t draw_stat_frame_count;
 
 /* Clear all statistics data */
-void drawStatClear(void)
+void drawStatClear()
 {
   draw_stat_last_50_ms = 0;
   draw_stat_last_frame_ms = 0;
@@ -983,7 +967,7 @@ void drawStatClear(void)
 }
 
 /* New frame, take timestamp */
-static void drawStatTimestamp(void)
+void drawStatTimestamp()
 {
   uint32_t timestamp = timerGetTimeMs(); /* Get current time */
   if (draw_stat_frame_count == 0)
@@ -1008,7 +992,7 @@ static void drawStatTimestamp(void)
   draw_stat_frame_count++;
 }
 
-uint32_t drawStatLast50FramesFps(void)
+uint32_t drawStatLast50FramesFps()
 {
   if (draw_stat_last_50_ms == 0)
   {
@@ -1017,7 +1001,7 @@ uint32_t drawStatLast50FramesFps(void)
   return 50000 / (draw_stat_last_50_ms);
 }
 
-uint32_t drawStatLastFrameFps(void)
+uint32_t drawStatLastFrameFps()
 {
   if (draw_stat_last_frame_ms == 0)
   {
@@ -1026,7 +1010,7 @@ uint32_t drawStatLastFrameFps(void)
   return 1000 / draw_stat_last_frame_ms;
 }
 
-uint32_t drawStatSessionFps(void)
+uint32_t drawStatSessionFps()
 {
   uint32_t session_time = draw_stat_last_frame_timestamp - draw_stat_first_frame_timestamp;
   if (session_time == 0)
@@ -1080,7 +1064,7 @@ uint32_t drawValidateBufferPointer(uint32_t amiga_line_number)
 /* Invalidates the buffer pointer                                             */
 /*============================================================================*/
 
-void drawInvalidateBufferPointer(void)
+void drawInvalidateBufferPointer()
 {
   gfxDrvInvalidateBufferPointer();
 }
@@ -1090,7 +1074,7 @@ void drawInvalidateBufferPointer(void)
 /* Called on every end of frame                                               */
 /*============================================================================*/
 
-void drawHardReset(void)
+void drawHardReset()
 {
   draw_switch_bg_to_bpl = FALSE;
 }
@@ -1099,7 +1083,7 @@ void drawHardReset(void)
 /* Called on emulation start                                                  */
 /*============================================================================*/
 
-void drawEmulationStart(void)
+void drawEmulationStart()
 {
   uint32_t gfxModeNumberOfBuffers = (drawGetAllowMultipleBuffers() && !cfgGetDeinterlace(draw_config)) ? 3 : 1;
 
@@ -1113,7 +1097,7 @@ void drawEmulationStart(void)
   drawSetDeinterlace(cfgGetDeinterlace(draw_config));
 }
 
-BOOLE drawEmulationStartPost(void)
+BOOLE drawEmulationStartPost()
 {
   drawAmigaScreenGeometry(draw_buffer_info.width, draw_buffer_info.height);
   draw_buffer_count = gfxDrvEmulationStartPost();
@@ -1137,7 +1121,7 @@ BOOLE drawEmulationStartPost(void)
 /* Called on emulation halt                                                   */
 /*============================================================================*/
 
-void drawEmulationStop(void)
+void drawEmulationStop()
 {
   gfxDrvEmulationStop();
 }
@@ -1147,7 +1131,7 @@ void drawEmulationStop(void)
 /* Things initialized once at startup                                         */
 /*============================================================================*/
 
-BOOLE drawStartup(void)
+BOOLE drawStartup()
 {
   draw_config = cfgManagerGetCurrentConfig(&cfg_manager);
 
@@ -1197,7 +1181,7 @@ BOOLE drawStartup(void)
 /* Things uninitialized at emulator shutdown                                  */
 /*============================================================================*/
 
-void drawShutdown(void)
+void drawShutdown()
 {
   drawClearModeList();
   gfxDrvShutdown();
@@ -1205,7 +1189,7 @@ void drawShutdown(void)
   drawWriteProfilingResultsToFile();
 }
 
-void drawUpdateDrawmode(void) 
+void drawUpdateDrawmode() 
 {
   draw_line_routine = draw_line_BG_routine;
   if (graph_playfield_on == 1) 
@@ -1239,7 +1223,7 @@ uint32_t drawGetNextLineOffsetInBytes(uint32_t pitch_in_bytes)
   return pitch_in_bytes / 4; // 4x4
 }
 
-void drawReinitializeRendering(void)
+void drawReinitializeRendering()
 {
   drawModeTablesInitialize();
   graphLineDescClear();
@@ -1249,7 +1233,7 @@ void drawReinitializeRendering(void)
 /* Drawing end of frame handler                                                 */
 /*==============================================================================*/
 
-void drawEndOfFrame(void)
+void drawEndOfFrame()
 {
   if (draw_frame_skip == 0)
   {

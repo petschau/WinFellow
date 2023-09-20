@@ -129,8 +129,6 @@ void LineExactCopper::NotifyCop1lcChanged()
 
 void LineExactCopper::EventHandler()
 {
-  uint32_t bswapRegC;
-  uint32_t bswapRegD;
   bool correctLine;
   uint32_t maskedY;
   uint32_t maskedX;
@@ -145,9 +143,9 @@ void LineExactCopper::EventHandler()
   }
 
   // retrieve Copper command (two words)
-  bswapRegC = chipmemReadWord(copper_registers.copper_pc);
+  uint32_t bswapRegC = chipmemReadWord(copper_registers.copper_pc);
   copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
-  bswapRegD = chipmemReadWord(copper_registers.copper_pc);
+  uint32_t bswapRegD = chipmemReadWord(copper_registers.copper_pc);
   copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
 
   if (bswapRegC != 0xffff || bswapRegD != 0xfffe)

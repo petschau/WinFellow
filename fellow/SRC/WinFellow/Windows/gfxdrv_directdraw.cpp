@@ -399,7 +399,7 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
   LPSTR lpDriverName,
   LPVOID lpContext)
 {
-  gfx_drv_ddraw_device *tmpdev = reinterpret_cast<gfx_drv_ddraw_device *>(malloc(sizeof(gfx_drv_ddraw_device)));
+  gfx_drv_ddraw_device *tmpdev = static_cast<gfx_drv_ddraw_device *>(malloc(sizeof(gfx_drv_ddraw_device)));
   memset(tmpdev, 0, sizeof(gfx_drv_ddraw_device));
   if (lpGUID == nullptr)
   {
@@ -522,8 +522,7 @@ bool gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
   }
   else
   {
-    DDCAPS caps;
-    memset(&caps, 0, sizeof(caps));
+    DDCAPS caps = {};
     caps.dwSize = sizeof(caps);
     HRESULT res = IDirectDraw_GetCaps(ddraw_device->lpDD2, &caps, nullptr);
     if (res != DD_OK)
@@ -622,7 +621,7 @@ gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawFindFullScreenMode(gfx_drv_ddraw_devic
 {
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
-    gfx_drv_ddraw_fullscreen_mode *tmpmode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
+    gfx_drv_ddraw_fullscreen_mode *tmpmode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
     if (tmpmode->width == width &&
       tmpmode->height == height &&
       tmpmode->depth == depth)
@@ -645,7 +644,7 @@ void gfxDrvDDrawRegisterFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_de
 
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
-    gfx_drv_ddraw_fullscreen_mode *ddmode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
+    gfx_drv_ddraw_fullscreen_mode *ddmode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
     draw_mode *mode = new draw_mode();
 
     mode->width = ddmode->width;
@@ -716,7 +715,7 @@ void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
-    gfx_drv_ddraw_fullscreen_mode *tmpmode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
+    gfx_drv_ddraw_fullscreen_mode *tmpmode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
     sprintf(s, "gfxdrv: Mode Description: %uWx%uHx%uBPPx%uHZ (%u,%u,%u,%u,%u,%u)",
       tmpmode->width,
       tmpmode->height,
@@ -749,7 +748,7 @@ gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawNewFullScreenMode(uint32_t width,
   uint32_t bluepos,
   uint32_t bluesize)
 {
-  gfx_drv_ddraw_fullscreen_mode *tmpmode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode*>(malloc(sizeof(gfx_drv_ddraw_fullscreen_mode)));
+  gfx_drv_ddraw_fullscreen_mode *tmpmode = static_cast<gfx_drv_ddraw_fullscreen_mode*>(malloc(sizeof(gfx_drv_ddraw_fullscreen_mode)));
   tmpmode->width = width;
   tmpmode->height = height;
   tmpmode->depth = depth;
@@ -786,7 +785,7 @@ HRESULT WINAPI gfxDrvDDrawEnumerateFullScreenMode(LPDDSURFACEDESC lpDDSurfaceDes
       return DDENUMRET_OK;
     }
 
-    gfx_drv_ddraw_device *ddraw_device = reinterpret_cast<gfx_drv_ddraw_device *>(lpContext);
+    gfx_drv_ddraw_device *ddraw_device = static_cast<gfx_drv_ddraw_device *>(lpContext);
     gfx_drv_ddraw_fullscreen_mode *tmpmode = gfxDrvDDrawNewFullScreenMode(lpDDSurfaceDesc->dwWidth,
       lpDDSurfaceDesc->dwHeight,
       lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
@@ -895,9 +894,8 @@ bool gfxDrvDDrawSetCooperativeLevel(gfx_drv_ddraw_device *ddraw_device)
 
 void gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSURFACE surface, RECT *dstrect = nullptr)
 {
-  DDBLTFX ddbltfx;
+  DDBLTFX ddbltfx = {};
 
-  memset(&ddbltfx, 0, sizeof(ddbltfx));
   ddbltfx.dwSize = sizeof(ddbltfx);
   ddbltfx.dwFillColor = 0;
 
@@ -1015,9 +1013,8 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   RECT srcwin;
   RECT dstwin;
   LPDIRECTDRAWSURFACE lpDDSDestination;
-  DDBLTFX bltfx;
+  DDBLTFX bltfx = {};
 
-  memset(&bltfx, 0, sizeof(DDBLTFX));
   bltfx.dwSize = sizeof(DDBLTFX);
 
   /* When using the blitter to show our buffer, */
@@ -1276,8 +1273,7 @@ uint32_t gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
 
   if (success)
   {
-    DDPIXELFORMAT ddpf;
-    memset(&ddpf, 0, sizeof(ddpf));
+    DDPIXELFORMAT ddpf = {};
     ddpf.dwSize = sizeof(ddpf);
     err = IDirectDrawSurface_GetPixelFormat(ddraw_device->lpDDSPrimary, &ddpf);
     if (err != DD_OK)
@@ -1502,11 +1498,7 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 
     if (!ddraw_device->windowed)
     {
-      DDSURFACEDESC myDDSDesc;
-
-      gfx_drv_ddraw_fullscreen_mode *mode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode*>(listNode(listIndex(ddraw_device->fullscreen_modes, ddraw_device->drawmode->id)));
-      memset(&myDDSDesc, 0, sizeof(myDDSDesc));
-      myDDSDesc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT;
+      gfx_drv_ddraw_fullscreen_mode *mode = static_cast<gfx_drv_ddraw_fullscreen_mode*>(listNode(listIndex(ddraw_device->fullscreen_modes, ddraw_device->drawmode->id)));
       HRESULT err = IDirectDraw2_SetDisplayMode(ddraw_device->lpDD2, mode->width, mode->height, mode->depth, mode->refresh, 0);
       if (err != DD_OK)
       {
@@ -1674,7 +1666,7 @@ void gfxDrvDDrawSetMode(draw_mode *dm, bool windowed)
   }
   else
   {
-    gfx_drv_ddraw_device_current->fullscreen_mode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(listIndex(gfx_drv_ddraw_device_current->fullscreen_modes, dm->id)));
+    gfx_drv_ddraw_device_current->fullscreen_mode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(listIndex(gfx_drv_ddraw_device_current->fullscreen_modes, dm->id)));
     gfx_drv_output_width = dm->width;
     gfx_drv_output_height = dm->height;
     fellowAddLog("gfxdrv: SetMode() - Fullscreen\n");
@@ -1769,7 +1761,6 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   HGDIOBJ oldbit = nullptr;
   FILE *file = nullptr;
   void *data = nullptr;
-  int bpp, datasize;
   bool bSuccess = FALSE;
 
   if (!hDC) return 0;
@@ -1777,11 +1768,11 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   if (width <= 0) return 0;
   if (height <= 0) return 0;
 
-  bpp = bits / 8;
+  int bpp = bits / 8;
   if (bpp < 2) bpp = 2;
   if (bpp > 3) bpp = 3;
 
-  datasize = width * bpp * height;
+  int datasize = width * bpp * height;
   if (width * bpp % 4)
   {
     datasize += height * (4 - width * bpp % 4);

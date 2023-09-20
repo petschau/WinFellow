@@ -431,7 +431,7 @@ static __inline void drawTscAfter(int64_t* a, int64_t* b, int32_t* c)
 
 #endif
 
-void drawWriteProfilingResultsToFile(void)
+void drawWriteProfilingResultsToFile()
 {
 #ifdef DRAW_TSC_PROFILE
   char filename[MAX_PATH];
@@ -584,15 +584,15 @@ void drawHAMTableInit()
 /* Initializes the dual playfield translation table                           */
 /*============================================================================*/
 
-void drawDualTranslationInitialize(void)
+void drawDualTranslationInitialize()
 {
-  int32_t i,j,k,l;
+  int32_t l;
 
-  for (k = 0; k < 2; k++)
+  for (int32_t k = 0; k < 2; k++)
   {
-    for (i = 0; i < 256; i++)
+    for (int32_t i = 0; i < 256; i++)
     {
-      for (j = 0; j < 256; j++)
+      for (int32_t j = 0; j < 256; j++)
       {
 	if (k == 0)
 	{					 /* PF1 behind, PF2 in front */
@@ -768,11 +768,6 @@ static void drawSetPixel2x4_16Bit(uint32_t *framebuffer, uint32_t nextlineoffset
   framebuffer[nextlineoffset1] = pixel_color;
   framebuffer[nextlineoffset2] = pixel_color;
   framebuffer[nextlineoffset3] = pixel_color;
-}
-
-static void drawSetPixel4x1_16Bit(uint64_t *framebuffer, uint64_t pixel_color)
-{
-  framebuffer[0] = pixel_color;
 }
 
 static void drawSetPixel4x2_16Bit(uint64_t *framebuffer, uint32_t nextlineoffset, uint64_t pixel_color)
@@ -3681,7 +3676,7 @@ static uint32_t drawGetColorDepthIndex()
   return 2;
 }
 
-uint32_t drawGetScaleIndex(void)
+uint32_t drawGetScaleIndex()
 {
   uint32_t internal_scale_factor = drawGetInternalScaleFactor();
   if (drawGetUseInterlacedRendering())

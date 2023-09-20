@@ -3,7 +3,7 @@
 #include "Graphics.h"
 #include "BUS.H"
 
-void GraphicsEventQueue::Clear(void)
+void GraphicsEventQueue::Clear()
 {
   _events = nullptr;
 }
@@ -76,7 +76,7 @@ void GraphicsEventQueue::Insert(GraphicsEvent *graphics_event)
   }
 }
 
-GraphicsEvent *GraphicsEventQueue::Pop(void)
+GraphicsEvent *GraphicsEventQueue::Pop()
 {
   GraphicsEvent *tmp = _events;
   _events = tmp->_next;

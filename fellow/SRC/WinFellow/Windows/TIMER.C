@@ -69,10 +69,9 @@ void timerAddCallback(timerCallbackFunction callback)
 void timerEmulationStart()
 {
     TIMECAPS timecaps;
-    MMRESULT mmres;
 
     timer_ticks = 0;
-    mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
+    MMRESULT mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
     if(mmres != TIMERR_NOERROR)
     {
       fellowAddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");

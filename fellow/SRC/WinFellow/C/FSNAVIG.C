@@ -36,7 +36,7 @@ fs_navig_point *fs_navig_startup_dir;
 /* Returns TRUE if the local filesystem is drive based                       */
 /*===========================================================================*/
 
-BOOLE fsNavigHasDrives(void) {
+BOOLE fsNavigHasDrives() {
   return fsWrapHasDrives();
 }
 
@@ -45,7 +45,7 @@ BOOLE fsNavigHasDrives(void) {
 /* Returns a BOOLE [27] array with available drives                          */
 /*===========================================================================*/
 
-BOOLE *fsNavigGetDriveMap(void) {
+BOOLE *fsNavigGetDriveMap() {
   return fsWrapGetDriveMap();
 }
 
@@ -54,7 +54,7 @@ BOOLE *fsNavigGetDriveMap(void) {
 /* Finds Fellow startup-directory                                            */
 /*===========================================================================*/
 
-void fsNavigInitializeStartupDir(void) {
+void fsNavigInitializeStartupDir() {
   fs_navig_startup_dir = fsWrapGetCWD();
 }
 
@@ -64,11 +64,10 @@ void fsNavigInitializeStartupDir(void) {
 /*===========================================================================*/
 
 void fsNavigInitializeInstallDir(char *cmd) {
-  char *locc;
   char tmpname[FS_WRAP_MAX_PATH_LENGTH];
 
   fsWrapFullPath(tmpname, cmd);
-  locc = strrchr(tmpname, FS_WRAP_PATH_SEPARATOR_CHAR);
+  char* locc = strrchr(tmpname, FS_WRAP_PATH_SEPARATOR_CHAR);
   if (locc == nullptr) strcpy(tmpname, ".");
   else *locc = '\0';
   fs_navig_install_dir = fsWrapMakePoint(tmpname);
@@ -88,7 +87,7 @@ void fsNavigInitializeInstallDir(char *cmd) {
 /* Get current dir                                                           */
 /*===========================================================================*/
 
-fs_navig_point *fsNavigGetCWD(void) {
+fs_navig_point *fsNavigGetCWD() {
   return fsWrapGetCWD();
 }
 
@@ -105,7 +104,7 @@ void fsNavigSetCWD(fs_navig_point *fs_point) {
 /* Set current dir to install dir                                            */
 /*===========================================================================*/
 
-void fsNavigSetCWDInstallDir(void) {
+void fsNavigSetCWDInstallDir() {
   fsNavigSetCWD(fs_navig_install_dir);
 }
 
@@ -114,7 +113,7 @@ void fsNavigSetCWDInstallDir(void) {
 /* Set current dir to startup dir                                            */
 /*===========================================================================*/
 
-void fsNavigSetCWDStartupDir(void) {
+void fsNavigSetCWDStartupDir() {
   fsNavigSetCWD(fs_navig_startup_dir);
 }
 
@@ -149,7 +148,7 @@ void fsNavigStartup(char *argv[]) {
 /* Filesystem navigator shutdown                                             */
 /*===========================================================================*/
 
-void fsNavigShutdown(void) {
+void fsNavigShutdown() {
   if (fs_navig_install_dir != nullptr)
     free(fs_navig_install_dir);
   if (fs_navig_startup_dir != nullptr)

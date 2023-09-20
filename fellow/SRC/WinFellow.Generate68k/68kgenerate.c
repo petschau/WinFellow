@@ -133,7 +133,7 @@ void cgProfileLogHeader()
   {
     fprintf(profilef, "#include \"fileops.h\"\n");
   }
-  fprintf(profilef, "void cpuProfileWrite(void)\n");
+  fprintf(profilef, "void cpuProfileWrite()\n");
   fprintf(profilef, "{\n");
 
   if (!cpu_profile)
@@ -194,7 +194,7 @@ void cgSetDisassemblyFunction(unsigned int opcode, char *dis_func_no)
   cpu_opcode_data[opcode].dis_func_no = atoi(dis_func_no);
 }
 
-void cgDisFunc(void)
+void cgDisFunc()
 {
   unsigned int opcode;
   fprintf(disfuncf, "static uint8_t cpu_dis_func_tab[65536] = \n{");

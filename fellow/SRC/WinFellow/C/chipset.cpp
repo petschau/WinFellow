@@ -24,12 +24,12 @@
 
 chipset_information chipset;
 
-bool chipsetGetECS(void)
+bool chipsetGetECS()
 {
   return chipset.ecs;
 }
 
-void chipsetUpdateAddressMasks(void)
+void chipsetUpdateAddressMasks()
 {
   if (chipsetGetECS())
   {
@@ -51,7 +51,7 @@ BOOLE chipsetSetECS(bool ecs)
   return needreset;
 }
 
-void chipsetStartup(void)
+void chipsetStartup()
 {
   chipsetSetECS(false);
 }

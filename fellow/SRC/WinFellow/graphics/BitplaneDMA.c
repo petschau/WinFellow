@@ -67,7 +67,7 @@ uint16_t BitplaneDMA::GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bp
   return 0;
 }
 
-void BitplaneDMA::AddModulo(void)
+void BitplaneDMA::AddModulo()
 {
   switch (_core.RegisterUtility.GetEnabledBitplaneCount())
   {
@@ -81,7 +81,7 @@ void BitplaneDMA::AddModulo(void)
 }
 
 // Stop after the current unit
-void BitplaneDMA::Stop(void)
+void BitplaneDMA::Stop()
 {
   _stopDDF = true;
 }
@@ -94,7 +94,7 @@ void BitplaneDMA::SetState(BPLDMAStates newState, uint32_t arriveTime)
   _queue->Insert(this);
 }
 
-void BitplaneDMA::SetStateNone(void)
+void BitplaneDMA::SetStateNone()
 {
   _queue->Remove(this);
   _state = BPL_DMA_STATE_NONE;
@@ -134,7 +134,7 @@ void BitplaneDMA::Restart(bool ddfIsActive)
   }
 }
 
-void BitplaneDMA::FetchLores(void)
+void BitplaneDMA::FetchLores()
 {
   uint32_t bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
 
@@ -146,7 +146,7 @@ void BitplaneDMA::FetchLores(void)
 		                         GetHold(6, bplsEnabled, &bpl6pt));
 }
 
-void BitplaneDMA::FetchHires(void)
+void BitplaneDMA::FetchHires()
 {
   uint32_t bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
 
@@ -191,7 +191,7 @@ void BitplaneDMA::Handler(uint32_t rasterY, uint32_t cylinder)
 
 /* Fellow events */
 
-void BitplaneDMA::EndOfFrame(void)
+void BitplaneDMA::EndOfFrame()
 {
   SetStateNone();
 }

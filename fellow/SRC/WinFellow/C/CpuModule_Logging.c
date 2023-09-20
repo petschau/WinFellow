@@ -37,7 +37,7 @@ void cpuSetInstructionLoggingFunc(cpuInstructionLoggingFunc func)
   cpu_instruction_logging_func = func;
 }
 
-void cpuCallInstructionLoggingFunc(void)
+void cpuCallInstructionLoggingFunc()
 {
   if (cpu_instruction_logging_func != nullptr)
     cpu_instruction_logging_func();

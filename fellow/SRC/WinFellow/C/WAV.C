@@ -48,10 +48,8 @@ int32_t wav_samplesum;
 /*============================================================*/
 
 void wav8BitsMonoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
-  uint32_t i;
-
   if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
+    for (uint32_t i = 0; i < sample_count; i++) {
       wav_samplesum = (((int32_t) left[i] + (int32_t) right[i])>>8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
     }
@@ -60,10 +58,8 @@ void wav8BitsMonoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
 }
 
 void wav8BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
-  uint32_t i;
-
   if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
+    for (uint32_t i = 0; i < sample_count; i++) {
       wav_samplesum = (((int32_t) left[i])>>8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
       wav_samplesum = (((int32_t) right[i])>>8) + 0x80;
@@ -74,10 +70,8 @@ void wav8BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
 }
 
 void wav16BitsMonoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
-  uint32_t i;
-
   if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
+    for (uint32_t i = 0; i < sample_count; i++) {
       wav_samplesum = left[i] + right[i];
       fwrite(&wav_samplesum, 2, 1, wav_FILE);
     }
@@ -86,10 +80,8 @@ void wav16BitsMonoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
 }
 
 void wav16BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
-  uint32_t i;
-
   if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
+    for (uint32_t i = 0; i < sample_count; i++) {
       fwrite(&left[i], 2, 1, wav_FILE);
       fwrite(&right[i], 2, 1, wav_FILE);
     }
@@ -102,7 +94,7 @@ void wav16BitsStereoAdd(int16_t *left, int16_t *right, uint32_t sample_count) {
 /* Write WAV header                                                          */
 /*===========================================================================*/
 
-void wavHeaderWrite(void) {
+void wavHeaderWrite() {
   static char *wav_RIFF = {"RIFF"};
   static char *wav_WAVEfmt = {"WAVEfmt "};
   static uint32_t wav_fmtchunklength = 16;
@@ -139,7 +131,7 @@ void wavHeaderWrite(void) {
   }
 }  
 
-void wavLengthUpdate(void) {
+void wavLengthUpdate() {
   if (wav_FILE != nullptr) {
     fseek(wav_FILE, 4, SEEK_SET);
     fwrite(&wav_filelength, 4, 1, wav_FILE);
@@ -210,7 +202,7 @@ void wavEmulationStart(sound_rates rate,
 			 wavFileInit(rate, bits16, stereo);
 }
 
-void wavEmulationStop(void) {
+void wavEmulationStop() {
   wavLengthUpdate();
   if (wav_FILE != nullptr) {
     fflush(wav_FILE);
@@ -226,7 +218,7 @@ void wavEmulationStop(void) {
 /* WAV supports any sound quality                                            */
 /*===========================================================================*/
 
-void wavStartup(void) {
+void wavStartup() {
   wav_serial = 0;
   wav_rate = (sound_rates) 9999;
   wav_16bits = 2;
@@ -240,7 +232,7 @@ void wavStartup(void) {
 /* Called once on shutdown                                                   */
 /*===========================================================================*/
 
-void wavShutdown(void) {
+void wavShutdown() {
   if (wav_FILE != nullptr)
     fclose(wav_FILE);
 }

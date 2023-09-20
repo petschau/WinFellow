@@ -7,7 +7,7 @@ Automator automator;
 
 void Automator::TakeSnapshot()
 {
-  if (SnapshotDirectory == "")
+  if (SnapshotDirectory.empty())
   {
     return;
   }
@@ -89,9 +89,9 @@ void Automator::Shutdown()
 }
 
 Automator::Automator()
-  : SnapshotFrequency(100),
-  SnapshotEnable(false),
-  RecordScript(false)
+  : RecordScript(false),
+    SnapshotFrequency(100),
+    SnapshotEnable(false)
 {
 }
 

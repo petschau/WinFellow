@@ -32,7 +32,7 @@
 #include "zlib.h" // crc32 function
 #include "fmem.h" // decrypt AF2 kickstart
 
-#include <time.h>
+#include <ctime>
 #include <io.h>
 
 /** @file
@@ -46,9 +46,7 @@
  * @return TRUE, if variable was successfully resolved, FALSE otherwise.
  */
 BOOLE fileopsResolveVariables(const char *szPath, char *szNewPath) {
-  DWORD nRet;
-
-  nRet = ExpandEnvironmentStrings(szPath, szNewPath, CFG_FILENAME_LENGTH);
+  DWORD nRet = ExpandEnvironmentStrings(szPath, szNewPath, CFG_FILENAME_LENGTH);
 
   if(nRet < CFG_FILENAME_LENGTH)
     if( nRet ) {
@@ -103,20 +101,18 @@ BOOLE fileopsGetGenericFileName(char *szPath, const char *szSubDir, const char *
 
 BOOLE fileopsGetScreenshotFileName(char *szFilename)
 {
-  HRESULT hr;
   char szFolderPath[MAX_PATH];
   
-  hr = SHGetFolderPath(nullptr, CSIDL_MYPICTURES, nullptr, SHGFP_TYPE_CURRENT, szFolderPath);
+  HRESULT hr = SHGetFolderPath(nullptr, CSIDL_MYPICTURES, nullptr, SHGFP_TYPE_CURRENT, szFolderPath);
   if (hr == S_OK)
   {
     time_t rawtime;
-    struct tm *timeinfo;
     char szTime[255] = "";
     uint32_t i = 1;
     bool done = false;
     
     time(&rawtime);
-    timeinfo = localtime(&rawtime);
+    tm* timeinfo = localtime(&rawtime);
     
     strftime(szTime, 255, "%Y%m%d%H%M%S", timeinfo);
     while (done != true)
@@ -234,12 +230,11 @@ BOOLE fileopsGetWinFellowPresetPath(char *strBuffer, const DWORD lBufferSize)
 /* the volumes rootdir                     */
 /*=========================================*/
 
-char *fileopsGetTemporaryFilename(void)
+char *fileopsGetTemporaryFilename()
 {
-  char *tempvar;
   char *result;
 
-  tempvar = getenv("TEMP");
+  char* tempvar = getenv("TEMP");
   if( tempvar != nullptr)
   {
     result = _tempnam(tempvar, "wftemp");

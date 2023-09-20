@@ -59,30 +59,28 @@ extern struct uaedev_mount_info mountinfo;
 
 void filesys_init(int automount_drives)
 {
-  int drive, drivetype, readonly, removable;
   UINT errormode = SetErrorMode( SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX );
   char volumename[MAX_PATH]="";
   char volumepath[6];
-  DWORD dwDriveMask;
   char *result = nullptr;
 
   mountinfo.num_units = 0;
   if ( automount_drives) {
     if (memoryGetKickImageVersion() >= 36)
     {
-      dwDriveMask = GetLogicalDrives();
+      DWORD dwDriveMask = GetLogicalDrives();
 
-      for( drive = 'A'; drive <= 'Z'; sprintf( volumepath, "%c:\\", ++drive ) )
+      for( int drive = 'A'; drive <= 'Z'; sprintf( volumepath, "%c:\\", ++drive ) )
       {
 	if( ( dwDriveMask & 1 ) && CheckRM( volumepath ) ) /* Is this drive-letter valid and media in drive? */
 	{
-	  drivetype = GetDriveType( volumepath );
+	  int drivetype = GetDriveType(volumepath);
 	  if( drivetype == DRIVE_REMOTE )
 	    strcat( volumepath, "." );
 	  else
 	    strcat( volumepath, ".." );
-	  readonly = ( drivetype == DRIVE_CDROM ) ? 1:0;
-	  removable = (drivetype == DRIVE_CDROM || drivetype == DRIVE_REMOVABLE ) ? 1:0;
+	  int readonly = (drivetype == DRIVE_CDROM) ? 1 : 0;
+	  int removable = (drivetype == DRIVE_CDROM || drivetype == DRIVE_REMOVABLE) ? 1 : 0;
 
 	  if( get_volume_name( &mountinfo, volumepath, volumename, MAX_PATH, drive, drivetype, 1 ) )
 	  {
@@ -139,11 +137,10 @@ static int get_volume_name(struct uaedev_mount_info *mtinf, char *volumepath, ch
 BOOLE CheckRM(char *DriveName)
 {
   char filename[ MAX_PATH ];
-  DWORD dwHold;
   BOOL result = FALSE;
 
   sprintf( filename, "%s.", DriveName );
-  dwHold = GetFileAttributes( filename );
+  DWORD dwHold = GetFileAttributes(filename);
   if( dwHold != 0xFFFFFFFF )
     result = TRUE;
   return result;

@@ -90,7 +90,7 @@ int lasttrap;
 
 static void *extra_stack_list = NULL;
 
-static void *get_extra_stack(void)
+static void *get_extra_stack()
 {
     void *s = extra_stack_list;
     if (s)
@@ -171,7 +171,7 @@ static uae_u32 execute_fn_on_extra_stack(TrapFunction f, int has_retval)
     return 0;
 }
 
-static uae_u32 m68k_mode_return(void)
+static uae_u32 m68k_mode_return()
 {
 #ifdef CAN_DO_STACK_MAGIC
     uaecptr a7 = m68k_areg(regs, 7);
@@ -470,7 +470,7 @@ void org(uae_u32 a)
     rt_addr = a - RTAREA_BASE;
 }
 
-uae_u32 here(void)
+uae_u32 here()
 {
     return addr(rt_addr);
 }
@@ -494,25 +494,25 @@ void align(int b)
     rt_addr = (rt_addr + b - 1) & ~(b - 1);
 }
 
-static uae_u32 nullfunc(void)
+static uae_u32 nullfunc()
 {
     write_log ("Null function called\n");
     return 0;
 }
 
-static uae_u32 getchipmemsize (void)
+static uae_u32 getchipmemsize ()
 {
     return allocated_chipmem;
 }
 
-static uae_u32 uae_puts (void)
+static uae_u32 uae_puts ()
 {
     puts ((char*)get_real_address (m68k_areg (regs, 0)));
     return 0;
 }
 
 /* FELLOW OUT (START)----------------
-static void rtarea_init_mem (void)
+static void rtarea_init_mem ()
 {
     rtarea = mapped_malloc (0x10000, "rtarea");
     if (!rtarea) {
@@ -523,7 +523,7 @@ static void rtarea_init_mem (void)
 }
    FELLOW OUT (END)------------------ */
 
-void rtarea_init (void)
+void rtarea_init ()
 {
     uae_u32 a;
     char uaever[100];
@@ -564,12 +564,12 @@ void rtarea_init (void)
 
 volatile int uae_int_requested = 0;
 
-void set_uae_int_flag (void)
+void set_uae_int_flag ()
 {
     rtarea[0xFFFB] = uae_int_requested;
 }
 
-void rtarea_setup(void)
+void rtarea_setup()
 {
   /* FELLOW IN (START)------------------- */
   if (memoryGetKickImageBaseBank() >= 0xf8) {

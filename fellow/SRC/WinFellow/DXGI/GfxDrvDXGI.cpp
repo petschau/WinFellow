@@ -755,9 +755,7 @@ void GfxDrvDXGI::DeleteVertexAndIndexBuffers()
 
 bool GfxDrvDXGI::CreateDepthDisabledStencil()
 {
-  D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDescription;
-
-  memset(&depthDisabledStencilDescription, 0, sizeof(depthDisabledStencilDescription));
+  D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDescription = {};
 
   depthDisabledStencilDescription.DepthEnable = false;
   depthDisabledStencilDescription.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;

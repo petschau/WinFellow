@@ -195,26 +195,25 @@ void cpuStackFrameGenerate(uint16_t vector_offset, uint32_t pc)
 
 static void cpuStackFrameInitSetDefaultFunc(cpuStackFrameGenFunc default_func)
 {
-  uint32_t i;
-  for (i = 0; i < 64; i++)
+  for (uint32_t i = 0; i < 64; i++)
     cpuSetStackFrameGenFunc(i, default_func);
 }
 
-static void cpuStackFrameInit000(void)
+static void cpuStackFrameInit000()
 {
   cpuStackFrameInitSetDefaultFunc(cpuFrameGroup1);
   cpuSetStackFrameGenFunc(2, cpuFrameGroup2); /* 2 - Bus error */
   cpuSetStackFrameGenFunc(3, cpuFrameGroup2); /* 3 - Address error */
 }
 
-static void cpuStackFrameInit010(void)
+static void cpuStackFrameInit010()
 {
   cpuStackFrameInitSetDefaultFunc(cpuFrame0);
   cpuSetStackFrameGenFunc(2, cpuFrame8); /* 2 - Bus error */
   cpuSetStackFrameGenFunc(3, cpuFrame8); /* 3 - Address error */
 }
 
-static void cpuStackFrameInit020(void)
+static void cpuStackFrameInit020()
 {
   cpuStackFrameInitSetDefaultFunc(cpuFrame0);
   cpuSetStackFrameGenFunc(2, cpuFrameA);  /* 2  - Bus Error */
@@ -225,7 +224,7 @@ static void cpuStackFrameInit020(void)
   cpuSetStackFrameGenFunc(9, cpuFrame2);  /* 9  - Trace */
 }
 
-static void cpuStackFrameInit030(void)
+static void cpuStackFrameInit030()
 {
   cpuStackFrameInitSetDefaultFunc(cpuFrame0);
   cpuSetStackFrameGenFunc(2, cpuFrameA);  /* 2  - Bus Error */
@@ -236,7 +235,7 @@ static void cpuStackFrameInit030(void)
   cpuSetStackFrameGenFunc(9, cpuFrame2);  /* 9  - Trace */
 }
 
-void cpuStackFrameInit(void)
+void cpuStackFrameInit()
 {
   switch (cpuGetModelMajor())
   {

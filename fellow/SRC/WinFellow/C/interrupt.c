@@ -86,7 +86,7 @@ void interruptSetPendingChipInterruptNumber(uint32_t pending_chip_interrupt_numb
   interrupt_pending_chip_interrupt_number = pending_chip_interrupt_number;
 }
 
-uint32_t interruptGetPendingChipInterruptNumber(void)
+uint32_t interruptGetPendingChipInterruptNumber()
 {
   return interrupt_pending_chip_interrupt_number;
 }
@@ -96,12 +96,12 @@ void interruptSetPendingCpuLevel(uint32_t pending_cpu_level)
   interrupt_pending_cpu_level = pending_cpu_level;
 }
 
-uint32_t interruptGetPendingCpuLevel(void)
+uint32_t interruptGetPendingCpuLevel()
 {
   return interrupt_pending_cpu_level;
 }
 
-unsigned int interruptGetScheduleLatency(void)
+unsigned int interruptGetScheduleLatency()
 {
   return 10;
 }
@@ -116,7 +116,7 @@ bool interruptIsPending(int interrupt_number, unsigned int pending_interrupts)
   return (pending_interrupts & (1 << interrupt_number)) != 0;
 }
 
-bool interruptMasterSwitchIsEnabled(void)
+bool interruptMasterSwitchIsEnabled()
 {
   return !!(intena & 0x4000);
 }
@@ -126,7 +126,7 @@ bool interruptHasSetModeBit(uint16_t interrupt_bitmask)
   return !!(interrupt_bitmask & 0x8000);
 }
 
-uint16_t interruptGetPendingBitMask(void)
+uint16_t interruptGetPendingBitMask()
 {
   return intena & intreq;
 }
@@ -236,7 +236,7 @@ void interruptRaisePending()
 /*=====================================================
   Used to introduce a slight delay for hardware irqs
   =====================================================*/
-void interruptHandleEvent(void)
+void interruptHandleEvent()
 {
   interruptEvent.cycle = BUS_CYCLE_DISABLE;
   interruptRaisePendingInternal(false);
@@ -317,12 +317,12 @@ void wintena(uint16_t data, uint32_t address)
   }
 }
 
-void interruptClearInternalState(void)
+void interruptClearInternalState()
 {
   intreq = intena = 0;
 }
 
-void interruptIoHandlersInstall(void)
+void interruptIoHandlersInstall()
 {
   memorySetIoReadStub(0x01c, rintenar);
   memorySetIoReadStub(0x01e, rintreqr);
@@ -332,29 +332,29 @@ void interruptIoHandlersInstall(void)
 
 /* Fellow standard module events */
 
-void interruptSoftReset(void)
+void interruptSoftReset()
 {
   interruptClearInternalState();
 }
 
-void interruptHardReset(void)
+void interruptHardReset()
 {
   interruptClearInternalState();
 }
 
-void interruptEmulationStart(void)
+void interruptEmulationStart()
 {
   interruptIoHandlersInstall();
 }
 
-void interruptEmulationStop(void)
+void interruptEmulationStop()
 {
 }
 
-void interruptStartup(void)
+void interruptStartup()
 {
 }
 
-void interruptShutdown(void)
+void interruptShutdown()
 {
 }

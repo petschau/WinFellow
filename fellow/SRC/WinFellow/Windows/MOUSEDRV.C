@@ -150,7 +150,7 @@ void mouseDrvDInputAcquireFailure(char* header, HRESULT err)
 /* Acquire DirectInput mouse device                                          */
 /*===========================================================================*/
 
-void mouseDrvDInputAcquire(void)
+void mouseDrvDInputAcquire()
 {
   HRESULT res;
 
@@ -199,7 +199,7 @@ void mouseDrvDInputAcquire(void)
 /* Release DirectInput for mouse                                             */
 /*===========================================================================*/
 
-void mouseDrvDInputRelease(void)
+void mouseDrvDInputRelease()
 {
   if (mouse_drv_lpDID != nullptr)
   {
@@ -228,10 +228,8 @@ BOOL FAR PASCAL GetMouseInfo(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 /* Initialize DirectInput for mouse                                          */
 /*===========================================================================*/
 
-BOOLE mouseDrvDInputInitialize(void)
+BOOLE mouseDrvDInputInitialize()
 {
-  HRESULT res; 
-
 #define INITDIPROP( diprp, obj, how ) \
 	{ diprp.diph.dwSize = sizeof( diprp ); \
 	diprp.diph.dwHeaderSize = sizeof( diprp.diph ); \
@@ -259,7 +257,8 @@ BOOLE mouseDrvDInputInitialize(void)
   mouse_drv_initialization_failed = FALSE;
   mouse_drv_unacquired = true;
 
-  res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI, nullptr);
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI,
+                                   nullptr);
   if (res != DI_OK)
   {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create()", res );
@@ -372,7 +371,7 @@ void mouseDrvStateHasChanged(BOOLE active)
 /* Mouse toggle focus                                                        */
 /*===========================================================================*/
 
-void mouseDrvToggleFocus(void)
+void mouseDrvToggleFocus()
 {
   mouse_drv_focus = !mouse_drv_focus;
   mouseDrvStateHasChanged(mouse_drv_active);
@@ -420,7 +419,7 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
 /* Mouse movement handler                                                    */
 /*===========================================================================*/
 
-void mouseDrvMovementHandler(void)
+void mouseDrvMovementHandler()
 {
   if (mouse_drv_in_use)
   {
@@ -504,7 +503,7 @@ void mouseDrvMovementHandler(void)
   }
 }
 
-BOOLE mouseDrvGetFocus(void)
+BOOLE mouseDrvGetFocus()
 {
   return mouse_drv_focus;
 }
@@ -513,7 +512,7 @@ BOOLE mouseDrvGetFocus(void)
 /* Hard Reset                                                                */
 /*===========================================================================*/
 
-void mouseDrvHardReset(void)
+void mouseDrvHardReset()
 {
   fellowAddLog("mouseDrvHardReset\n");
 }
@@ -523,7 +522,7 @@ void mouseDrvHardReset(void)
 /* Emulation Starting                                                        */
 /*===========================================================================*/
 
-BOOLE mouseDrvEmulationStart(void) 
+BOOLE mouseDrvEmulationStart() 
 {
   fellowAddLog("mouseDrvEmulationStart\n");
   return mouseDrvDInputInitialize();
@@ -534,7 +533,7 @@ BOOLE mouseDrvEmulationStart(void)
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
 
-void mouseDrvEmulationStop(void) 
+void mouseDrvEmulationStop() 
 {
   fellowAddLog("mouseDrvEmulationStop\n");
   mouseDrvDInputRelease();
@@ -545,7 +544,7 @@ void mouseDrvEmulationStop(void)
 /* Emulation Startup                                                         */
 /*===========================================================================*/
 
-void mouseDrvStartup(void) 
+void mouseDrvStartup() 
 {
   fellowAddLog("mouseDrvStartup\n");
   mouse_drv_active = FALSE;
@@ -565,7 +564,7 @@ void mouseDrvStartup(void)
 /* Emulation Shutdown                                                        */
 /*===========================================================================*/
 
-void mouseDrvShutdown(void) 
+void mouseDrvShutdown() 
 {
   fellowAddLog("mouseDrvShutdown\n");
 }

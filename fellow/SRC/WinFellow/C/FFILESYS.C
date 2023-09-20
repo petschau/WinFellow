@@ -93,12 +93,10 @@ void ffilesysSetFilesys(ffilesys_dev filesys, uint32_t index)
 
 BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, uint32_t index)
 {
-  size_t len;
-
   if (index >= FFILESYS_MAX_DEVICES)
     return FALSE;
 
-  len = strlen(filesys.rootpath) - 1;
+  size_t len = strlen(filesys.rootpath) - 1;
   if (filesys.rootpath[len] == '\\')
     filesys.rootpath[len] = '\0';
 
@@ -116,7 +114,7 @@ void ffilesysSetAutomountDrives(BOOLE automount_drives)
   ffilesys_automount_drives = automount_drives;
 }
 
-BOOLE ffilesysGetAutomountDrives(void)
+BOOLE ffilesysGetAutomountDrives()
 {
   return ffilesys_automount_drives;
 }
@@ -131,22 +129,19 @@ const string& ffilesysGetDeviceNamePrefix()
   return ffilesys_device_name_prefix;
 }
 
-static BOOLE ffilesysHasZeroDevices(void)
+static BOOLE ffilesysHasZeroDevices()
 {
-  uint32_t i;
   uint32_t dev_count = 0;
 
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
       dev_count++;
   return (dev_count == 0) && !ffilesysGetAutomountDrives();
 }
 
-void ffilesysClear(void)
+void ffilesysClear()
 {
-  uint32_t i;
-
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
     ffilesysRemoveFilesys(i);
 }
 
@@ -154,15 +149,13 @@ void ffilesysClear(void)
 /* Check out configuration                                                    */
 /*============================================================================*/
 
-void ffilesysDumpConfig(void)
+void ffilesysDumpConfig()
 {
-  uint32_t i;
   char filename[MAX_PATH];
-  FILE *F;
 
   fileopsGetGenericFileName(filename, "WinFellow", "fsysdump.txt");
-  F = fopen(filename, "w");
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++) {
+  FILE* F = fopen(filename, "w");
+  for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++) {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
       fprintf(F, "Slot: %u, %s, %s, %s\n",
       i,
@@ -179,14 +172,11 @@ void ffilesysDumpConfig(void)
 /* Install the user defined Reset filesys device                              */
 /*============================================================================*/
 
-void ffilesysInstall(void)
+void ffilesysInstall()
 {
-  uint32_t i;
-  size_t len;
-
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
     if (ffilesys_devs[i].status == FFILESYS_INSERTED) {
-      len = strlen(ffilesys_devs[i].rootpath) - 1;
+      size_t len = strlen(ffilesys_devs[i].rootpath) - 1;
       if (ffilesys_devs[i].rootpath[len] == '\\') {
 	ffilesys_devs[i].rootpath[len] = '\0';
       }
@@ -201,7 +191,7 @@ void ffilesysInstall(void)
 /* Reset filesys device                                                       */
 /*============================================================================*/
 
-void ffilesysHardReset(void)
+void ffilesysHardReset()
 {
   if ((!ffilesysHasZeroDevices()) &&
     ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36)) {
@@ -222,7 +212,7 @@ void ffilesysHardReset(void)
 /* Start filesys device for actual emulation                                  */
 /*============================================================================*/
 
-void ffilesysEmulationStart(void)
+void ffilesysEmulationStart()
 {
 #ifdef _DEBUG
   ffilesysDumpConfig();
@@ -233,7 +223,7 @@ void ffilesysEmulationStart(void)
 /* Stop filesys device after actual emulation                                 */
 /*============================================================================*/
 
-void ffilesysEmulationStop(void)
+void ffilesysEmulationStop()
 {
   /*
   filesys_prepare_reset();
@@ -245,7 +235,7 @@ void ffilesysEmulationStop(void)
 /* Startup filesys device                                                     */
 /*============================================================================*/
 
-void ffilesysStartup(void)
+void ffilesysStartup()
 {
   ffilesysClear();
   ffilesysSetAutomountDrives(FALSE);
@@ -256,7 +246,7 @@ void ffilesysStartup(void)
 /* clean up rests from copy of mountinfo */
 /*=======================================*/
 
-void ffilesysClearMountinfo(void)
+void ffilesysClearMountinfo()
 {
   for(mountinfo.num_units; mountinfo.num_units>0; mountinfo.num_units--)
   {
@@ -277,7 +267,7 @@ void ffilesysClearMountinfo(void)
 /* Shutdown filesys device                                                    */
 /*============================================================================*/
 
-void ffilesysShutdown(void)
+void ffilesysShutdown()
 {
   filesys_prepare_reset();
   filesys_reset();

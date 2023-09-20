@@ -25,7 +25,7 @@ void Logger::Log(uint32_t line, uint32_t cylinder, char *message)
   }
 }
 
-void Logger::Shutdown(void)
+void Logger::Shutdown()
 {
   if (_logfile != nullptr)
   {

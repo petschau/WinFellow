@@ -10,10 +10,10 @@ private:
 
 public:
   void Log(uint32_t line, uint32_t cylinder, char *message);
-  bool IsLogEnabled(void) {return _enableLog;}
+  bool IsLogEnabled() {return _enableLog;}
 
   void Shutdown();
 
-  Logger(void) : _enableLog(false), _logfile(nullptr) {};
+  Logger() : _enableLog(false), _logfile(nullptr) {};
 
 };

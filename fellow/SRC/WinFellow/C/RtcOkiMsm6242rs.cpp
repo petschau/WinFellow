@@ -29,7 +29,7 @@ int RtcOkiMsm6242rs::GetRegisterNumberFromAddress(uint32_t address)
   return (address >> 2) & 0xf;
 }
 
-struct tm *RtcOkiMsm6242rs::GetCurrentOrHeldTime(void)
+struct tm *RtcOkiMsm6242rs::GetCurrentOrHeldTime()
 {
   // Add the time passed since the clock was last set
   time_t actual_now = time(nullptr);
@@ -38,7 +38,7 @@ struct tm *RtcOkiMsm6242rs::GetCurrentOrHeldTime(void)
   return localtime(&rtc_now);
 }
 
-void RtcOkiMsm6242rs::SetCurrentTime(struct tm *datetime)
+void RtcOkiMsm6242rs::SetCurrentTime(tm *datetime)
 {
   _rtcTime = mktime(datetime);
   _rtcLastActualTime = time(nullptr);
@@ -81,7 +81,7 @@ void RtcOkiMsm6242rs::SetSecondDigit(struct tm& datetime, int& value, uint16_t d
   SetCurrentTime(&datetime);
 }
 
-uint16_t RtcOkiMsm6242rs::GetSecondRegister(void)
+uint16_t RtcOkiMsm6242rs::GetSecondRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -99,7 +99,7 @@ void RtcOkiMsm6242rs::SetSecondRegister(uint16_t data)
     SetFirstDigit(*datetime, datetime->tm_sec, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetTenSecondRegister(void)
+uint16_t RtcOkiMsm6242rs::GetTenSecondRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -117,7 +117,7 @@ void RtcOkiMsm6242rs::SetTenSecondRegister(uint16_t data)
     SetSecondDigit(*datetime, datetime->tm_sec, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetMinuteRegister(void)
+uint16_t RtcOkiMsm6242rs::GetMinuteRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -135,7 +135,7 @@ void RtcOkiMsm6242rs::SetMinuteRegister(uint16_t data)
     SetFirstDigit(*datetime, datetime->tm_min, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetTenMinuteRegister(void)
+uint16_t RtcOkiMsm6242rs::GetTenMinuteRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -153,7 +153,7 @@ void RtcOkiMsm6242rs::SetTenMinuteRegister(uint16_t data)
     SetSecondDigit(*datetime, datetime->tm_min, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetHourRegister(void)
+uint16_t RtcOkiMsm6242rs::GetHourRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -171,7 +171,7 @@ void RtcOkiMsm6242rs::SetHourRegister(uint16_t data)
     SetFirstDigit(*datetime, datetime->tm_hour, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetTenHourRegister(void)
+uint16_t RtcOkiMsm6242rs::GetTenHourRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -189,7 +189,7 @@ void RtcOkiMsm6242rs::SetTenHourRegister(uint16_t data)
     SetSecondDigit(*datetime, datetime->tm_hour, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetDayRegister(void)
+uint16_t RtcOkiMsm6242rs::GetDayRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -207,7 +207,7 @@ void RtcOkiMsm6242rs::SetDayRegister(uint16_t data)
     SetFirstDigit(*datetime, datetime->tm_mday, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetTenDayRegister(void)
+uint16_t RtcOkiMsm6242rs::GetTenDayRegister()
 {
   tm *datetime = GetCurrentOrHeldTime();
   
@@ -225,7 +225,7 @@ void RtcOkiMsm6242rs::SetTenDayRegister(uint16_t data)
     SetSecondDigit(*datetime, datetime->tm_mday, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetMonthRegister(void)
+uint16_t RtcOkiMsm6242rs::GetMonthRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -247,7 +247,7 @@ void RtcOkiMsm6242rs::SetMonthRegister(uint16_t data)
   }
 }
 
-uint16_t RtcOkiMsm6242rs::GetTenMonthRegister(void)
+uint16_t RtcOkiMsm6242rs::GetTenMonthRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -269,7 +269,7 @@ void RtcOkiMsm6242rs::SetTenMonthRegister(uint16_t data)
   }
 }
 
-uint16_t RtcOkiMsm6242rs::GetYearRegister(void)
+uint16_t RtcOkiMsm6242rs::GetYearRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -287,7 +287,7 @@ void RtcOkiMsm6242rs::SetYearRegister(uint16_t data)
     SetFirstDigit(*datetime, datetime->tm_year, data);
 }
 
-uint16_t RtcOkiMsm6242rs::GetTenYearRegister(void)
+uint16_t RtcOkiMsm6242rs::GetTenYearRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -313,7 +313,7 @@ void RtcOkiMsm6242rs::SetTenYearRegister(uint16_t data)
   }
 }
 
-uint16_t RtcOkiMsm6242rs::GetWeekRegister(void)
+uint16_t RtcOkiMsm6242rs::GetWeekRegister()
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
@@ -338,7 +338,7 @@ void RtcOkiMsm6242rs::SetWeekRegister(uint16_t data)
   }
 }
 
-uint16_t RtcOkiMsm6242rs::GetControlRegisterD(void)
+uint16_t RtcOkiMsm6242rs::GetControlRegisterD()
 {
   return (_thirtySecAdjFlag << 3) | (_irqFlag << 2) | (_busyFlag << 1) | _holdFlag;
 }
@@ -350,7 +350,7 @@ void RtcOkiMsm6242rs::SetControlRegisterD(uint16_t data)
   _holdFlag = data & 1;
 }
 
-uint16_t RtcOkiMsm6242rs::GetControlRegisterE(void)
+uint16_t RtcOkiMsm6242rs::GetControlRegisterE()
 {
   return (_t1Flag << 3) | (_t0Flag << 2) | (_itrptStdFlag << 1) | _maskFlag;
 }
@@ -364,7 +364,7 @@ void RtcOkiMsm6242rs::SetControlRegisterE(uint16_t data)
   _maskFlag = data & 1;
 }
 
-uint16_t RtcOkiMsm6242rs::GetControlRegisterF(void)
+uint16_t RtcOkiMsm6242rs::GetControlRegisterF()
 {
   return (_testFlag << 3) | (_twentyFourTwelveFlag << 2) | (_stopFlag << 1) | _restFlag;
 }
@@ -423,7 +423,7 @@ void RtcOkiMsm6242rs::logRtcTime(char *msg)
 
 #endif
 
-void RtcOkiMsm6242rs::InitializeRegisterGetters(void)
+void RtcOkiMsm6242rs::InitializeRegisterGetters()
 {
   _registerGetters[0] = &RtcOkiMsm6242rs::GetSecondRegister;
   _registerGetters[1] = &RtcOkiMsm6242rs::GetTenSecondRegister;
@@ -443,7 +443,7 @@ void RtcOkiMsm6242rs::InitializeRegisterGetters(void)
   _registerGetters[15] = &RtcOkiMsm6242rs::GetControlRegisterF;
 }
 
-void RtcOkiMsm6242rs::InitializeRegisterSetters(void)
+void RtcOkiMsm6242rs::InitializeRegisterSetters()
 {
   _registerSetters[0] = &RtcOkiMsm6242rs::SetSecondRegister;
   _registerSetters[1] = &RtcOkiMsm6242rs::SetTenSecondRegister;
@@ -463,7 +463,7 @@ void RtcOkiMsm6242rs::InitializeRegisterSetters(void)
   _registerSetters[15] = &RtcOkiMsm6242rs::SetControlRegisterF;
 }
 
-RtcOkiMsm6242rs::RtcOkiMsm6242rs(void)
+RtcOkiMsm6242rs::RtcOkiMsm6242rs()
 {
   _rtcLastActualTime = _rtcTime = time(nullptr);
   _rtcWeekdayModifier = 0;

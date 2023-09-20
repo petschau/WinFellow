@@ -66,6 +66,6 @@ public:
   void Startup();
   void Shutdown();
 
-  DIWXStateMachine(void) : GraphicsEvent() {};
+  DIWXStateMachine() : GraphicsEvent() {};
 
 };

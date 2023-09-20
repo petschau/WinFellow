@@ -23,7 +23,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include <assert.h>
+#include <cassert>
 #include "caps.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
@@ -57,18 +57,15 @@ static int    capsFlags = DI_LOCK_INDEX | DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOC
 static BOOLE  capsDriveIsLocked [4]= { FALSE, FALSE, FALSE, FALSE };
 static SDWORD capsDriveContainer[4]= { -1,    -1,    -1,    -1    };
 
-static HMODULE capshModule = NULL;          /* handle for the library */
+static HMODULE capshModule = nullptr;          /* handle for the library */
 static BOOLE capsIsInitialized = FALSE;     /* is the module initialized? */
 static BOOLE capsUserIsNotified = FALSE;    /* if the library is missing, did we already notify the user? */
 
-BOOLE capsStartup(void) {
-  int i;
-  
+BOOLE capsStartup() {
   if(capsIsInitialized) 
     return TRUE;
 
-  SDWORD result;
-  result = CapsInit("CapsImg.dll");
+  SDWORD result = CapsInit("CapsImg.dll");
 
   if(result != 0)
   {
@@ -78,12 +75,10 @@ BOOLE capsStartup(void) {
     fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
     return FALSE;
   }
-  else
-  {
-    capsIsInitialized = TRUE;
-  }
 
-  for(i = 0; i < 4; i++)
+  capsIsInitialized = TRUE;
+
+  for(int i = 0; i < 4; i++)
     capsDriveContainer[i] = CapsAddImage();
 
   capsIsInitialized = TRUE;
@@ -92,7 +87,7 @@ BOOLE capsStartup(void) {
   return TRUE;
 }
 
-BOOLE capsShutdown(void) {
+BOOLE capsShutdown() {
   return CapsExit();
 }
 
@@ -108,15 +103,13 @@ BOOLE capsUnloadImage(uint32_t drive) {
 }
 
 static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, uint32_t drive) {
-  int i;
   char DateString[100], TypeString[100], PlatformString[100];
-  struct CapsDateTimeExt *capsDateTimeExt;
 
   if(!capsImageInfo)
     return;
 
   /* extract the date from information */
-  capsDateTimeExt = &capsImageInfo->crdt;
+  CapsDateTimeExt* capsDateTimeExt = &capsImageInfo->crdt;
   sprintf(DateString, "%02u.%02u.%04u %02u:%02u:%02u", 
     capsDateTimeExt->day, 
     capsDateTimeExt->month,
@@ -139,7 +132,7 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, uint32_t drive
   }
 
   /* generate a platform string */
-  for(i = 0; capsImageInfo->platform[i] != 0; i++) {
+  for(int i = 0; capsImageInfo->platform[i] != 0; i++) {
     if(i > 0) {
       char AppendString[100];
       sprintf(AppendString, CapsGetPlatformName(capsImageInfo->platform[i]));
@@ -164,8 +157,6 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, uint32_t drive
 
 BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
   struct CapsImageInfo capsImageInfo;
-  uint32_t ImageSize, ReturnCode;
-  uint8_t *ImageBuffer;
 
   /* make sure we're up and running beforehand */
   if(!capsIsInitialized)
@@ -177,17 +168,17 @@ BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
   fellowAddLog("capsLoadImage(): Attempting to load IPF Image %s into drive %u.\n", floppy[drive].imagename, drive);
 
   fseek(F, 0, SEEK_END);
-  ImageSize = ftell(F);
+  uint32_t ImageSize = ftell(F);
   fseek(F, 0, SEEK_SET);
 
-  ImageBuffer = (uint8_t *) malloc(ImageSize);
+  uint8_t* ImageBuffer = (uint8_t*)malloc(ImageSize);
   if(!ImageBuffer)
     return FALSE;
 
   if(fread(ImageBuffer, ImageSize, 1, F) == 0)
     return FALSE;
 
-  ReturnCode = CapsLockImageMemory(capsDriveContainer[drive], ImageBuffer, ImageSize, 0);
+  uint32_t ReturnCode = CapsLockImageMemory(capsDriveContainer[drive], ImageBuffer, ImageSize, 0);
   free(ImageBuffer);
 
   if(ReturnCode != imgeOk)
@@ -205,14 +196,14 @@ BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
 }
 
 BOOLE capsLoadTrack(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t *tracklength, uint32_t *maxtracklength, uint32_t *timebuf, BOOLE *flakey) {
-  uint32_t i, len, type;
+  uint32_t i;
   struct CapsTrackInfo capsTrackInfo;
 
   *timebuf = 0;
   CapsLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
   *flakey = (capsTrackInfo.type & CTIT_FLAG_FLAKEY) ? TRUE : FALSE;
-  type = capsTrackInfo.type & CTIT_MASK_TYPE;
-  len = capsTrackInfo.tracksize[0];
+  uint32_t type = capsTrackInfo.type & CTIT_MASK_TYPE;
+  uint32_t len = capsTrackInfo.tracksize[0];
   *tracklength = len;
   *maxtracklength = 0;
   /* trackcnt contains number of valid entries, we need to determine the max tracklen value for 
@@ -232,11 +223,10 @@ BOOLE capsLoadTrack(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t 
 
 #if TRACECAPS
   {
-    FILE *f;
     char filename[MAX_PATH];
 
     fileopsGetGenericFileName(filename, "WinFellow", "CAPSDump.txt");
-    f = fopen(filename, "wb");
+    FILE* f = fopen(filename, "wb");
     fwrite(capsTrackInfo.trackdata[0], len, 1, f);
     fclose(f);
   }
@@ -261,13 +251,12 @@ BOOLE capsLoadTrack(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t 
 
 BOOLE capsLoadNextRevolution(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t *tracklength) {
   static uint32_t revolutioncount = 0;
-  uint32_t revolution, len;
   struct CapsTrackInfo capsTrackInfo;
 
   revolutioncount++;
   CapsLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
-  revolution = revolutioncount % capsTrackInfo.trackcnt;
-  len = capsTrackInfo.tracksize[revolution];
+  uint32_t revolution = revolutioncount % capsTrackInfo.trackcnt;
+  uint32_t len = capsTrackInfo.tracksize[revolution];
   /*if(*tracklength != len)
   {
   fellowAddLog("capsLoadRevolution(): Variable track size not implemented, will result in MFM buffer corruption!!!\n");

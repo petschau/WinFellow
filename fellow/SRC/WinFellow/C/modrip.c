@@ -79,7 +79,6 @@ static uint32_t modripModsFound;
 
 BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 {
-  uint32_t i;
   FILE *modfile;
 
   if(info == nullptr) return FALSE;
@@ -87,7 +86,7 @@ BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
   RIPLOG3("mod-ripper saving range 0x%06x - 0x%06x\n", info->start, info->end);
 
   if ((modfile = fopen(info->filename, "w+b")) == nullptr) return FALSE;
-  for (i = info->start; i <= info->end; i++)
+  for (uint32_t i = info->start; i <= info->end; i++)
     fputc((*func)(i), modfile);
   fclose(modfile);
 
@@ -105,10 +104,9 @@ BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 static BOOLE modripSaveChipMem(char *filename)
 {
   FILE *memfile;
-  size_t written;
   if(!filename || !(*filename)) return FALSE;
   if((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
-  written = fwrite(memory_chip, 1, memoryGetChipSize(), memfile);
+  size_t written = fwrite(memory_chip, 1, memoryGetChipSize(), memfile);
   fclose(memfile);
   if(written < memoryGetChipSize()) return FALSE;
   return TRUE;
@@ -117,10 +115,9 @@ static BOOLE modripSaveChipMem(char *filename)
 static BOOLE modripSaveSlowMem(char *filename)
 {
   FILE *memfile;
-  size_t written;
   if(!filename || !(*filename)) return FALSE;
   if((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
-  written = fwrite(memory_slow, 1, memoryGetSlowSize(), memfile);
+  size_t written = fwrite(memory_slow, 1, memoryGetSlowSize(), memfile);
   fclose(memfile);
   if(written < memoryGetSlowSize()) return FALSE;
   return TRUE;
@@ -129,10 +126,9 @@ static BOOLE modripSaveSlowMem(char *filename)
 static BOOLE modripSaveFastMem(char *filename)
 {
   FILE *memfile;
-  size_t written;
   if(!filename || !(*filename)) return FALSE;
   if((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
-  written = fwrite(memory_fast, 1, memoryGetFastSize(), memfile);
+  size_t written = fwrite(memory_fast, 1, memoryGetFastSize(), memfile);
   fclose(memfile);
   if(written < memoryGetFastSize()) return FALSE;
   return TRUE;
@@ -142,9 +138,9 @@ static BOOLE modripSaveFastMem(char *filename)
 /* fills a ModuleInfo struct with zeroes */
 /*=======================================*/
 
-static void modripModuleInfoInitialize(struct ModuleInfo *info)
+static void modripModuleInfoInitialize(ModuleInfo *info)
 {
-  if(info) memset(info, 0, sizeof(struct ModuleInfo));
+  if(info) memset(info, 0, sizeof(ModuleInfo));
 }
 
 /*======================================*/
@@ -155,7 +151,6 @@ static void modripModuleInfoInitialize(struct ModuleInfo *info)
 static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
 {
   uint32_t i;
-  int type;
   struct { char *ID; char *Desc; int channels; } formats[9] = {
     {"M.K.", "Noisetracker",  4},
     {"N.T.", "Noisetracker",  4},
@@ -168,9 +163,8 @@ static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
     {"M&K!", "Noisetracker",  4}
   };
   struct ModuleInfo info;
-  BOOLE ScratchyName;
 
-  for(type = 0; type < 9; type++) {
+  for(int type = 0; type < 9; type++) {
     if ( ((*func)(address + 0) == formats[type].ID[0])
       && ((*func)(address + 1) == formats[type].ID[1])
       && ((*func)(address + 2) == formats[type].ID[2])
@@ -242,7 +236,7 @@ static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
 
 	  /* set filename for the module file */
 	  if (strlen(info.modname) > 2) {
-	    ScratchyName = FALSE;
+	    BOOLE ScratchyName = FALSE;
 	    for(i = 0; (i < 20) && (info.modname[i] != 0) ; i++) {
 	      if(!isprint(info.modname[i])) ScratchyName = TRUE;
 	    }
@@ -273,9 +267,8 @@ static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
 static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
 {
   BOOLE match = FALSE;
-  uint32_t i, size, offset;
-  unsigned patterns;
-  struct ModuleInfo info;
+  uint32_t i;
+  ModuleInfo info;
 
   if (((*func)(address + 0) == 'S') && ((*func)(address + 1) == 'O')) {
     modripModuleInfoInitialize(&info);
@@ -300,7 +293,7 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
       strcpy(info.typesig, "SO31");
     }
     if (match) {
-      offset = 0; size = 0;
+      uint32_t offset = 0; uint32_t size = 0;
 
       /* add instrument lengths to size */
       for (i = 0; i < info.instruments; i++)
@@ -324,7 +317,7 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
 	size += 30;
       }
 
-      patterns = (*func)(info.start + offset);
+      unsigned patterns = (*func)(info.start + offset);
       if((patterns > MODRIP_MAXMODLEN) 
 	|| (patterns == 0)) return;
 
@@ -366,8 +359,8 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
 
 static void modripDetectSoundMon(uint32_t address, MemoryAccessFunc func)
 {
-  BOOLE FoundHeader = FALSE, ScratchyName;
-  struct ModuleInfo info;
+  BOOLE FoundHeader = FALSE;
+  ModuleInfo info;
   int version = 0;
   uint32_t offset = 0, patterns = 0;
   uint32_t temp = 0, i = 0;
@@ -455,7 +448,7 @@ static void modripDetectSoundMon(uint32_t address, MemoryAccessFunc func)
 
     /* set filename */
     if (strlen(info.modname) > 2) {
-      ScratchyName = FALSE;
+      BOOLE ScratchyName = FALSE;
       for(i = 0; (i < 26) && (info.modname[i] != 0) ; i++) {
 	if(!isprint(info.modname[i])) {
 	  ScratchyName = TRUE;
@@ -489,7 +482,7 @@ static void modripDetectFred(uint32_t address, MemoryAccessFunc func)
 {
   uint32_t offset = 0, i, j;
   BOOLE match = FALSE;
-  struct ModuleInfo info;
+  ModuleInfo info;
   long instData = 0, instDataOffset = 0, instNo = 0, instMax = 0;
   long songData = 0, songDataOffset = 0, songNo = 0;
   long sampSize = 0, sampDataOffset = 0,             sampMax = 0;
@@ -780,7 +773,7 @@ static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
 /* scan the emulated amiga's memory for modules */
 /*==============================================*/
 
-static void modripScanFellowMemory(void)
+static void modripScanFellowMemory()
 {
   uint32_t i, j;
   uint32_t ChipSize = 0, BogoSize = 0, FastSize = 0;
@@ -871,20 +864,17 @@ static BOOLE modripReadFloppyImage(char *filename, char *cache)
 /* scan inserted floppies for modules */
 /*====================================*/
 
-static void modripScanFellowFloppies(void)
+static void modripScanFellowFloppies()
 {
-  int driveNo, j;
-  uint32_t i;
   char cache[MODRIP_FLOPCACHE];
-  BOOLE Read;
 
   modripCurrentFloppyCache = cache;
 
-  for(driveNo = 0; driveNo < 4; driveNo++) { /* for each drive */
+  for(int driveNo = 0; driveNo < 4; driveNo++) { /* for each drive */
     if(floppy[driveNo].inserted) { /* check if a floppy is inserted */
       if(modripGuiRipFloppy(driveNo)) { /* does the user want to rip? */
 	memset(cache, 0, MODRIP_FLOPCACHE);
-	Read = FALSE;
+	BOOLE Read = FALSE;
 	if(*floppy[driveNo].imagenamereal) {
 	  RIPLOG2("mod-ripper %s\n", floppy[driveNo].imagenamereal);
 	  if(modripReadFloppyImage(floppy[driveNo].imagenamereal, cache))
@@ -897,8 +887,8 @@ static void modripScanFellowFloppies(void)
 	}
 	if(Read) {
 	  /* now really begin the ripping */
-	  for(i = 0; i <= MODRIP_ADFSIZE; i++)
-	    for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+	  for(uint32_t i = 0; i <= MODRIP_ADFSIZE; i++)
+	    for(int j = 0; j < MODRIP_KNOWNFORMATS; j++)
 	      (*DetectFunctions[j])(i, modripFloppyCacheRead);
 	}
       }
@@ -910,7 +900,7 @@ static void modripScanFellowFloppies(void)
 /* do a chipmem dump */
 /*===================*/
 
-void modripChipDump(void)
+void modripChipDump()
 {
   BOOLE Saved = FALSE;
 
@@ -936,10 +926,9 @@ void modripChipDump(void)
 	/* prowiz.exe has been found */
 	if(modripGuiRunProWiz()) {
 	  char commandline[MAX_PATH];
-	  int result;
-	  sprintf(commandline, "prowiz.exe \"%s\"", filenamechip);
+          sprintf(commandline, "prowiz.exe \"%s\"", filenamechip);
 	  fellowAddLog("Running Pro-Wizard: %s ...\n", commandline);
-	  result = system(commandline);
+	  int result = system(commandline);
 	  fellowAddLog("Pro-Wizard call returned: %d\n", result);
 	}
       }
@@ -951,7 +940,7 @@ void modripChipDump(void)
 /* Invokes the mod-ripping                                                    */
 /*============================================================================*/
 
-void modripRIP(void)
+void modripRIP()
 {
   if(!modripGuiInitialize()) return;
   modripGuiSetBusy();

@@ -68,5 +68,5 @@ public:
   void Startup();
   void Shutdown();
 
-  PixelSerializer(void) : GraphicsEvent(), _lastCylinderOutput(FIRST_CYLINDER - 1), _newLine(true), _activated(false) {};
+  PixelSerializer() : GraphicsEvent(), _lastCylinderOutput(FIRST_CYLINDER - 1), _newLine(true), _activated(false) {};
 };
