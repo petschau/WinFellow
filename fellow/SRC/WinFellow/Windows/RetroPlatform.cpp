@@ -1888,7 +1888,11 @@ HWND RetroPlatform::GetTopWindowHandle()
 
   if(bResult) {
     fellowAddLog("RetroPlatform::GetTopWindowHandle(): top window handle returned was %u.\n", lResult);
-    return (HWND)lResult;
+    
+    if (lResult == NULL) // older RetroPlatform versions don't use the top window handle as emulator runs in a separate context
+      return gfxDrvCommon->GetHWND();
+    else 
+      return (HWND)lResult;
   } 
   else
     return nullptr;
