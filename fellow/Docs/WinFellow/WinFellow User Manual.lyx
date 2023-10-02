@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.10 (2023/09/13)
+v0.5.10 (2023/10/02)
 \end_layout
 
 \begin_layout Author
@@ -332,22 +332,22 @@ Thank you for your interest in WinFellow.
 \end_layout
 
 \begin_layout Itemize
-New features:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-tbd
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
 Bug fixes:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-Addressed the following mostly CPU related issues:
+code refactoring based on statical analysis
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+replace custom datatypes with standard sized C++ types 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+addressed the following mostly CPU related issues:
 \end_layout
 
 \begin_deeper
@@ -421,11 +421,11 @@ Changes to cycle calculation for BSET/BCGH.
 \end_layout
 
 \begin_layout Itemize
-Set undefined div flags according to behaviour on 68000
+Set undefined div flags according to behaviour on 68000.
 \end_layout
 
 \begin_layout Itemize
-Move to SR, check supervisor level before evaluating ea
+Move to SR, check supervisor level before evaluating ea.
 \end_layout
 
 \begin_layout Itemize
@@ -433,36 +433,30 @@ Include exception time in cycle time for chk.
 \end_layout
 
 \begin_layout Itemize
-Handle bkpt differenly from illegal
+Handle bkpt differenly from illegal.
 \end_layout
 
 \begin_layout Itemize
-Broken overflow and other special cases for mull
+Broken overflow and other special cases for mull.
 \end_layout
 
 \begin_layout Itemize
 Handle supervisor check differently for move from sr to avoid returning
- result when throwing exception
+ result when throwing exception.
 \end_layout
 
 \begin_layout Itemize
 Missing address mask in rtarea memory handling (for when upper address byte
- contains data)
+ contains data).
 \end_layout
 
 \begin_layout Itemize
-Trapcc had wrong pc in the stack frame
+Trapcc had wrong pc in the stack frame.
 \end_layout
 
 \end_deeper
-\end_deeper
 \begin_layout Itemize
-Maintenance updates:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-tbd
+fixed mouse capture for older RetroPlatform hosts
 \end_layout
 
 \end_deeper
