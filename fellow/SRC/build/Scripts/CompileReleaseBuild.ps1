@@ -32,11 +32,11 @@
 
 .DESCRIPTION
 
-.PARAMETER Debug
+.PARAMETER DebugBuild
     If set, a clean debug build will be produced, local modifications will be
     cleaned from the repository beforehand.
 
-.PARAMETER Test
+.PARAMETER TestBuild
     If set, a debug build will be produced while preserving local modifications
     that may be present in the Git repository; the repository will not be cleaned.
 #>
@@ -47,18 +47,15 @@ Param(
     [switch]$TestBuild
 )
 
-Function CheckForExeInSearchPath([string] $exe)
-{
-    If((Get-Command $exe -ErrorAction SilentlyContinue) -eq $null)
-    {
+Function CheckForExeInSearchPath([string] $exe) {
+    If((Get-Command $exe -ErrorAction SilentlyContinue) -eq $null) {
         Write-Error "ERROR: Unable to find $exe in your search PATH!"
         return $false
     }
     return $true
 }
 
-Function ShowProgressIndicator($step, $CurrentOperation)
-{
+Function ShowProgressIndicator($step, $CurrentOperation) {
     $steps = 11
 
     Write-Verbose $CurrentOperation
@@ -72,16 +69,14 @@ Function ShowProgressIndicator($step, $CurrentOperation)
 Set-StrictMode -Version 2.0
 $ErrorActionPreference='Stop'
 
-[string[]] $BuildPlatforms = @('win32', 'x64')
+[string[]] $BuildPlatforms = @('win32', 'x64', 'ARM64')
 
 $FELLOWBUILDPROFILE='Release'
 
-If($DebugBuild)
-{
+If($DebugBuild) {
     $FELLOWBUILDPROFILE='Debug'
 }
-If($TestBuild)
-{
+If($TestBuild) {
     $FELLOWBUILDPROFILE='Debug'
     $DebugPreference   = 'Continue'
     $VerbosePreference = 'Continue'
@@ -112,20 +107,17 @@ Function Main()
 
     cd $SourceCodeBaseDir
 
-    If($FELLOWBUILDPROFILE -eq "Release")
-    {
+    If($FELLOWBUILDPROFILE -eq "Release") {
         ShowProgressIndicator 2 "Release build, checking Git working copy for local modifications..."
 
         $result = (git status --porcelain)
-        If($result -ne $null)
-        {
+        If($result -ne $null) {
             Write-Error "Local working copy contains modifications, aborting - a release build must always be produced from a clean and current working copy."
             exit $result
         }
         $GitBranch = (git rev-parse --abbrev-ref HEAD)
         $result = (git log origin/$GitBranch..HEAD)
-        If($result -ne $null)
-        {
+        If($result -ne $null) {
             Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
             exit $result
         }
@@ -137,37 +129,28 @@ Function Main()
 
     ShowProgressIndicator 4 "Performing clean build of WinFellow..."
 
-    If((Get-Command "vswhere.exe" -ErrorAction SilentlyContinue) -eq $null)
-    {
+    If((Get-Command "vswhere.exe" -ErrorAction SilentlyContinue) -eq $null) {
         Write-Error "Unable to find Visual Studio Locator (vswhere.exe) in your PATH; you can obtain it from http://github.com/Microsoft/vswhere"
     }
 
     $MSBuildPath = vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-    If($MSBuildPath)
-    {
+    If($MSBuildPath) {
         $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\Current\Bin\MSBuild.exe'
-        If(Test-Path $MSBuildPath)
-        {
-            ForEach($CurrentPlatform In $BuildPlatforms)
-            {
+        If(Test-Path $MSBuildPath) {
+            ForEach($CurrentPlatform In $BuildPlatforms) {
                 Write-Verbose "Executing $CurrentPlatform platform build..."
                 $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WinFellow\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$CurrentPlatform /fl /flp:logfile=$MSBuildLog)
 
-                If($LastExitCode -ne 0)
-                {
+                If($LastExitCode -ne 0) {
                     ii $MSBuildLog
                     Pop-Location
                     Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
                 }
             }
-        }
-        Else
-        {
+        } Else {
             Write-Error "ERROR locating MSBuild.exe."
         }
-    }
-    Else
-    {
+    } Else {
         Write-Error "ERROR locating MSBuild.exe."
     }
 
@@ -201,10 +184,11 @@ Function Main()
     Move-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual.pdf" "$OUTPUTDIR\WinFellow User Manual.pdf"
 
     $PlatformBuildOutputDirs = @{
-        'x86'="$SourceCodeBaseDir\fellow\SRC\WinFellow\win32\$FELLOWBUILDPROFILE";
-        'x64'="$SourceCodeBaseDir\fellow\SRC\WinFellow\x64\$FELLOWBUILDPROFILE"}
-    ForEach($CurrentPlatform In $PlatformBuildOutputDirs.Keys.GetEnumerator())
-    {
+        'x86'   = "$SourceCodeBaseDir\fellow\SRC\WinFellow\win32\$FELLOWBUILDPROFILE"
+        'x64'   = "$SourceCodeBaseDir\fellow\SRC\WinFellow\x64\$FELLOWBUILDPROFILE"
+        'ARM64' = "$SourceCodeBaseDir\fellow\SRC\WinFellow\ARM64\$FELLOWBUILDPROFILE"
+    }
+    ForEach($CurrentPlatform In $PlatformBuildOutputDirs.Keys.GetEnumerator()) {
         $PlatformBuildOutputDir = $PlatformBuildOutputDirs[$CurrentPlatform]
         Write-Debug "PlatformBuildOutputDir = $PlatformBuildOutputDir"
         Move-Item -Force "$PlatformBuildOutputDir\WinFellow.exe" "$OUTPUTDIR\WinFellow-$CurrentPlatform.exe"
@@ -217,12 +201,9 @@ Function Main()
 
     Write-Verbose "Compressing release binary distribution archive..."
     CD $OUTPUTDIR
-    If($FELLOWBUILDPROFILE -eq 'Release')
-    {
+    If($FELLOWBUILDPROFILE -eq 'Release') {
         $BinaryArchiveFullName = "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
-    }
-    Else
-    {
+    } Else {
         $BinaryArchiveFullName = "$TargetOutputDir\WinFellow_v$FELLOWVERSION-Debug.zip"
     }
     Write-Debug "Release binary archive name: $BinaryArchiveFullName"
@@ -237,12 +218,9 @@ Function Main()
     cd $temp
 
     # build combined 32/64 bit installer
-    If($FELLOWBUILDPROFILE -eq 'Release')
-    {
+    If($FELLOWBUILDPROFILE -eq 'Release') {
         $NSISInstallerFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
-    }
-    Else
-    {
+    } Else {
         $NSISInstallerFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}-Debug.exe"
     }
     $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow_NSIS.log")
@@ -251,8 +229,7 @@ Function Main()
 
     cd $SourceCodeBaseDir
 
-    If(($FELLOWBUILDPROFILE -eq 'Release') -Or ($DebugBuild -eq $true))
-    {
+    If(($FELLOWBUILDPROFILE -eq 'Release') -Or ($DebugBuild -eq $true)) {
         ShowProgressIndicator 10 "Cleaning up unwanted parts within Git working copy..."
 
         $result = (git status --porcelain --ignored |
@@ -264,12 +241,9 @@ Function Main()
     }
 
     ShowProgressIndicator 11 "Compressing release source code archive..."
-     If($FELLOWBUILDPROFILE -eq 'Release')
-    {
+    If($FELLOWBUILDPROFILE -eq 'Release') {
         $SourceArchiveFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
-    }
-    Else
-    {
+    } Else {
         $SourceArchiveFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src-Debug.zip"
     }
     Write-Debug "Release source code archive output name: $SourceArchiveFullName"
@@ -289,12 +263,9 @@ Function Main()
     Pop-Location
 }
 
-Try
-{
+Try {
     Main
-}
-Catch
-{
+} Catch {
     $ErrorMessage = $_.Exception | Format-List -Force | Out-String
     Write-Host "[ERROR] A terminating error was encountered. See error details below." -ForegroundColor Red
     Write-Host "$($_.InvocationInfo.PositionMessage)"                                  -ForegroundColor Red

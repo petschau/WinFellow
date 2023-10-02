@@ -327,22 +327,37 @@ What's New in WinFellow 0.5.10?
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to the earlier version 0.5.8, the following changes are included
+ Compared to the earlier version 0.5.9, the following changes are included
  in this build:
 \end_layout
 
+\begin_layout Itemize
+New features:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+a native ARM64 build of WinFellow is now provided as part of the release
+ zip archive
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 Bug fixes:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-code refactoring based on statical analysis
+code refactoring:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-replace custom datatypes with standard sized C++ types 
+solution file reorganisation
+\end_layout
+
+\begin_layout Itemize
+static analysis/replace custom datatypes with standard sized C++ types
 \end_layout
 
 \end_deeper
