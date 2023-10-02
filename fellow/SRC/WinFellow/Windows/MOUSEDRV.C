@@ -166,7 +166,10 @@ void mouseDrvDInputAcquire()
 #ifdef RETRO_PLATFORM
       // call moved here to ensure future compatibility with fullscreen/windowed RP modes
       if (RP.GetHeadlessMode()) {
-        if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND)) != DI_OK)
+        HWND twh = RP.GetTopWindowHandle();
+        if (twh == NULL) // older RetroPlatform versions don't use the top window handle as emulator runs in a separate context
+          twh = gfxDrvCommon->GetHWND();
+        if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, twh, DISCL_EXCLUSIVE | DISCL_FOREGROUND)) != DI_OK)
           mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire() - set cooperative level:", res);
       }
 #endif
