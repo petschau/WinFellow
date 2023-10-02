@@ -337,7 +337,8 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-an ARM64 build of WinFellow is now provided
+a native ARM64 build of WinFellow is now provided as part of the release
+ zip archive
 \end_layout
 
 \end_deeper
