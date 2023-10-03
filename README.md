@@ -28,42 +28,52 @@ WinFellow and its source code are developed and distributed under the terms of t
 
 Source organisation
 -------------------
+The source code is being reorganized into a structure based on solution/project files.
 
 ```
-fellow/src/c
-fellow/src/include
+fellow/SRC
 ```
 
-These directories contain what can be refered to as the emulation engine. This is a
-generic implementation.
+This directory is the main directory for source code. It contains the Visual Studio solution, as well
+as subdirectories for child project specific implementations like the emulator core, the hardfile code,
+68k generator and unit testing infrastructure.
+
+The WinFellow folder contains the original project files that have not yet been reorganized.
+
+```
+fellow/SRC/WinFellow/C
+fellow/SRC/WinFellow/INCLUDE
+```
+
+These directories contain the original parts of what can be refered to as the emulation engine.
+This is a generic implementation.
 
 The C-files are ANSI-C or C++, although the OS-dependent parts might require a specific
 compiler. In the event of changing the C-compiler, some generic header files need to be
 changed for the emulation engine files to work with it.
 
 ```
-fellow/src/uae
-fellow/src/win32/uae
+fellow/SRC/WinFellow/uae
 ```
 
-These directories contain the filesystem module from WinUAE V8.8 and some
+This directory contains the filesystem module from WinUAE V8.8 and some
 other stripped down UAE files needed to interact with it. This module is GPL.
 Explicit permission has been granted to use these files from the respective authors.
 
 ```
-fellow/src/win32/c
-fellow/src/win32/include
+fellow/SRC/WinFellow/Windows
 ```
 
-These directories contain pure win32 (and DirectX) implementations needed to
+This directory contain pure win32 (and DirectX) implementations needed to
 support Fellow on Win32. A workspace setup to compile WinFellow into
 an executable is provided for MS Visual Studio.
 
 ```
-fellow/src/win32/msvc
+fellow/SRC/WinFellow
 ```
 
-This directory contains a MS Visual Studio workspace for the entire Fellow sources.
+This directory contains an MS Visual Studio workspace for the entire Fellow sources.
+
 
 What you need to compile the sources
 ------------------------------------
