@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.10 (2023/10/02)
+v0.5.10 (2023/10/03)
 \end_layout
 
 \begin_layout Author
@@ -348,21 +348,8 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-code refactoring:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-solution file reorganisation
-\end_layout
-
-\begin_layout Itemize
-static analysis/replace custom datatypes with standard sized C++ types
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-addressed the following mostly CPU related issues:
+Thanks to the availability of Toni Wilen's cputester, the following mostly
+ CPU related issues from the basic tests could be addressed:
 \end_layout
 
 \begin_deeper
@@ -394,7 +381,7 @@ Link/Unlk incorrect result on stack when link register was a7.
 \end_layout
 
 \begin_layout Itemize
-Split long reads in two word reads for correct values accross banks that
+Split long reads in two word reads for correct values across banks that
  are not stored consecutively.
 \end_layout
 
@@ -474,6 +461,26 @@ Trapcc had wrong pc in the stack frame.
 fixed mouse capture for older RetroPlatform hosts
 \end_layout
 
+\end_deeper
+\begin_layout Itemize
+Maintenance updates:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+code refactoring:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+solution file reorganisation
+\end_layout
+
+\begin_layout Itemize
+static analysis/replace custom datatypes with standard sized C++ types
+\end_layout
+
+\end_deeper
 \end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes, including
@@ -2510,6 +2517,11 @@ Oscar Sillani
 \noun default
  and anyone else who may have been involved) for their support integrating
  WinFellow into Amiga Forever, and for their continuing efforts.
+\end_layout
+
+\begin_layout Standard
+Thanks also go out to Toni Wilen for making his great cputester tool available
+ for public use.
 \end_layout
 
 \begin_layout Section*
