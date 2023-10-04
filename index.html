@@ -123,6 +123,94 @@
 			</span>
 		</div>
 
+		<h1 class="entry-title">WinFellow v0.5.10 RC-1 released</h1>
+
+		<div class="entry-meta">
+			<span class="entry-date">
+				<a href="http://petschau.github.io/WinFellow/post/2023-10-04-winfellow-v0.5.10-rc-1-released//index.html" rel="bookmark">
+					<time class="entry-date" datetime="2023-10-04 05:49:00 &#43;0000 &#43;0000">
+						October 4, 2023
+					</time>
+				</a>
+			</span>
+		</div>
+
+	</header>
+	
+	<div class="entry-content">
+		<p>There is a new release candidate build of WinFellow v0.5.10 in the GitHub releases section. Compared to the earlier version 0.5.9, the following changes are included in this build:</p>
+<p><strong>New features</strong></p>
+<ul>
+<li>a native ARM64 build of WinFellow is now provided as part of the release zip archive</li>
+</ul>
+<p><strong>Bug Fixes</strong></p>
+<ul>
+<li>Thanks to the availability of Toni Wilen&rsquo;s cputester, the following mostly CPU related issues from the basic tests could be addressed:
+<ul>
+<li>Removed address register as byte source operand in move.</li>
+<li>Various bit-field instruction fixes.</li>
+<li>Incorrect pack/unpk behaviour.</li>
+<li>Trapcc increase pc after condition check to get correct exception stack frame.</li>
+<li>Cas2 select the first compare result value when both compare registers are the same register. Set v flag.</li>
+<li>Link/Unlk incorrect result on stack when link register was a7.</li>
+<li>Split long reads in two word reads for correct values across banks that are not stored consecutively.</li>
+<li>VPOS wraparound fix.</li>
+<li>Exception cycle time changes.</li>
+<li>Fixed various instructions that overwrote exception cycle times with regular instruction time. (when triggering privilege violations etc.)</li>
+<li>Set div cycle times to values closer to the listed cycle times. Still not dynamically calculated, but should be closer.</li>
+<li>Don&rsquo;t trace when instruction was aborted by illegal, privilege or address error.</li>
+<li>CHK.w N flag fix.</li>
+<li>EOR ea vs. data register check for cycle calculation was inverted.</li>
+<li>Changes to cycle calculation for BSET/BCGH.</li>
+<li>Set undefined div flags according to behaviour on 68000.</li>
+<li>Move to SR, check supervisor level before evaluating ea.</li>
+<li>Include exception time in cycle time for chk.</li>
+<li>Handle bkpt differenly from illegal.</li>
+<li>Broken overflow and other special cases for mull.</li>
+<li>Handle supervisor check differently for move from sr to avoid returning result when throwing exception.</li>
+<li>Missing address mask in rtarea memory handling (for when upper address byte contains data).</li>
+<li>Trapcc had wrong pc in the stack frame.</li>
+</ul>
+</li>
+<li>fixed mouse capture for older RetroPlatform hosts</li>
+</ul>
+<p><strong>Maintenance updates</strong></p>
+<ul>
+<li>code refactoring:
+<ul>
+<li>solution file reorganisation</li>
+<li>static analysis/replace custom datatypes with standard sized C++ types</li>
+</ul>
+</li>
+</ul>
+<p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which may not be listed above.</p>
+
+	</div>
+
+	<footer class="entry-meta">
+		<span class="tag-links">		
+			
+                <a href="http://petschau.github.io/WinFellow/tags/news/index.html" rel="tag">News</a>
+            
+                <a href="http://petschau.github.io/WinFellow/tags/releases/index.html" rel="tag">Releases</a>
+            
+		</span>
+	</footer>
+</article> 
+			
+				<article class="post type-post status-publish format-standard hentry">
+
+	
+	<header class="entry-header">
+
+	
+
+		<div class="entry-meta">
+			<span class="cat-links">
+                
+			</span>
+		</div>
+
 		<h1 class="entry-title">WinFellow v0.5.9 released</h1>
 
 		<div class="entry-meta">
