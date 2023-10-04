@@ -27,14 +27,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core.h" />
     <ClInclude Include="CustomChipset\RegisterUtility.h" />
     <ClInclude Include="CustomChipset\Registers.h" />
+    <ClInclude Include="CustomChipset\Sound\Sound.h" />
+    <ClInclude Include="CustomChipset\Sound\SoundConfiguration.h" />
+    <ClInclude Include="CustomChipset\Sound\WavFileWriter.h" />
+    <ClInclude Include="Driver\Drivers.h" />
+    <ClInclude Include="Driver\ISoundDriver.h" />
+    <ClInclude Include="Driver\SoundDriverRuntimeConfiguration.h" />
+    <ClInclude Include="NullDriver\Sound\NullSound.h" />
+    <ClInclude Include="VirtualHost\Core.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core.cpp" />
     <ClCompile Include="CustomChipset\Registers.cpp" />
     <ClCompile Include="CustomChipset\RegisterUtility.cpp" />
+    <ClCompile Include="NullDriver\Sound\NullSound.cpp" />
+    <ClCompile Include="VirtualHost\Core.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

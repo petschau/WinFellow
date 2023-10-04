@@ -25,18 +25,18 @@
 
 /** @file
  * The floppy module handles floppy disc drive emulation.
- * It supports the use of .adf files, and is able to handle gzip (via embedded 
+ * It supports the use of .adf files, and is able to handle gzip (via embedded
  * zlib code) and xdms (also embedded) compressed disc images.
- * 
- * It contains experimental support for .ipf files originating from the C.A.P.S. 
- * project <a href="http://www.softpres.org">Software Preservation Society</a>). 
- * CAPS  * support is not yet fully functional, because timings are not emulated 
+ *
+ * It contains experimental support for .ipf files originating from the C.A.P.S.
+ * project <a href="http://www.softpres.org">Software Preservation Society</a>).
+ * CAPS  * support is not yet fully functional, because timings are not emulated
  * correctly to support copy-protected ("flakey") images.
- * 
- * CAPS support is only available for the 32 bit version, since no 64 bit version 
- * of the library is available. CAPS support is only enabled, when the preprocessor 
+ *
+ * CAPS support is only available for the 32 bit version, since no 64 bit version
+ * of the library is available. CAPS support is only enabled, when the preprocessor
  * definition FELLOW_SUPPORT_CAPS is set - this should be disabled for 64 bit builds.
- * 
+ *
  * @todo CAPS has been renamed to SPS, and a 64 bit version is available;
  *       update to a current version
  * @todo enhance timing for flakey image support
@@ -69,7 +69,7 @@
 #include "zlibwrap.h"
 #include "fileops.h"
 
-#include "CoreHost.h"
+#include "VirtualHost/Core.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps.h"
@@ -97,9 +97,9 @@ using namespace CustomChipset;
 /* Configuration */
 /*---------------*/
 
-floppyinfostruct floppy[4];              /* Info about drives */ 
+floppyinfostruct floppy[4];              /* Info about drives */
 BOOLE floppy_fast;                       /* Select fast floppy transfer */
-uint8_t tmptrack[20*1024*11];                /* Temporary track buffer */
+uint8_t tmptrack[20 * 1024 * 11];                /* Temporary track buffer */
 floppyDMAinfostruct floppy_DMA;          /* Info about a DMA transfer */
 BOOLE floppy_DMA_started;                /* Disk DMA started */
 BOOLE floppy_DMA_read;                   /* DMA read or write */
@@ -116,14 +116,14 @@ uint16_t dskbyt_tmp = 0;
 BOOLE dskbyt1_read = FALSE;
 BOOLE dskbyt2_read = FALSE;
 
-static uint8_t floppyBootBlockOFS[]={
+static uint8_t floppyBootBlockOFS[] = {
   0x44, 0x4f, 0x53, 0x00, 0xc0, 0x20, 0x0f, 0x19, 0x00, 0x00, 0x03, 0x70, 0x43, 0xfa, 0x00, 0x18,
   0x4e, 0xae, 0xff, 0xa0, 0x4a, 0x80, 0x67, 0x0a, 0x20, 0x40, 0x20, 0x68, 0x00, 0x16, 0x70, 0x00,
   0x4e, 0x75, 0x70, 0xff, 0x60, 0xfa, 0x64, 0x6f, 0x73, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x72,
   0x79
 };
 
-static uint8_t floppyBootBlockFFS[]={
+static uint8_t floppyBootBlockFFS[] = {
   0x44, 0x4F, 0x53, 0x01, 0xE3, 0x3D, 0x0E, 0x72, 0x00, 0x00, 0x03, 0x70, 0x43, 0xFA, 0x00, 0x3E,
   0x70, 0x25, 0x4E, 0xAE, 0xFD, 0xD8, 0x4A, 0x80, 0x67, 0x0C, 0x22, 0x40, 0x08, 0xE9, 0x00, 0x06,
   0x00, 0x22, 0x4E, 0xAE, 0xFE, 0x62, 0x43, 0xFA, 0x00, 0x18, 0x4E, 0xAE, 0xFF, 0xA0, 0x4A, 0x80,
@@ -136,14 +136,14 @@ static uint8_t floppyBootBlockFFS[]={
 #ifdef FLOPPY_LOG
 
 char floppylogfilename[MAX_PATH];
-FILE *floppylogfile = 0;
+FILE* floppylogfile = 0;
 
 void floppyLogClear()
 {
   remove(floppylogfilename);
 }
 
-void floppyLog(char *msg)
+void floppyLog(char* msg)
 {
   if (floppylogfile == 0)
   {
@@ -167,21 +167,21 @@ void floppyLogStep(uint32_t drive, uint32_t from, uint32_t to)
   floppyLog(msg);
 }
 
-void floppyLogValue(char *text, uint32_t v)
+void floppyLogValue(char* text, uint32_t v)
 {
   char msg[256];
   sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Value=%.8X PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), v, cpuGetPC());
   floppyLog(msg);
 }
 
-void floppyLogValueWithTicks(char *text, uint32_t v, uint32_t ticks)
+void floppyLogValueWithTicks(char* text, uint32_t v, uint32_t ticks)
 {
   char msg[256];
   sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Value=%.8X Ticks=%.5u PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), v, ticks, cpuGetPC());
   floppyLog(msg);
 }
 
-void floppyLogMessageWithTicks(char *text, uint32_t ticks)
+void floppyLogMessageWithTicks(char* text, uint32_t ticks)
 {
   char msg[256];
   sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Ticks=%.5u PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), ticks, cpuGetPC());
@@ -235,13 +235,13 @@ void wadcon(uint16_t data, uint32_t address)
 
 uint16_t rdskbytr(uint32_t address)
 {
-  uint16_t tmp = (uint16_t)(floppy_DMA_started<<14);
+  uint16_t tmp = (uint16_t)(floppy_DMA_started << 14);
   uint32_t currentX = busGetRasterX();
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
   if (currentX < 114 && !dskbyt1_read)
   {
-    tmp |= 0x8000 | (dskbyt_tmp>>8);
+    tmp |= 0x8000 | (dskbyt_tmp >> 8);
     dskbyt1_read = TRUE;
   }
   else if (currentX >= 114 && !dskbyt2_read)
@@ -311,7 +311,7 @@ void wdsklen(uint16_t data, uint32_t address)
       floppyClearDMAState();
     }
     diskDMAen = 0;
-  }  
+  }
 }
 
 /*----------*/
@@ -341,7 +341,7 @@ int32_t floppySelectedGet()
   {
     if (floppy[i].enabled && floppy[i].sel)
     {
-        return i;
+      return i;
     }
     i++;
   }
@@ -413,11 +413,11 @@ BOOLE floppyIsReady(uint32_t drive)
     {
       if (floppy[drive].idmode)
       {
-	return (floppy[drive].idcount++ < 32);
+        return (floppy[drive].idcount++ < 32);
       }
       else
       {
-	return (floppy[drive].motor && floppy[drive].inserted);
+        return (floppy[drive].motor && floppy[drive].inserted);
       }
     }
   }
@@ -461,7 +461,7 @@ void floppyMotorSet(uint32_t drive, BOOLE mtr)
   {
     drawSetLED(drive, !mtr);
 #ifdef RETRO_PLATFORM
-    if(RP.GetHeadlessMode())
+    if (RP.GetHeadlessMode())
       RP.PostFloppyDriveLED(drive, !mtr ? true : false, false);
 #endif
   }
@@ -504,14 +504,14 @@ void floppyStepSet(BOOLE stp)
     if (floppy[i].sel)
     {
       if (!stp && floppy[i].changed && floppy[i].inserted &&
-	((draw_frame_count - floppy[i].insertedframe) > FLOPPY_INSERTED_DELAY))
+        ((draw_frame_count - floppy[i].insertedframe) > FLOPPY_INSERTED_DELAY))
       {
-	floppy[i].changed = FALSE;
+        floppy[i].changed = FALSE;
       }
       if (!floppy[i].step && !stp)
       {
-	if (!floppy[i].dir) 
-	{
+        if (!floppy[i].dir)
+        {
           if (floppy[i].track < floppy[i].tracks + 3)
           {
 #ifdef FLOPPY_LOG
@@ -524,22 +524,22 @@ void floppyStepSet(BOOLE stp)
               RP.PostFloppyDriveSeek(i, floppy[i].track);
 #endif
           }
-	}
-	else
-	{
-	  if (floppy[i].track > 0) 
-	  {
+        }
+        else
+        {
+          if (floppy[i].track > 0)
+          {
 #ifdef FLOPPY_LOG
-	    floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
+            floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
 #endif
-	    floppy[i].track--;
+            floppy[i].track--;
 
 #ifdef RETRO_PLATFORM
-	    if(RP.GetHeadlessMode())
-	      RP.PostFloppyDriveSeek(i, floppy[i].track);
+            if (RP.GetHeadlessMode())
+              RP.PostFloppyDriveSeek(i, floppy[i].track);
 #endif
-	  }
-	}
+          }
+        }
       }
       floppy[i].step = !stp;
     }
@@ -550,7 +550,7 @@ void floppyStepSet(BOOLE stp)
 /* Will MFM encode one sector from src to dest */
 /*=============================================*/
 
-void floppySectorMfmEncode(uint32_t tra, uint32_t sec, uint8_t *src, uint8_t *dest, uint32_t sync)
+void floppySectorMfmEncode(uint32_t tra, uint32_t sec, uint8_t* src, uint8_t* dest, uint32_t sync)
 {
   uint32_t x, hck = 0, dck = 0;
 
@@ -560,18 +560,18 @@ void floppySectorMfmEncode(uint32_t tra, uint32_t sec, uint8_t *src, uint8_t *de
   *(dest + 1) = 0xaa;
   *(dest + 2) = 0xaa;
   *(dest + 3) = 0xaa;
-  *(dest + 4) = (uint8_t) (sync>>8);
-  *(dest + 5) = (uint8_t) (sync & 0xff);
-  *(dest + 6) = (uint8_t) (sync>>8);
-  *(dest + 7) = (uint8_t) (sync & 0xff);
+  *(dest + 4) = (uint8_t)(sync >> 8);
+  *(dest + 5) = (uint8_t)(sync & 0xff);
+  *(dest + 6) = (uint8_t)(sync >> 8);
+  *(dest + 7) = (uint8_t)(sync & 0xff);
 
   /* Track and sector info */
 
   uint32_t tmp = 0xff000000 | (tra << 16) | (sec << 8) | (11 - sec);
   uint32_t even = (tmp & MFM_MASK);
   uint32_t odd = ((tmp >> 1) & MFM_MASK);
-  *(dest +  8) = (uint8_t) ((odd & 0xff000000)>>24);
-  *(dest +  9) = (uint8_t) ((odd & 0xff0000)>>16);
+  *(dest + 8) = (uint8_t)((odd & 0xff000000) >> 24);
+  *(dest + 9) = (uint8_t)((odd & 0xff0000) >> 16);
   *(dest + 10) = (uint8_t)((odd & 0xff00) >> 8);
   *(dest + 11) = (uint8_t)(odd & 0xff);
   *(dest + 12) = (uint8_t)((even & 0xff000000) >> 24);
@@ -581,64 +581,64 @@ void floppySectorMfmEncode(uint32_t tra, uint32_t sec, uint8_t *src, uint8_t *de
 
   /* Fill unused space */
 
-  for (x = 16 ; x < 48; x++)
+  for (x = 16; x < 48; x++)
   {
     *(dest + x) = MFM_FILLB;
   }
 
   /* Encode data section of sector */
 
-  for (x = 64 ; x < 576; x++)
+  for (x = 64; x < 576; x++)
   {
     tmp = *(src + x - 64);
     odd = (tmp & 0x55);
-    even = (tmp>>1) & 0x55;
-    *(dest + x) = (uint8_t) (even | MFM_FILLB);
-    *(dest + x + 512) = (uint8_t) (odd | MFM_FILLB);
+    even = (tmp >> 1) & 0x55;
+    *(dest + x) = (uint8_t)(even | MFM_FILLB);
+    *(dest + x + 512) = (uint8_t)(odd | MFM_FILLB);
   }
 
   /* Calculate checksum for unused space */
 
-  for(x = 8; x < 48; x += 4)
+  for (x = 8; x < 48; x += 4)
   {
-    hck ^= (((uint32_t) *(dest + x))<<24) | (((uint32_t) *(dest + x + 1))<<16) |
-	    (((uint32_t) *(dest + x + 2))<<8) |  ((uint32_t) *(dest + x + 3));
+    hck ^= (((uint32_t) * (dest + x)) << 24) | (((uint32_t) * (dest + x + 1)) << 16) |
+      (((uint32_t) * (dest + x + 2)) << 8) | ((uint32_t) * (dest + x + 3));
   }
-  even = odd = hck; 
+  even = odd = hck;
   odd >>= 1;
   even |= MFM_FILLL;
   odd |= MFM_FILLL;
-  *(dest + 48) = (uint8_t) ((odd & 0xff000000)>>24);
-  *(dest + 49) = (uint8_t) ((odd & 0xff0000)>>16);
-  *(dest + 50) = (uint8_t) ((odd & 0xff00)>>8);
-  *(dest + 51) = (uint8_t) (odd & 0xff);
-  *(dest + 52) = (uint8_t) ((even & 0xff000000)>>24);
-  *(dest + 53) = (uint8_t) ((even & 0xff0000)>>16);
-  *(dest + 54) = (uint8_t) ((even & 0xff00)>>8);
-  *(dest + 55) = (uint8_t) (even & 0xff);
+  *(dest + 48) = (uint8_t)((odd & 0xff000000) >> 24);
+  *(dest + 49) = (uint8_t)((odd & 0xff0000) >> 16);
+  *(dest + 50) = (uint8_t)((odd & 0xff00) >> 8);
+  *(dest + 51) = (uint8_t)(odd & 0xff);
+  *(dest + 52) = (uint8_t)((even & 0xff000000) >> 24);
+  *(dest + 53) = (uint8_t)((even & 0xff0000) >> 16);
+  *(dest + 54) = (uint8_t)((even & 0xff00) >> 8);
+  *(dest + 55) = (uint8_t)(even & 0xff);
 
   /* Calculate checksum for data section */
 
-  for(x = 64; x < 1088; x += 4)
+  for (x = 64; x < 1088; x += 4)
   {
-    dck ^= (((uint32_t) *(dest + x))<<24) | (((uint32_t) *(dest + x + 1))<<16) |
-	    (((uint32_t) *(dest + x + 2))<< 8) |  ((uint32_t) *(dest + x + 3));
+    dck ^= (((uint32_t) * (dest + x)) << 24) | (((uint32_t) * (dest + x + 1)) << 16) |
+      (((uint32_t) * (dest + x + 2)) << 8) | ((uint32_t) * (dest + x + 3));
   }
   even = odd = dck;
   odd >>= 1;
   even |= MFM_FILLL;
   odd |= MFM_FILLL;
-  *(dest + 56) = (uint8_t) ((odd & 0xff000000)>>24);
-  *(dest + 57) = (uint8_t) ((odd & 0xff0000)>>16);
-  *(dest + 58) = (uint8_t) ((odd & 0xff00)>>8);
-  *(dest + 59) = (uint8_t) (odd & 0xff);
-  *(dest + 60) = (uint8_t) ((even & 0xff000000)>>24);
-  *(dest + 61) = (uint8_t) ((even & 0xff0000)>>16);
-  *(dest + 62) = (uint8_t) ((even & 0xff00)>>8);
-  *(dest + 63) = (uint8_t) (even & 0xff);
+  *(dest + 56) = (uint8_t)((odd & 0xff000000) >> 24);
+  *(dest + 57) = (uint8_t)((odd & 0xff0000) >> 16);
+  *(dest + 58) = (uint8_t)((odd & 0xff00) >> 8);
+  *(dest + 59) = (uint8_t)(odd & 0xff);
+  *(dest + 60) = (uint8_t)((even & 0xff000000) >> 24);
+  *(dest + 61) = (uint8_t)((even & 0xff0000) >> 16);
+  *(dest + 62) = (uint8_t)((even & 0xff00) >> 8);
+  *(dest + 63) = (uint8_t)(even & 0xff);
 }
 
-void floppyGapMfmEncode(uint8_t *dst)
+void floppyGapMfmEncode(uint8_t* dst)
 {
   for (uint32_t i = 0; i < FLOPPY_GAP_BYTES; i++)
   {
@@ -653,12 +653,12 @@ void floppyGapMfmEncode(uint8_t *dst)
 /* Returns the sector number found in the MFM encoded header */
 /*===========================================================*/
 
-uint32_t floppySectorMfmDecode(uint8_t *src, uint8_t *dst, uint32_t track)
+uint32_t floppySectorMfmDecode(uint8_t* src, uint8_t* dst, uint32_t track)
 {
   uint32_t odd = (src[0] << 24) | (src[1] << 16) | (src[2] << 8) | src[3];
   uint32_t even = (src[4] << 24) | (src[5] << 16) | (src[6] << 8) | src[7];
   even &= MFM_MASK;
-  odd  = (odd & MFM_MASK) << 1;
+  odd = (odd & MFM_MASK) << 1;
   even |= odd;
   uint32_t src_ff = (even & 0xff000000) >> 24;
   uint32_t src_sector = (even & 0xff00) >> 8;
@@ -672,7 +672,7 @@ uint32_t floppySectorMfmDecode(uint8_t *src, uint8_t *dst, uint32_t track)
   {
     even = (*(src + i)) & MFM_MASK;
     odd = (*(src + i + 512)) & MFM_MASK;
-    *(dst++) = (uint8_t) ((even<<1) | odd);
+    *(dst++) = (uint8_t)((even << 1) | odd);
   }
   return src_sector;
 }
@@ -684,14 +684,14 @@ uint32_t floppySectorMfmDecode(uint8_t *src, uint8_t *dst, uint32_t track)
 /* returns TRUE if this really was a sector                        */
 /*=================================================================*/
 
-BOOLE floppySectorSave(uint32_t drive, uint32_t track, uint8_t *mfmsrc)
+BOOLE floppySectorSave(uint32_t drive, uint32_t track, uint8_t* mfmsrc)
 {
   uint32_t sector;
   if (!floppyIsWriteProtected(drive))
   {
     if ((sector = floppySectorMfmDecode(mfmsrc, tmptrack, track)) < 11)
     {
-      fseek(floppy[drive].F, floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
+      fseek(floppy[drive].F, floppy[drive].trackinfo[track].file_offset + sector * 512, SEEK_SET);
       fwrite(tmptrack, 1, 512, floppy[drive].F);
 
       // Problem with keeping the MFM for ADFs is that the sector sequence could be anything and they are enumerated. Re-encode from plain data.
@@ -722,13 +722,13 @@ static void floppySetReadOnlyEnforced(uint32_t drive, bool enforce)
 /* Track is MFM tracks (0 - 163) */
 /*===============================*/
 
-void floppyTrackMfmEncode(uint32_t track, uint8_t *src, uint8_t *dst, uint32_t sync)
+void floppyTrackMfmEncode(uint32_t track, uint8_t* src, uint8_t* dst, uint32_t sync)
 {
   for (uint32_t i = 0; i < 11; i++)
   {
-    floppySectorMfmEncode(track, i, src + i*512, dst + i*1088, sync);
+    floppySectorMfmEncode(track, i, src + i * 512, dst + i * 1088, sync);
   }
-  floppyGapMfmEncode(dst + 11*1088);
+  floppyGapMfmEncode(dst + 11 * 1088);
 }
 
 /*=======================================================*/
@@ -738,7 +738,7 @@ void floppyTrackMfmEncode(uint32_t track, uint8_t *src, uint8_t *dst, uint32_t s
 
 void floppyTrackLoad(uint32_t drive, uint32_t track)
 {
-  fseek(floppy[drive].F, track*5632, SEEK_SET);
+  fseek(floppy[drive].F, track * 5632, SEEK_SET);
   fread(tmptrack, 1, 5632, floppy[drive].F);
   floppyTrackMfmEncode(track, tmptrack, floppy[drive].trackinfo[track].mfm_data, 0x4489);
 }
@@ -761,41 +761,41 @@ void floppyError(uint32_t drive, uint32_t errorID)
 
 /** Write the current date/time into the floppy disk buffer.
  */
-static void floppyWriteDiskDate(uint8_t *strBuffer)
+static void floppyWriteDiskDate(uint8_t* strBuffer)
 {
   timeb time;
   const time_t timediff = ((8 * 365 + 2) * (24 * 60 * 60)) * (time_t)1000;
   const time_t msecs_per_day = 24 * 60 * 60 * 1000;
-  
+
   ftime(&time);
 
   time_t sec = time.time;
   sec -= time.timezone * 60;
-  if(time.dstflag) sec += 3600;
-  
+  if (time.dstflag) sec += 3600;
+
   time_t t = sec * 1000 + time.millitm - timediff;
 
-  if(t < 0) t = 0;
+  if (t < 0) t = 0;
 
   time_t days = t / msecs_per_day;
   t -= days * msecs_per_day;
   time_t mins = t / (60 * 1000);
   t -= mins * (60 * 1000);
   time_t ticks = t / (1000 / 50);
-  
-  memoryWriteLongToPointer((uint32_t) days,  strBuffer);
-  memoryWriteLongToPointer((uint32_t) mins,  strBuffer + 4);
-  memoryWriteLongToPointer((uint32_t) ticks, strBuffer + 8);
+
+  memoryWriteLongToPointer((uint32_t)days, strBuffer);
+  memoryWriteLongToPointer((uint32_t)mins, strBuffer + 4);
+  memoryWriteLongToPointer((uint32_t)ticks, strBuffer + 8);
 }
 
 /** Write the checksum into the floppy disk buffer.
  */
-static void floppyWriteDiskChecksum(const uint8_t *strBuffer, uint8_t *strChecksum)
+static void floppyWriteDiskChecksum(const uint8_t* strBuffer, uint8_t* strChecksum)
 {
   uint32_t lChecksum = 0;
 
-  for (int i = 0; i < 512; i+= 4) {
-    const uint8_t *p = strBuffer + i;
+  for (int i = 0; i < 512; i += 4) {
+    const uint8_t* p = strBuffer + i;
     lChecksum += memoryReadLongFromPointer(p);
   }
 
@@ -804,51 +804,51 @@ static void floppyWriteDiskChecksum(const uint8_t *strBuffer, uint8_t *strChecks
   memoryWriteLongToPointer(lChecksum, strChecksum);
 }
 
-bool floppyValidateAmigaDOSVolumeName(const char *strVolumeName)
+bool floppyValidateAmigaDOSVolumeName(const char* strVolumeName)
 {
-  char *strIllegalVolumeNames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
+  char* strIllegalVolumeNames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
   char strIllegalCharacters[2] = { ':', '/' };
   int i;
 
-  if(strVolumeName == nullptr) 
+  if (strVolumeName == nullptr)
     return false;
 
-  if(strVolumeName[0] == '\0') 
+  if (strVolumeName[0] == '\0')
     return false;
 
-  if(strlen(strVolumeName) > 30)
+  if (strlen(strVolumeName) > 30)
     return false;
 
-  for(i = 0; i < 2; i++)
-    if(strchr(strVolumeName, strIllegalCharacters[i]) != nullptr)
+  for (i = 0; i < 2; i++)
+    if (strchr(strVolumeName, strIllegalCharacters[i]) != nullptr)
       return false;
 
-  for(i = 0; i < 7; i++)
-    if(stricmp(strVolumeName, strIllegalVolumeNames[i]) == 0)
+  for (i = 0; i < 7; i++)
+    if (stricmp(strVolumeName, strIllegalVolumeNames[i]) == 0)
       return false;
 
   return true;
 }
 
-static void floppyWriteDiskBootblock(uint8_t *strCylinderContent, bool bFFS, bool bBootable)
+static void floppyWriteDiskBootblock(uint8_t* strCylinderContent, bool bFFS, bool bBootable)
 {
-  strcpy((char *) strCylinderContent, "DOS");
+  strcpy((char*)strCylinderContent, "DOS");
   strCylinderContent[3] = bFFS ? 1 : 0;
 
-  if(bBootable)
-    memcpy(strCylinderContent, 
-      bFFS ? floppyBootBlockFFS : floppyBootBlockOFS, 
+  if (bBootable)
+    memcpy(strCylinderContent,
+      bFFS ? floppyBootBlockFFS : floppyBootBlockOFS,
       bFFS ? sizeof(floppyBootBlockFFS) : sizeof(floppyBootBlockOFS));
 }
 
-static void floppyWriteDiskRootBlock(uint8_t *strCylinderContent, uint32_t lBlockIndex, const uint8_t *strVolumeLabel)
+static void floppyWriteDiskRootBlock(uint8_t* strCylinderContent, uint32_t lBlockIndex, const uint8_t* strVolumeLabel)
 {
-  strCylinderContent[0+3] = 2;
-  strCylinderContent[12+3] = 0x48;
+  strCylinderContent[0 + 3] = 2;
+  strCylinderContent[12 + 3] = 0x48;
   strCylinderContent[312] = strCylinderContent[313] = strCylinderContent[314] = strCylinderContent[315] = 0xff;
-  strCylinderContent[316+2] = (lBlockIndex + 1) >> 8; strCylinderContent[316+3] = (lBlockIndex + 1) & 255;
-  strCylinderContent[432] = (uint8_t) strlen((char *) strVolumeLabel);
-  strcpy((char *) strCylinderContent + 433, (const char *) strVolumeLabel);
+  strCylinderContent[316 + 2] = (lBlockIndex + 1) >> 8; strCylinderContent[316 + 3] = (lBlockIndex + 1) & 255;
+  strCylinderContent[432] = (uint8_t)strlen((char*)strVolumeLabel);
+  strcpy((char*)strCylinderContent + 433, (const char*)strVolumeLabel);
   strCylinderContent[508 + 3] = 1;
   floppyWriteDiskDate(strCylinderContent + 420);
   memcpy(strCylinderContent + 472, strCylinderContent + 420, 3 * 4);
@@ -859,41 +859,41 @@ static void floppyWriteDiskRootBlock(uint8_t *strCylinderContent, uint32_t lBloc
   floppyWriteDiskChecksum(strCylinderContent + 512, strCylinderContent + 512);
 }
 
-bool floppyImageADFCreate(char *strImageFilename, char *strVolumeLabel, bool bFormat, bool bBootable, bool bFFS)
+bool floppyImageADFCreate(char* strImageFilename, char* strVolumeLabel, bool bFormat, bool bBootable, bool bFFS)
 {
   bool bResult = false;
-  uint32_t lImageSize = 2*11*80*512; // 2 tracks per cylinder, 11 sectors per track, 80 cylinders, 512 bytes per sector
-  uint32_t lCylinderSize = 2*11*512; // 2 tracks per cylinder, 11 sectors per track, 512 bytes per sector
+  uint32_t lImageSize = 2 * 11 * 80 * 512; // 2 tracks per cylinder, 11 sectors per track, 80 cylinders, 512 bytes per sector
+  uint32_t lCylinderSize = 2 * 11 * 512; // 2 tracks per cylinder, 11 sectors per track, 512 bytes per sector
 
-  FILE *f = nullptr;
+  FILE* f = nullptr;
 
-  if(bFormat) {
-    if(!floppyValidateAmigaDOSVolumeName(strVolumeLabel)) return false;
+  if (bFormat) {
+    if (!floppyValidateAmigaDOSVolumeName(strVolumeLabel)) return false;
   }
 
   f = fopen(strImageFilename, "wb");
 
-  if(f)
-  { 
-    uint8_t *strCylinderContent = nullptr;
+  if (f)
+  {
+    uint8_t* strCylinderContent = nullptr;
 
-    strCylinderContent = (uint8_t *) malloc(lCylinderSize);
+    strCylinderContent = (uint8_t*)malloc(lCylinderSize);
 
-    if(strCylinderContent)
+    if (strCylinderContent)
     {
-      for(uint32_t i = 0; i < lImageSize; i += lCylinderSize)
+      for (uint32_t i = 0; i < lImageSize; i += lCylinderSize)
       {
         memset(strCylinderContent, 0, lCylinderSize);
 
-        if(bFormat) {
-          if(i == 0)
-	    floppyWriteDiskBootblock(strCylinderContent, 
-              bFFS, 
+        if (bFormat) {
+          if (i == 0)
+            floppyWriteDiskBootblock(strCylinderContent,
+              bFFS,
               bBootable);
-          else if(i == lImageSize / 2)
-	    floppyWriteDiskRootBlock(strCylinderContent, 
-              lImageSize / 1024, 
-              (uint8_t *) strVolumeLabel);
+          else if (i == lImageSize / 2)
+            floppyWriteDiskRootBlock(strCylinderContent,
+              lImageSize / 1024,
+              (uint8_t*)strVolumeLabel);
         }
 
         fwrite(strCylinderContent, lCylinderSize, 1, f);
@@ -916,12 +916,12 @@ bool floppyImageADFCreate(char *strImageFilename, char *strVolumeLabel, bool bFo
 /* Uncompress a BZip image */
 /*=========================*/
 
-BOOLE floppyImageCompressedBZipPrepare(char *diskname, uint32_t drive)
+BOOLE floppyImageCompressedBZipPrepare(char* diskname, uint32_t drive)
 {
-  char *gzname;
+  char* gzname;
   char cmdline[512];
 
-  if( (gzname = fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -939,22 +939,22 @@ BOOLE floppyImageCompressedBZipPrepare(char *diskname, uint32_t drive)
 /* Uncompress a DMS image */
 /*========================*/
 
-BOOLE floppyImageCompressedDMSPrepare(char *diskname, uint32_t drive)
+BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
 {
-  char *gzname;
+  char* gzname;
 
-  if((gzname = fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
-  
+
   USHORT result = dmsUnpack(diskname, gzname);
-  if(result != 0)
+  if (result != 0)
   {
     char szErrorMessage[1024] = "";
 
-    dmsErrMsg(result, (char *) diskname, gzname, (char *) szErrorMessage);
+    dmsErrMsg(result, (char*)diskname, gzname, (char*)szErrorMessage);
 
     fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
 
@@ -972,16 +972,16 @@ BOOLE floppyImageCompressedDMSPrepare(char *diskname, uint32_t drive)
 /* Uncompress a GZipped image */
 /*============================*/
 
-BOOLE floppyImageCompressedGZipPrepare(char *diskname, uint32_t drive)
+BOOLE floppyImageCompressedGZipPrepare(char* diskname, uint32_t drive)
 {
-  char *gzname;
-  if( (gzname = fileopsGetTemporaryFilename()) == nullptr)
+  char* gzname;
+  if ((gzname = fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
 
-  if(!gzUnpack(diskname, gzname))
+  if (!gzUnpack(diskname, gzname))
   {
     free(gzname);
     return FALSE;
@@ -990,7 +990,7 @@ BOOLE floppyImageCompressedGZipPrepare(char *diskname, uint32_t drive)
   strcpy(floppy[drive].imagenamereal, gzname);
   free(gzname);
   floppy[drive].zipped = TRUE;
-  if((access(diskname, 2 )) == -1 )
+  if ((access(diskname, 2)) == -1)
   {
     floppySetReadOnlyEnforced(drive, true);
   }
@@ -1003,30 +1003,30 @@ BOOLE floppyImageCompressedGZipPrepare(char *diskname, uint32_t drive)
 
 void floppyImageCompressedRemove(uint32_t drive)
 {
-  if(floppy[drive].zipped)
+  if (floppy[drive].zipped)
   {
-    if( (!floppyIsWriteProtected(drive)) && 
-      ((access(floppy[drive].imagename, 2)) != -1 )) // file is not read-only
+    if ((!floppyIsWriteProtected(drive)) &&
+      ((access(floppy[drive].imagename, 2)) != -1)) // file is not read-only
     {
-	    char *dotptr = strrchr(floppy[drive].imagename, '.');
-	    if (dotptr != nullptr)
-	    {
-	      if ((strcmpi(dotptr, ".gz") == 0) ||
-	        (strcmpi(dotptr, ".z") == 0) ||
-	        (strcmpi(dotptr, ".adz") == 0))
-	      {
-	        if(!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
-	        {
-	          fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n", 
-			        floppy[drive].imagename);
-	        }
-	        else
-	        {
-	          fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
-			        floppy[drive].imagename);
-	        }
-	      }
-	    }
+      char* dotptr = strrchr(floppy[drive].imagename, '.');
+      if (dotptr != nullptr)
+      {
+        if ((strcmpi(dotptr, ".gz") == 0) ||
+          (strcmpi(dotptr, ".z") == 0) ||
+          (strcmpi(dotptr, ".adz") == 0))
+        {
+          if (!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
+          {
+            fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n",
+              floppy[drive].imagename);
+          }
+          else
+          {
+            fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
+              floppy[drive].imagename);
+          }
+        }
+      }
     }
     floppy[drive].zipped = FALSE;
     remove(floppy[drive].imagenamereal);
@@ -1039,15 +1039,15 @@ void floppyImageCompressedRemove(uint32_t drive)
 /* compressed.                */
 /*============================*/
 
-BOOLE floppyImageCompressedPrepare(char *diskname, uint32_t drive)
+BOOLE floppyImageCompressedPrepare(char* diskname, uint32_t drive)
 {
-  char *dotptr = strrchr(diskname, '.');
+  char* dotptr = strrchr(diskname, '.');
   if (dotptr == nullptr)
   {
     return FALSE;
   }
 
-  if((strcmpi(dotptr, ".bz2") == 0) ||
+  if ((strcmpi(dotptr, ".bz2") == 0) ||
     (strcmpi(dotptr, ".bz") == 0))
   {
     return floppyImageCompressedBZipPrepare(diskname, drive);
@@ -1081,19 +1081,19 @@ void floppyImageRemove(uint32_t drive)
   if (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK ||
     floppy[drive].imagestatus == FLOPPY_STATUS_EXTENDED_OK)
   {
-      if (floppy[drive].zipped)
-      {
-	floppyImageCompressedRemove(drive);
-      }
+    if (floppy[drive].zipped)
+    {
+      floppyImageCompressedRemove(drive);
+    }
   }
 #ifdef FELLOW_SUPPORT_CAPS
-  else if(floppy[drive].imagestatus == FLOPPY_STATUS_IPF_OK)
+  else if (floppy[drive].imagestatus == FLOPPY_STATUS_IPF_OK)
   {
     capsUnloadImage(drive);
   }
 #endif
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
+  if (RP.GetHeadlessMode())
   {
     RP.SendFloppyDriveContent(drive, "", floppyIsWriteProtected(drive) ? true : false);
   }
@@ -1108,7 +1108,7 @@ void floppyImageRemove(uint32_t drive)
 /* Prepare a disk image, ie. uncompress and report errors */
 /*========================================================*/
 
-void floppyImagePrepare(char *diskname, uint32_t drive)
+void floppyImagePrepare(char* diskname, uint32_t drive)
 {
   if (!floppyImageCompressedPrepare(diskname, drive))
   {
@@ -1125,7 +1125,7 @@ void floppyImagePrepare(char *diskname, uint32_t drive)
 /* Returns the image status              */
 /*=======================================*/
 
-uint32_t floppyImageGeometryCheck(fs_navig_point *fsnp, uint32_t drive)
+uint32_t floppyImageGeometryCheck(fs_navig_point* fsnp, uint32_t drive)
 {
   char head[8];
   fread(head, 1, 8, floppy[drive].F);
@@ -1149,7 +1149,7 @@ uint32_t floppyImageGeometryCheck(fs_navig_point *fsnp, uint32_t drive)
   else
   {
     floppy[drive].tracks = fsnp->size / 11264;
-    if ((floppy[drive].tracks*11264) != (uint32_t) fsnp->size)
+    if ((floppy[drive].tracks * 11264) != (uint32_t)fsnp->size)
     {
       floppyError(drive, FLOPPY_ERROR_SIZE);
     }
@@ -1171,11 +1171,11 @@ uint32_t floppyImageGeometryCheck(fs_navig_point *fsnp, uint32_t drive)
 
 void floppyImageNormalLoad(uint32_t drive)
 {
-  for (uint32_t i = 0; i < floppy[drive].tracks*2; i++)
+  for (uint32_t i = 0; i < floppy[drive].tracks * 2; i++)
   {
-    floppy[drive].trackinfo[i].file_offset = i*5632;
+    floppy[drive].trackinfo[i].file_offset = i * 5632;
     floppy[drive].trackinfo[i].mfm_length = 11968 + FLOPPY_GAP_BYTES;
-    floppy[drive].trackinfo[i].mfm_data = floppy[drive].mfm_data + i*(11968 + FLOPPY_GAP_BYTES); 
+    floppy[drive].trackinfo[i].mfm_data = floppy[drive].mfm_data + i * (11968 + FLOPPY_GAP_BYTES);
     floppyTrackLoad(drive, i);
   }
   floppy[drive].inserted = TRUE;
@@ -1194,11 +1194,11 @@ void floppyImageExtendedLoad(uint32_t drive)
 
   /* read table from header containing sync and length words */
   fseek(floppy[drive].F, 8, SEEK_SET);
-  for (i = 0; i < floppy[drive].tracks*2; i++)
+  for (i = 0; i < floppy[drive].tracks * 2; i++)
   {
     fread(tinfo, 1, 4, floppy[drive].F);
-    syncs[i] = (((uint32_t)tinfo[0]) << 8) | ((uint32_t) tinfo[1]);
-    lengths[i] = (((uint32_t)tinfo[2]) << 8) | ((uint32_t) tinfo[3]);
+    syncs[i] = (((uint32_t)tinfo[0]) << 8) | ((uint32_t)tinfo[1]);
+    lengths[i] = (((uint32_t)tinfo[2]) << 8) | ((uint32_t)tinfo[3]);
   }
 
   /* initial offset of track data in file, and in the internal mfm_buffer */
@@ -1206,12 +1206,12 @@ void floppyImageExtendedLoad(uint32_t drive)
   uint32_t mfm_offset = 0;
   /* read the actual track data */
   fseek(floppy[drive].F, file_offset, SEEK_SET);
-  for (i = 0; i < floppy[drive].tracks*2; i++)
+  for (i = 0; i < floppy[drive].tracks * 2; i++)
   {
     floppy[drive].trackinfo[i].mfm_data = floppy[drive].mfm_data + mfm_offset;
     floppy[drive].trackinfo[i].file_offset = file_offset;
     if (!syncs[i]) /* Sync = 0 means AmigaDOS tracks (Stored non-MFM encoded) */
-    { 
+    {
       floppy[drive].trackinfo[i].mfm_length = 11968 + FLOPPY_GAP_BYTES;
       mfm_offset += floppy[drive].trackinfo[i].mfm_length;
       fread(tmptrack, 1, lengths[i], floppy[drive].F);
@@ -1219,14 +1219,14 @@ void floppyImageExtendedLoad(uint32_t drive)
     }
     else /* raw MFM tracks */
     {
-      mfm_offset  += lengths[i] + 2;
+      mfm_offset += lengths[i] + 2;
       floppy[drive].trackinfo[i].mfm_length = lengths[i] + 2;
-      floppy[drive].trackinfo[i].mfm_data[0] = (uint8_t) (syncs[i] >> 8);
-      floppy[drive].trackinfo[i].mfm_data[1] = (uint8_t) (syncs[i] & 0xff);
+      floppy[drive].trackinfo[i].mfm_data[0] = (uint8_t)(syncs[i] >> 8);
+      floppy[drive].trackinfo[i].mfm_data[1] = (uint8_t)(syncs[i] & 0xff);
       fread(floppy[drive].trackinfo[i].mfm_data + 2, 1, lengths[i], floppy[drive].F);
     }
     file_offset += lengths[i];
-  }     
+  }
   floppy[drive].inserted = TRUE;
   floppy[drive].insertedframe = draw_frame_count;
 }
@@ -1238,23 +1238,23 @@ void floppyImageExtendedLoad(uint32_t drive)
 
 void floppyImageIPFLoad(uint32_t drive)
 {
-  uint8_t *LastTrackMFMData = floppy[drive].mfm_data;
+  uint8_t* LastTrackMFMData = floppy[drive].mfm_data;
 
-  if(!capsLoadImage(drive, floppy[drive].F, &floppy[drive].tracks))
+  if (!capsLoadImage(drive, floppy[drive].F, &floppy[drive].tracks))
   {
     fellowAddLog("floppyImageIPFLoad(): Unable to load CAPS IPF Image. Is the Plug-In installed correctly?\n");
     return;
   }
 
-  for (uint32_t i = 0; i < floppy[drive].tracks*2; i++)
+  for (uint32_t i = 0; i < floppy[drive].tracks * 2; i++)
   {
     uint32_t maxtracklength;
-    floppy[drive].trackinfo[i].mfm_data = LastTrackMFMData; 
+    floppy[drive].trackinfo[i].mfm_data = LastTrackMFMData;
 
     capsLoadTrack(drive,
       i,
       floppy[drive].trackinfo[i].mfm_data,
-      &floppy[drive].trackinfo[i].mfm_length, 
+      &floppy[drive].trackinfo[i].mfm_length,
       &maxtracklength,
       floppy[drive].timebuf,
       &floppy[drive].flakey);
@@ -1270,12 +1270,12 @@ void floppyImageIPFLoad(uint32_t drive)
 
 /** Insert an image into a floppy drive
  */
-void floppySetDiskImage(uint32_t drive, char *diskname)
+void floppySetDiskImage(uint32_t drive, char* diskname)
 {
-  fs_navig_point *fsnp;
+  fs_navig_point* fsnp;
   BOOLE bSuccess = FALSE;
 
-  if(floppy[drive].enabled)
+  if (floppy[drive].enabled)
   {
     fellowAddLog("floppySetDiskImage(%u, '%s')...\n", drive, diskname);
   }
@@ -1291,7 +1291,7 @@ void floppySetDiskImage(uint32_t drive, char *diskname)
     floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
     strcpy(floppy[drive].imagename, "");
   }
-  else 
+  else
   {
     if ((fsnp = fsWrapMakePoint(diskname)) == nullptr)
     {
@@ -1305,61 +1305,61 @@ void floppySetDiskImage(uint32_t drive, char *diskname)
       }
       else
       {
-	floppyImagePrepare(diskname, drive);
-	if (floppy[drive].zipped)
-	{
-	  free(fsnp);
-	  if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == nullptr)
-	  {
-	    floppyError(drive, FLOPPY_ERROR_COMPRESS);
-	  }
-	}
-	if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR)
-	{
-    if (!fsnp->writeable)
-      floppySetReadOnlyEnforced(drive, true);
-	  if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
-	    (floppyIsWriteProtected(drive) ? "rb" : "r+b"))) == nullptr)
-	  {
-	    floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
-	  }
-	  else
-	  {
-	    strcpy(floppy[drive].imagename, diskname);
-	    switch (floppyImageGeometryCheck(fsnp, drive))
-	    {
-	      case FLOPPY_STATUS_NORMAL_OK:
-		floppyImageNormalLoad(drive);
-		bSuccess = TRUE;
-		break;
-	      case FLOPPY_STATUS_EXTENDED_OK:
-		floppyImageExtendedLoad(drive);
-		bSuccess = TRUE;
-		break;
-	      case FLOPPY_STATUS_EXTENDED2_OK:
-		fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n",
-		  drive, diskname);
-		break;
+        floppyImagePrepare(diskname, drive);
+        if (floppy[drive].zipped)
+        {
+          free(fsnp);
+          if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == nullptr)
+          {
+            floppyError(drive, FLOPPY_ERROR_COMPRESS);
+          }
+        }
+        if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR)
+        {
+          if (!fsnp->writeable)
+            floppySetReadOnlyEnforced(drive, true);
+          if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
+            (floppyIsWriteProtected(drive) ? "rb" : "r+b"))) == nullptr)
+          {
+            floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
+          }
+          else
+          {
+            strcpy(floppy[drive].imagename, diskname);
+            switch (floppyImageGeometryCheck(fsnp, drive))
+            {
+            case FLOPPY_STATUS_NORMAL_OK:
+              floppyImageNormalLoad(drive);
+              bSuccess = TRUE;
+              break;
+            case FLOPPY_STATUS_EXTENDED_OK:
+              floppyImageExtendedLoad(drive);
+              bSuccess = TRUE;
+              break;
+            case FLOPPY_STATUS_EXTENDED2_OK:
+              fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n",
+                drive, diskname);
+              break;
 #ifdef FELLOW_SUPPORT_CAPS
-	      case FLOPPY_STATUS_IPF_OK:
-		floppyImageIPFLoad(drive);
-		bSuccess = TRUE;
-		break;
+            case FLOPPY_STATUS_IPF_OK:
+              floppyImageIPFLoad(drive);
+              bSuccess = TRUE;
+              break;
 #endif
-	      default:
-		/* Error already set by floppyImageGeometryCheck() */
-		fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: unexpected floppy image geometry status.\n",
-		  drive, diskname);
-		break;
-	    }
+            default:
+              /* Error already set by floppyImageGeometryCheck() */
+              fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: unexpected floppy image geometry status.\n",
+                drive, diskname);
+              break;
+            }
 #ifdef RETRO_PLATFORM
-	    if(RP.GetHeadlessMode() && bSuccess)
-	    {
-        RP.SendFloppyDriveContent(drive, diskname, floppyIsWriteProtected(drive) ? true : false);
-	    }
+            if (RP.GetHeadlessMode() && bSuccess)
+            {
+              RP.SendFloppyDriveContent(drive, diskname, floppyIsWriteProtected(drive) ? true : false);
+            }
 #endif
-	  }
-	}
+          }
+        }
       }
       free(fsnp);
     }
@@ -1386,7 +1386,7 @@ void floppySetReadOnlyConfig(uint32_t drive, BOOLE readonly)
   }
 
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
+  if (RP.GetHeadlessMode())
     RP.SendFloppyDriveReadOnly(drive, readonly ? true : false);
 #endif
 }
@@ -1400,7 +1400,7 @@ void floppySetFastDMA(BOOLE fastDMA)
   floppy_fast = fastDMA;
 
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
+  if (RP.GetHeadlessMode())
     RP.SendFloppyTurbo(fastDMA ? true : false);
 #endif
 }
@@ -1432,10 +1432,10 @@ void floppyDriveTableInit()
     floppy[i].zipped = FALSE;
     floppy[i].changed = TRUE;
     /* Need to be large enough to hold UAE--ADF encoded tracks */
-    floppy[i].mfm_data = (uint8_t *) malloc(FLOPPY_TRACKS*25000);
+    floppy[i].mfm_data = (uint8_t*)malloc(FLOPPY_TRACKS * 25000);
 #ifdef FELLOW_SUPPORT_CAPS
     floppy[i].flakey = FALSE;
-    floppy[i].timebuf = (uint32_t *) malloc(FLOPPY_TRACKS*25000);
+    floppy[i].timebuf = (uint32_t*)malloc(FLOPPY_TRACKS * 25000);
 #endif
   }
 }
@@ -1542,7 +1542,7 @@ BOOLE floppyHasIndex(uint32_t sel_drv)
 
 uint32_t floppyGetLinearTrack(uint32_t sel_drv)
 {
-  return floppy[sel_drv].track*2 + floppy[sel_drv].side;
+  return floppy[sel_drv].track * 2 + floppy[sel_drv].side;
 }
 
 BOOLE floppyIsSpinning(uint32_t sel_drv)
@@ -1571,12 +1571,12 @@ void floppyDMAReadInit(uint32_t drive)
   }
 
   // Workaround, require normal sync with MFM generated from ADF. (North and South (?), Prince of Persia, Lemmings 2)
-  if(floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
+  if (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
     fellowAddLog("floppyDMAReadInit(): WARNING: unusual dsksync value encountered: 0x%x\n", dsksync);
 
-  floppy_DMA.wait_for_sync = (adcon & 0x0400) 
-    && ( (floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) || 
-         (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914 || dsksync == 0x4124)));
+  floppy_DMA.wait_for_sync = (adcon & 0x0400)
+    && ((floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) ||
+      (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914 || dsksync == 0x4124)));
 
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
@@ -1622,7 +1622,7 @@ void floppyDMAWriteInit(int32_t drive)
   BOOLE ended = FALSE;
 
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
+  if (RP.GetHeadlessMode())
     RP.PostFloppyDriveLED(drive, true, true);
 #endif
 
@@ -1641,8 +1641,8 @@ void floppyDMAWriteInit(int32_t drive)
     {
       if (floppySectorSave(drive, track_lin, memory_chip + pos))
       {
-	length -= 1080;
-	pos += 1080;
+        length -= 1080;
+        pos += 1080;
       }
     }
     else
@@ -1761,7 +1761,7 @@ void floppyNextByte(uint32_t sel_drv, uint32_t track)
   uint32_t modulo;
 #ifdef FELLOW_SUPPORT_CAPS
   uint32_t previous_motor_ticks = floppy[sel_drv].motor_ticks;
-  if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK)
+  if (floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK)
   {
     modulo = floppy[sel_drv].trackinfo[track].mfm_length;
   }
@@ -1769,7 +1769,7 @@ void floppyNextByte(uint32_t sel_drv, uint32_t track)
 #endif
   {
     modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
-	     floppy[sel_drv].trackinfo[track].mfm_length;
+      floppy[sel_drv].trackinfo[track].mfm_length;
   }
   if (modulo == 0)
   {
@@ -1782,16 +1782,16 @@ void floppyNextByte(uint32_t sel_drv, uint32_t track)
   }
 
 #ifdef FELLOW_SUPPORT_CAPS
-  if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
+  if (previous_motor_ticks > floppy[sel_drv].motor_ticks)
   {
-    if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK && floppy[sel_drv].flakey)
+    if (floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK && floppy[sel_drv].flakey)
     {
-      uint32_t track = floppy[sel_drv].track;    
+      uint32_t track = floppy[sel_drv].track;
       capsLoadNextRevolution(
-	sel_drv, 
-	floppy[sel_drv].track, 
-	floppy[sel_drv].trackinfo[track].mfm_data, 
-	&floppy[sel_drv].trackinfo[track].mfm_length);
+        sel_drv,
+        floppy[sel_drv].track,
+        floppy[sel_drv].trackinfo[track].mfm_data,
+        &floppy[sel_drv].trackinfo[track].mfm_length);
     }
   }
 #endif
@@ -1801,22 +1801,22 @@ uint16_t prev_byte_under_head = 0;
 void floppyEndOfLine()
 {
   int32_t sel_drv = floppySelectedGet();
-  if (floppyDMAWriteStarted()) 
+  if (floppyDMAWriteStarted())
   {
-    floppyDMAWrite(); 
-    floppy_has_sync = FALSE; 
+    floppyDMAWrite();
+    floppy_has_sync = FALSE;
     return;
   }
-  if (sel_drv == -1) 
+  if (sel_drv == -1)
   {
-    floppy_has_sync = FALSE; 
+    floppy_has_sync = FALSE;
     return;
   }
-  if (floppyIsSpinning(sel_drv)) 
+  if (floppyIsSpinning(sel_drv))
   {
     uint32_t track = floppyGetLinearTrack(sel_drv);
     uint32_t words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
-    for (uint32_t i = 0; i < words; i++) 
+    for (uint32_t i = 0; i < words; i++)
     {
       uint16_t tmpb1 = floppyGetByteUnderHead(sel_drv, track);
       uint16_t word_under_head = (prev_byte_under_head << 8) | tmpb1;
@@ -1833,7 +1833,7 @@ void floppyEndOfLine()
 #ifdef FLOPPY_LOG
       else
       {
-          floppyLogMessageWithTicks("Sync was found on byte boundary", floppy[sel_drv].motor_ticks);
+        floppyLogMessageWithTicks("Sync was found on byte boundary", floppy[sel_drv].motor_ticks);
       }
 #endif
 
@@ -1844,7 +1844,7 @@ void floppyEndOfLine()
 
       if (floppyDMAReadStarted())
       {
-	floppyReadWord(word_under_head, found_sync);
+        floppyReadWord(word_under_head, found_sync);
       }
     }
   }

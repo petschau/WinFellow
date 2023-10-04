@@ -23,39 +23,39 @@
 
 /***********************************************************************/
 /**
-  * @file
-  * Graphics device module
-  *
-  * Framebuffer modes of operation:
-  *
-  * 1. Using the primary buffer non-clipped, with possible back-buffers.
-  *    This applies to fullscreen mode with a framepointer.
-  * 2. Using a secondary buffer to render and then applying the blitter
-  *    to the primary buffer. The primary buffer can be clipped (window)
-  *    or non-clipped (fullscreen). In this mode there are no backbuffers.
-  *
-  * blitmode is used:
-  *  1. When running on the desktop in a window.
-  *  2. In fullscreen mode with a primary surface that
-  *     can not supply a framebuffer pointer.
-  *
-  * Windows:
-  * Two types of windows:
-  *  1. Normal desktop window for desktop operation
-  *  2. Full-screen window for fullscreen mode
-  *
-  * Windows are created and destroyed on emulation start and stop.
-  *
-  * Buffers:
-  * Buffers are created when emulation starts and destroyed
-  * when emulation stops. (Recreated when lost also)
-  *
-  * if blitmode, create single primary buffer
-  * and a secondary buffer for actual rendering in system memory.
-  * if windowed also add a clipper to the primary buffer
-  *
-  * else create a primary buffer (with backbuffers)
-  ***************************************************************************/
+ * @file
+ * Graphics device module
+ *
+ * Framebuffer modes of operation:
+ *
+ * 1. Using the primary buffer non-clipped, with possible back-buffers.
+ *    This applies to fullscreen mode with a framepointer.
+ * 2. Using a secondary buffer to render and then applying the blitter
+ *    to the primary buffer. The primary buffer can be clipped (window)
+ *    or non-clipped (fullscreen). In this mode there are no backbuffers.
+ *
+ * blitmode is used:
+ *  1. When running on the desktop in a window.
+ *  2. In fullscreen mode with a primary surface that
+ *     can not supply a framebuffer pointer.
+ *
+ * Windows:
+ * Two types of windows:
+ *  1. Normal desktop window for desktop operation
+ *  2. Full-screen window for fullscreen mode
+ *
+ * Windows are created and destroyed on emulation start and stop.
+ *
+ * Buffers:
+ * Buffers are created when emulation starts and destroyed
+ * when emulation stops. (Recreated when lost also)
+ *
+ * if blitmode, create single primary buffer
+ * and a secondary buffer for actual rendering in system memory.
+ * if windowed also add a clipper to the primary buffer
+ *
+ * else create a primary buffer (with backbuffers)
+ ***************************************************************************/
 
 #define INITGUID
 
@@ -67,7 +67,6 @@
 
 #include "fellow.h"
 #include "fmem.h"
-#include "sound.h"
 #include "graph.h"
 #include "draw.h"
 #include "kbd.h"
@@ -77,7 +76,6 @@
 #include "gameport.h"
 #include "mousedrv.h"
 #include "joydrv.h"
-#include "sounddrv.h"
 #include "wgui.h"
 #include "ini.h"
 
@@ -116,34 +114,33 @@ struct gfx_drv_ddraw_fullscreen_mode
 
 typedef struct
 {
-  LPGUID               lpGUID;
-  LPSTR                lpDriverDescription;
-  LPSTR                lpDriverName;
-  LPDIRECTDRAW         lpDD;
-  LPDIRECTDRAW2        lpDD2;
-  LPDIRECTDRAWSURFACE  lpDDSPrimary;		        /*!< Primary display surface        */
-  LPDIRECTDRAWSURFACE  lpDDSBack;               /*!< Current backbuffer for Primary */
-  LPDIRECTDRAWSURFACE  lpDDSSecondary;		      /*!< Source surface in blitmode     */
-  DDSURFACEDESC        ddsdPrimary;
-  DDSURFACEDESC        ddsdBack;
-  DDSURFACEDESC        ddsdSecondary;
-  LPDIRECTDRAWCLIPPER  lpDDClipper;
-  felist               *fullscreen_modes;
-  gfx_drv_ddraw_fullscreen_mode   *fullscreen_mode;
-  uint32_t	       buffercount;
-  uint32_t	       maxbuffercount;
-  RECT		       hwnd_clientrect_screen;
-  RECT		       hwnd_clientrect_win;
-  draw_mode            *drawmode;
-  bool		       use_blitter;
-  bool		       can_stretch_y;
-  bool		       no_dd_hardware;
-  bool                 windowed;
+  LPGUID lpGUID;
+  LPSTR lpDriverDescription;
+  LPSTR lpDriverName;
+  LPDIRECTDRAW lpDD;
+  LPDIRECTDRAW2 lpDD2;
+  LPDIRECTDRAWSURFACE lpDDSPrimary;   /*!< Primary display surface        */
+  LPDIRECTDRAWSURFACE lpDDSBack;      /*!< Current backbuffer for Primary */
+  LPDIRECTDRAWSURFACE lpDDSSecondary; /*!< Source surface in blitmode     */
+  DDSURFACEDESC ddsdPrimary;
+  DDSURFACEDESC ddsdBack;
+  DDSURFACEDESC ddsdSecondary;
+  LPDIRECTDRAWCLIPPER lpDDClipper;
+  felist *fullscreen_modes;
+  gfx_drv_ddraw_fullscreen_mode *fullscreen_mode;
+  uint32_t buffercount;
+  uint32_t maxbuffercount;
+  RECT hwnd_clientrect_screen;
+  RECT hwnd_clientrect_win;
+  draw_mode *drawmode;
+  bool use_blitter;
+  bool can_stretch_y;
+  bool no_dd_hardware;
+  bool windowed;
 } gfx_drv_ddraw_device;
 
 gfx_drv_ddraw_device *gfx_drv_ddraw_device_current;
-felist               *gfx_drv_ddraw_devices;
-
+felist *gfx_drv_ddraw_devices;
 
 bool gfx_drv_ddraw_initialized;
 bool gfx_drv_ddraw_clear_borders;
@@ -158,107 +155,107 @@ const char *gfxDrvDDrawErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
-    case DD_OK:				    return "DD_OK";
-    case DDERR_ALREADYINITIALIZED:	    return "DDERR_ALREADYINITIALIZED";
-    case DDERR_BLTFASTCANTCLIP:		    return "DDERR_BLTFASTCANTCLIP";
-    case DDERR_CANNOTATTACHSURFACE:	    return "DDERR_CANNOTATTACHSURFACE";
-    case DDERR_CANNOTDETACHSURFACE:	    return "DDERR_CANNOTDETACHSURFACE";
-    case DDERR_CANTCREATEDC:		    return "DDERR_CANTCREATEDC";
-    case DDERR_CANTDUPLICATE:               return "DDERR_CANTDUPLICATE";
-    case DDERR_CANTLOCKSURFACE:		    return "DDERR_CANTLOCKSURFACE";
-    case DDERR_CANTPAGELOCK:		    return "DDERR_CANTPAGELOCK";
-    case DDERR_CANTPAGEUNLOCK:		    return "DDERR_CANTPAGEUNLOCK";
-    case DDERR_CLIPPERISUSINGHWND:	    return "DDERR_CLIPPERISUSINGHWND";
-    case DDERR_COLORKEYNOTSET:		    return "DDERR_COLORKEYNOTSET";
-    case DDERR_CURRENTLYNOTAVAIL:	    return "DDERR_CURRENTLYNOTAVAIL";
-    case DDERR_DCALREADYCREATED:	    return "DDERR_DCALREADYCREATED";
-    case DDERR_DIRECTDRAWALREADYCREATED:    return "DDERR_DIRECTDRAWALREADYCREATED";
-    case DDERR_EXCEPTION:		    return "DDERR_EXCEPTION";
-    case DDERR_EXCLUSIVEMODEALREADYSET:     return "DDERR_EXCLUSIVEMODEALREADYSET";
-    case DDERR_GENERIC:			    return "DDERR_GENERIC";
-    case DDERR_HEIGHTALIGN:		    return "DDERR_HEIGHTALIGN";
-    case DDERR_HWNDALREADYSET:		    return "DDERR_HWNDALREADYSET";
-    case DDERR_HWNDSUBCLASSED:		    return "DDERR_HWNDSUBCLASSED";
-    case DDERR_IMPLICITLYCREATED:	    return "DDERR_IMPLICITLYCREATED";
-    case DDERR_INCOMPATIBLEPRIMARY:	    return "DDERR_INCOMPATIBLEPRIMARY";
-    case DDERR_INVALIDCAPS:		    return "DDERR_INVALIDCAPS";
-    case DDERR_INVALIDCLIPLIST:		    return "DDERR_INVALIDCLIPLIST";
-    case DDERR_INVALIDDIRECTDRAWGUID:       return "DDERR_INVALIDDIRECTDRAWGUID";
-    case DDERR_INVALIDMODE:		    return "DDERR_INVALIDMODE";
-    case DDERR_INVALIDOBJECT:		    return "DDERR_INVALIDOBJECT";
-    case DDERR_INVALIDPARAMS:		    return "DDERR_INVALIDPARAMS";
-    case DDERR_INVALIDPIXELFORMAT:	    return "DDERR_INVALIDPIXELFORMAT";
-    case DDERR_INVALIDPOSITION:		    return "DDERR_INVALIDPOSITION";
-    case DDERR_INVALIDRECT:		    return "DDERR_INVALIDRECT";
-    case DDERR_INVALIDSURFACETYPE:	    return "DDERR_INVALIDSURFACETYPE";
-    case DDERR_LOCKEDSURFACES:		    return "DDERR_LOCKEDSURFACES";
-    case DDERR_NO3D:			    return "DDERR_NO3D";
-    case DDERR_NOALPHAHW:		    return "DDERR_NOALPHAHW";
-    case DDERR_NOBLTHW:			    return "DDERR_NOBLTHW";
-    case DDERR_NOCLIPLIST:		    return "DDERR_NOCLIPLIST";
-    case DDERR_NOCLIPPERATTACHED:	    return "DDERR_NOCLIPPERATTACHED";
-    case DDERR_NOCOLORCONVHW:		    return "DDERR_NOCOLORCONVHW";
-    case DDERR_NOCOLORKEY:		    return "DDERR_NOCOLORKEY";
-    case DDERR_NOCOLORKEYHW:		    return "DDERR_NOCOLORKEYHW";
-    case DDERR_NOCOOPERATIVELEVELSET:       return "DDERR_NOCOOPERATIVELEVELSET";
-    case DDERR_NODC:			    return "DDERR_NODC";
-    case DDERR_NODDROPSHW:		    return "DDERR_NODDROPSHW";
-    case DDERR_NODIRECTDRAWHW:		    return "DDERR_NODIRECTDRAWHW";
-    case DDERR_NODIRECTDRAWSUPPORT:	    return "DDERR_NODIRECTDRAWSUPPORT";
-    case DDERR_NOEMULATION:		    return "DDERR_NOEMULATION";
-    case DDERR_NOEXCLUSIVEMODE:		    return "DDERR_NOEXCLUSIVEMODE";
-    case DDERR_NOFLIPHW:		    return "DDERR_NOFLIPHW";
-    case DDERR_NOGDI:			    return "DDERR_NOGDI";
-    case DDERR_NOHWND:			    return "DDERR_NOHWND";
-    case DDERR_NOMIPMAPHW:		    return "DDERR_NOMIPMAPHW";
-    case DDERR_NOMIRRORHW:		    return "DDERR_NOMIRRORHW";
-    case DDERR_NOOVERLAYDEST:		    return "DDERR_NOOVERLAYDEST";
-    case DDERR_NOOVERLAYHW:		    return "DDERR_NOOVERLAYHW";
-    case DDERR_NOPALETTEATTACHED:	    return "DDERR_NOPALETTEATTACHED";
-    case DDERR_NOPALETTEHW:		    return "DDERR_NOPALETTEHW";
-    case DDERR_NORASTEROPHW:		    return "DDERR_NORASTEROPHW";
-    case DDERR_NOROTATIONHW:		    return "DDERR_NOROTATIONHW";
-    case DDERR_NOSTRETCHHW:		    return "DDERR_NOSTRETCHHW";
-    case DDERR_NOT4BITCOLOR:		    return "DDERR_NOT4BITCOLOR";
-    case DDERR_NOT4BITCOLORINDEX:	    return "DDERR_NOT4BITCOLORINDEX";
-    case DDERR_NOT8BITCOLOR:		    return "DDERR_NOT8BITCOLOR";
-    case DDERR_NOTAOVERLAYSURFACE:	    return "DDERR_NOTAOVERLAYSURFACE";
-    case DDERR_NOTEXTUREHW:		    return "DDERR_NOTEXTUREHW";
-    case DDERR_NOTFLIPPABLE:		    return "DDERR_NOTFLIPPABLE";
-    case DDERR_NOTFOUND:		    return "DDERR_NOTFOUND";
-    case DDERR_NOTINITIALIZED:		    return "DDERR_NOTINITIALIZED";
-    case DDERR_NOTLOCKED:		    return "DDERR_NOTLOCKED";
-    case DDERR_NOTPAGELOCKED:		    return "DDERR_NOTPAGELOCKED";
-    case DDERR_NOTPALETTIZED:		    return "DDERR_NOTPALETTIZED";
-    case DDERR_NOVSYNCHW:		    return "DDERR_NOVSYNCHW";
-    case DDERR_NOZBUFFERHW:		    return "DDERR_NOZBUFFERHW";
-    case DDERR_NOZOVERLAYHW:		    return "DDERR_NOZOVERLAYHW";
-    case DDERR_OUTOFCAPS:		    return "DDERR_OUTOFCAPS";
-    case DDERR_OUTOFMEMORY:		    return "DDERR_OUTOFMEMORY";
-    case DDERR_OUTOFVIDEOMEMORY:	    return "DDERR_OUTOFVIDEOMEMORY";
-    case DDERR_OVERLAYCANTCLIP:		    return "DDERR_OVERLAYCANTCLIP";
-    case DDERR_OVERLAYCOLORKEYONLYONEACTIVE:return "DDERR_OVERLAYCOLORKEYONLYONEACTIVE";
-    case DDERR_OVERLAYNOTVISIBLE:	    return "DDERR_OVERLAYNOTVISIBLE";
-    case DDERR_PALETTEBUSY:		    return "DDERR_PALETTEBUSY";
+    case DD_OK: return "DD_OK";
+    case DDERR_ALREADYINITIALIZED: return "DDERR_ALREADYINITIALIZED";
+    case DDERR_BLTFASTCANTCLIP: return "DDERR_BLTFASTCANTCLIP";
+    case DDERR_CANNOTATTACHSURFACE: return "DDERR_CANNOTATTACHSURFACE";
+    case DDERR_CANNOTDETACHSURFACE: return "DDERR_CANNOTDETACHSURFACE";
+    case DDERR_CANTCREATEDC: return "DDERR_CANTCREATEDC";
+    case DDERR_CANTDUPLICATE: return "DDERR_CANTDUPLICATE";
+    case DDERR_CANTLOCKSURFACE: return "DDERR_CANTLOCKSURFACE";
+    case DDERR_CANTPAGELOCK: return "DDERR_CANTPAGELOCK";
+    case DDERR_CANTPAGEUNLOCK: return "DDERR_CANTPAGEUNLOCK";
+    case DDERR_CLIPPERISUSINGHWND: return "DDERR_CLIPPERISUSINGHWND";
+    case DDERR_COLORKEYNOTSET: return "DDERR_COLORKEYNOTSET";
+    case DDERR_CURRENTLYNOTAVAIL: return "DDERR_CURRENTLYNOTAVAIL";
+    case DDERR_DCALREADYCREATED: return "DDERR_DCALREADYCREATED";
+    case DDERR_DIRECTDRAWALREADYCREATED: return "DDERR_DIRECTDRAWALREADYCREATED";
+    case DDERR_EXCEPTION: return "DDERR_EXCEPTION";
+    case DDERR_EXCLUSIVEMODEALREADYSET: return "DDERR_EXCLUSIVEMODEALREADYSET";
+    case DDERR_GENERIC: return "DDERR_GENERIC";
+    case DDERR_HEIGHTALIGN: return "DDERR_HEIGHTALIGN";
+    case DDERR_HWNDALREADYSET: return "DDERR_HWNDALREADYSET";
+    case DDERR_HWNDSUBCLASSED: return "DDERR_HWNDSUBCLASSED";
+    case DDERR_IMPLICITLYCREATED: return "DDERR_IMPLICITLYCREATED";
+    case DDERR_INCOMPATIBLEPRIMARY: return "DDERR_INCOMPATIBLEPRIMARY";
+    case DDERR_INVALIDCAPS: return "DDERR_INVALIDCAPS";
+    case DDERR_INVALIDCLIPLIST: return "DDERR_INVALIDCLIPLIST";
+    case DDERR_INVALIDDIRECTDRAWGUID: return "DDERR_INVALIDDIRECTDRAWGUID";
+    case DDERR_INVALIDMODE: return "DDERR_INVALIDMODE";
+    case DDERR_INVALIDOBJECT: return "DDERR_INVALIDOBJECT";
+    case DDERR_INVALIDPARAMS: return "DDERR_INVALIDPARAMS";
+    case DDERR_INVALIDPIXELFORMAT: return "DDERR_INVALIDPIXELFORMAT";
+    case DDERR_INVALIDPOSITION: return "DDERR_INVALIDPOSITION";
+    case DDERR_INVALIDRECT: return "DDERR_INVALIDRECT";
+    case DDERR_INVALIDSURFACETYPE: return "DDERR_INVALIDSURFACETYPE";
+    case DDERR_LOCKEDSURFACES: return "DDERR_LOCKEDSURFACES";
+    case DDERR_NO3D: return "DDERR_NO3D";
+    case DDERR_NOALPHAHW: return "DDERR_NOALPHAHW";
+    case DDERR_NOBLTHW: return "DDERR_NOBLTHW";
+    case DDERR_NOCLIPLIST: return "DDERR_NOCLIPLIST";
+    case DDERR_NOCLIPPERATTACHED: return "DDERR_NOCLIPPERATTACHED";
+    case DDERR_NOCOLORCONVHW: return "DDERR_NOCOLORCONVHW";
+    case DDERR_NOCOLORKEY: return "DDERR_NOCOLORKEY";
+    case DDERR_NOCOLORKEYHW: return "DDERR_NOCOLORKEYHW";
+    case DDERR_NOCOOPERATIVELEVELSET: return "DDERR_NOCOOPERATIVELEVELSET";
+    case DDERR_NODC: return "DDERR_NODC";
+    case DDERR_NODDROPSHW: return "DDERR_NODDROPSHW";
+    case DDERR_NODIRECTDRAWHW: return "DDERR_NODIRECTDRAWHW";
+    case DDERR_NODIRECTDRAWSUPPORT: return "DDERR_NODIRECTDRAWSUPPORT";
+    case DDERR_NOEMULATION: return "DDERR_NOEMULATION";
+    case DDERR_NOEXCLUSIVEMODE: return "DDERR_NOEXCLUSIVEMODE";
+    case DDERR_NOFLIPHW: return "DDERR_NOFLIPHW";
+    case DDERR_NOGDI: return "DDERR_NOGDI";
+    case DDERR_NOHWND: return "DDERR_NOHWND";
+    case DDERR_NOMIPMAPHW: return "DDERR_NOMIPMAPHW";
+    case DDERR_NOMIRRORHW: return "DDERR_NOMIRRORHW";
+    case DDERR_NOOVERLAYDEST: return "DDERR_NOOVERLAYDEST";
+    case DDERR_NOOVERLAYHW: return "DDERR_NOOVERLAYHW";
+    case DDERR_NOPALETTEATTACHED: return "DDERR_NOPALETTEATTACHED";
+    case DDERR_NOPALETTEHW: return "DDERR_NOPALETTEHW";
+    case DDERR_NORASTEROPHW: return "DDERR_NORASTEROPHW";
+    case DDERR_NOROTATIONHW: return "DDERR_NOROTATIONHW";
+    case DDERR_NOSTRETCHHW: return "DDERR_NOSTRETCHHW";
+    case DDERR_NOT4BITCOLOR: return "DDERR_NOT4BITCOLOR";
+    case DDERR_NOT4BITCOLORINDEX: return "DDERR_NOT4BITCOLORINDEX";
+    case DDERR_NOT8BITCOLOR: return "DDERR_NOT8BITCOLOR";
+    case DDERR_NOTAOVERLAYSURFACE: return "DDERR_NOTAOVERLAYSURFACE";
+    case DDERR_NOTEXTUREHW: return "DDERR_NOTEXTUREHW";
+    case DDERR_NOTFLIPPABLE: return "DDERR_NOTFLIPPABLE";
+    case DDERR_NOTFOUND: return "DDERR_NOTFOUND";
+    case DDERR_NOTINITIALIZED: return "DDERR_NOTINITIALIZED";
+    case DDERR_NOTLOCKED: return "DDERR_NOTLOCKED";
+    case DDERR_NOTPAGELOCKED: return "DDERR_NOTPAGELOCKED";
+    case DDERR_NOTPALETTIZED: return "DDERR_NOTPALETTIZED";
+    case DDERR_NOVSYNCHW: return "DDERR_NOVSYNCHW";
+    case DDERR_NOZBUFFERHW: return "DDERR_NOZBUFFERHW";
+    case DDERR_NOZOVERLAYHW: return "DDERR_NOZOVERLAYHW";
+    case DDERR_OUTOFCAPS: return "DDERR_OUTOFCAPS";
+    case DDERR_OUTOFMEMORY: return "DDERR_OUTOFMEMORY";
+    case DDERR_OUTOFVIDEOMEMORY: return "DDERR_OUTOFVIDEOMEMORY";
+    case DDERR_OVERLAYCANTCLIP: return "DDERR_OVERLAYCANTCLIP";
+    case DDERR_OVERLAYCOLORKEYONLYONEACTIVE: return "DDERR_OVERLAYCOLORKEYONLYONEACTIVE";
+    case DDERR_OVERLAYNOTVISIBLE: return "DDERR_OVERLAYNOTVISIBLE";
+    case DDERR_PALETTEBUSY: return "DDERR_PALETTEBUSY";
     case DDERR_PRIMARYSURFACEALREADYEXISTS: return "DDERR_PRIMARYSURFACEALREADYEXISTS";
-    case DDERR_REGIONTOOSMALL:		    return "DDERR_REGIONTOOSMALL";
-    case DDERR_SURFACEALREADYATTACHED:      return "DDERR_SURFACEALREADYATTACHED";
-    case DDERR_SURFACEALREADYDEPENDENT:     return "DDERR_SURFACEALREADYDEPENDENT";
-    case DDERR_SURFACEBUSY:		    return "DDERR_SURFACEBUSY";
-    case DDERR_SURFACEISOBSCURED:	    return "DDERR_SURFACEISOBSCURED";
-    case DDERR_SURFACELOST:		    return "DDERR_SURFACELOST";
-    case DDERR_SURFACENOTATTACHED:          return "DDERR_SURFACENOTATTACHED";
-    case DDERR_TOOBIGHEIGHT:		    return "DDERR_TOOBIGHEIGHT";
-    case DDERR_TOOBIGSIZE:		    return "DDERR_TOOBIGSIZE";
-    case DDERR_TOOBIGWIDTH:		    return "DDERR_TOOBIGWIDTH";
-    case DDERR_UNSUPPORTED:		    return "DDERR_UNSUPPORTED";
-    case DDERR_UNSUPPORTEDFORMAT:	    return "DDERR_UNSUPPORTEDFORMAT";
-    case DDERR_UNSUPPORTEDMASK:		    return "DDERR_UNSUPPORTEDMASK";
-    case DDERR_UNSUPPORTEDMODE:		    return "DDERR_UNSUPPORTEDMODE";
-    case DDERR_VERTICALBLANKINPROGRESS:     return "DDERR_VERTICALBLANKINPROGRESS";
-    case DDERR_WASSTILLDRAWING:		    return "DDERR_WASSTILLDRAWING";
-    case DDERR_WRONGMODE:		    return "DDERR_WRONGMODE";
-    case DDERR_XALIGN:			    return "DDERR_XALIGN";
+    case DDERR_REGIONTOOSMALL: return "DDERR_REGIONTOOSMALL";
+    case DDERR_SURFACEALREADYATTACHED: return "DDERR_SURFACEALREADYATTACHED";
+    case DDERR_SURFACEALREADYDEPENDENT: return "DDERR_SURFACEALREADYDEPENDENT";
+    case DDERR_SURFACEBUSY: return "DDERR_SURFACEBUSY";
+    case DDERR_SURFACEISOBSCURED: return "DDERR_SURFACEISOBSCURED";
+    case DDERR_SURFACELOST: return "DDERR_SURFACELOST";
+    case DDERR_SURFACENOTATTACHED: return "DDERR_SURFACENOTATTACHED";
+    case DDERR_TOOBIGHEIGHT: return "DDERR_TOOBIGHEIGHT";
+    case DDERR_TOOBIGSIZE: return "DDERR_TOOBIGSIZE";
+    case DDERR_TOOBIGWIDTH: return "DDERR_TOOBIGWIDTH";
+    case DDERR_UNSUPPORTED: return "DDERR_UNSUPPORTED";
+    case DDERR_UNSUPPORTEDFORMAT: return "DDERR_UNSUPPORTEDFORMAT";
+    case DDERR_UNSUPPORTEDMASK: return "DDERR_UNSUPPORTEDMASK";
+    case DDERR_UNSUPPORTEDMODE: return "DDERR_UNSUPPORTEDMODE";
+    case DDERR_VERTICALBLANKINPROGRESS: return "DDERR_VERTICALBLANKINPROGRESS";
+    case DDERR_WASSTILLDRAWING: return "DDERR_WASSTILLDRAWING";
+    case DDERR_WRONGMODE: return "DDERR_WRONGMODE";
+    case DDERR_XALIGN: return "DDERR_XALIGN";
   }
   return "Not a DirectDraw Error";
 }
@@ -314,9 +311,7 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
 /* Select the correct drawing surface for a draw operation                  */
 /*==========================================================================*/
 
-void gfxDrvDDrawDrawTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device,
-  LPDIRECTDRAWSURFACE *lpDDS,
-  LPDDSURFACEDESC *lpDDSD)
+void gfxDrvDDrawDrawTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSURFACE *lpDDS, LPDDSURFACEDESC *lpDDSD)
 {
   if (ddraw_device->use_blitter)
   {
@@ -351,7 +346,6 @@ void gfxDrvDDrawClipperRelease(gfx_drv_ddraw_device *ddraw_device)
     ddraw_device->lpDDClipper = nullptr;
   }
 }
-
 
 /*==========================================================================*/
 /* Initialize clipper                                                       */
@@ -388,16 +382,12 @@ bool gfxDrvDDrawClipperInitialize(gfx_drv_ddraw_device *ddraw_device)
   return (err == DD_OK);
 }
 
-
 /*==========================================================================*/
 /* Callback used to collect information about available DirectDraw devices  */
 /* Called on emulator startup                                               */
 /*==========================================================================*/
 
-BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
-  LPSTR lpDriverDescription,
-  LPSTR lpDriverName,
-  LPVOID lpContext)
+BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext)
 {
   gfx_drv_ddraw_device *tmpdev = static_cast<gfx_drv_ddraw_device *>(malloc(sizeof(gfx_drv_ddraw_device)));
   memset(tmpdev, 0, sizeof(gfx_drv_ddraw_device));
@@ -419,7 +409,6 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
   return DDENUMRET_OK;
 }
 
-
 /*==========================================================================*/
 /* Dump information about available DirectDraw devices to log               */
 /*==========================================================================*/
@@ -439,7 +428,6 @@ void gfxDrvDDrawDeviceInformationDump()
     fellowAddLog(s);
   }
 }
-
 
 /*==========================================================================*/
 /* Creates a list of available DirectDraw devices                           */
@@ -463,7 +451,6 @@ bool gfxDrvDDrawDeviceInformationInitialize()
   return (listCount(gfx_drv_ddraw_devices) > 0);
 }
 
-
 /*==========================================================================*/
 /* Releases the list of available DirectDraw devices                        */
 /* Called on emulator shutdown                                              */
@@ -486,7 +473,6 @@ void gfxDrvDDrawDeviceInformationRelease()
   gfx_drv_ddraw_devices = nullptr;
 }
 
-
 /*==========================================================================*/
 /* Creates the DirectDraw1 object for the given DirectDraw device           */
 /* Called on emulator startup                                               */
@@ -503,7 +489,6 @@ bool gfxDrvDDraw1ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
   }
   return true;
 }
-
 
 /*==========================================================================*/
 /* Creates the DirectDraw2 object for the given DirectDraw device           */
@@ -531,10 +516,8 @@ bool gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
     }
     else
     {
-      ddraw_device->can_stretch_y = (caps.dwFXCaps & DDFXCAPS_BLTARITHSTRETCHY) ||
-        (caps.dwFXCaps & DDFXCAPS_BLTARITHSTRETCHYN) ||
-        (caps.dwFXCaps & DDFXCAPS_BLTSTRETCHY) ||
-        (caps.dwFXCaps & DDFXCAPS_BLTSHRINKYN);
+      ddraw_device->can_stretch_y = (caps.dwFXCaps & DDFXCAPS_BLTARITHSTRETCHY) || (caps.dwFXCaps & DDFXCAPS_BLTARITHSTRETCHYN) || (caps.dwFXCaps & DDFXCAPS_BLTSTRETCHY) ||
+                                    (caps.dwFXCaps & DDFXCAPS_BLTSHRINKYN);
       if (!ddraw_device->can_stretch_y)
       {
         fellowAddLog("gfxdrv: WARNING: No hardware stretch\n");
@@ -548,7 +531,6 @@ bool gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
   }
   return true;
 }
-
 
 /*==========================================================================*/
 /* Releases the DirectDraw1 object for the given DirectDraw device          */
@@ -571,7 +553,6 @@ bool gfxDrvDDraw1ObjectRelease(gfx_drv_ddraw_device *ddraw_device)
   return (err == DD_OK);
 }
 
-
 /*==========================================================================*/
 /* Releases the DirectDraw2 object for the given DirectDraw device          */
 /* Called on emulator shutdown                                              */
@@ -593,7 +574,6 @@ bool gfxDrvDDraw2ObjectRelease(gfx_drv_ddraw_device *ddraw_device)
   return (err == DD_OK);
 }
 
-
 /*==========================================================================*/
 /* Creates the DirectDraw object for the selected DirectDraw device         */
 /* Called on emulator startup                                               */
@@ -612,7 +592,6 @@ bool gfxDrvDDrawObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
   return result;
 }
 
-
 /*==========================================================================*/
 /* Returns fullscreen mode information                                      */
 /*==========================================================================*/
@@ -622,16 +601,13 @@ gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawFindFullScreenMode(gfx_drv_ddraw_devic
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_fullscreen_mode *tmpmode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
-    if (tmpmode->width == width &&
-      tmpmode->height == height &&
-      tmpmode->depth == depth)
+    if (tmpmode->width == width && tmpmode->height == height && tmpmode->depth == depth)
     {
       return tmpmode;
     }
   }
   return nullptr;
 }
-
 
 /*==========================================================================*/
 /* Describes all the found modes to the draw module                         */
@@ -668,7 +644,6 @@ void gfxDrvDDrawRegisterFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_de
     id++;
   }
 }
-
 
 /*==========================================================================*/
 /* Examines RGB masks for the mode information initializer                  */
@@ -716,17 +691,19 @@ void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_fullscreen_mode *tmpmode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
-    sprintf(s, "gfxdrv: Mode Description: %uWx%uHx%uBPPx%uHZ (%u,%u,%u,%u,%u,%u)",
-      tmpmode->width,
-      tmpmode->height,
-      tmpmode->depth,
-      tmpmode->refresh,
-      tmpmode->redpos,
-      tmpmode->redsize,
-      tmpmode->greenpos,
-      tmpmode->greensize,
-      tmpmode->bluepos,
-      tmpmode->bluesize);
+    sprintf(
+        s,
+        "gfxdrv: Mode Description: %uWx%uHx%uBPPx%uHZ (%u,%u,%u,%u,%u,%u)",
+        tmpmode->width,
+        tmpmode->height,
+        tmpmode->depth,
+        tmpmode->refresh,
+        tmpmode->redpos,
+        tmpmode->redsize,
+        tmpmode->greenpos,
+        tmpmode->greensize,
+        tmpmode->bluepos,
+        tmpmode->bluesize);
     logmessages.emplace_back(s);
   }
   Service->Log.AddLogList(logmessages);
@@ -737,18 +714,19 @@ void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 /* Called on emulator startup                                               */
 /*==========================================================================*/
 
-gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawNewFullScreenMode(uint32_t width,
-  uint32_t height,
-  uint32_t depth,
-  uint32_t refresh,
-  uint32_t redpos,
-  uint32_t redsize,
-  uint32_t greenpos,
-  uint32_t greensize,
-  uint32_t bluepos,
-  uint32_t bluesize)
+gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawNewFullScreenMode(
+    uint32_t width,
+    uint32_t height,
+    uint32_t depth,
+    uint32_t refresh,
+    uint32_t redpos,
+    uint32_t redsize,
+    uint32_t greenpos,
+    uint32_t greensize,
+    uint32_t bluepos,
+    uint32_t bluesize)
 {
-  gfx_drv_ddraw_fullscreen_mode *tmpmode = static_cast<gfx_drv_ddraw_fullscreen_mode*>(malloc(sizeof(gfx_drv_ddraw_fullscreen_mode)));
+  gfx_drv_ddraw_fullscreen_mode *tmpmode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(malloc(sizeof(gfx_drv_ddraw_fullscreen_mode)));
   tmpmode->width = width;
   tmpmode->height = height;
   tmpmode->depth = depth;
@@ -770,37 +748,36 @@ gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawNewFullScreenMode(uint32_t width,
 HRESULT WINAPI gfxDrvDDrawEnumerateFullScreenMode(LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext)
 {
   if (((lpDDSurfaceDesc->ddpfPixelFormat.dwFlags & DDPF_RGB) &&
-    ((lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 16) ||
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 32))))
+       ((lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 16) || (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
+        (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 32))))
   {
     if ((lpDDSurfaceDesc->dwRefreshRate > 1 && lpDDSurfaceDesc->dwRefreshRate < 50) || lpDDSurfaceDesc->dwWidth < 640)
     {
-      //fellowAddLog("gfxDrvDDrawModeEnumerate(): ignoring mode %ux%u, %u bit, %u Hz\n",
-      //  lpDDSurfaceDesc->dwWidth,
-      //  lpDDSurfaceDesc->dwHeight,
-      //  lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
-      //  lpDDSurfaceDesc->dwRefreshRate);
+      // fellowAddLog("gfxDrvDDrawModeEnumerate(): ignoring mode %ux%u, %u bit, %u Hz\n",
+      //   lpDDSurfaceDesc->dwWidth,
+      //   lpDDSurfaceDesc->dwHeight,
+      //   lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
+      //   lpDDSurfaceDesc->dwRefreshRate);
 
       return DDENUMRET_OK;
     }
 
     gfx_drv_ddraw_device *ddraw_device = static_cast<gfx_drv_ddraw_device *>(lpContext);
-    gfx_drv_ddraw_fullscreen_mode *tmpmode = gfxDrvDDrawNewFullScreenMode(lpDDSurfaceDesc->dwWidth,
-      lpDDSurfaceDesc->dwHeight,
-      lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
-      lpDDSurfaceDesc->dwRefreshRate,
-      gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask),
-      gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask),
-      gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask),
-      gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask),
-      gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask),
-      gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask));
+    gfx_drv_ddraw_fullscreen_mode *tmpmode = gfxDrvDDrawNewFullScreenMode(
+        lpDDSurfaceDesc->dwWidth,
+        lpDDSurfaceDesc->dwHeight,
+        lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
+        lpDDSurfaceDesc->dwRefreshRate,
+        gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask),
+        gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask),
+        gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask),
+        gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask),
+        gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask),
+        gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask));
     ddraw_device->fullscreen_modes = listAddLast(ddraw_device->fullscreen_modes, listNew(tmpmode));
   }
   return DDENUMRET_OK;
 }
-
 
 /*==========================================================================*/
 /* Creates a list of available modes on a given DirectDraw device           */
@@ -812,11 +789,7 @@ bool gfxDrvDDrawInitializeFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_
   bool result;
 
   ddraw_device->fullscreen_modes = nullptr;
-  HRESULT err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
-    DDEDM_REFRESHRATES,
-    nullptr,
-    (LPVOID)ddraw_device,
-    gfxDrvDDrawEnumerateFullScreenMode);
+  HRESULT err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2, DDEDM_REFRESHRATES, nullptr, (LPVOID)ddraw_device, gfxDrvDDrawEnumerateFullScreenMode);
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDrawModeInformationInitialize(): ", err);
@@ -839,7 +812,6 @@ bool gfxDrvDDrawInitializeFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_
   return result;
 }
 
-
 /*==========================================================================*/
 /* Releases the list of available modes                                     */
 /* Called on emulator shutdown                                              */
@@ -850,7 +822,6 @@ void gfxDrvDDrawReleaseFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_dev
   listFreeAll(ddraw_device->fullscreen_modes, true);
   ddraw_device->fullscreen_modes = nullptr;
 }
-
 
 /*==========================================================================*/
 /* Set cooperative level                                                    */
@@ -866,7 +837,6 @@ bool gfxDrvDDrawSetCooperativeLevelNormal(gfx_drv_ddraw_device *ddraw_device)
   return (err == DD_OK);
 }
 
-
 bool gfxDrvDDrawSetCooperativeLevelExclusive(gfx_drv_ddraw_device *ddraw_device)
 {
   HRESULT err = IDirectDraw2_SetCooperativeLevel(ddraw_device->lpDD2, gfxDrvCommon->GetHWND(), DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE);
@@ -877,7 +847,6 @@ bool gfxDrvDDrawSetCooperativeLevelExclusive(gfx_drv_ddraw_device *ddraw_device)
   return (err == DD_OK);
 }
 
-
 bool gfxDrvDDrawSetCooperativeLevel(gfx_drv_ddraw_device *ddraw_device)
 {
   if (ddraw_device->windowed)
@@ -886,7 +855,6 @@ bool gfxDrvDDrawSetCooperativeLevel(gfx_drv_ddraw_device *ddraw_device)
   }
   return gfxDrvDDrawSetCooperativeLevelExclusive(ddraw_device);
 }
-
 
 /*==========================================================================*/
 /* Clear surface with blitter                                               */
@@ -906,7 +874,6 @@ void gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSUR
   }
   fellowAddLog("gfxdrv: Clearing surface\n");
 }
-
 
 /*==========================================================================*/
 /* Restore a surface, do some additional cleaning up.                       */
@@ -944,7 +911,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
   return err;
 }
 
-void gfxDrvDDrawCalculateDestinationRectangle(uint32_t output_width, uint32_t output_height, gfx_drv_ddraw_device *ddraw_device, RECT& dstwin)
+void gfxDrvDDrawCalculateDestinationRectangle(uint32_t output_width, uint32_t output_height, gfx_drv_ddraw_device *ddraw_device, RECT &dstwin)
 {
   int upscaled_clip_width = 0;
   int upscaled_clip_height = 0;
@@ -953,8 +920,8 @@ void gfxDrvDDrawCalculateDestinationRectangle(uint32_t output_width, uint32_t ou
   {
     // Fixed scaling
     float upscale_factor = static_cast<float>(drawGetOutputScaleFactor()) / static_cast<float>(drawGetInternalScaleFactor());
-    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
-    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat() * upscale_factor);
+    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat() * upscale_factor);
   }
   else
   {
@@ -1047,7 +1014,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_output_width, gfx_drv_output_height, ddraw_device, dstwin);
 
   /* This can fail when a surface is lost */
-  HRESULT err =    IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
+  HRESULT err = IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Blt failed) ", err);
@@ -1079,7 +1046,6 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
     }
   }
 }
-
 
 /*==========================================================================*/
 /* Release the surfaces                                                     */
@@ -1137,9 +1103,9 @@ uint32_t gfxDrvDDrawVideomemLocationFlags(uint32_t pass)
 {
   switch (pass)
   {
-    case 0: return DDSCAPS_VIDEOMEMORY; /* Local videomemory (default oncard) */
+    case 0: return DDSCAPS_VIDEOMEMORY;                          /* Local videomemory (default oncard) */
     case 1: return DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY; /* Shared videomemory */
-    case 2: return DDSCAPS_SYSTEMMEMORY; /* Plain memory */
+    case 2: return DDSCAPS_SYSTEMMEMORY;                         /* Plain memory */
   }
   return 0;
 }
@@ -1168,10 +1134,7 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
     else
     {
       buffer_allocated = true;
-      fellowAddLog("gfxdrv: Allocated second offscreen surface in %s (%d, %d)\n",
-        gfxDrvDDrawVideomemLocationStr(pass),
-        draw_buffer_info.width,
-        draw_buffer_info.height);
+      fellowAddLog("gfxdrv: Allocated second offscreen surface in %s (%d, %d)\n", gfxDrvDDrawVideomemLocationStr(pass), draw_buffer_info.width, draw_buffer_info.height);
       gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSSecondary);
       result = true;
     }
@@ -1286,16 +1249,21 @@ uint32_t gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
     else
     {
       /* Examine pixelformat */
-      if (((ddpf.dwFlags & DDPF_RGB) &&
-        ((ddpf.dwRGBBitCount == 16) ||
-          (ddpf.dwRGBBitCount == 24) ||
-          (ddpf.dwRGBBitCount == 32))))
+      if (((ddpf.dwFlags & DDPF_RGB) && ((ddpf.dwRGBBitCount == 16) || (ddpf.dwRGBBitCount == 24) || (ddpf.dwRGBBitCount == 32))))
       {
         char pixelFormats[512];
         gfxDrvDDrawPrintPixelFlags(ddpf.dwFlags, pixelFormats);
-        fellowAddLog("gfxdrv: Surface has pixelformat flags %s (%.8X), (%d, %d, %d, %d, %d, %d, %d)\n",
-          pixelFormats, ddpf.dwFlags, ddpf.dwRGBBitCount, gfxDrvRGBMaskPos(ddpf.dwRBitMask), gfxDrvRGBMaskSize(ddpf.dwRBitMask), gfxDrvRGBMaskPos(ddpf.dwGBitMask), 
-          gfxDrvRGBMaskSize(ddpf.dwGBitMask), gfxDrvRGBMaskPos(ddpf.dwBBitMask), gfxDrvRGBMaskSize(ddpf.dwBBitMask));
+        fellowAddLog(
+            "gfxdrv: Surface has pixelformat flags %s (%.8X), (%d, %d, %d, %d, %d, %d, %d)\n",
+            pixelFormats,
+            ddpf.dwFlags,
+            ddpf.dwRGBBitCount,
+            gfxDrvRGBMaskPos(ddpf.dwRBitMask),
+            gfxDrvRGBMaskSize(ddpf.dwRBitMask),
+            gfxDrvRGBMaskPos(ddpf.dwGBitMask),
+            gfxDrvRGBMaskSize(ddpf.dwGBitMask),
+            gfxDrvRGBMaskPos(ddpf.dwBBitMask),
+            gfxDrvRGBMaskSize(ddpf.dwBBitMask));
 
         draw_buffer_info.bits = ddpf.dwRGBBitCount;
         draw_buffer_info.redpos = gfxDrvRGBMaskPos(ddpf.dwRBitMask);
@@ -1437,9 +1405,8 @@ uint8_t *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, uint32_t *pi
     }
   }
   *pitch = lpDDSD->lPitch;
-  return (uint8_t*)lpDDSD->lpSurface;
+  return (uint8_t *)lpDDSD->lpSurface;
 }
-
 
 /*==========================================================================*/
 /* Unlock the primary surface                                               */
@@ -1458,18 +1425,17 @@ void gfxDrvDDrawSurfaceUnlock(gfx_drv_ddraw_device *ddraw_device)
   }
 }
 
-
 /*==========================================================================*/
 /* Flip to next buffer                                                      */
 /*==========================================================================*/
 
 void gfxDrvDDrawFlip()
 {
-  if (gfx_drv_ddraw_device_current->use_blitter)     /* Blit secondary buffer to primary */
+  if (gfx_drv_ddraw_device_current->use_blitter) /* Blit secondary buffer to primary */
   {
     gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device_current);
   }
-  if (gfx_drv_ddraw_device_current->buffercount > 1)    /* Flip buffer if there are several */
+  if (gfx_drv_ddraw_device_current->buffercount > 1) /* Flip buffer if there are several */
   {
     HRESULT err = IDirectDrawSurface_Flip(gfx_drv_ddraw_device_current->lpDDSPrimary, nullptr, DDFLIP_WAIT);
     if (err != DD_OK)
@@ -1478,7 +1444,6 @@ void gfxDrvDDrawFlip()
     }
   }
 }
-
 
 /*==========================================================================*/
 /* Set specified mode                                                       */
@@ -1498,7 +1463,7 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 
     if (!ddraw_device->windowed)
     {
-      gfx_drv_ddraw_fullscreen_mode *mode = static_cast<gfx_drv_ddraw_fullscreen_mode*>(listNode(listIndex(ddraw_device->fullscreen_modes, ddraw_device->drawmode->id)));
+      gfx_drv_ddraw_fullscreen_mode *mode = static_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(listIndex(ddraw_device->fullscreen_modes, ddraw_device->drawmode->id)));
       HRESULT err = IDirectDraw2_SetDisplayMode(ddraw_device->lpDD2, mode->width, mode->height, mode->depth, mode->refresh, 0);
       if (err != DD_OK)
       {
@@ -1522,8 +1487,8 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 void gfxDrvDDrawGetBufferInformation(draw_buffer_information *buffer_information)
 {
   uint32_t internal_scale_factor = drawGetInternalScaleFactor();
-  buffer_information->width = drawGetInternalClip().GetWidth()*internal_scale_factor;
-  buffer_information->height = drawGetInternalClip().GetHeight()*internal_scale_factor;
+  buffer_information->width = drawGetInternalClip().GetWidth() * internal_scale_factor;
+  buffer_information->height = drawGetInternalClip().GetHeight() * internal_scale_factor;
   // color information set later by the surface init code
 }
 
@@ -1557,7 +1522,6 @@ bool gfxDrvDDrawInitialize()
   return result;
 }
 
-
 /*==========================================================================*/
 /* Release any resources allocated by gfxDrvDDrawInitialize                 */
 /* Called on emulator shutdown                                              */
@@ -1573,7 +1537,6 @@ void gfxDrvDDrawRelease()
 /*==========================================================================*/
 /* Functions below are the actual "graphics driver API"                     */
 /*==========================================================================*/
-
 
 void gfxDrvDDrawClearCurrentBuffer()
 {
@@ -1615,7 +1578,6 @@ uint8_t *gfxDrvDDrawValidateBufferPointer()
   }
   return buffer;
 }
-
 
 /*==========================================================================*/
 /* Unlocks surface                                                          */
@@ -1675,18 +1637,18 @@ void gfxDrvDDrawSetMode(draw_mode *dm, bool windowed)
 
 /************************************************************************/
 /**
-  * Emulation is starting.
-  *
-  * Called on emulation start.
-  * Subtlety: In exclusive mode, the window that is attached to the device
-  * appears to become activated, even if it is not shown at the time.
-  * The WM_ACTIVATE message triggers DirectInput acquisition, which means
-  * that the DirectInput object needs to have been created at that time.
-  * Unfortunately, the window must be created as well in order to attach DI
-  * objects to it. So we create window, create DI objects in between and then
-  * do the rest of the gfx init.
-  * That is why gfxDrvEmulationStart is split in two.
-  ***************************************************************************/
+ * Emulation is starting.
+ *
+ * Called on emulation start.
+ * Subtlety: In exclusive mode, the window that is attached to the device
+ * appears to become activated, even if it is not shown at the time.
+ * The WM_ACTIVATE message triggers DirectInput acquisition, which means
+ * that the DirectInput object needs to have been created at that time.
+ * Unfortunately, the window must be created as well in order to attach DI
+ * objects to it. So we create window, create DI objects in between and then
+ * do the rest of the gfx init.
+ * That is why gfxDrvEmulationStart is split in two.
+ ***************************************************************************/
 
 bool gfxDrvDDrawEmulationStart(uint32_t maxbuffercount)
 {
@@ -1694,11 +1656,10 @@ bool gfxDrvDDrawEmulationStart(uint32_t maxbuffercount)
   return true;
 }
 
-
 /************************************************************************/
 /**
-* Emulation is starting, post
-***************************************************************************/
+ * Emulation is starting, post
+ ***************************************************************************/
 
 unsigned int gfxDrvDDrawEmulationStartPost()
 {
@@ -1711,7 +1672,6 @@ unsigned int gfxDrvDDrawEmulationStartPost()
 
   return buffers;
 }
-
 
 /*==========================================================================*/
 /* Emulation is stopping, clean up current videomode                        */
@@ -1736,7 +1696,6 @@ bool gfxDrvDDrawStartup()
   gfx_drv_ddraw_initialized = gfxDrvDDrawInitialize();
   return gfx_drv_ddraw_initialized;
 }
-
 
 /*==========================================================================*/
 /* Free DDraw resources                                                     */
@@ -1778,13 +1737,13 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
     datasize += height * (4 - width * bpp % 4);
   }
 
-  memset((void*)&bfh, 0, sizeof(bfh));
+  memset((void *)&bfh, 0, sizeof(bfh));
 
   bfh.bfType = 'B' + ('M' << 8);
   bfh.bfSize = sizeof(bfh) + sizeof(bih) + datasize;
   bfh.bfOffBits = sizeof(bfh) + sizeof(bih);
 
-  memset((void*)&bih, 0, sizeof(bih));
+  memset((void *)&bih, 0, sizeof(bih));
   bih.biSize = sizeof(bih);
   bih.biWidth = width;
   bih.biHeight = height;
@@ -1792,8 +1751,7 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   bih.biBitCount = bpp * 8;
   bih.biCompression = BI_RGB;
 
-  bitmap = CreateDIBSection(nullptr, (BITMAPINFO *)&bih,
-                            DIB_RGB_COLORS, &data, nullptr, 0);
+  bitmap = CreateDIBSection(nullptr, (BITMAPINFO *)&bih, DIB_RGB_COLORS, &data, nullptr, 0);
 
   if (!bitmap) goto cleanup;
   if (!data) goto cleanup;
@@ -1810,9 +1768,9 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   file = fopen(filename, "wb");
   if (!file) goto cleanup;
 
-  fwrite((void*)&bfh, sizeof(bfh), 1, file);
-  fwrite((void*)&bih, sizeof(bih), 1, file);
-  fwrite((void*)data, 1, datasize, file);
+  fwrite((void *)&bfh, sizeof(bfh), 1, file);
+  fwrite((void *)&bih, sizeof(bih), 1, file);
+  fwrite((void *)data, 1, datasize, file);
 
   bSuccess = TRUE;
 
@@ -1822,14 +1780,20 @@ cleanup:
   if (file) fclose(file);
   if (bitmap) DeleteObject(bitmap);
 
-  fellowAddLog("gfxDrvDDrawSaveScreenshotFromDCArea(hDC=0x%x, width=%d, height=%d, bits=%d, filename='%s' %s.\n",
-    hDC, width, height, bits, filename, bSuccess ? "successful" : "failed");
+  fellowAddLog(
+      "gfxDrvDDrawSaveScreenshotFromDCArea(hDC=0x%x, width=%d, height=%d, bits=%d, filename='%s' %s.\n",
+      hDC,
+      width,
+      height,
+      bits,
+      filename,
+      bSuccess ? "successful" : "failed");
 
   return bSuccess;
 }
 
-static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface,
-  DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, const char *filename) {
+static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface, DWORD x, DWORD y, DWORD width, DWORD height, uint32_t lDisplayScale, const char *filename)
+{
   DDSURFACEDESC ddsd;
   HRESULT hResult = DD_OK;
   HDC surfDC = nullptr;
@@ -1852,13 +1816,14 @@ static bool gfxDrvDDrawSaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface
   return bSuccess;
 }
 
-bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char *filename) 
+bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char *filename)
 {
   bool bResult;
   DWORD width = 0, height = 0, x = 0, y = 0;
   uint32_t lDisplayScale;
 
-  if (bTakeFilteredScreenshot) {
+  if (bTakeFilteredScreenshot)
+  {
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
     {
@@ -1877,12 +1842,13 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char *f
     }
     bResult = gfxDrvDDrawSaveScreenshotFromSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, lDisplayScale, filename);
   }
-  else {
+  else
+  {
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
     {
-      //width and height in RP mode are sized for maximum scale factor
-      // use harcoded RetroPlatform max PAL dimensions from WinUAE
+      // width and height in RP mode are sized for maximum scale factor
+      //  use harcoded RetroPlatform max PAL dimensions from WinUAE
       width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
       height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
     }
@@ -1895,8 +1861,7 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char *f
     bResult = gfxDrvDDrawSaveScreenshotFromSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, 1, filename);
   }
 
-  fellowAddLog("gfxDrvDDrawSaveScreenshot(filtered=%d, filename='%s') %s.\n", bTakeFilteredScreenshot, filename,
-    bResult ? "successful" : "failed");
+  fellowAddLog("gfxDrvDDrawSaveScreenshot(filtered=%d, filename='%s') %s.\n", bTakeFilteredScreenshot, filename, bResult ? "successful" : "failed");
 
   return bResult;
 }

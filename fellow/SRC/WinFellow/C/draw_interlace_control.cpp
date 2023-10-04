@@ -25,7 +25,7 @@
 #include "GRAPH.H"
 #include "DRAW.H"
 #include "draw_interlace_control.h"
-#include "CoreHost.h"
+#include "VirtualHost/Core.h"
 
 typedef struct
 {
@@ -71,7 +71,7 @@ void drawDecideInterlaceStatusForNextFrame()
   {
 
     if ((drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES) &&
-        interlace_status.use_interlaced_rendering)
+      interlace_status.use_interlaced_rendering)
     {
       // Clear buffers when switching back to scanlines from interlaced rendering
       // to avoid a ghost image remaining in the scanlines.
@@ -82,7 +82,7 @@ void drawDecideInterlaceStatusForNextFrame()
     drawReinitializeRendering();
   }
 
-//    fellowAddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
+  //    fellowAddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
 }
 
 void drawInterlaceStartup()

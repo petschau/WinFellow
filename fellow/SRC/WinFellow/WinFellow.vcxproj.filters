@@ -76,6 +76,15 @@
     <Filter Include="Windows">
       <UniqueIdentifier>{0adab2c7-b505-44b5-a2c6-67ce8f273312}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VirtualHost">
+      <UniqueIdentifier>{25b2f21a-8c0b-4ab7-85fc-86be576fed09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\Driver">
+      <UniqueIdentifier>{5cd84858-a406-4181-9bfd-143e9807bbaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\Driver\Sound">
+      <UniqueIdentifier>{d3362cca-2d02-4d07-8940-1a7b0be5fb67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xdms\C\crc_csum.c">
@@ -255,7 +264,7 @@
     <ClCompile Include="C\RtcOkiMsm6242rs.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\SOUND.C">
+    <ClCompile Include="C\Sound.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\SPRITE.C">
@@ -271,9 +280,6 @@
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\uart.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C\WAV.C">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\xdmswrap.c">
@@ -444,9 +450,6 @@
     <ClCompile Include="Windows\RetroPlatformGuestIPC.c">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\SOUNDDRV.C">
-      <Filter>Windows</Filter>
-    </ClCompile>
     <ClCompile Include="Windows\sysinfo.c">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -479,6 +482,15 @@
     </ClCompile>
     <ClCompile Include="zlib\C\infback.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp">
+      <Filter>Windows\Driver\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="C\WavFileWriter.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualHost\CoreFactory.cpp">
+      <Filter>VirtualHost</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -584,9 +596,6 @@
     <ClInclude Include="INCLUDE\CopperRegisters.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\CoreHost.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\CpuIntegration.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -627,9 +636,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\draw_pixelrenderers.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\EVENTID.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\FELLOW.H">
@@ -698,12 +704,6 @@
     <ClInclude Include="INCLUDE\RtcOkiMsm6242rs.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\SOUND.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\SOUNDDRV.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\SPRITE.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -720,9 +720,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\uart.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\WAV.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\WGUI.H">
@@ -937,6 +934,15 @@
     </ClInclude>
     <ClInclude Include="Windows\caps.h">
       <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h">
+      <Filter>Windows\Driver\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h">
+      <Filter>Windows\Driver\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualHost\CoreFactory.h">
+      <Filter>VirtualHost</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

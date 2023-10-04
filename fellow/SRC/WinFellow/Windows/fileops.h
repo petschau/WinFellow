@@ -24,6 +24,8 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#include "DEFS.H"
+
 extern BOOLE fileopsGetFellowLogfileName(char *);
 extern BOOLE fileopsGetGenericFileName(char *, const char *, const char *);
 extern BOOLE fileopsGetDefaultConfigFileName(char *);

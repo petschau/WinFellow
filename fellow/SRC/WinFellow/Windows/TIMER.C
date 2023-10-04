@@ -22,7 +22,6 @@
 /*=========================================================================*/
 #include <list>
 #include "defs.h"
-#include "sound.h"
 #include <windows.h>
 #include "fellow.h"
 #include "TIMER.H"
@@ -68,47 +67,47 @@ void timerAddCallback(timerCallbackFunction callback)
 
 void timerEmulationStart()
 {
-    TIMECAPS timecaps;
+  TIMECAPS timecaps;
 
-    timer_ticks = 0;
-    MMRESULT mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
-    if(mmres != TIMERR_NOERROR)
-    {
-      fellowAddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
-      timer_running = false;
-      return;
-    }
+  timer_ticks = 0;
+  MMRESULT mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
+  if (mmres != TIMERR_NOERROR)
+  {
+    fellowAddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
+    timer_running = false;
+    return;
+  }
 
-    fellowAddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+  fellowAddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
 
-    timer_mmresolution = timecaps.wPeriodMin;
+  timer_mmresolution = timecaps.wPeriodMin;
 
-    mmres = timeBeginPeriod(timer_mmresolution);
-    if(mmres != TIMERR_NOERROR)
-    {
-      fellowAddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
-      timer_running = false;
-      return;
-    }
+  mmres = timeBeginPeriod(timer_mmresolution);
+  if (mmres != TIMERR_NOERROR)
+  {
+    fellowAddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
+    timer_running = false;
+    return;
+  }
 
-    mmres = timeSetEvent(1, 0, timerCallback, (DWORD_PTR)0, (UINT)TIME_PERIODIC);
-    if(mmres == 0)
-    {
-      fellowAddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
-      timer_running = false;
-      return;
-    }
-    timer_mmtimer = mmres;
-    timer_running = true;
+  mmres = timeSetEvent(1, 0, timerCallback, (DWORD_PTR)0, (UINT)TIME_PERIODIC);
+  if (mmres == 0)
+  {
+    fellowAddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
+    timer_running = false;
+    return;
+  }
+  timer_mmtimer = mmres;
+  timer_running = true;
 }
 
 void timerEmulationStop()
 {
   if (timer_running)
   {
-    MMRESULT mmres = timeKillEvent(timer_mmtimer);  
+    MMRESULT mmres = timeKillEvent(timer_mmtimer);
     mmres = timeEndPeriod(timer_mmresolution);
-    if(mmres != TIMERR_NOERROR)
+    if (mmres != TIMERR_NOERROR)
     {
       fellowAddLog("timer: timerEmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
     }

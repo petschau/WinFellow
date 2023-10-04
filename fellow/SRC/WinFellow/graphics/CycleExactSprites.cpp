@@ -34,7 +34,7 @@
 #include "SpriteP2CDecoder.h"
 #include "SpriteMerger.h"
 #include "CycleExactSprites.h"
-#include "CoreHost.h"
+#include "VirtualHost/Core.h"
 #include "Graphics.h"
 
 using namespace CustomChipset;
@@ -73,25 +73,25 @@ void CycleExactSprites::Arm(uint32_t sprite_number)
 
 void CycleExactSprites::MergeLores(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t* playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t* sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeLores(spriteNo, playfield, sprite_data, pixel_count);
 }
 
 void CycleExactSprites::MergeHires(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t* playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t* sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHires(spriteNo, playfield, sprite_data, pixel_count);
 }
 
 void CycleExactSprites::MergeHam(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  uint8_t *ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
-  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t* playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t* ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
+  uint8_t* sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHam(spriteNo, playfield, ham_sprites_playfield, sprite_data, pixel_count);
 }
@@ -141,11 +141,11 @@ void CycleExactSprites::OutputSprite(uint32_t spriteNo, uint32_t startCylinder, 
 
       if (_core.RegisterUtility.IsHiresEnabled())
       {
-        pixel_index = pixel_index*2;  // Hires coordinates
+        pixel_index = pixel_index * 2;  // Hires coordinates
       }
 
       Merge(spriteNo, SpriteState[spriteNo].pixels_output, pixel_index, pixel_count);
-      SpriteState[spriteNo].pixels_output += pixel_count;	
+      SpriteState[spriteNo].pixels_output += pixel_count;
       SpriteState[spriteNo].serializing = (SpriteState[spriteNo].pixels_output < 16);
     }
   }
@@ -227,14 +227,14 @@ void CycleExactSprites::ReadControlWords(uint32_t spriteNo)
 {
   uint16_t pos = ReadWord(spriteNo);
   uint16_t ctl = ReadWord(spriteNo);
-  wsprxpos(pos, 0x140 + spriteNo*8);
-  wsprxctl(ctl, 0x142 + spriteNo*8);
+  wsprxpos(pos, 0x140 + spriteNo * 8);
+  wsprxctl(ctl, 0x142 + spriteNo * 8);
 }
 
 void CycleExactSprites::ReadDataWords(uint32_t spriteNo)
 {
-  wsprxdatb(ReadWord(spriteNo), 0x146 + spriteNo*8);
-  wsprxdata(ReadWord(spriteNo), 0x144 + spriteNo*8);
+  wsprxdatb(ReadWord(spriteNo), 0x146 + spriteNo * 8);
+  wsprxdata(ReadWord(spriteNo), 0x144 + spriteNo * 8);
 }
 
 bool CycleExactSprites::IsFirstLine(uint32_t spriteNo, uint32_t rasterY)
@@ -258,7 +258,7 @@ void CycleExactSprites::DMAReadControl(uint32_t spriteNo, uint32_t rasterY)
 
   if (IsFirstLine(spriteNo, rasterY))
   {
-    SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_DATA;	
+    SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_DATA;
   }
   else
   {
@@ -303,7 +303,7 @@ void CycleExactSprites::DMAReadData(uint32_t spriteNo, uint32_t rasterY)
 }
 
 void CycleExactSprites::DMAHandler(uint32_t rasterY)
-{  
+{
   if ((dmacon & 0x20) == 0 || rasterY < 0x18)
   {
     return;
@@ -312,19 +312,19 @@ void CycleExactSprites::DMAHandler(uint32_t rasterY)
   rasterY++; // Do DMA for next line
 
   uint32_t spriteNo = 0;
-  while (spriteNo < 8) 
+  while (spriteNo < 8)
   {
-    switch(SpriteState[spriteNo].DMAState.state) 
+    switch (SpriteState[spriteNo].DMAState.state)
     {
-      case SPRITE_DMA_STATE_READ_CONTROL:
-	DMAReadControl(spriteNo, rasterY);
-	break;
-      case SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE:
-	DMAWaitingForFirstLine(spriteNo, rasterY);
-        break;
-      case SPRITE_DMA_STATE_READ_DATA:
-	DMAReadData(spriteNo, rasterY);
-  	break;
+    case SPRITE_DMA_STATE_READ_CONTROL:
+      DMAReadControl(spriteNo, rasterY);
+      break;
+    case SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE:
+      DMAWaitingForFirstLine(spriteNo, rasterY);
+      break;
+    case SPRITE_DMA_STATE_READ_DATA:
+      DMAReadData(spriteNo, rasterY);
+      break;
     }
     spriteNo++;
   }
@@ -351,7 +351,7 @@ void CycleExactSprites::EndOfFrame()
 
 void CycleExactSprites::ClearState()
 {
-  memset(SpriteState, 0, sizeof(Sprite)*8);
+  memset(SpriteState, 0, sizeof(Sprite) * 8);
 }
 
 void CycleExactSprites::HardReset()
