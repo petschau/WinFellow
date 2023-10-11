@@ -5,7 +5,9 @@ title = "WinFellow v0.5.10 released"
 tags = [ "News", "Releases" ]
 +++
 
-There is a new public release of WinFellow v0.5.10 in the GitHub releases section. Compared to the earlier version 0.5.9, the following changes are included in this build:
+There is a new public release of WinFellow v0.5.10 in the GitHub releases section; it had been published earlier as release candidate 1.
+
+Compared to the earlier version 0.5.9, the following changes are included in this build:
 
 **New features**
   - a native ARM64 build of WinFellow is now provided as part of the release zip archive
