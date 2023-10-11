@@ -19,6 +19,12 @@
     <Filter Include="VirtualHost">
       <UniqueIdentifier>{29b4dd9a-9e1c-4a2c-b6c7-80ed23d761f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Service">
+      <UniqueIdentifier>{f3c41e74-a7cd-42f9-9100-12dec86693ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IO">
+      <UniqueIdentifier>{c35a0995-5f62-4a9b-a67d-83090c2ef18b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomChipset\Registers.h">
@@ -51,6 +57,18 @@
     <ClInclude Include="CustomChipset\Sound\WavFileWriter.h">
       <Filter>CustomChipset\Sound</Filter>
     </ClInclude>
+    <ClInclude Include="Service\Log.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Service\IFileops.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Service\ILog.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Uart.h">
+      <Filter>IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -64,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="VirtualHost\Core.cpp">
       <Filter>VirtualHost</Filter>
+    </ClCompile>
+    <ClCompile Include="Service\Log.cpp">
+      <Filter>Service</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

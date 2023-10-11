@@ -28,7 +28,6 @@
 #include "graph.h"
 #include "draw.h"
 #include "fmem.h"
-#include "fileops.h"
 #include "Graphics.h"
 
 using namespace CustomChipset;

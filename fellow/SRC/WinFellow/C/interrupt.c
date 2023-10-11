@@ -23,8 +23,7 @@
 #include "CIA.H"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
-#include "UART.h"
-#include "fileops.h"
+#include "VirtualHost/Core.h"
 
 /** @file
  *  Chipset side of interrupt control 
@@ -262,7 +261,7 @@ void wintreq_direct(uint16_t data, uint32_t address, bool delayIRQ)
   if (interruptHasSetModeBit(data))
   {
     intreq = interruptSetBits(intreq, data);
-    uart.NotifyInterruptRequestBitsChanged(intreq);
+    _core.Uart->NotifyInterruptRequestBitsChanged(intreq);
     interruptRaisePendingInternal(delayIRQ);
   }
   else

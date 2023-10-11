@@ -61,14 +61,10 @@
 #include "cia.h"
 #include "bus.h"
 #include "CpuModule.h"
-#include "fileops.h"
 #include "interrupt.h"
 #include <sys/timeb.h>
-
 #include "xdms.h"
 #include "zlibwrap.h"
-#include "fileops.h"
-
 #include "VirtualHost/Core.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
@@ -921,7 +917,7 @@ BOOLE floppyImageCompressedBZipPrepare(char* diskname, uint32_t drive)
   char* gzname;
   char cmdline[512];
 
-  if ((gzname = fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = _core.Fileops->fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -943,7 +939,7 @@ BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
 {
   char* gzname;
 
-  if ((gzname = fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = _core.Fileops->fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -975,7 +971,7 @@ BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
 BOOLE floppyImageCompressedGZipPrepare(char* diskname, uint32_t drive)
 {
   char* gzname;
-  if ((gzname = fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = _core.Fileops->fileopsGetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;

@@ -1,30 +1,28 @@
-#include "uart.h"
+#include "IO/Uart.h"
 #include "BUS.H"
 #include "FMEM.H"
 #include "interrupt.h"
-#include "fileops.h"
-
-UART uart;
+#include "VirtualHost/Core.h"
 
 /* SERDATR 0xdff018 */
-uint16_t UART::rserdat(uint32_t address)
+uint16_t Uart::rserdat(uint32_t address)
 {
-  return uart.ReadSerdatRegister();
+  return _core.Uart->ReadSerdatRegister();
 }
 
 /* SERDAT 0xdff030 */
-void UART::wserdat(uint16_t data, uint32_t address)
+void Uart::wserdat(uint16_t data, uint32_t address)
 {
-  uart.WriteSerdatRegister(data);
+  _core.Uart->WriteSerdatRegister(data);
 }
 
 /* SERDAT 0xdff032 */
-void UART::wserper(uint16_t data, uint32_t address)
+void Uart::wserper(uint16_t data, uint32_t address)
 {
-  uart.WriteSerperRegister(data);
+  _core.Uart->WriteSerperRegister(data);
 }
 
-uint16_t UART::ReadSerdatRegister()
+uint16_t Uart::ReadSerdatRegister()
 {
   uint16_t data = _receiveBuffer & 0x3ff;
 
@@ -38,7 +36,7 @@ uint16_t UART::ReadSerdatRegister()
   return data;
 }
 
-void UART::WriteSerdatRegister(uint16_t data)
+void Uart::WriteSerdatRegister(uint16_t data)
 {
   _transmitBuffer = data & 0x3ff;
   _transmitBufferEmpty = false;
@@ -49,12 +47,12 @@ void UART::WriteSerdatRegister(uint16_t data)
   }
 }
 
-void UART::WriteSerperRegister(uint16_t data)
+void Uart::WriteSerperRegister(uint16_t data)
 {
   _serper = data;  
 }
 
-uint32_t UART::GetTransmitDoneTime()
+uint32_t Uart::GetTransmitDoneTime()
 {
   int bitsToTransfer = 2 + (Is8BitMode() ? 8 : 9);
   uint32_t cyclesPerBit = GetBitPeriod() + 1;
@@ -62,7 +60,7 @@ uint32_t UART::GetTransmitDoneTime()
   return cyclesPerBit * bitsToTransfer;  
 }
 
-void UART::CopyTransmitBufferToShiftRegister()
+void Uart::CopyTransmitBufferToShiftRegister()
 {
   if (_transmitShiftRegisterEmpty)
   {
@@ -80,14 +78,14 @@ void UART::CopyTransmitBufferToShiftRegister()
   }
 }
 
-void UART::CopyReceiveShiftRegisterToBuffer()
+void Uart::CopyReceiveShiftRegisterToBuffer()
 {
   _receiveBuffer = _receiveShiftRegister;
   _receiveBufferFull = true;  
   wintreq_direct(0x8400, 0xdff09c, true); // RBF interrupt
 }
 
-void UART::NotifyInterruptRequestBitsChanged(uint16_t intreq)
+void Uart::NotifyInterruptRequestBitsChanged(uint16_t intreq)
 {
   // Clear only, or is it directly wired?
   // HRM says overrun is also mirrored from intreq? How?
@@ -98,14 +96,14 @@ void UART::NotifyInterruptRequestBitsChanged(uint16_t intreq)
   }
 }
 
-void UART::InstallIOHandlers()
+void Uart::InstallIOHandlers()
 {
   memorySetIoWriteStub(0x030, wserdat);
   memorySetIoWriteStub(0x32, wserper);
   memorySetIoReadStub(0x018, rserdat);
 }
 
-void UART::ClearState()
+void Uart::ClearState()
 {
   _serper = 0;
 
@@ -122,7 +120,7 @@ void UART::ClearState()
   _receiveDoneTime = BUS_CYCLE_DISABLE;
 }
 
-void UART::LoadState(FILE *F)
+void Uart::LoadState(FILE *F)
 {
   fread(&_serper, sizeof(_serper), 1, F);
   fread(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
@@ -137,7 +135,7 @@ void UART::LoadState(FILE *F)
   fread(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
 }
 
-void UART::SaveState(FILE *F)
+void Uart::SaveState(FILE *F)
 {
   fwrite(&_serper, sizeof(_serper), 1, F);
   fwrite(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
@@ -152,17 +150,17 @@ void UART::SaveState(FILE *F)
   fwrite(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
 }
 
-bool UART::Is8BitMode()
+bool Uart::Is8BitMode()
 {
   return (_serper & 0x8000) == 0;
 }
 
-uint16_t UART::GetBitPeriod()
+uint16_t Uart::GetBitPeriod()
 {
   return _serper & 0x3fff;
 }
 
-void UART::OpenOutputFile()
+void Uart::OpenOutputFile()
 {
   if (_outputFile == nullptr)
   {
@@ -170,7 +168,7 @@ void UART::OpenOutputFile()
   }
 }
 
-void UART::CloseOutputFile()
+void Uart::CloseOutputFile()
 {
   if (_outputFile != nullptr)
   {
@@ -179,7 +177,7 @@ void UART::CloseOutputFile()
   }  
 }
 
-void UART::EndOfLine()
+void Uart::EndOfLine()
 {
   // (Put this in an event with an exact time-stamp)
 
@@ -209,7 +207,7 @@ void UART::EndOfLine()
   }
 }
 
-void UART::EndOfFrame()
+void Uart::EndOfFrame()
 {
   if (_transmitDoneTime != BUS_CYCLE_DISABLE)
   {
@@ -229,26 +227,26 @@ void UART::EndOfFrame()
   }
 }
 
-void UART::EmulationStart()
+void Uart::EmulationStart()
 {
   InstallIOHandlers();
 }
 
-void UART::EmulationStop()
+void Uart::EmulationStop()
 {
   CloseOutputFile();
 }
 
-UART::UART()
+Uart::Uart()
   : _outputFile(nullptr)
 {
   char tempFileName[256];
-  fileopsGetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");
+  _core.Fileops->fileopsGetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");
   _outputFileName = tempFileName;
   ClearState();
 }
 
-UART::~UART()
+Uart::~Uart()
 {
   CloseOutputFile();
 }

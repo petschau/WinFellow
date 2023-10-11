@@ -3,6 +3,7 @@ fellow/SRC/WinFellow/Windows/versioninfo.h
 fellow/SRC/WinFellow/GUI_versioninfo.rc
 **/Debug/
 **/Release/
+**/.vscode/
 *.lyx~
 fellow/doxygen/WinFellow-doxygen.*
 fellow/doxygen/WinFellow-doxygen.pdf

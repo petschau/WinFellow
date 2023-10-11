@@ -1,9 +1,7 @@
 #include <cstring>
 #include "fellow/api/defs.h"
 #include "hardfile/hunks/BSSHunk.h"
-#include "fellow/api/Services.h"
-
-using namespace fellow::api;
+#include "VirtualHost/Core.h"
 
 namespace fellow::hardfile::hunks
 {
@@ -19,7 +17,7 @@ namespace fellow::hardfile::hunks
     _rawData.reset(new uint8_t[size]);
     memset(_rawData.get(), 0, size);
 
-    Service->Log.AddLogDebug("fhfile: RDB filesystem - BSS hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, size, GetAllocateSizeInBytes());
+    _core.Log->AddLogDebug("fhfile: RDB filesystem - BSS hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, size, GetAllocateSizeInBytes());
   }
 
   BSSHunk::BSSHunk(uint32_t allocateSizeInLongwords)

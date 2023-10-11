@@ -3,12 +3,11 @@
 #include "DEFS.H"
 #include "FELLOW.H"
 #include <list>
-#include "fellow/api/Services.h"
+#include "VirtualHost/Core.h"
 
 using namespace std;
-using namespace fellow::api;
 
-void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
+void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter* adapter)
 {
   DXGI_ADAPTER_DESC desc;
   HRESULT hr = adapter->GetDesc(&desc);
@@ -17,7 +16,7 @@ void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
   {
     list<string> messages;
     char s[512];
- 
+
     snprintf(_name, 255, "%ls", desc.Description);
 
     sprintf(s, "DXGI Adapter: %s", _name);
@@ -36,11 +35,11 @@ void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
     messages.emplace_back(s);
     sprintf(s, "Shared system memory:    %I64d", (__int64)desc.SharedSystemMemory);
     messages.emplace_back(s);
-    Service->Log.AddLogList(messages);
+    _core.Log->AddLogList(messages);
   }
 }
 
-void GfxDrvDXGIAdapter::EnumerateOutputs(IDXGIAdapter *adapter)
+void GfxDrvDXGIAdapter::EnumerateOutputs(IDXGIAdapter* adapter)
 {
   GfxDrvDXGIOutputEnumerator::EnumerateOutputs(adapter, _outputs);
 }
@@ -50,7 +49,7 @@ const GfxDrvDXGIOutputList& GfxDrvDXGIAdapter::GetOutputs()
   return _outputs;
 }
 
-GfxDrvDXGIAdapter::GfxDrvDXGIAdapter(IDXGIAdapter *adapter)
+GfxDrvDXGIAdapter::GfxDrvDXGIAdapter(IDXGIAdapter* adapter)
 {
   LogCapabilities(adapter);
   EnumerateOutputs(adapter);

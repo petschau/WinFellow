@@ -29,8 +29,9 @@
 #include "CpuIntegration.h"
 #include "CpuModule_Internal.h"
 #include "bus.h"
-#include "fileops.h"
 #include "interrupt.h"
+
+#include "VirtualHost/Core.h"
 
 jmp_buf cpu_integration_exception_buffer;
 uint32_t cpu_integration_chip_interrupt_number;
@@ -193,7 +194,7 @@ void cpuInstructionLogOpen()
   if (CPUINSTRUCTIONLOG == nullptr)
   {
     char filename[MAX_PATH];
-    fileopsGetGenericFileName(filename, "WinFellow", "cpuinstructions.log");
+    _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "cpuinstructions.log");
     CPUINSTRUCTIONLOG = fopen(filename, "w");
   }
 }

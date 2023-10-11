@@ -15,7 +15,6 @@
 #include "graph.h"
 #include "draw.h"
 #include "bus.h"
-#include "fileops.h"
 #include "CpuIntegration.h"
 #include "chipset.h"
 #include "interrupt.h"
@@ -196,7 +195,7 @@ void blitterOperationLog() {
     FILE* F;
     char filename[MAX_PATH];
 
-    fileopsGetGenericFileName(filename, "WinFellow", "blitterops.log");
+    _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "blitterops.log");
     F = fopen(filename, (blitter_operation_log_first) ? "w" : "a");
     if (blitter_operation_log_first) {
       blitter_operation_log_first = FALSE;

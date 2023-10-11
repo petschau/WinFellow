@@ -1,7 +1,5 @@
 #include "hardfile/hunks/HeaderHunk.h"
-#include "fellow/api/Services.h"
-
-using namespace fellow::api;
+#include "VirtualHost/Core.h"
 
 namespace fellow::hardfile::hunks
 {
@@ -12,7 +10,7 @@ namespace fellow::hardfile::hunks
 
   uint32_t HeaderHunk::GetHunkSizeCount()
   {
-    return (uint32_t) _hunkSizes.size();
+    return (uint32_t)_hunkSizes.size();
   }
 
   const HunkSize& HeaderHunk::GetHunkSize(uint32_t index)
@@ -22,7 +20,7 @@ namespace fellow::hardfile::hunks
 
   uint32_t HeaderHunk::GetResidentLibraryCount()
   {
-    return (uint32_t) _residentLibraries.size();
+    return (uint32_t)_residentLibraries.size();
   }
 
   const std::string& HeaderHunk::GetResidentLibrary(uint32_t index)
@@ -42,25 +40,25 @@ namespace fellow::hardfile::hunks
 
   void HeaderHunk::Parse(RawDataReader& rawDataReader)
   {
-    Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk (%u)\n", ID);
+    _core.Log->AddLogDebug("fhfile: RDB filesystem - Header hunk (%u)\n", ID);
 
     uint32_t stringLength = rawDataReader.GetNextByteswappedLong();
     while (stringLength != 0)
     {
       _residentLibraries.push_back(rawDataReader.GetNextString(stringLength));
-      Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk resident library entry '%s'\n", _residentLibraries.back().c_str());
+      _core.Log->AddLogDebug("fhfile: RDB filesystem - Header hunk resident library entry '%s'\n", _residentLibraries.back().c_str());
 
       stringLength = rawDataReader.GetNextByteswappedLong();
     }
 
     uint32_t tableSize = rawDataReader.GetNextByteswappedLong();
 
-    Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk table size: %u\n", tableSize);
+    _core.Log->AddLogDebug("fhfile: RDB filesystem - Header hunk table size: %u\n", tableSize);
 
     _firstLoadHunk = rawDataReader.GetNextByteswappedLong();
     _lastLoadHunk = rawDataReader.GetNextByteswappedLong();
 
-    Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk first load %u last load %u\n", _firstLoadHunk, _lastLoadHunk);
+    _core.Log->AddLogDebug("fhfile: RDB filesystem - Header hunk first load %u last load %u\n", _firstLoadHunk, _lastLoadHunk);
 
     for (uint32_t i = _firstLoadHunk; i <= _lastLoadHunk; i++)
     {
@@ -76,12 +74,12 @@ namespace fellow::hardfile::hunks
       }
       _hunkSizes.emplace_back(hunkSize, memoryFlags, additionalFlags);
 
-      Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk table entry %u size: %u %s\n", i, _hunkSizes.back().SizeInLongwords * 4, _hunkSizes.back().GetMemoryFlagsToString());
+      _core.Log->AddLogDebug("fhfile: RDB filesystem - Header hunk table entry %u size: %u %s\n", i, _hunkSizes.back().SizeInLongwords * 4, _hunkSizes.back().GetMemoryFlagsToString());
     }
   }
 
   HeaderHunk::HeaderHunk()
-    : _firstLoadHunk(0), _lastLoadHunk(0)  
+    : _firstLoadHunk(0), _lastLoadHunk(0)
   {
   }
 }

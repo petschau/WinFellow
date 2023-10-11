@@ -1,8 +1,9 @@
 #include "DEFS.H"
 
 #include "Logger.h"
-#include "fileops.h"
 #include "BUS.H"
+
+#include "VirtualHost/Core.h"
 
 void Logger::Log(uint32_t line, uint32_t cylinder, char *message)
 {
@@ -11,7 +12,7 @@ void Logger::Log(uint32_t line, uint32_t cylinder, char *message)
     if (_logfile == nullptr)
     {
       char filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "Graphics.log");
+      _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "Graphics.log");
       _logfile = fopen(filename, "w");
     }
     fprintf(_logfile, 

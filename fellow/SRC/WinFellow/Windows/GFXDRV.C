@@ -4,7 +4,7 @@
 #include "FELLOW.H"
 #include "gfxdrv_directdraw.h"
 #include "RetroPlatform.h"
-#include "fileops.h"
+#include "VirtualHost/Core.h"
 
 bool gfx_drv_use_dxgi = false;
 
@@ -170,7 +170,7 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const char *szFile
   if (szFilename[0] == 0)
   {
     // filename not set, automatically generate one
-    fileopsGetScreenshotFileName(szActualFilename);
+    _core.Fileops->fileopsGetScreenshotFileName(szActualFilename);
   }
   else
   {

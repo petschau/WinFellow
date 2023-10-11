@@ -33,9 +33,8 @@
 #include "kbd.h"
 #include "joydrv.h"
 #include "kbddrv.h"
-#include "fileops.h"
 #include "GfxDrvCommon.h"
-
+#include "VirtualHost/Core.h"
 
 #ifdef RETRO_PLATFORM
 #include "retroplatform.h"
@@ -450,7 +449,7 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
     FELLOWNUMERICVERSION, 
     t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
 
-  fileopsGetGenericFileName(name, "WinFellow", filename);
+  _core.Fileops->fileopsGetGenericFileName(name, "WinFellow", filename);
 
   fellowAddLog("Unhandled exception detected, write minidump to %s...\n", name);
 
@@ -533,7 +532,7 @@ int winDrvDetectMemoryLeaks()
     FELLOWNUMERICVERSION,
     t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
 
-  fileopsGetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
+  _core.Fileops->fileopsGetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
 
   HANDLE hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE,
                                FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS,

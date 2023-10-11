@@ -1,7 +1,5 @@
 #include "hardfile/hunks/EndHunk.h"
-#include "fellow/api/Services.h"
-
-using namespace fellow::api;
+#include "VirtualHost/Core.h"
 
 namespace fellow::hardfile::hunks
 {
@@ -12,7 +10,7 @@ namespace fellow::hardfile::hunks
 
   void EndHunk::Parse(RawDataReader& rawDataReader)
   {
-    Service->Log.AddLogDebug("fhfile: RDB filesystem - End hunk (%u)\n", ID);
+    _core.Log->AddLogDebug("fhfile: RDB filesystem - End hunk (%u)\n", ID);
   }
 
   EndHunk::EndHunk()

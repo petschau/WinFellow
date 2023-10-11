@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
-#include "fellow/api/service/ILog.h"
+#include "ILog.h"
 
-namespace fellow::service
-{  
-  class Log : public fellow::api::service::ILog
+namespace Service
+{
+  class Log : public ILog
   {
   private:
     static const unsigned int LogLevelError = 0;
@@ -24,11 +23,12 @@ namespace fellow::service
     void AddLogInternal(FILE* F, char* msg);
 
   public:
-    void AddLogDebug(const char *format, ...) override;
-    void AddLog(const char *, ...) override;
-    void AddLogList(const std::list<std::string>& messages) override;
-    void AddLog2(char *msg) override ;
+    void AddLogDebug(const char* format, ...);
+    void AddLog(const char*, ...);
+    void AddLogList(const std::list<std::string>& messages);
+    void AddLog2(char* msg);
 
     Log();
+    virtual ~Log();
   };
 }

@@ -1,8 +1,6 @@
 #include "hardfile/rdb/RDBLSegBlock.h"
 #include "hardfile/rdb/CheckSumCalculator.h"
-#include "fellow/api/Services.h"
-
-using namespace fellow::api;
+#include "VirtualHost/Core.h"
 
 namespace fellow::hardfile::rdb
 {
@@ -47,12 +45,12 @@ namespace fellow::hardfile::rdb
 
   void RDBLSegBlock::Log()
   {
-    Service->Log.AddLogDebug("LSegBlock (Blocknumber %d)\n", Blocknumber);
-    Service->Log.AddLogDebug("-----------------------------------------\n");
-    Service->Log.AddLogDebug("0   - id:                     %.4s\n", ID.c_str());
-    Service->Log.AddLogDebug("4   - size in longs:          %d\n", SizeInLongs);
-    Service->Log.AddLogDebug("8   - checksum:               %.8X (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
-    Service->Log.AddLogDebug("12  - host id:                %d\n", HostID);
-    Service->Log.AddLogDebug("16  - next:                   %d\n\n", Next);
+    _core.Log->AddLogDebug("LSegBlock (Blocknumber %d)\n", Blocknumber);
+    _core.Log->AddLogDebug("-----------------------------------------\n");
+    _core.Log->AddLogDebug("0   - id:                     %.4s\n", ID.c_str());
+    _core.Log->AddLogDebug("4   - size in longs:          %d\n", SizeInLongs);
+    _core.Log->AddLogDebug("8   - checksum:               %.8X (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
+    _core.Log->AddLogDebug("12  - host id:                %d\n", HostID);
+    _core.Log->AddLogDebug("16  - next:                   %d\n\n", Next);
   }
 }

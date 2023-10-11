@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DEFS.H"
+
 /* Access for chipset emulation that already have validated addresses */
 
 #define chipmemReadByte(address) (memory_chip[address])

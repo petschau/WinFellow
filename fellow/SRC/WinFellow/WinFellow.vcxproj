@@ -486,6 +486,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\WavFileWriter.cpp" />
     <ClCompile Include="VirtualHost\CoreFactory.cpp" />
     <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
+    <ClCompile Include="Windows\Service\FileopsWin32.cpp" />
     <ClCompile Include="zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1125,7 +1126,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="DXGI\GfxDrvDXGIOutputEnumerator.cpp" />
     <ClCompile Include="fellow\service\FSWrapper.cpp" />
     <ClCompile Include="fellow\service\HUD.cpp" />
-    <ClCompile Include="fellow\service\Log.cpp" />
     <ClCompile Include="fellow\service\RetroPlatformWrapper.cpp" />
     <ClCompile Include="fellow\service\Services.cpp" />
     <ClCompile Include="fellow\vm\M68K.cpp" />
@@ -1156,7 +1156,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="uae\UAESUPP.C" />
     <ClCompile Include="Windows\caps.c" />
     <ClCompile Include="Windows\commoncontrol_wrap.c" />
-    <ClCompile Include="Windows\fileops.c" />
     <ClCompile Include="Windows\FSWRAP.C" />
     <ClCompile Include="Windows\fsysamnt.c" />
     <ClCompile Include="Windows\GFXDRV.C" />
@@ -1180,6 +1179,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="VirtualHost\CoreFactory.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h" />
+    <ClInclude Include="Windows\Service\FileopsWin32.h" />
     <ClInclude Include="xdms\include\cdata.h" />
     <ClInclude Include="xdms\include\crc_csum.h" />
     <ClInclude Include="xdms\include\getbits.h" />
@@ -1219,14 +1219,12 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="fellow\api\Services.h" />
     <ClInclude Include="fellow\api\service\IFSWrapper.h" />
     <ClInclude Include="fellow\api\service\IHUD.h" />
-    <ClInclude Include="fellow\api\service\ILog.h" />
     <ClInclude Include="fellow\api\service\IRetroPlatform.h" />
     <ClInclude Include="fellow\api\VM.h" />
     <ClInclude Include="fellow\api\vm\IM68K.h" />
     <ClInclude Include="fellow\api\vm\IMemorySystem.h" />
     <ClInclude Include="fellow\service\FSWrapper.h" />
     <ClInclude Include="fellow\service\HUD.h" />
-    <ClInclude Include="fellow\service\Log.h" />
     <ClInclude Include="fellow\service\RetroPlatformWrapper.h" />
     <ClInclude Include="fellow\vm\M68K.h" />
     <ClInclude Include="fellow\vm\MemorySystem.h" />
@@ -1293,7 +1291,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\SpriteP2CDecoder.h" />
     <ClInclude Include="INCLUDE\SpriteRegisters.h" />
     <ClInclude Include="INCLUDE\TIMER.H" />
-    <ClInclude Include="INCLUDE\uart.h" />
     <ClInclude Include="INCLUDE\WGUI.H" />
     <ClInclude Include="INCLUDE\zlibwrap.h" />
     <ClInclude Include="IPF\CapsAPI.h" />
@@ -1312,7 +1309,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\caps.h" />
     <ClInclude Include="Windows\commoncontrol_wrap.h" />
     <ClInclude Include="Windows\dxver.h" />
-    <ClInclude Include="Windows\fileops.h" />
     <ClInclude Include="Windows\FSWRAP.H" />
     <ClInclude Include="Windows\GfxDrvCommon.h" />
     <ClInclude Include="Windows\gfxdrv_directdraw.h" />

@@ -38,8 +38,8 @@
 #include "defs.h"
 #include "fellow.h"
 #include "ffilesys.h"
-#include "fileops.h"
 #include "filesys.h"
+#include "VirtualHost/Core.h"
 
 #include <string>
 
@@ -103,10 +103,10 @@ BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, uint32_t index)
   return (ffilesys_devs[index].readonly == filesys.readonly) &&
     (strncmp
     (ffilesys_devs[index].volumename, filesys.volumename,
-    FFILESYS_MAX_VOLUMENAME) == 0) &&
+      FFILESYS_MAX_VOLUMENAME) == 0) &&
     (strncmp
     (ffilesys_devs[index].rootpath, filesys.rootpath,
-    CFG_FILENAME_LENGTH) == 0);
+      CFG_FILENAME_LENGTH) == 0);
 }
 
 void ffilesysSetAutomountDrives(BOOLE automount_drives)
@@ -153,15 +153,15 @@ void ffilesysDumpConfig()
 {
   char filename[MAX_PATH];
 
-  fileopsGetGenericFileName(filename, "WinFellow", "fsysdump.txt");
+  _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "fsysdump.txt");
   FILE* F = fopen(filename, "w");
   for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++) {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
       fprintf(F, "Slot: %u, %s, %s, %s\n",
-      i,
-      ffilesys_devs[i].volumename,
-      ffilesys_devs[i].rootpath,
-      (ffilesys_devs[i].readonly) ? "R" : "RW");
+        i,
+        ffilesys_devs[i].volumename,
+        ffilesys_devs[i].rootpath,
+        (ffilesys_devs[i].readonly) ? "R" : "RW");
     else
       fprintf(F, "Slot: %u, No filesystem defined.\n", i);
   }
@@ -178,12 +178,12 @@ void ffilesysInstall()
     if (ffilesys_devs[i].status == FFILESYS_INSERTED) {
       size_t len = strlen(ffilesys_devs[i].rootpath) - 1;
       if (ffilesys_devs[i].rootpath[len] == '\\') {
-	ffilesys_devs[i].rootpath[len] = '\0';
+        ffilesys_devs[i].rootpath[len] = '\0';
       }
       add_filesys_unit(&mountinfo,
-	ffilesys_devs[i].volumename,
-	ffilesys_devs[i].rootpath,
-	ffilesys_devs[i].readonly, 0, 0, 0, 0);
+        ffilesys_devs[i].volumename,
+        ffilesys_devs[i].rootpath,
+        ffilesys_devs[i].readonly, 0, 0, 0, 0);
     }
 }
 
@@ -195,16 +195,16 @@ void ffilesysHardReset()
 {
   if ((!ffilesysHasZeroDevices()) &&
     ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36)) {
-      rtarea_setup();		/* Maps the trap memory area into memory */
-      rtarea_init();		/* Sets up a lot of traps */
-      hardfile_install();
-      filesys_install();	/* Sets some traps and information in the trap memory area */
-      filesys_init(ffilesysGetAutomountDrives());	/* Mounts all Windows drives as filesystems */
-      filesys_prepare_reset();	/* Cleans up mounted filesystems(?) */
-      filesys_reset();		/* More cleaning up(?) */
-      ffilesysInstall();	/* Install user defined filesystems */
-      filesys_start_threads();	/* Installs registered filesystem mounts, this also names the device "<prefix>x" */
-      memoryEmemCardAdd(expamem_init_filesys, expamem_map_filesys);
+    rtarea_setup();		/* Maps the trap memory area into memory */
+    rtarea_init();		/* Sets up a lot of traps */
+    hardfile_install();
+    filesys_install();	/* Sets some traps and information in the trap memory area */
+    filesys_init(ffilesysGetAutomountDrives());	/* Mounts all Windows drives as filesystems */
+    filesys_prepare_reset();	/* Cleans up mounted filesystems(?) */
+    filesys_reset();		/* More cleaning up(?) */
+    ffilesysInstall();	/* Install user defined filesystems */
+    filesys_start_threads();	/* Installs registered filesystem mounts, this also names the device "<prefix>x" */
+    memoryEmemCardAdd(expamem_init_filesys, expamem_map_filesys);
   }
 }
 
@@ -227,7 +227,7 @@ void ffilesysEmulationStop()
 {
   /*
   filesys_prepare_reset();
-  filesys_reset();	
+  filesys_reset();
   */
 }
 
@@ -248,17 +248,17 @@ void ffilesysStartup()
 
 void ffilesysClearMountinfo()
 {
-  for(mountinfo.num_units; mountinfo.num_units>0; mountinfo.num_units--)
+  for (mountinfo.num_units; mountinfo.num_units > 0; mountinfo.num_units--)
   {
-    if(mountinfo.ui[mountinfo.num_units-1].volname) 
+    if (mountinfo.ui[mountinfo.num_units - 1].volname)
     {
-      free(mountinfo.ui[mountinfo.num_units-1].volname);
-      mountinfo.ui[mountinfo.num_units-1].volname = nullptr;
+      free(mountinfo.ui[mountinfo.num_units - 1].volname);
+      mountinfo.ui[mountinfo.num_units - 1].volname = nullptr;
     }
-    if(mountinfo.ui[mountinfo.num_units-1].rootdir) 
+    if (mountinfo.ui[mountinfo.num_units - 1].rootdir)
     {
-      free(mountinfo.ui[mountinfo.num_units-1].rootdir);
-      mountinfo.ui[mountinfo.num_units-1].rootdir = nullptr;
+      free(mountinfo.ui[mountinfo.num_units - 1].rootdir);
+      mountinfo.ui[mountinfo.num_units - 1].rootdir = nullptr;
     }
   }
 }
