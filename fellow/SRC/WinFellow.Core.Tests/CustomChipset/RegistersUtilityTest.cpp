@@ -1,5 +1,5 @@
 #include "catch/catch_amalgamated.hpp"
-#include "Core.h"
+#include "VirtualHost/Core.h"
 
 using namespace CustomChipset;
 

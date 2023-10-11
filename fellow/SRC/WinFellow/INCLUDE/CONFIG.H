@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sound.h"
+#include "CustomChipset/Sound/SoundConfiguration.h"
 #include "CpuIntegration.h"
 #include "gameport.h"
 #include "ListTree.h"
@@ -53,7 +53,7 @@ typedef enum {
 } DISPLAYDRIVER;
 
 typedef enum {
-  GRAPHICSEMULATIONMODE_LINEEXACT  = 0,
+  GRAPHICSEMULATIONMODE_LINEEXACT = 0,
   GRAPHICSEMULATIONMODE_CYCLEEXACT = 1
 } GRAPHICSEMULATIONMODE;
 
@@ -80,7 +80,7 @@ typedef struct {
   BOOLE  m_diskenabled[4];
   BOOLE  m_diskreadonly[4];
   BOOLE  m_diskfast;
-  char    m_lastuseddiskdir[CFG_FILENAME_LENGTH];	
+  char    m_lastuseddiskdir[CFG_FILENAME_LENGTH];
 
 
   /*==========================================================================*/
@@ -136,14 +136,14 @@ typedef struct {
   /* Sound configuration                                                      */
   /*==========================================================================*/
 
-  sound_emulations     m_soundemulation;
-  sound_rates          m_soundrate;
+  CustomChipset::sound_emulations     m_soundemulation;
+  CustomChipset::sound_rates          m_soundrate;
   bool                 m_soundstereo;
   bool                 m_sound16bits;
-  sound_filters        m_soundfilter;
+  CustomChipset::sound_filters        m_soundfilter;
   uint32_t                  m_soundvolume;
   BOOLE                m_soundWAVdump;
-  sound_notifications  m_notification;
+  CustomChipset::sound_notifications  m_notification;
   uint32_t                  m_bufferlength;
 
 
@@ -209,169 +209,169 @@ typedef struct {
 /* Configuration                                                              */
 /*============================================================================*/
 
-extern char *cfgGetDescription(cfg *config);
+extern char* cfgGetDescription(cfg* config);
 
 /*============================================================================*/
 /* Floppy disk configuration property access                                  */
 /*============================================================================*/
 
-extern void cfgSetDiskImage(cfg *config, uint32_t index, char *diskimage);
-extern char *cfgGetDiskImage(cfg *config, uint32_t index);
-extern void cfgSetDiskEnabled(cfg *config, uint32_t index, BOOLE enabled);
-extern BOOLE cfgGetDiskEnabled(cfg *config, uint32_t index);
-extern void cfgSetDiskReadOnly(cfg *config, uint32_t index, BOOLE readonly);
-extern BOOLE cfgGetDiskReadOnly(cfg *config, uint32_t index);
-extern void cfgSetDiskFast(cfg *config, BOOLE fast);
-extern BOOLE cfgGetDiskFast(cfg *config);  
-extern void cfgSetLastUsedDiskDir(cfg *config, char *directory);
-extern char *cfgGetLastUsedDiskDir(cfg *config);
+extern void cfgSetDiskImage(cfg* config, uint32_t index, char* diskimage);
+extern char* cfgGetDiskImage(cfg* config, uint32_t index);
+extern void cfgSetDiskEnabled(cfg* config, uint32_t index, BOOLE enabled);
+extern BOOLE cfgGetDiskEnabled(cfg* config, uint32_t index);
+extern void cfgSetDiskReadOnly(cfg* config, uint32_t index, BOOLE readonly);
+extern BOOLE cfgGetDiskReadOnly(cfg* config, uint32_t index);
+extern void cfgSetDiskFast(cfg* config, BOOLE fast);
+extern BOOLE cfgGetDiskFast(cfg* config);
+extern void cfgSetLastUsedDiskDir(cfg* config, char* directory);
+extern char* cfgGetLastUsedDiskDir(cfg* config);
 
 /*============================================================================*/
 /* Memory configuration property access                                       */
 /*============================================================================*/
 
-extern void cfgSetChipSize(cfg *config, uint32_t chipsize);
-extern uint32_t cfgGetChipSize(cfg *config);
-extern void cfgSetFastSize(cfg *config, uint32_t fastsize);
-extern uint32_t cfgGetFastSize(cfg *config);
-extern void cfgSetBogoSize(cfg *config, uint32_t bogosize);
-extern uint32_t cfgGetBogoSize(cfg *config);
-extern void cfgSetKickImage(cfg *config, char *kickimage);
-extern char *cfgGetKickImage(cfg *config);
-extern void cfgSetKickImageExtended(cfg *config, char *kickimageext);
-extern char *cfgGetKickImageExtended(cfg *config);
-extern void cfgSetKickDescription(cfg *config, char *kickdescription);
-extern char *cfgGetKickDescription(cfg *config);
-extern void cfgSetKickCRC32(cfg *config, uint32_t kickcrc32);
-extern uint32_t  cfgGetKickCRC32(cfg *config);
-extern void cfgSetKey(cfg *config, char *key);
-extern char *cfgGetKey(cfg *config);
-extern void cfgSetUseAutoconfig(cfg *config, bool useautoconfig);
-extern bool cfgGetUseAutoconfig(cfg *config);
-extern BOOLE cfgGetAddress32Bit(cfg *config);
-extern void cfgSetRtc(cfg *config, bool rtc);
-extern bool cfgGetRtc(cfg *config);
+extern void cfgSetChipSize(cfg* config, uint32_t chipsize);
+extern uint32_t cfgGetChipSize(cfg* config);
+extern void cfgSetFastSize(cfg* config, uint32_t fastsize);
+extern uint32_t cfgGetFastSize(cfg* config);
+extern void cfgSetBogoSize(cfg* config, uint32_t bogosize);
+extern uint32_t cfgGetBogoSize(cfg* config);
+extern void cfgSetKickImage(cfg* config, char* kickimage);
+extern char* cfgGetKickImage(cfg* config);
+extern void cfgSetKickImageExtended(cfg* config, char* kickimageext);
+extern char* cfgGetKickImageExtended(cfg* config);
+extern void cfgSetKickDescription(cfg* config, char* kickdescription);
+extern char* cfgGetKickDescription(cfg* config);
+extern void cfgSetKickCRC32(cfg* config, uint32_t kickcrc32);
+extern uint32_t  cfgGetKickCRC32(cfg* config);
+extern void cfgSetKey(cfg* config, char* key);
+extern char* cfgGetKey(cfg* config);
+extern void cfgSetUseAutoconfig(cfg* config, bool useautoconfig);
+extern bool cfgGetUseAutoconfig(cfg* config);
+extern BOOLE cfgGetAddress32Bit(cfg* config);
+extern void cfgSetRtc(cfg* config, bool rtc);
+extern bool cfgGetRtc(cfg* config);
 
 /*===========================================================================*/
 /* Host screen configuration property access                                 */
 /*===========================================================================*/
 
-extern void cfgSetScreenWidth(cfg *config, uint32_t screenwidth);
-extern uint32_t cfgGetScreenWidth(cfg *config);
-extern void cfgSetScreenHeight(cfg *config, uint32_t screenheight);
-extern uint32_t cfgGetScreenHeight(cfg *config);
-extern void cfgSetScreenColorBits(cfg *config, uint32_t screencolorbits);
-extern uint32_t cfgGetScreenColorBits(cfg *config);
-extern void cfgSetScreenRefresh(cfg *config, uint32_t screenrefresh);
-extern uint32_t cfgGetScreenRefresh(cfg *config);
-extern void cfgSetScreenWindowed(cfg *config, bool screenwindowed);
-extern bool cfgGetScreenWindowed(cfg *config);
+extern void cfgSetScreenWidth(cfg* config, uint32_t screenwidth);
+extern uint32_t cfgGetScreenWidth(cfg* config);
+extern void cfgSetScreenHeight(cfg* config, uint32_t screenheight);
+extern uint32_t cfgGetScreenHeight(cfg* config);
+extern void cfgSetScreenColorBits(cfg* config, uint32_t screencolorbits);
+extern uint32_t cfgGetScreenColorBits(cfg* config);
+extern void cfgSetScreenRefresh(cfg* config, uint32_t screenrefresh);
+extern uint32_t cfgGetScreenRefresh(cfg* config);
+extern void cfgSetScreenWindowed(cfg* config, bool screenwindowed);
+extern bool cfgGetScreenWindowed(cfg* config);
 
-extern void cfgSetScreenDrawLEDs(cfg *config, bool drawleds);
-extern bool cfgGetScreenDrawLEDs(cfg *config);
-extern void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_graphical_buffers);
-extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *config);
-extern void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver);
-extern DISPLAYDRIVER cfgGetDisplayDriver(cfg *config);
+extern void cfgSetScreenDrawLEDs(cfg* config, bool drawleds);
+extern bool cfgGetScreenDrawLEDs(cfg* config);
+extern void cfgSetUseMultipleGraphicalBuffers(cfg* config, BOOLE use_multiple_graphical_buffers);
+extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg* config);
+extern void cfgSetDisplayDriver(cfg* config, DISPLAYDRIVER display_driver);
+extern DISPLAYDRIVER cfgGetDisplayDriver(cfg* config);
 
 /*===========================================================================*/
 /* Graphics emulation configuration property access                          */
 /*===========================================================================*/
 
-extern void  cfgSetFrameskipRatio (cfg *config, uint32_t frameskipratio);
-extern uint32_t   cfgGetFrameskipRatio (cfg *config);
+extern void  cfgSetFrameskipRatio(cfg* config, uint32_t frameskipratio);
+extern uint32_t   cfgGetFrameskipRatio(cfg* config);
 
-extern void cfgSetClipLeft(cfg *config, uint32_t left);
-extern uint32_t cfgGetClipLeft(cfg *config);
-extern void cfgSetClipTop(cfg *config, uint32_t top);
-extern uint32_t cfgGetClipTop(cfg *config);
-extern void cfgSetClipRight(cfg *config, uint32_t right);
-extern uint32_t cfgGetClipRight(cfg *config);
-extern void cfgSetClipBottom(cfg *config, uint32_t bottom);
-extern uint32_t cfgGetClipBottom(cfg *config);
+extern void cfgSetClipLeft(cfg* config, uint32_t left);
+extern uint32_t cfgGetClipLeft(cfg* config);
+extern void cfgSetClipTop(cfg* config, uint32_t top);
+extern uint32_t cfgGetClipTop(cfg* config);
+extern void cfgSetClipRight(cfg* config, uint32_t right);
+extern uint32_t cfgGetClipRight(cfg* config);
+extern void cfgSetClipBottom(cfg* config, uint32_t bottom);
+extern uint32_t cfgGetClipBottom(cfg* config);
 
-extern void  cfgSetDisplayScale(cfg *config, DISPLAYSCALE displayscale);
-extern DISPLAYSCALE cfgGetDisplayScale(cfg *config);
-extern void cfgSetDisplayScaleStrategy(cfg *config, DISPLAYSCALE_STRATEGY displayscalestrategy);
-extern DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config);
-extern void cfgSetDeinterlace(cfg *config, bool deinterlace);
-extern bool cfgGetDeinterlace(cfg *config);
-extern void cfgSetGraphicsEmulationMode(cfg *config, GRAPHICSEMULATIONMODE graphcisemulationmode);
-extern GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationMode(cfg *config);
+extern void  cfgSetDisplayScale(cfg* config, DISPLAYSCALE displayscale);
+extern DISPLAYSCALE cfgGetDisplayScale(cfg* config);
+extern void cfgSetDisplayScaleStrategy(cfg* config, DISPLAYSCALE_STRATEGY displayscalestrategy);
+extern DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg* config);
+extern void cfgSetDeinterlace(cfg* config, bool deinterlace);
+extern bool cfgGetDeinterlace(cfg* config);
+extern void cfgSetGraphicsEmulationMode(cfg* config, GRAPHICSEMULATIONMODE graphcisemulationmode);
+extern GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationMode(cfg* config);
 
 /*============================================================================*/
 /* Sound configuration property access                                        */
 /*============================================================================*/
 
-extern void cfgSetSoundEmulation(cfg *config, sound_emulations soundemulation);
-extern sound_emulations cfgGetSoundEmulation(cfg *config);
-extern void cfgSetSoundRate(cfg *config, sound_rates soundrate);
-extern sound_rates cfgGetSoundRate(cfg *config);
-extern void cfgSetSoundStereo(cfg *config, bool soundstereo);
-extern bool cfgGetSoundStereo(cfg *config);
-extern void cfgSetSound16Bits(cfg *config, bool soundbit);
-extern bool cfgGetSound16Bits(cfg *config);
-extern void cfgSetSoundFilter(cfg *config, sound_filters soundfilter);
-extern sound_filters cfgGetSoundFilter(cfg *config);
-extern void cfgSetSoundVolume(cfg *config, const uint32_t soundvolume);
-extern uint32_t cfgGetSoundVolume(cfg *config);
-extern void cfgSetSoundWAVDump(cfg *config, BOOLE soundWAVdump);
-extern BOOLE cfgGetSoundWAVDump(cfg *config);
-extern void cfgSetSoundNotification(cfg *config, sound_notifications soundnotification);
-extern sound_notifications cfgGetSoundNotification(cfg *config);
-extern void cfgSetSoundBufferLength(cfg *config, uint32_t buffer_length);
-extern uint32_t cfgGetSoundBufferLength(cfg *config);
+extern void cfgSetSoundEmulation(cfg* config, CustomChipset::sound_emulations soundemulation);
+extern CustomChipset::sound_emulations cfgGetSoundEmulation(cfg* config);
+extern void cfgSetSoundRate(cfg* config, CustomChipset::sound_rates soundrate);
+extern CustomChipset::sound_rates cfgGetSoundRate(cfg* config);
+extern void cfgSetSoundStereo(cfg* config, bool soundstereo);
+extern bool cfgGetSoundStereo(cfg* config);
+extern void cfgSetSound16Bits(cfg* config, bool soundbit);
+extern bool cfgGetSound16Bits(cfg* config);
+extern void cfgSetSoundFilter(cfg* config, CustomChipset::sound_filters soundfilter);
+extern CustomChipset::sound_filters cfgGetSoundFilter(cfg* config);
+extern void cfgSetSoundVolume(cfg* config, const uint32_t soundvolume);
+extern uint32_t cfgGetSoundVolume(cfg* config);
+extern void cfgSetSoundWAVDump(cfg* config, BOOLE soundWAVdump);
+extern BOOLE cfgGetSoundWAVDump(cfg* config);
+extern void cfgSetSoundNotification(cfg* config, CustomChipset::sound_notifications soundnotification);
+extern CustomChipset::sound_notifications cfgGetSoundNotification(cfg* config);
+extern void cfgSetSoundBufferLength(cfg* config, uint32_t buffer_length);
+extern uint32_t cfgGetSoundBufferLength(cfg* config);
 
 
 /*============================================================================*/
 /* CPU configuration property access                                          */
 /*============================================================================*/
 
-extern void cfgSetCPUType(cfg *config, cpu_integration_models CPUtype);
-extern cpu_integration_models cfgGetCPUType(cfg *config);
-extern void cfgSetCPUSpeed(cfg *config, uint32_t CPUspeed);
-extern uint32_t cfgGetCPUSpeed(cfg *config);
+extern void cfgSetCPUType(cfg* config, cpu_integration_models CPUtype);
+extern cpu_integration_models cfgGetCPUType(cfg* config);
+extern void cfgSetCPUSpeed(cfg* config, uint32_t CPUspeed);
+extern uint32_t cfgGetCPUSpeed(cfg* config);
 
 
 /*============================================================================*/
 /* Custom chipset configuration property access                               */
 /*============================================================================*/
 
-extern void cfgSetBlitterFast(cfg *config, BOOLE blitterfast);
-extern BOOLE cfgGetBlitterFast(cfg *config);
-extern void cfgSetECS(cfg *config, bool ecs);
-extern bool cfgGetECS(cfg *config);
+extern void cfgSetBlitterFast(cfg* config, BOOLE blitterfast);
+extern BOOLE cfgGetBlitterFast(cfg* config);
+extern void cfgSetECS(cfg* config, bool ecs);
+extern bool cfgGetECS(cfg* config);
 
 
 /*============================================================================*/
 /* Hardfile configuration property access                                     */
 /*============================================================================*/
 
-extern uint32_t cfgGetHardfileCount(cfg *config);
-extern cfg_hardfile cfgGetHardfile(cfg *config, uint32_t index);
-extern void cfgHardfileAdd(cfg *config, cfg_hardfile *hardfile);
-extern void cfgHardfileRemove(cfg *config, uint32_t index);
-extern void cfgHardfilesFree(cfg *config);
-extern void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile);
-extern void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, uint32_t index);
+extern uint32_t cfgGetHardfileCount(cfg* config);
+extern cfg_hardfile cfgGetHardfile(cfg* config, uint32_t index);
+extern void cfgHardfileAdd(cfg* config, cfg_hardfile* hardfile);
+extern void cfgHardfileRemove(cfg* config, uint32_t index);
+extern void cfgHardfilesFree(cfg* config);
+extern void cfgSetHardfileUnitDefaults(cfg_hardfile* hardfile);
+extern void cfgHardfileChange(cfg* config, cfg_hardfile* hardfile, uint32_t index);
 
 
 /*============================================================================*/
 /* Filesystem configuration property access                                   */
 /*============================================================================*/
 
-extern uint32_t cfgGetFilesystemCount(cfg *config);
-extern cfg_filesys cfgGetFilesystem(cfg *config, uint32_t index);
-extern void cfgFilesystemAdd(cfg *config, cfg_filesys *filesystem);
-extern void cfgFilesystemRemove(cfg *config, uint32_t index);
-extern void cfgFilesystemsFree(cfg *config);
-extern void cfgSetFilesystemUnitDefaults(cfg_filesys *filesystem);
-extern void cfgFilesystemChange(cfg *config,
-				cfg_filesys *filesystem, 
-				uint32_t index);
-extern void cfgSetFilesystemAutomountDrives(cfg *config,
-					    BOOLE automount_drives);
-extern BOOLE cfgGetFilesystemAutomountDrives(cfg *config);
+extern uint32_t cfgGetFilesystemCount(cfg* config);
+extern cfg_filesys cfgGetFilesystem(cfg* config, uint32_t index);
+extern void cfgFilesystemAdd(cfg* config, cfg_filesys* filesystem);
+extern void cfgFilesystemRemove(cfg* config, uint32_t index);
+extern void cfgFilesystemsFree(cfg* config);
+extern void cfgSetFilesystemUnitDefaults(cfg_filesys* filesystem);
+extern void cfgFilesystemChange(cfg* config,
+  cfg_filesys* filesystem,
+  uint32_t index);
+extern void cfgSetFilesystemAutomountDrives(cfg* config,
+  BOOLE automount_drives);
+extern BOOLE cfgGetFilesystemAutomountDrives(cfg* config);
 
 extern void cfgSetFilesystemDeviceNamePrefix(cfg* config, char* prefix);
 extern char* cfgGetFilesystemDeviceNamePrefix(cfg* config);
@@ -381,42 +381,42 @@ extern char* cfgGetFilesystemDeviceNamePrefix(cfg* config);
 /* Game port configuration property access                                    */
 /*============================================================================*/
 
-extern void cfgSetGameport(cfg *config, uint32_t index, gameport_inputs gameport);
-extern gameport_inputs cfgGetGameport(cfg *config, uint32_t index);
+extern void cfgSetGameport(cfg* config, uint32_t index, gameport_inputs gameport);
+extern gameport_inputs cfgGetGameport(cfg* config, uint32_t index);
 
 
 /*============================================================================*/
 /* GUI configuration property access                                          */
 /*============================================================================*/
 
-extern void cfgSetUseGUI(cfg *config, bool useGUI);
-extern bool cfgGetUseGUI(cfg *config);
+extern void cfgSetUseGUI(cfg* config, bool useGUI);
+extern bool cfgGetUseGUI(cfg* config);
 
 
 /*============================================================================*/
 /* Various configuration property access                                      */
 /*============================================================================*/
 
-extern void cfgSetMeasureSpeed(cfg *config, bool measurespeed);
-extern bool cfgGetMeasureSpeed(cfg *config);
+extern void cfgSetMeasureSpeed(cfg* config, bool measurespeed);
+extern bool cfgGetMeasureSpeed(cfg* config);
 
 /*============================================================================*/
 /* cfg Utility Functions                                                      */
 /*============================================================================*/
 
-extern void cfgSetDefaults(cfg *config);
-extern BOOLE cfgSetOption(cfg *config, char *optionstr);
-extern BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile);
-extern bool cfgLoadFromFilename(cfg *, const char *, const bool);
-extern BOOLE cfgSaveToFilename(cfg *config, char *filename);
-extern void cfgSynopsis(cfg *config);
+extern void cfgSetDefaults(cfg* config);
+extern BOOLE cfgSetOption(cfg* config, char* optionstr);
+extern BOOLE cfgSaveOptions(cfg* config, FILE* cfgfile);
+extern bool cfgLoadFromFilename(cfg*, const char*, const bool);
+extern BOOLE cfgSaveToFilename(cfg* config, char* filename);
+extern void cfgSynopsis(cfg* config);
 
 /*============================================================================*/
 /* struct cfgManager                                                          */
 /*============================================================================*/
 
 typedef struct {
-  cfg *m_currentconfig;
+  cfg* m_currentconfig;
 } cfgManager;
 
 
@@ -424,20 +424,20 @@ typedef struct {
 /* struct cfgManager property access functions                                */
 /*============================================================================*/
 
-extern void cfgManagerSetCurrentConfig(cfgManager *configmanager, cfg *currentconfig);
-extern cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager);
-extern cfg *cfgManagerGetCopyOfCurrentConfig(cfgManager *configmanager);
+extern void cfgManagerSetCurrentConfig(cfgManager* configmanager, cfg* currentconfig);
+extern cfg* cfgManagerGetCurrentConfig(cfgManager* configmanager);
+extern cfg* cfgManagerGetCopyOfCurrentConfig(cfgManager* configmanager);
 
 
 /*============================================================================*/
 /* struct cfgManager utility functions                                        */
 /*============================================================================*/
 
-extern BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager);
-extern cfg *cfgManagerGetNewConfig(cfgManager *configmanager);
-extern void cfgManagerFreeConfig(cfgManager *configmanager, cfg *config);
-extern void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[]);
-extern void cfgManagerShutdown(cfgManager *configmanager);
+extern BOOLE cfgManagerConfigurationActivate(cfgManager* configmanager);
+extern cfg* cfgManagerGetNewConfig(cfgManager* configmanager);
+extern void cfgManagerFreeConfig(cfgManager* configmanager, cfg* config);
+extern void cfgManagerStartup(cfgManager* configmanager, int argc, char* argv[]);
+extern void cfgManagerShutdown(cfgManager* configmanager);
 
 
 /*============================================================================*/
@@ -446,14 +446,14 @@ extern void cfgManagerShutdown(cfgManager *configmanager);
 
 extern cfgManager cfg_manager;
 
-extern void cfgStartup(int argc, char **argv);
+extern void cfgStartup(int argc, char** argv);
 extern void cfgShutdown();
 
 /*============================================================================*/
 /* tracking flag functions                                                    */
 /*============================================================================*/
 
-extern void  cfgSetConfigAppliedOnce(cfg *, BOOLE);
-extern BOOLE cfgGetConfigAppliedOnce(cfg *);
-extern void  cfgSetConfigChangedSinceLastSave(cfg *, BOOLE);
-extern BOOLE cfgGetConfigChangedSinceLastSave(cfg *);
+extern void  cfgSetConfigAppliedOnce(cfg*, BOOLE);
+extern BOOLE cfgGetConfigAppliedOnce(cfg*);
+extern void  cfgSetConfigChangedSinceLastSave(cfg*, BOOLE);
+extern BOOLE cfgGetConfigChangedSinceLastSave(cfg*);

@@ -320,7 +320,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AssemblerOutput>
       </AssemblerOutput>
@@ -380,7 +379,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <AssemblerOutput>
@@ -440,7 +438,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <AssemblerOutput>
@@ -486,6 +483,9 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C\WavFileWriter.cpp" />
+    <ClCompile Include="VirtualHost\CoreFactory.cpp" />
+    <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
     <ClCompile Include="zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1107,13 +1107,12 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\modrip.c" />
     <ClCompile Include="C\rtc.cpp" />
     <ClCompile Include="C\RtcOkiMsm6242rs.cpp" />
-    <ClCompile Include="C\SOUND.C" />
+    <ClCompile Include="C\Sound.cpp" />
     <ClCompile Include="C\SPRITE.C" />
     <ClCompile Include="C\SpriteMerger.cpp" />
     <ClCompile Include="C\SpriteP2CDecoder.cpp" />
     <ClCompile Include="C\SpriteRegisters.cpp" />
     <ClCompile Include="C\uart.cpp" />
-    <ClCompile Include="C\WAV.C" />
     <ClCompile Include="C\xdmswrap.c" />
     <ClCompile Include="C\zlibwrap.c" />
     <ClCompile Include="DXGI\GfxDrvDXGI.cpp" />
@@ -1171,7 +1170,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="Windows\MOUSEDRV.C" />
     <ClCompile Include="Windows\RetroPlatform.cpp" />
     <ClCompile Include="Windows\RetroPlatformGuestIPC.c" />
-    <ClCompile Include="Windows\SOUNDDRV.C" />
     <ClCompile Include="Windows\sysinfo.c" />
     <ClCompile Include="Windows\TIMER.C" />
     <ClCompile Include="Windows\WDBG.C" />
@@ -1179,6 +1177,9 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="Windows\WINMAIN.C" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="VirtualHost\CoreFactory.h" />
+    <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h" />
+    <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h" />
     <ClInclude Include="xdms\include\cdata.h" />
     <ClInclude Include="xdms\include\crc_csum.h" />
     <ClInclude Include="xdms\include\getbits.h" />
@@ -1251,7 +1252,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\CONFIG.H" />
     <ClInclude Include="INCLUDE\COPPER.H" />
     <ClInclude Include="INCLUDE\CopperRegisters.h" />
-    <ClInclude Include="INCLUDE\CoreHost.h" />
     <ClInclude Include="INCLUDE\CpuIntegration.h" />
     <ClInclude Include="INCLUDE\CpuModule.h" />
     <ClInclude Include="INCLUDE\CpuModule_Code.h" />
@@ -1266,7 +1266,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\DRAW.H" />
     <ClInclude Include="INCLUDE\draw_interlace_control.h" />
     <ClInclude Include="INCLUDE\draw_pixelrenderers.h" />
-    <ClInclude Include="INCLUDE\EVENTID.H" />
     <ClInclude Include="INCLUDE\FELLOW.H" />
     <ClInclude Include="INCLUDE\FFILESYS.H" />
     <ClInclude Include="INCLUDE\FLOPPY.H" />
@@ -1289,15 +1288,12 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\MOUSEDRV.H" />
     <ClInclude Include="INCLUDE\rtc.h" />
     <ClInclude Include="INCLUDE\RtcOkiMsm6242rs.h" />
-    <ClInclude Include="INCLUDE\SOUND.H" />
-    <ClInclude Include="INCLUDE\SOUNDDRV.H" />
     <ClInclude Include="INCLUDE\SPRITE.H" />
     <ClInclude Include="INCLUDE\SpriteMerger.h" />
     <ClInclude Include="INCLUDE\SpriteP2CDecoder.h" />
     <ClInclude Include="INCLUDE\SpriteRegisters.h" />
     <ClInclude Include="INCLUDE\TIMER.H" />
     <ClInclude Include="INCLUDE\uart.h" />
-    <ClInclude Include="INCLUDE\WAV.H" />
     <ClInclude Include="INCLUDE\WGUI.H" />
     <ClInclude Include="INCLUDE\zlibwrap.h" />
     <ClInclude Include="IPF\CapsAPI.h" />

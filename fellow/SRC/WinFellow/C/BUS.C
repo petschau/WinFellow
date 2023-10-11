@@ -34,8 +34,6 @@
 #include "graph.h"
 #include "floppy.h"
 #include "kbd.h"
-#include "sound.h"
-#include "kbd.h"
 #include "sprite.h"
 #include "timer.h"
 #include "draw.h"
@@ -76,7 +74,7 @@ void busEndOfLine()
   /* Handles graphics planar to chunky conversion                 */
   /* and updates the graphics emulation for a new line            */
   /*==============================================================*/
-  graphEndOfLine(); 
+  graphEndOfLine();
   spriteEndOfLine(busGetRasterY());
 
   /*==============================================================*/
@@ -92,7 +90,7 @@ void busEndOfLine()
   /*==============================================================*/
   /* Update the sound emulation                                   */
   /*==============================================================*/
-  soundEndOfLine();
+  _core.Sound->EndOfLine();
 
   /*==============================================================*/
   /* Handle keyboard events                                       */
@@ -120,15 +118,13 @@ void busEndOfFrame()
   /*==============================================================*/
   /* Draw the frame in the host buffer                            */
   /*==============================================================*/
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
-    drawEndOfFrame();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT) drawEndOfFrame();
 
-  /*==============================================================*/
-  /* Handle keyboard events                                       */
-  /*==============================================================*/
+    /*==============================================================*/
+    /* Handle keyboard events                                       */
+    /*==============================================================*/
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
-    kbdDrvEOFHandler();
+  if (RP.GetHeadlessMode()) kbdDrvEOFHandler();
 #endif
   kbdEventEOFHandler();
 
@@ -201,8 +197,7 @@ void busEndOfFrame()
   eolEvent.cycle = busGetCyclesInThisLine() - 1;
   busInsertEventWithNullCheck(&eolEvent);
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.EndOfFrame();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EndOfFrame();
 
   automator.EndOfFrame();
 
@@ -214,7 +209,7 @@ void busEndOfFrame()
 void busRemoveEvent(bus_event *ev)
 {
   BOOLE found = FALSE;
-  for (bus_event* tmp = bus.events; tmp != nullptr; tmp = tmp->next)
+  for (bus_event *tmp = bus.events; tmp != nullptr; tmp = tmp->next)
   {
     if (tmp == ev)
     {
@@ -255,15 +250,17 @@ void busInsertEventWithNullCheck(bus_event *ev)
 void busInsertEvent(bus_event *ev)
 {
   bus_event *tmp_prev = nullptr;
-  for (bus_event* tmp = bus.events; tmp != nullptr; tmp = tmp->next)
+  for (bus_event *tmp = bus.events; tmp != nullptr; tmp = tmp->next)
   {
-      if (ev->cycle < tmp->cycle)
+    if (ev->cycle < tmp->cycle)
     {
       ev->next = tmp;
       ev->prev = tmp_prev;
       tmp->prev = ev;
-      if (tmp_prev == nullptr) bus.events = ev; /* In front */
-      else tmp_prev->next = ev;
+      if (tmp_prev == nullptr)
+        bus.events = ev; /* In front */
+      else
+        tmp_prev->next = ev;
       return;
     }
     tmp_prev = tmp;
@@ -280,7 +277,6 @@ bus_event *busPopEvent()
   bus.events->prev = nullptr;
   return tmp;
 }
-
 
 #ifdef ENABLE_BUS_EVENT_LOGGING
 
@@ -377,24 +373,24 @@ void busRun68000Fast()
     {
       while (!fellow_request_emulation_stop)
       {
-	while (bus.events->cycle >= cpuEvent.cycle)
-	{
+        while (bus.events->cycle >= cpuEvent.cycle)
+        {
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	  busEventLog(&cpuEvent);
+          busEventLog(&cpuEvent);
 #endif
-	  busSetCycle(cpuEvent.cycle);
-	  cpuIntegrationExecuteInstructionEventHandler68000Fast();
-	}
-	do
-	{
-	  bus_event *e = busPopEvent();
+          busSetCycle(cpuEvent.cycle);
+          cpuIntegrationExecuteInstructionEventHandler68000Fast();
+        }
+        do
+        {
+          bus_event *e = busPopEvent();
 
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	  busEventLog(e);
+          busEventLog(e);
 #endif
-	  busSetCycle(e->cycle);
-	  e->handler();
-	} while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
+          busSetCycle(e->cycle);
+          e->handler();
+        } while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
       }
     }
     else
@@ -415,24 +411,24 @@ void busRunGeneric()
     {
       while (!fellow_request_emulation_stop)
       {
-	while (bus.events->cycle >= cpuEvent.cycle)
-	{
+        while (bus.events->cycle >= cpuEvent.cycle)
+        {
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	  busEventLog(&cpuEvent);
+          busEventLog(&cpuEvent);
 #endif
-	  busSetCycle(cpuEvent.cycle);
-	  cpuEvent.handler();
-	}
-	do
-	{
-	  bus_event *e = busPopEvent();
+          busSetCycle(cpuEvent.cycle);
+          cpuEvent.handler();
+        }
+        do
+        {
+          bus_event *e = busPopEvent();
 
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	  busEventLog(e);
+          busEventLog(e);
 #endif
-	  busSetCycle(e->cycle);
-	  e->handler();
-	} while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
+          busSetCycle(e->cycle);
+          e->handler();
+        } while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
       }
     }
     else
@@ -450,8 +446,7 @@ busRunHandlerFunc busGetRunHandler()
 {
   if (cpuGetModelMajor() <= 1)
   {
-    if (cpuIntegrationGetSpeed() == 4)
-      return busRun68000Fast;
+    if (cpuIntegrationGetSpeed() == 4) return busRun68000Fast;
   }
   return busRunGeneric;
 }
@@ -470,25 +465,25 @@ void busDebugStepOneInstruction()
     {
       while (!fellow_request_emulation_stop)
       {
-	if (bus.events->cycle >= cpuEvent.cycle)
-	{
+        if (bus.events->cycle >= cpuEvent.cycle)
+        {
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	  busEventLog(&cpuEvent);
+          busEventLog(&cpuEvent);
 #endif
-	  busSetCycle(cpuEvent.cycle);
-	  cpuEvent.handler();
-	  return;
-	}
-	do
-	{
-	  bus_event *e = busPopEvent();
+          busSetCycle(cpuEvent.cycle);
+          cpuEvent.handler();
+          return;
+        }
+        do
+        {
+          bus_event *e = busPopEvent();
 
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	  busEventLog(e);
+          busEventLog(e);
 #endif
-	  busSetCycle(e->cycle);
-	  e->handler();
-	} while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
+          busSetCycle(e->cycle);
+          e->handler();
+        } while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
       }
     }
     else
@@ -508,10 +503,12 @@ void busClearEvent(bus_event *ev, busEventHandler handlerFunc)
   ev->handler = handlerFunc;
 }
 
-void busDetermineCpuInstructionEventHandler() {
-  if (cpuGetModelMajor() <= 1) {
+void busDetermineCpuInstructionEventHandler()
+{
+  if (cpuGetModelMajor() <= 1)
+  {
     if (cpuIntegrationGetSpeed() == 4)
-        cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
+      cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
     else
       cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000General;
   }
@@ -549,7 +546,7 @@ void busInitializePalLongFrame()
   pal_long_frame.max_cycles_in_line = 227;
   pal_long_frame.lines_in_this_frame = 313;
   pal_long_frame.max_lines_in_frame = 314;
-  pal_long_frame.cycles_in_this_frame = 313*227;
+  pal_long_frame.cycles_in_this_frame = 313 * 227;
 }
 void busInitializePalShortFrame()
 {
@@ -557,7 +554,7 @@ void busInitializePalShortFrame()
   pal_short_frame.max_cycles_in_line = 227;
   pal_short_frame.lines_in_this_frame = 312;
   pal_short_frame.max_lines_in_frame = 314;
-  pal_short_frame.cycles_in_this_frame = 312*227;
+  pal_short_frame.cycles_in_this_frame = 312 * 227;
 }
 
 void busInitializeScreenLimits()

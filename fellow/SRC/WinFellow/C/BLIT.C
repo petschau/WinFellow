@@ -19,7 +19,7 @@
 #include "CpuIntegration.h"
 #include "chipset.h"
 #include "interrupt.h"
-#include "CoreHost.h"
+#include "VirtualHost/Core.h"
 
 using namespace CustomChipset;
 
@@ -205,7 +205,7 @@ void blitterOperationLog() {
     if (F)
     {
       fprintf(F, "%.7d\t%.3d\t%.3d\t%.4X\t%.4X\t%.4X\t%.4X\t%.6X\t%.6X\t%.6X\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%d\t%d\n",
-	draw_frame_count, busGetRasterY(), busGetRasterX(), (blitter.bltcon >> 16) & 0xffff, blitter.bltcon & 0xffff, blitter.bltafwm & 0xffff, blitter.bltalwm & 0xffff, blitter.bltapt, blitter.bltbpt, blitter.bltcpt, blitter.bltdpt, blitter.bltamod & 0xffff, blitter.bltbmod & 0xffff, blitter.bltcmod & 0xffff, blitter.bltdmod & 0xffff, blitter.bltadat & 0xffff, blitter.bltbdat & 0xffff, blitter.bltcdat & 0xffff, blitter.height, blitter.width);
+        draw_frame_count, busGetRasterY(), busGetRasterX(), (blitter.bltcon >> 16) & 0xffff, blitter.bltcon & 0xffff, blitter.bltafwm & 0xffff, blitter.bltalwm & 0xffff, blitter.bltapt, blitter.bltbpt, blitter.bltcpt, blitter.bltdpt, blitter.bltamod & 0xffff, blitter.bltbmod & 0xffff, blitter.bltcmod & 0xffff, blitter.bltdmod & 0xffff, blitter.bltadat & 0xffff, blitter.bltbdat & 0xffff, blitter.bltcdat & 0xffff, blitter.height, blitter.width);
       fclose(F);
     }
   }
@@ -1132,14 +1132,14 @@ void blitterLineMode()
     {
       if (blitter.bltcon & 0x00000002)
       {
-	if (single_dot)
-	{
-	  bltadat_local = 0;
-	}
-	else
-	{
-	  single_dot = TRUE;
-	}
+        if (single_dot)
+        {
+          bltadat_local = 0;
+        }
+        else
+        {
+          single_dot = TRUE;
+        }
       }
     }
 
@@ -1180,26 +1180,26 @@ void blitterLineMode()
 
       if (!x_independent)
       {
-	if (x_inc)
-	{
-	  blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
-	}
-	else
-	{
-	  blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
-	}
+        if (x_inc)
+        {
+          blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
+        }
+        else
+        {
+          blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
+        }
       }
       else
       {
-	if (y_inc)
-	{
-	  blitterLineIncreaseY(bltcpt_local, blitter.bltcmod);
-	}
-	else
-	{
-	  blitterLineDecreaseY(bltcpt_local, blitter.bltcmod);
-	}
-	single_dot = FALSE;
+        if (y_inc)
+        {
+          blitterLineIncreaseY(bltcpt_local, blitter.bltcmod);
+        }
+        else
+        {
+          blitterLineDecreaseY(bltcpt_local, blitter.bltcmod);
+        }
+        single_dot = FALSE;
       }
     }
     decision_is_signed = ((int16_t)decision_variable < 0);
@@ -1209,22 +1209,22 @@ void blitterLineMode()
       // decrease/increase y
       if (y_inc)
       {
-	blitterLineIncreaseY(bltcpt_local, blitter.bltcmod);
+        blitterLineIncreaseY(bltcpt_local, blitter.bltcmod);
       }
       else
       {
-	blitterLineDecreaseY(bltcpt_local, blitter.bltcmod);
+        blitterLineDecreaseY(bltcpt_local, blitter.bltcmod);
       }
     }
     else
     {
       if (x_inc)
       {
-	blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
+        blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
       }
       else
       {
-	blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
+        blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
       }
     }
     bltdpt_local = bltcpt_local;
@@ -1803,16 +1803,16 @@ static void blitterFillTableInit()
     for (fc = 0; fc < 2; fc++)
       for (i = 0; i < 256; i++)
       {
-	fc_tmp = fc;
-	data = i;
-	for (bit = 0; bit < 8; bit++)
-	{
-	  if (mode == 0) data |= fc_tmp << bit;
-	  else data ^= fc_tmp << bit;
-	  if ((i & (0x1 << bit))) fc_tmp = (fc_tmp == 1) ? 0 : 1;
-	}
-	blit_fill[mode][fc][i][0] = (uint8_t)fc_tmp;
-	blit_fill[mode][fc][i][1] = (uint8_t)data;
+        fc_tmp = fc;
+        data = i;
+        for (bit = 0; bit < 8; bit++)
+        {
+          if (mode == 0) data |= fc_tmp << bit;
+          else data ^= fc_tmp << bit;
+          if ((i & (0x1 << bit))) fc_tmp = (fc_tmp == 1) ? 0 : 1;
+        }
+        blit_fill[mode][fc][i][0] = (uint8_t)fc_tmp;
+        blit_fill[mode][fc][i][1] = (uint8_t)data;
       }
 }
 
@@ -2007,8 +2007,8 @@ void verifyMinterms()
     char s[40];
     for (a_dat = 0; a_dat < 256; a_dat++)
       for (b_dat = 0; b_dat < 256; b_dat++)
-	for (c_dat = 0; c_dat < 256; c_dat++)
-	  minterm_had_error |= (correctMinterms(minterm, a_dat, b_dat, c_dat) != optimizedMinterms(minterm, a_dat, b_dat, c_dat));
+        for (c_dat = 0; c_dat < 256; c_dat++)
+          minterm_had_error |= (correctMinterms(minterm, a_dat, b_dat, c_dat) != optimizedMinterms(minterm, a_dat, b_dat, c_dat));
     if (minterm_had_error)
     {
       sprintf(s, "Minterm %X was %s", minterm, (minterm_had_error) ? "incorrect" : "correct");

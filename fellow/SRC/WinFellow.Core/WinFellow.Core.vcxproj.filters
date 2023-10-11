@@ -4,23 +4,66 @@
     <Filter Include="CustomChipset">
       <UniqueIdentifier>{f111653b-f438-4cdf-b795-9e0d0d94046e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NullDriver">
+      <UniqueIdentifier>{bed135ae-c425-4693-bf9c-910120ca8a7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Driver">
+      <UniqueIdentifier>{1dbf3373-7ddb-4fe4-bf8d-f24b1431a434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NullDriver\Sound">
+      <UniqueIdentifier>{b47fa094-e13d-4cc1-8ac8-0e00113219af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CustomChipset\Sound">
+      <UniqueIdentifier>{852a5a3f-973b-4671-908d-06a2252bd18e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VirtualHost">
+      <UniqueIdentifier>{29b4dd9a-9e1c-4a2c-b6c7-80ed23d761f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core.h" />
     <ClInclude Include="CustomChipset\Registers.h">
       <Filter>CustomChipset</Filter>
     </ClInclude>
     <ClInclude Include="CustomChipset\RegisterUtility.h">
       <Filter>CustomChipset</Filter>
     </ClInclude>
+    <ClInclude Include="Driver\Drivers.h">
+      <Filter>Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Driver\ISoundDriver.h">
+      <Filter>Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="NullDriver\Sound\NullSound.h">
+      <Filter>NullDriver\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Sound\SoundConfiguration.h">
+      <Filter>CustomChipset\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Driver\SoundDriverRuntimeConfiguration.h">
+      <Filter>Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualHost\Core.h">
+      <Filter>VirtualHost</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Sound\Sound.h">
+      <Filter>CustomChipset\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Sound\WavFileWriter.h">
+      <Filter>CustomChipset\Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core.cpp" />
     <ClCompile Include="CustomChipset\Registers.cpp">
       <Filter>CustomChipset</Filter>
     </ClCompile>
     <ClCompile Include="CustomChipset\RegisterUtility.cpp">
       <Filter>CustomChipset</Filter>
+    </ClCompile>
+    <ClCompile Include="NullDriver\Sound\NullSound.cpp">
+      <Filter>NullDriver\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualHost\Core.cpp">
+      <Filter>VirtualHost</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

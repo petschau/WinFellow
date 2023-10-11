@@ -7,12 +7,12 @@
 #include "gui_general.h"
 #include "GFXDRV.H"
 
-#include "SOUND.H"
-#include "SOUNDDRV.H"
 #include "MOUSEDRV.H"
 #include "JOYDRV.H"
 #include "KBDDRV.H"
 #include "TIMER.H"
+
+#include "VirtualHost/Core.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -143,12 +143,11 @@ void GfxDrvCommon::RunEventWait()
 
 void GfxDrvCommon::EvaluateRunEventStatus()
 {
-  _win_active = (_win_active_original &&
-    !_win_minimized_original &&
-    !_syskey_down);
-  
+  _win_active = (_win_active_original && !_win_minimized_original && !_syskey_down);
+
 #ifdef RETRO_PLATFORM
-  if (!RP.GetHeadlessMode()) {
+  if (!RP.GetHeadlessMode())
+  {
 #endif
     if (_win_active)
     {
@@ -156,10 +155,9 @@ void GfxDrvCommon::EvaluateRunEventStatus()
     }
     else
     {
-      if (_pause_emulation_when_window_loses_focus)
-        RunEventReset();
+      if (_pause_emulation_when_window_loses_focus) RunEventReset();
     }
-    
+
     gfxDrvNotifyActiveStatus(_win_active);
 #ifdef RETRO_PLATFORM
   }
@@ -169,7 +167,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
 void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 {
   mouseDrvStateHasChanged(active);
-  
+
 #ifdef RETRO_PLATFORM
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
   if (!RP.GetHeadlessMode())
@@ -185,7 +183,7 @@ void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 #endif
 }
 
-#define WM_DIACQUIRE  (WM_USER + 0)
+#define WM_DIACQUIRE (WM_USER + 0)
 
 LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -194,10 +192,10 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 
 /***********************************************************************/
 /**
-* Window procedure for the emulation window.
-*
-* Distributes events to mouse and keyboard drivers as well.
-***************************************************************************/
+ * Window procedure for the emulation window.
+ *
+ * Distributes events to mouse and keyboard drivers as well.
+ ***************************************************************************/
 
 LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -206,205 +204,188 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
 #ifdef GFXDRV_DEBUG_WINDOW_MESSAGES
   switch (message)
   {
-  case WM_SETFONT:
-  case WM_ACTIVATE:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATE");          break;
-  case WM_ACTIVATEAPP:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATEAPP");       break;
-  case WM_CHAR:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_CHAR");              break;
-  case WM_CREATE:             fellowAddLog("EmulationWindowProc got message %s\n", "WM_CREATE");            break;
-  case WM_CLOSE:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_CLOSE");             break;
-  case WM_DESTROY:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_DESTROY");           break;
-  case WM_ENABLE:             fellowAddLog("EmulationWindowProc got message %s\n", "WM_ENABLE");            break;
-  case WM_ERASEBKGND:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_ERASEBKGND");        break;
-  case WM_GETICON:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETICON");           break;
-  case WM_GETMINMAXINFO:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETMINMAXINFO");     break;
-  case WM_IME_NOTIFY:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_IME_NOTIFY");        break;
-  case WM_IME_SETCONTEXT:     fellowAddLog("EmulationWindowProc got message %s\n", "WM_IME_SETCONTEXT");    break;
-  case WM_KEYDOWN:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN");           break;
-  case WM_KEYUP:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP");             break;
-  case WM_KILLFOCUS:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_KILLFOCUS");         break;
-  case WM_LBUTTONDBLCLK:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDBLCLK");     break;
-  case WM_LBUTTONDOWN:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDOWN");       break;
-  case WM_LBUTTONUP:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONUP");         break;
-  case WM_MOVE:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOVE");              break;
-  case WM_MOUSEACTIVATE:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOUSEACTIVATE");     break;
-  case WM_MOUSEMOVE:        /*fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOUSEMOVE");*/       break;
-  case WM_NCPAINT:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT");           break;
-  case WM_NCACTIVATE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCACTIVATE");        break;
-  case WM_NCCALCSIZE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCALCSIZE");        break;
-  case WM_NCCREATE:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCREATE");          break;
-  case WM_NCDESTROY:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCDESTROY");         break;
-  case WM_PAINT:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_PAINT");             break;
-  case WM_SETCURSOR:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETCURSOR");         break;
-  case WM_SETFOCUS:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETFOCUS");          break;
-  case WM_SIZE:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_SIZE");              break;
-  case WM_SHOWWINDOW:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_SHOWWINDOW");        break;
-  case WM_SYNCPAINT:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYNCPAINT");         break;
-  case WM_SYSCOMMAND:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSCOMMAND");        break;
-  case WM_SYSKEYDOWN:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSKEYDOWN");        break;
-  case WM_SYSKEYUP:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSKEYUP");          break;
-  case WM_TIMER:            /*fellowAddLog("EmulationWindowProc got message %s\n", "WM_TIMER");*/           break;
-  case WM_WINDOWPOSCHANGING:  fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGING"); break;
-  case WM_WINDOWPOSCHANGED:   fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGED");  break;
-  default:                    fellowAddLog("EmulationWindowProc got message %Xh\n", message);
+    case WM_SETFONT:
+    case WM_ACTIVATE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATE"); break;
+    case WM_ACTIVATEAPP: fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATEAPP"); break;
+    case WM_CHAR: fellowAddLog("EmulationWindowProc got message %s\n", "WM_CHAR"); break;
+    case WM_CREATE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_CREATE"); break;
+    case WM_CLOSE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_CLOSE"); break;
+    case WM_DESTROY: fellowAddLog("EmulationWindowProc got message %s\n", "WM_DESTROY"); break;
+    case WM_ENABLE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_ENABLE"); break;
+    case WM_ERASEBKGND: fellowAddLog("EmulationWindowProc got message %s\n", "WM_ERASEBKGND"); break;
+    case WM_GETICON: fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETICON"); break;
+    case WM_GETMINMAXINFO: fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETMINMAXINFO"); break;
+    case WM_IME_NOTIFY: fellowAddLog("EmulationWindowProc got message %s\n", "WM_IME_NOTIFY"); break;
+    case WM_IME_SETCONTEXT: fellowAddLog("EmulationWindowProc got message %s\n", "WM_IME_SETCONTEXT"); break;
+    case WM_KEYDOWN: fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN"); break;
+    case WM_KEYUP: fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP"); break;
+    case WM_KILLFOCUS: fellowAddLog("EmulationWindowProc got message %s\n", "WM_KILLFOCUS"); break;
+    case WM_LBUTTONDBLCLK: fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDBLCLK"); break;
+    case WM_LBUTTONDOWN: fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDOWN"); break;
+    case WM_LBUTTONUP: fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONUP"); break;
+    case WM_MOVE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOVE"); break;
+    case WM_MOUSEACTIVATE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOUSEACTIVATE"); break;
+    case WM_MOUSEMOVE: /*fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOUSEMOVE");*/ break;
+    case WM_NCPAINT: fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT"); break;
+    case WM_NCACTIVATE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCACTIVATE"); break;
+    case WM_NCCALCSIZE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCALCSIZE"); break;
+    case WM_NCCREATE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCREATE"); break;
+    case WM_NCDESTROY: fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCDESTROY"); break;
+    case WM_PAINT: fellowAddLog("EmulationWindowProc got message %s\n", "WM_PAINT"); break;
+    case WM_SETCURSOR: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETCURSOR"); break;
+    case WM_SETFOCUS: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETFOCUS"); break;
+    case WM_SIZE: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SIZE"); break;
+    case WM_SHOWWINDOW: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SHOWWINDOW"); break;
+    case WM_SYNCPAINT: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYNCPAINT"); break;
+    case WM_SYSCOMMAND: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSCOMMAND"); break;
+    case WM_SYSKEYDOWN: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSKEYDOWN"); break;
+    case WM_SYSKEYUP: fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSKEYUP"); break;
+    case WM_TIMER: /*fellowAddLog("EmulationWindowProc got message %s\n", "WM_TIMER");*/ break;
+    case WM_WINDOWPOSCHANGING: fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGING"); break;
+    case WM_WINDOWPOSCHANGED: fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGED"); break;
+    default: fellowAddLog("EmulationWindowProc got message %Xh\n", message);
   }
 #endif
 
   switch (message)
   {
-  case WM_ERASEBKGND:
-  case WM_NCPAINT:
-  case WM_PAINT:
-    graph_buffer_lost = TRUE;
-    break;
-  case WM_TIMER:
-    if (wParam == 1)
-    {
-      winDrvHandleInputDevices();
-      soundDrvPollBufferPosition();
-      return 0;
-    }
-    break;
-  case WM_SYSKEYDOWN:
-  {
-    int vkey = (int)wParam;
-    _syskey_down = (vkey != VK_F10);
-  }
-  break;
-  case WM_SYSKEYUP:
-    _syskey_down = false;
-    EvaluateRunEventStatus();
-    switch (wParam)
-    {
-    case VK_RETURN:  /* Full screen vs windowed */
-      break;
-    }
-    break;
-  case WM_MOVE:
-    gfxDrvPositionChanged();
-    break;
-  case WM_SIZE:
-    gfxDrvSizeChanged(LOWORD(lParam), HIWORD(lParam));
-    break;
-  case WM_ACTIVATE:
-    /* WM_ACTIVATE tells us whether our window is active or not */
-    /* It is monitored so that we can know whether we should claim */
-    /* the DirectInput devices */
-
-    _win_active_original = (((LOWORD(wParam)) == WA_ACTIVE) || ((LOWORD(wParam)) == WA_CLICKACTIVE));
-    _win_minimized_original = ((HIWORD(wParam)) != 0);
-    NotifyDirectInputDevicesAboutActiveState(_win_active_original);
-#ifdef RETRO_PLATFORM
-    if (RP.GetHeadlessMode() && _win_active_original)
-      RP.SendMouseCapture(true);
-#endif
-    EvaluateRunEventStatus();
-    return 0; /* We processed this message */
-  case WM_ENTERMENULOOP:
-  case WM_ENTERSIZEMOVE:
-    _win_active_original = false;
-    NotifyDirectInputDevicesAboutActiveState(_win_active_original);
-    return 0;
-  case WM_EXITMENULOOP:
-  case WM_EXITSIZEMOVE:
-    _win_active_original = (GetActiveWindow() == hWnd && !IsIconic(hWnd));
-    PostMessage(hWnd, WM_DIACQUIRE, 0, 0L);
-    return 0;
-  case WM_SYSCOMMAND:
-    if (IsWindow(hWnd))
-    {
-      NotifyDirectInputDevicesAboutActiveState(_win_active_original);
-    }
-    switch (GET_WM_COMMAND_ID(wParam, lParam))
-    {
-    case SC_SCREENSAVE:
-      return 0;
-    case SC_KEYMENU:
-      return 0;
-#ifdef RETRO_PLATFORM
-    case SC_CLOSE:
-      if (RP.GetHeadlessMode())
+    case WM_ERASEBKGND:
+    case WM_NCPAINT:
+    case WM_PAINT: graph_buffer_lost = TRUE; break;
+    case WM_TIMER:
+      if (wParam == 1)
       {
-        RP.SendClose();
+        winDrvHandleInputDevices();
+        _core.Drivers.SoundDriver->PollBufferPosition();
         return 0;
       }
-      // else fall through to DefWindowProc() to get WM_CLOSE etc.
-#endif
-    default:
-      return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-  case WM_ACTIVATEAPP:
-    if (wParam)
+      break;
+    case WM_SYSKEYDOWN:
     {
-      /* Being activated */
+      int vkey = (int)wParam;
+      _syskey_down = (vkey != VK_F10);
     }
-    else
-    {
-      /* Being de-activated */
+    break;
+    case WM_SYSKEYUP:
       _syskey_down = false;
-    }
+      EvaluateRunEventStatus();
+      switch (wParam)
+      {
+        case VK_RETURN: /* Full screen vs windowed */ break;
+      }
+      break;
+    case WM_MOVE: gfxDrvPositionChanged(); break;
+    case WM_SIZE: gfxDrvSizeChanged(LOWORD(lParam), HIWORD(lParam)); break;
+    case WM_ACTIVATE:
+      /* WM_ACTIVATE tells us whether our window is active or not */
+      /* It is monitored so that we can know whether we should claim */
+      /* the DirectInput devices */
 
+      _win_active_original = (((LOWORD(wParam)) == WA_ACTIVE) || ((LOWORD(wParam)) == WA_CLICKACTIVE));
+      _win_minimized_original = ((HIWORD(wParam)) != 0);
+      NotifyDirectInputDevicesAboutActiveState(_win_active_original);
 #ifdef RETRO_PLATFORM
-    if (RP.GetHeadlessMode())
-      RP.SendActivated(wParam ? true : false, lParam);
+      if (RP.GetHeadlessMode() && _win_active_original) RP.SendMouseCapture(true);
 #endif
-
-    return 0;
-    break;
-  case WM_DESTROY:
-    // save emulation window position only if in windowed mode
-    if (GetOutputWindowed())
-    {
-      GetWindowRect(hWnd, &emulationRect);
-      iniSetEmulationWindowPosition(_ini, emulationRect.left, emulationRect.top);
-    }
-    NotifyDirectInputDevicesAboutActiveState(false);
-    return 0;
-    break;
-  case WM_SHOWWINDOW:
-    break;
-  case WM_DISPLAYCHANGE:
-    if (GetOutputWindowed())
-    {
-      _displaychange = (wParam != _current_draw_mode->bits);
-      fellow_request_emulation_stop = TRUE;
-    }
-    break;
-  case WM_DIACQUIRE:        /* Re-evaluate the active status of DI-devices */
-    NotifyDirectInputDevicesAboutActiveState(_win_active_original);
-    return 0;
-    break;
-  case WM_CLOSE:
-    fellowRequestEmulationStop();
-    return 0; /* We handled this message */
-
-#ifdef RETRO_PLATFORM
-  case WM_LBUTTONUP:
-    if(RP.GetHeadlessMode())
-    {
-      if(mouseDrvGetFocus())
+      EvaluateRunEventStatus();
+      return 0; /* We processed this message */
+    case WM_ENTERMENULOOP:
+    case WM_ENTERSIZEMOVE:
+      _win_active_original = false;
+      NotifyDirectInputDevicesAboutActiveState(_win_active_original);
+      return 0;
+    case WM_EXITMENULOOP:
+    case WM_EXITSIZEMOVE:
+      _win_active_original = (GetActiveWindow() == hWnd && !IsIconic(hWnd));
+      PostMessage(hWnd, WM_DIACQUIRE, 0, 0L);
+      return 0;
+    case WM_SYSCOMMAND:
+      if (IsWindow(hWnd))
       {
         NotifyDirectInputDevicesAboutActiveState(_win_active_original);
-        RP.SendMouseCapture(true);
+      }
+      switch (GET_WM_COMMAND_ID(wParam, lParam))
+      {
+        case SC_SCREENSAVE: return 0;
+        case SC_KEYMENU: return 0;
+#ifdef RETRO_PLATFORM
+        case SC_CLOSE:
+          if (RP.GetHeadlessMode())
+          {
+            RP.SendClose();
+            return 0;
+          }
+          // else fall through to DefWindowProc() to get WM_CLOSE etc.
+#endif
+        default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+    case WM_ACTIVATEAPP:
+      if (wParam)
+      {
+        /* Being activated */
       }
       else
       {
-        mouseDrvStateHasChanged(TRUE);
-        mouseDrvSetFocus(TRUE, FALSE);
+        /* Being de-activated */
+        _syskey_down = false;
       }
-      return 0;
-    }
-  case WM_ENABLE:
-    if (RP.GetHeadlessMode())
-    {
-      RP.SendEnable(wParam ? 1 : 0);
-      return 0;
-    }
+
+#ifdef RETRO_PLATFORM
+      if (RP.GetHeadlessMode()) RP.SendActivated(wParam ? true : false, lParam);
 #endif
 
+      return 0;
+      break;
+    case WM_DESTROY:
+      // save emulation window position only if in windowed mode
+      if (GetOutputWindowed())
+      {
+        GetWindowRect(hWnd, &emulationRect);
+        iniSetEmulationWindowPosition(_ini, emulationRect.left, emulationRect.top);
+      }
+      NotifyDirectInputDevicesAboutActiveState(false);
+      return 0;
+      break;
+    case WM_SHOWWINDOW: break;
+    case WM_DISPLAYCHANGE:
+      if (GetOutputWindowed())
+      {
+        _displaychange = (wParam != _current_draw_mode->bits);
+        fellow_request_emulation_stop = TRUE;
+      }
+      break;
+    case WM_DIACQUIRE: /* Re-evaluate the active status of DI-devices */
+      NotifyDirectInputDevicesAboutActiveState(_win_active_original);
+      return 0;
+      break;
+    case WM_CLOSE: fellowRequestEmulationStop(); return 0; /* We handled this message */
+
+#ifdef RETRO_PLATFORM
+    case WM_LBUTTONUP:
+      if (RP.GetHeadlessMode())
+      {
+        if (mouseDrvGetFocus())
+        {
+          NotifyDirectInputDevicesAboutActiveState(_win_active_original);
+          RP.SendMouseCapture(true);
+        }
+        else
+        {
+          mouseDrvStateHasChanged(TRUE);
+          mouseDrvSetFocus(TRUE, FALSE);
+        }
+        return 0;
+      }
+    case WM_ENABLE:
+      if (RP.GetHeadlessMode())
+      {
+        RP.SendEnable(wParam ? 1 : 0);
+        return 0;
+      }
+#endif
   }
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
 
 /*==========================================================================*/
 /* Create window classes for Amiga display                                  */
@@ -422,8 +403,7 @@ bool GfxDrvCommon::InitializeWindowClass()
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;
 #ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-    RP.SetWindowInstance(win_drv_hInstance);
+  if (RP.GetHeadlessMode()) RP.SetWindowInstance(win_drv_hInstance);
 #endif
   wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
   wc1.hCursor = LoadCursor(nullptr, IDC_ARROW);
@@ -440,11 +420,11 @@ void GfxDrvCommon::ReleaseWindowClass()
 
 /***********************************************************************/
 /**
-* Show window hosting the amiga display.
-*
-* Called on every emulation startup. In RetroPlatform mode, the player will
-* take care of showing the emulator's window.
-***************************************************************************/
+ * Show window hosting the amiga display.
+ *
+ * Called on every emulation startup. In RetroPlatform mode, the player will
+ * take care of showing the emulator's window.
+ ***************************************************************************/
 
 void GfxDrvCommon::DisplayWindow()
 {
@@ -470,7 +450,6 @@ void GfxDrvCommon::DisplayWindow()
   }
 }
 
-
 /*==========================================================================*/
 /* Hide window hosting the amiga display                                    */
 /* Called on emulation stop                                                 */
@@ -483,7 +462,6 @@ void GfxDrvCommon::HideWindow()
     ShowWindow(_hwnd, SW_SHOWMINIMIZED);
   }
 }
-
 
 HWND GfxDrvCommon::GetHWND()
 {
@@ -523,40 +501,29 @@ bool GfxDrvCommon::InitializeWindow()
     }
 #endif
 
-    _hwnd = CreateWindowEx(dwExStyle,
-      "FellowWindowClass",
-      versionstring,
-      dwStyle,
-      0, // CW_USEDEFAULT,
-      0, // SW_SHOW,
-      width,
-      height,
-      hParent,
-      nullptr,
-      win_drv_hInstance,
-      nullptr);
+    _hwnd = CreateWindowEx(
+        dwExStyle,
+        "FellowWindowClass",
+        versionstring,
+        dwStyle,
+        0, // CW_USEDEFAULT,
+        0, // SW_SHOW,
+        width,
+        height,
+        hParent,
+        nullptr,
+        win_drv_hInstance,
+        nullptr);
   }
   else
   {
-    _hwnd = CreateWindowEx(WS_EX_TOPMOST,
-      "FellowWindowClass",
-      versionstring,
-      WS_POPUP,
-      0,
-      0,
-      width,
-      height,
-      nullptr,
-      nullptr,
-      win_drv_hInstance,
-      nullptr);
+    _hwnd = CreateWindowEx(WS_EX_TOPMOST, "FellowWindowClass", versionstring, WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, nullptr);
   }
   fellowAddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
   free(versionstring);
 
   return (_hwnd != nullptr);
 }
-
 
 /*==========================================================================*/
 /* Destroy window hosting the amiga display                                 */
@@ -572,12 +539,12 @@ void GfxDrvCommon::ReleaseWindow()
   }
 }
 
-draw_mode* GfxDrvCommon::GetDrawMode()
+draw_mode *GfxDrvCommon::GetDrawMode()
 {
   return _current_draw_mode;
 }
 
-void GfxDrvCommon::SetDrawMode(draw_mode* mode, bool windowed)
+void GfxDrvCommon::SetDrawMode(draw_mode *mode, bool windowed)
 {
   _current_draw_mode = mode;
   _output_windowed = windowed;
@@ -590,7 +557,7 @@ void GfxDrvCommon::SetPauseEmulationWhenWindowLosesFocus(bool pause)
 
 void GfxDrvCommon::Flip()
 {
-  if (soundGetEmulation() == SOUND_PLAY)
+  if (_core.Sound->GetEmulation() == CustomChipset::SOUND_PLAY)
   {
     MaybeDelayFlip();
   }
@@ -598,7 +565,7 @@ void GfxDrvCommon::Flip()
 
 bool GfxDrvCommon::EmulationStart()
 {
-  RunEventReset();                    /* At this point, app is paused */
+  RunEventReset(); /* At this point, app is paused */
 
   _win_active = false;
   _win_active_original = false;
@@ -616,8 +583,7 @@ bool GfxDrvCommon::EmulationStart()
 
 #ifdef RETRO_PLATFORM
   // unpause emulation if in Retroplatform mode
-  if (RP.GetHeadlessMode() && !RP.GetEmulationPaused())
-    RunEventSet();
+  if (RP.GetHeadlessMode() && !RP.GetEmulationPaused()) RunEventSet();
 #endif
 
   return true;
@@ -662,14 +628,7 @@ void GfxDrvCommon::Shutdown()
 }
 
 GfxDrvCommon::GfxDrvCommon()
-  : _run_event(nullptr),
-    _hwnd(nullptr),
-    _ini(nullptr),
-    _frametime_target(18), 
-    _previous_flip_time(0), 
-    _time(0), 
-    _wait_for_time(0), 
-    _delay_flip_event(nullptr)
+  : _run_event(nullptr), _hwnd(nullptr), _ini(nullptr), _frametime_target(18), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
 {
 }
 
@@ -677,4 +636,3 @@ GfxDrvCommon::~GfxDrvCommon()
 {
   Shutdown();
 }
-

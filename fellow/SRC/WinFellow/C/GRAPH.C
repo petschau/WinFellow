@@ -30,7 +30,6 @@
 #include "blit.h"
 #include "graph.h"
 #include "bus.h"
-#include "sound.h"
 #include "draw.h"
 #include "graph.h"
 #include "LineExactSprites.h"
@@ -67,7 +66,6 @@ uint32_t graph_deco6[256][2];
 uint8_t graph_line1_tmp[1024];
 uint8_t graph_line2_tmp[1024];
 
-
 /*===========================================================================*/
 /* Line description registers and data                                       */
 /*===========================================================================*/
@@ -77,18 +75,16 @@ uint32_t graph_DDF_word_count;
 uint32_t graph_DIW_first_visible;
 uint32_t graph_DIW_last_visible;
 
-
 /*===========================================================================*/
 /* Translation tables for colors                                             */
 /*===========================================================================*/
 
-uint32_t graph_color_shadow[64];  /* Colors corresponding to the different Amiga- */
+uint32_t graph_color_shadow[64]; /* Colors corresponding to the different Amiga- */
 /* registers. Initialized from draw_color_table */
 /* whenever WCOLORXX is written.                */
 
-uint16_t graph_color[64];         /* Copy of Amiga version of colors */
+uint16_t graph_color[64]; /* Copy of Amiga version of colors */
 BOOLE graph_playfield_on;
-
 
 /*===========================================================================*/
 /* IO-registers                                                              */
@@ -97,7 +93,7 @@ BOOLE graph_playfield_on;
 uint32_t bpl1pt, bpl2pt, bpl3pt, bpl4pt, bpl5pt, bpl6pt;
 uint32_t lof, ddfstrt, ddfstop, bplcon1, bpl1mod, bpl2mod;
 uint32_t evenscroll, evenhiscroll, oddscroll, oddhiscroll;
-uint32_t diwstrt, diwstop; 
+uint32_t diwstrt, diwstop;
 uint32_t diwxleft, diwxright, diwytop, diwybottom;
 uint32_t dmacon;
 
@@ -115,13 +111,13 @@ graph_line graph_frame[3][628];
 
 void graphLineDescClear()
 {
-  memset(graph_frame, 0, sizeof(graph_line)*3*628);
+  memset(graph_frame, 0, sizeof(graph_line) * 3 * 628);
   for (int frame = 0; frame < 3; frame++)
   {
     for (int line = 0; line < 628; line++)
     {
       graph_frame[frame][line].linetype = GRAPH_LINE_BG;
-      graph_frame[frame][line].draw_line_routine = (void *) draw_line_BG_routine;
+      graph_frame[frame][line].draw_line_routine = (void *)draw_line_BG_routine;
       graph_frame[frame][line].colors[0] = 0;
       graph_frame[frame][line].frames_left_until_BG_skip = drawGetBufferCount(); /* ie. one more than normal to draw once in each buffer */
       graph_frame[frame][line].sprite_ham_slot = 0xffffffff;
@@ -130,17 +126,16 @@ void graphLineDescClear()
   }
 }
 
-graph_line* graphGetLineDesc(int buffer_no, int currentY)
+graph_line *graphGetLineDesc(int buffer_no, int currentY)
 {
-  int line_index = currentY*2;
-  
+  int line_index = currentY * 2;
+
   if (drawGetUseInterlacedRendering() && !drawGetFrameIsLong())
   {
     line_index += 1;
   }
   return &graph_frame[buffer_no][line_index];
 }
-
 
 /*===========================================================================*/
 /* The mapping from Amiga colors to host colors are dependent on the host    */
@@ -150,20 +145,22 @@ graph_line* graphGetLineDesc(int buffer_no, int currentY)
 /* don't know the color format yet in graphEmulationStart()                  */
 /*===========================================================================*/
 
-void graphInitializeShadowColors() {
+void graphInitializeShadowColors()
+{
   for (uint32_t i = 0; i < 64; i++)
     graph_color_shadow[i] = draw_color_table[graph_color[i] & 0xfff];
 }
-
 
 /*===========================================================================*/
 /* Clear all register data                                                   */
 /*===========================================================================*/
 
-static void graphIORegistersClear() {
-  for (uint32_t i = 0; i < 64; i++) graph_color_shadow[i] = graph_color[i] = 0;
+static void graphIORegistersClear()
+{
+  for (uint32_t i = 0; i < 64; i++)
+    graph_color_shadow[i] = graph_color[i] = 0;
   graph_playfield_on = FALSE;
-  lof = 0x8000;       /* Long frame */
+  lof = 0x8000; /* Long frame */
   bpl1mod = 0;
   bpl2mod = 0;
   bpl1pt = 0;
@@ -182,8 +179,8 @@ static void graphIORegistersClear() {
   diwstrt = 0;
   diwstop = 0;
   diwxleft = 0;
-  diwxright = 0; 
-  diwytop = 0;   
+  diwxright = 0;
+  diwytop = 0;
   diwybottom = 0;
   graph_DIW_first_visible = 256;
   graph_DIW_last_visible = 256;
@@ -207,7 +204,7 @@ uint16_t rdmaconr(uint32_t address)
 {
   if (blitterGetZeroFlag())
   {
-    return (uint16_t) (_core.Registers.DmaConR | 0x00002000);
+    return (uint16_t)(_core.Registers.DmaConR | 0x00002000);
   }
   return (uint16_t)_core.Registers.DmaConR;
 }
@@ -231,9 +228,9 @@ uint16_t rvposr(uint32_t address)
 
   if (chipsetGetECS())
   {
-    return (uint16_t) ((lof | (y >> 8)) | 0x2000);
+    return (uint16_t)((lof | (y >> 8)) | 0x2000);
   }
-  return (uint16_t) (lof | (y >> 8));  
+  return (uint16_t)(lof | (y >> 8));
 }
 
 /*===========================================================================*/
@@ -266,10 +263,9 @@ uint16_t rid(uint32_t address)
 
 void wvpos(uint16_t data, uint32_t address)
 {
-  lof = (uint32_t) (data & 0x8000);
+  lof = (uint32_t)(data & 0x8000);
 
-  //fellowAddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
-
+  // fellowAddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 /*===========================================================================*/
@@ -312,7 +308,7 @@ void wdiwstrt(uint16_t data, uint32_t address)
 
 void wdiwstop(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) 
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
     uint32_t diwstop_old = diwstop;
@@ -327,7 +323,7 @@ void wdiwstop(uint16_t data, uint32_t address)
   diwstop = data;
   if ((((data >> 8) & 0xff) & 0x80) == 0x0)
   {
-    diwybottom = ((data >> 8) & 0xff) + 256;  
+    diwybottom = ((data >> 8) & 0xff) + 256;
   }
   else
   {
@@ -353,7 +349,7 @@ void wdiwstop(uint16_t data, uint32_t address)
 /*                                                                              */
 /* When this value is written, the scroll (BPLCON1) also need to be reevaluated */
 /* for _reversal_ of the scroll values.                                         */
-/* _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here             */                                                           
+/* _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here             */
 /*==============================================================================*/
 
 void wddfstrt(uint16_t data, uint32_t address)
@@ -440,22 +436,22 @@ void wdmacon(uint16_t data, uint32_t address)
     // SET/CLR bit is 1 (bits set to 1 will set bits)
     uint32_t local_data = data & 0x7ff; // zero bits 15 to 11 (readonly bits and set/clr bit)
     // test if BLTPRI got turned on (blitter DMA priority)
-    if ((local_data & 0x0400) != 0x0) 
+    if ((local_data & 0x0400) != 0x0)
     {
       // BLTPRI bit is on now, was it turned off before?
       if (!_core.RegisterUtility.IsBlitterPriorityEnabled())
       {
-	// BLTPRI was turned off before and therefor
-	// BLTPRI got turned on, stop CPU until a blit is 
-	// finished if this is a blit that uses all cycles
-	if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
-	{
-	  if (blitterGetFreeCycles() == 0)
-	  {
-	    // below delays CPU additionally cycles
-	    cpuIntegrationSetChipCycles(cpuIntegrationGetChipCycles() + (blitterEvent.cycle - bus.cycle));
-	  }
-	}
+        // BLTPRI was turned off before and therefor
+        // BLTPRI got turned on, stop CPU until a blit is
+        // finished if this is a blit that uses all cycles
+        if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
+        {
+          if (blitterGetFreeCycles() == 0)
+          {
+            // below delays CPU additionally cycles
+            cpuIntegrationSetChipCycles(cpuIntegrationGetChipCycles() + (blitterEvent.cycle - bus.cycle));
+          }
+        }
       }
     }
 
@@ -471,26 +467,26 @@ void wdmacon(uint16_t data, uint32_t address)
     }
 
     // enable audio channel X ?
-    for (unsigned int i = 0; i < 4; i++) 
+    for (unsigned int i = 0; i < 4; i++)
     {
       if (((dmacon & (1 << i))) != 0x0)
       {
-	// audio channel 0 DMA enable bit is set now
-	if ((prev_dmacon & (1 << i)) == 0x0)
-	{
-	  // audio channel 0 DMA enable bit was clear previously
-	  soundChannelEnable(i);
-	}
+        // audio channel 0 DMA enable bit is set now
+        if ((prev_dmacon & (1 << i)) == 0x0)
+        {
+          // audio channel 0 DMA enable bit was clear previously
+          _core.Sound->ChannelEnable(i);
+        }
       }
-    }    
+    }
 
-    // check if already a call to wbltsize was executed 
+    // check if already a call to wbltsize was executed
     // before the blitter DMA channel was activated
     if (blitterGetDMAPending())
     {
       if ((dmacon & 0x0040) != 0x0)
       {
-	blitterCopy();
+        blitterCopy();
       }
     }
 
@@ -516,29 +512,29 @@ void wdmacon(uint16_t data, uint32_t address)
     {
       if (blitterIsStarted())
       {
-	blitForceFinish();
+        blitForceFinish();
       }
     }
 
     // disable audio channel X ?
-    for (unsigned int i = 0; i < 4; i++) 
+    for (unsigned int i = 0; i < 4; i++)
     {
       if ((dmacon & (1 << i)) == 0x0)
       {
-	if ((prev_dmacon & (1 << i)) != 0x0)
-	{
-	  soundChannelKill(i);
-	}
+        if ((prev_dmacon & (1 << i)) != 0x0)
+        {
+          _core.Sound->ChannelKill(i);
+        }
       }
     }
 
-    // check if already a call to wbltsize was executed 
+    // check if already a call to wbltsize was executed
     // before the blitter DMA channel was activated
     if (blitterGetDMAPending())
     {
       if ((dmacon & 0x0040) != 0x0)
       {
-	blitterCopy();
+        blitterCopy();
       }
     }
 
@@ -553,13 +549,11 @@ void wdmacon(uint16_t data, uint32_t address)
 
 void wbpl1pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl1pt = chipsetReplaceHighPtr(bpl1pt, data);
 
-//  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
-
+  //  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 /*===========================================================================*/
@@ -569,12 +563,11 @@ void wbpl1pth(uint16_t data, uint32_t address)
 
 void wbpl1ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl1pt = chipsetReplaceLowPtr(bpl1pt, data);
 
-//  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+  //  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 /*===========================================================================*/
@@ -584,8 +577,7 @@ void wbpl1ptl(uint16_t data, uint32_t address)
 
 void wbpl2pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl2pt = chipsetReplaceHighPtr(bpl2pt, data);
 }
@@ -597,8 +589,7 @@ void wbpl2pth(uint16_t data, uint32_t address)
 
 void wbpl2ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl2pt = chipsetReplaceLowPtr(bpl2pt, data);
 }
@@ -610,8 +601,7 @@ void wbpl2ptl(uint16_t data, uint32_t address)
 
 void wbpl3pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
   bpl3pt = chipsetReplaceHighPtr(bpl3pt, data);
 }
 
@@ -622,8 +612,7 @@ void wbpl3pth(uint16_t data, uint32_t address)
 
 void wbpl3ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl3pt = chipsetReplaceLowPtr(bpl3pt, data);
 }
@@ -635,8 +624,7 @@ void wbpl3ptl(uint16_t data, uint32_t address)
 
 void wbpl4pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl4pt = chipsetReplaceHighPtr(bpl4pt, data);
 }
@@ -648,8 +636,7 @@ void wbpl4pth(uint16_t data, uint32_t address)
 
 void wbpl4ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl4pt = chipsetReplaceLowPtr(bpl4pt, data);
 }
@@ -661,8 +648,7 @@ void wbpl4ptl(uint16_t data, uint32_t address)
 
 void wbpl5pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl5pt = chipsetReplaceHighPtr(bpl5pt, data);
 }
@@ -674,8 +660,7 @@ void wbpl5pth(uint16_t data, uint32_t address)
 
 void wbpl5ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl5pt = chipsetReplaceLowPtr(bpl5pt, data);
 }
@@ -687,8 +672,7 @@ void wbpl5ptl(uint16_t data, uint32_t address)
 
 void wbpl6pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl6pt = chipsetReplaceHighPtr(bpl6pt, data);
 }
@@ -700,8 +684,7 @@ void wbpl6pth(uint16_t data, uint32_t address)
 
 void wbpl6ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl6pt = chipsetReplaceLowPtr(bpl6pt, data);
 }
@@ -723,10 +706,10 @@ void wbplcon0(uint16_t data, uint32_t address)
   _core.Registers.BplCon0 = data;
   uint32_t local_data = (data >> 12) & 0x0f;
 
-  // check if DBLPF bit is set 
+  // check if DBLPF bit is set
   if (_core.RegisterUtility.IsDualPlayfieldEnabled())
   {
-    // double playfield, select a decoding function 
+    // double playfield, select a decoding function
     // depending on hires and playfield priority
     graph_decode_line_ptr = graph_decode_line_dual_tab[local_data];
   }
@@ -735,7 +718,7 @@ void wbplcon0(uint16_t data, uint32_t address)
     graph_decode_line_ptr = graph_decode_line_tab[local_data];
   }
 
-  // check if HOMOD bit is set 
+  // check if HOMOD bit is set
   if (_core.RegisterUtility.IsHAMEnabled())
   {
     // hold-and-modify mode
@@ -749,11 +732,11 @@ void wbplcon0(uint16_t data, uint32_t address)
       // check if HIRES is set
       if (_core.RegisterUtility.IsHiresEnabled())
       {
-	draw_line_BPL_res_routine = draw_line_dual_hires_routine;
+        draw_line_BPL_res_routine = draw_line_dual_hires_routine;
       }
       else
       {
-	draw_line_BPL_res_routine = draw_line_dual_lores_routine;
+        draw_line_BPL_res_routine = draw_line_dual_lores_routine;
       }
     }
     else
@@ -761,11 +744,11 @@ void wbplcon0(uint16_t data, uint32_t address)
       // check if HIRES is set
       if (_core.RegisterUtility.IsHiresEnabled())
       {
-	draw_line_BPL_res_routine = draw_line_hires_routine;
+        draw_line_BPL_res_routine = draw_line_hires_routine;
       }
       else
       {
-	draw_line_BPL_res_routine = draw_line_lores_routine;
+        draw_line_BPL_res_routine = draw_line_lores_routine;
       }
     }
   }
@@ -904,10 +887,10 @@ void wcolor(uint16_t data, uint32_t address)
   }
 
   // normal mode
-  graph_color[color_index] = (uint16_t) (data & 0x0fff);
+  graph_color[color_index] = (uint16_t)(data & 0x0fff);
   graph_color_shadow[color_index] = draw_color_table[data & 0xfff];
   // half bright mode
-  graph_color[color_index + 32] = (uint16_t) (((data & 0xfff) & 0xeee) >> 1);
+  graph_color[color_index + 32] = (uint16_t)(((data & 0xfff) & 0xeee) >> 1);
   graph_color_shadow[color_index + 32] = draw_color_table[(((data & 0xfff) & 0xeee) >> 1)];
 }
 
@@ -944,7 +927,8 @@ void graphIOHandlersInstall()
   memorySetIoWriteStub(0x104, wbplcon2);
   memorySetIoWriteStub(0x108, wbpl1mod);
   memorySetIoWriteStub(0x10a, wbpl2mod);
-  for (uint32_t i = 0x180; i < 0x1c0; i += 2) memorySetIoWriteStub(i, wcolor);
+  for (uint32_t i = 0x180; i < 0x1c0; i += 2)
+    memorySetIoWriteStub(i, wcolor);
 }
 
 /*===========================================================================*/
@@ -956,12 +940,12 @@ static __inline uint32_t graphDecodeOdd1(int bitplanes, uint32_t dat1, uint32_t 
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2: return graph_deco1[dat1][0]; 
-  case 3:
-  case 4: return graph_deco1[dat1][0] | graph_deco3[dat3][0]; 
-  case 5:
-  case 6: return graph_deco1[dat1][0] | graph_deco3[dat3][0] | graph_deco5[dat5][0]; 
+    case 1:
+    case 2: return graph_deco1[dat1][0];
+    case 3:
+    case 4: return graph_deco1[dat1][0] | graph_deco3[dat3][0];
+    case 5:
+    case 6: return graph_deco1[dat1][0] | graph_deco3[dat3][0] | graph_deco5[dat5][0];
   }
   return 0;
 }
@@ -971,12 +955,12 @@ static __inline uint32_t graphDecodeOdd2(int bitplanes, uint32_t dat1, uint32_t 
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2: return graph_deco1[dat1][1]; 
-  case 3:
-  case 4: return graph_deco1[dat1][1] | graph_deco3[dat3][1]; 
-  case 5:
-  case 6: return graph_deco1[dat1][1] | graph_deco3[dat3][1] | graph_deco5[dat5][1]; 
+    case 1:
+    case 2: return graph_deco1[dat1][1];
+    case 3:
+    case 4: return graph_deco1[dat1][1] | graph_deco3[dat3][1];
+    case 5:
+    case 6: return graph_deco1[dat1][1] | graph_deco3[dat3][1] | graph_deco5[dat5][1];
   }
   return 0;
 }
@@ -986,12 +970,12 @@ static __inline uint32_t graphDecodeEven1(int bitplanes, uint32_t dat2, uint32_t
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2:
-  case 3: return graph_deco2[dat2][0]; 
-  case 4: 
-  case 5: return graph_deco2[dat2][0] | graph_deco4[dat4][0];  
-  case 6: return graph_deco2[dat2][0] | graph_deco4[dat4][0] | graph_deco6[dat6][0];
+    case 1:
+    case 2:
+    case 3: return graph_deco2[dat2][0];
+    case 4:
+    case 5: return graph_deco2[dat2][0] | graph_deco4[dat4][0];
+    case 6: return graph_deco2[dat2][0] | graph_deco4[dat4][0] | graph_deco6[dat6][0];
   }
   return 0;
 }
@@ -1001,12 +985,12 @@ static __inline uint32_t graphDecodeEven2(int bitplanes, uint32_t dat2, uint32_t
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2:
-  case 3: return graph_deco2[dat2][1]; 
-  case 4:  
-  case 5: return graph_deco2[dat2][1] | graph_deco4[dat4][1]; 
-  case 6: return graph_deco2[dat2][1] | graph_deco4[dat4][1] | graph_deco6[dat6][1]; 
+    case 1:
+    case 2:
+    case 3: return graph_deco2[dat2][1];
+    case 4:
+    case 5: return graph_deco2[dat2][1] | graph_deco4[dat4][1];
+    case 6: return graph_deco2[dat2][1] | graph_deco4[dat4][1] | graph_deco6[dat6][1];
   }
   return 0;
 }
@@ -1016,12 +1000,12 @@ static __inline uint32_t graphDecodeDualOdd1(int bitplanes, uint32_t datA, uint3
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2: return graph_deco1[datA][0]; 
-  case 3: 
-  case 4: return graph_deco1[datA][0] | graph_deco2[datB][0];  
-  case 5: 
-  case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0];
+    case 1:
+    case 2: return graph_deco1[datA][0];
+    case 3:
+    case 4: return graph_deco1[datA][0] | graph_deco2[datB][0];
+    case 5:
+    case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0];
   }
   return 0;
 }
@@ -1031,12 +1015,12 @@ static __inline uint32_t graphDecodeDualOdd2(int bitplanes, uint32_t datA, uint3
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2: return graph_deco1[datA][1]; 
-  case 3: 
-  case 4: return graph_deco1[datA][1] | graph_deco2[datB][1];  
-  case 5: 
-  case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1]; 
+    case 1:
+    case 2: return graph_deco1[datA][1];
+    case 3:
+    case 4: return graph_deco1[datA][1] | graph_deco2[datB][1];
+    case 5:
+    case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1];
   }
   return 0;
 }
@@ -1046,12 +1030,12 @@ static __inline uint32_t graphDecodeDualEven1(int bitplanes, uint32_t datA, uint
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2:
-  case 3: return graph_deco1[datA][0]; 
-  case 4: 
-  case 5: return graph_deco1[datA][0] | graph_deco2[datB][0];  
-  case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0]; 
+    case 1:
+    case 2:
+    case 3: return graph_deco1[datA][0];
+    case 4:
+    case 5: return graph_deco1[datA][0] | graph_deco2[datB][0];
+    case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0];
   }
   return 0;
 }
@@ -1061,12 +1045,12 @@ static __inline uint32_t graphDecodeDualEven2(int bitplanes, uint32_t datA, uint
 {
   switch (bitplanes)
   {
-  case 1:
-  case 2:
-  case 3: return graph_deco1[datA][1]; 
-  case 4:  
-  case 5: return graph_deco1[datA][1] | graph_deco2[datB][1]; 
-  case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1]; 
+    case 1:
+    case 2:
+    case 3: return graph_deco1[datA][1];
+    case 4:
+    case 5: return graph_deco1[datA][1] | graph_deco2[datB][1];
+    case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1];
   }
   return 0;
 }
@@ -1076,12 +1060,12 @@ static __inline void graphDecodeModulo(int bitplanes, uint32_t bpl_length_in_byt
 {
   switch (bitplanes)
   {
-  case 6: bpl6pt = chipsetMaskPtr(bpl6pt + bpl_length_in_bytes + bpl2mod);
-  case 5: bpl5pt = chipsetMaskPtr(bpl5pt + bpl_length_in_bytes + bpl1mod);
-  case 4: bpl4pt = chipsetMaskPtr(bpl4pt + bpl_length_in_bytes + bpl2mod);
-  case 3: bpl3pt = chipsetMaskPtr(bpl3pt + bpl_length_in_bytes + bpl1mod);
-  case 2: bpl2pt = chipsetMaskPtr(bpl2pt + bpl_length_in_bytes + bpl2mod);
-  case 1: bpl1pt = chipsetMaskPtr(bpl1pt + bpl_length_in_bytes + bpl1mod);
+    case 6: bpl6pt = chipsetMaskPtr(bpl6pt + bpl_length_in_bytes + bpl2mod);
+    case 5: bpl5pt = chipsetMaskPtr(bpl5pt + bpl_length_in_bytes + bpl1mod);
+    case 4: bpl4pt = chipsetMaskPtr(bpl4pt + bpl_length_in_bytes + bpl2mod);
+    case 3: bpl3pt = chipsetMaskPtr(bpl3pt + bpl_length_in_bytes + bpl1mod);
+    case 2: bpl2pt = chipsetMaskPtr(bpl2pt + bpl_length_in_bytes + bpl2mod);
+    case 1: bpl1pt = chipsetMaskPtr(bpl1pt + bpl_length_in_bytes + bpl1mod);
   }
 }
 
@@ -1098,14 +1082,14 @@ static __inline void graphDecodeGeneric(int bitplanes)
   uint32_t bpl_length_in_bytes = graph_DDF_word_count * 2;
 
   if (bitplanes == 0) return;
-  if (bpl_length_in_bytes != 0) 
+  if (bpl_length_in_bytes != 0)
   {
     uint32_t *dest_odd;
     uint32_t *dest_even;
     uint32_t *dest_tmp;
     uint32_t *end_even;
     uint8_t *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
-    uint32_t dat2, dat3, dat4, dat5, dat6; 
+    uint32_t dat2, dat3, dat4, dat5, dat6;
     int maxscroll;
     uint32_t temp = 0;
     uint8_t *line1;
@@ -1118,19 +1102,19 @@ static __inline void graphDecodeGeneric(int bitplanes)
     if (_core.RegisterUtility.IsHiresEnabled()) // check if hires bit is set (bit 15 of register BPLCON0)
     {
       // high resolution
-      dest_odd = (uint32_t*) (line1 + graph_DDF_start + oddhiscroll);		
+      dest_odd = (uint32_t *)(line1 + graph_DDF_start + oddhiscroll);
 
       // Find out how many pixels the bitplane is scrolled
       // the first pixels must then be zeroed to avoid garbage.
-      maxscroll = (evenhiscroll > oddhiscroll) ? evenhiscroll : oddhiscroll; 
-    } 
-    else 
+      maxscroll = (evenhiscroll > oddhiscroll) ? evenhiscroll : oddhiscroll;
+    }
+    else
     {
-      dest_odd = (uint32_t*) (line1 + graph_DDF_start + oddscroll);			
+      dest_odd = (uint32_t *)(line1 + graph_DDF_start + oddscroll);
 
       // Find out how many pixels the bitplane is scrolled
       // the first pixels must then be zeroed to avoid garbage.
-      maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
+      maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll;
     }
 
     // clear edges
@@ -1143,62 +1127,62 @@ static __inline void graphDecodeGeneric(int bitplanes)
     }
 
     // setup loop
-    uint32_t* end_odd = dest_odd + bpl_length_in_bytes * 2; 
+    uint32_t *end_odd = dest_odd + bpl_length_in_bytes * 2;
 
     if (bitplanes > 1)
     {
       if (_core.RegisterUtility.IsHiresEnabled()) // check if hires bit is set (bit 15 of register BPLCON0)
       {
-	// high resolution
-	dest_even = (uint32_t*) (line1 + graph_DDF_start + evenhiscroll);
+        // high resolution
+        dest_even = (uint32_t *)(line1 + graph_DDF_start + evenhiscroll);
       }
       else
       {
-	// low resolution
-	dest_even = (uint32_t*) (line1 + graph_DDF_start + evenscroll);
+        // low resolution
+        dest_even = (uint32_t *)(line1 + graph_DDF_start + evenscroll);
       }
-      end_even = dest_even + bpl_length_in_bytes * 2; 
+      end_even = dest_even + bpl_length_in_bytes * 2;
     }
 
     switch (bitplanes)
     {
-    case 6: pt6_tmp = memory_chip + bpl6pt;
-    case 5: pt5_tmp = memory_chip + bpl5pt;
-    case 4: pt4_tmp = memory_chip + bpl4pt;
-    case 3: pt3_tmp = memory_chip + bpl3pt;
-    case 2: pt2_tmp = memory_chip + bpl2pt;
-    case 1: pt1_tmp = memory_chip + bpl1pt;
+      case 6: pt6_tmp = memory_chip + bpl6pt;
+      case 5: pt5_tmp = memory_chip + bpl5pt;
+      case 4: pt4_tmp = memory_chip + bpl4pt;
+      case 3: pt3_tmp = memory_chip + bpl3pt;
+      case 2: pt2_tmp = memory_chip + bpl2pt;
+      case 1: pt1_tmp = memory_chip + bpl1pt;
     }
 
-    for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 2) 
+    for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 2)
     {
       switch (bitplanes)
       {
-      case 6:
-      case 5:	dat5 = *pt5_tmp++;
-      case 4:
-      case 3:	dat3 = *pt3_tmp++;
-      case 2:
-      case 1:	dat1 = *pt1_tmp++;
+        case 6:
+        case 5: dat5 = *pt5_tmp++;
+        case 4:
+        case 3: dat3 = *pt3_tmp++;
+        case 2:
+        case 1: dat1 = *pt1_tmp++;
       }
       dest_tmp[0] = graphDecodeOdd1(bitplanes, dat1, dat3, dat5);
       dest_tmp[1] = graphDecodeOdd2(bitplanes, dat1, dat3, dat5);
     }
 
-    if (bitplanes >= 2) 
+    if (bitplanes >= 2)
     {
       for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 2)
       {
-	switch (bitplanes)
-	{
-	case 6:	dat6 = *pt6_tmp++;
-	case 5:
-	case 4:	dat4 = *pt4_tmp++;
-	case 3:
-	case 2:	dat2 = *pt2_tmp++;
-	}
-	dest_tmp[0] |= graphDecodeEven1(bitplanes, dat2, dat4, dat6);
-	dest_tmp[1] |= graphDecodeEven2(bitplanes, dat2, dat4, dat6);
+        switch (bitplanes)
+        {
+          case 6: dat6 = *pt6_tmp++;
+          case 5:
+          case 4: dat4 = *pt4_tmp++;
+          case 3:
+          case 2: dat2 = *pt2_tmp++;
+        }
+        dest_tmp[0] |= graphDecodeEven1(bitplanes, dat2, dat4, dat6);
+        dest_tmp[1] |= graphDecodeEven2(bitplanes, dat2, dat4, dat6);
       }
     }
   }
@@ -1209,7 +1193,7 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
 {
   uint32_t bpl_length_in_bytes = graph_DDF_word_count * 2;
   if (bitplanes == 0) return;
-  if (bpl_length_in_bytes != 0) 
+  if (bpl_length_in_bytes != 0)
   {
     uint32_t *dest_even;
     uint32_t *dest_tmp;
@@ -1225,7 +1209,7 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     graphSetLinePointers(&line1, &line2);
 
     // clear edges
-    int maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
+    int maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll;
 
     uint32_t temp = 0;
     while (maxscroll > 0)
@@ -1239,55 +1223,55 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     }
 
     // setup loop
-    uint32_t* dest_odd = (uint32_t*)(line1 + graph_DDF_start + oddscroll);			
-    uint32_t* end_odd = dest_odd + bpl_length_in_bytes * 2; 
+    uint32_t *dest_odd = (uint32_t *)(line1 + graph_DDF_start + oddscroll);
+    uint32_t *end_odd = dest_odd + bpl_length_in_bytes * 2;
 
     if (bitplanes > 1)
     {
       // low resolution
-      dest_even = (uint32_t*) (line2 + graph_DDF_start + evenscroll);
-      end_even = dest_even + bpl_length_in_bytes * 2; 
+      dest_even = (uint32_t *)(line2 + graph_DDF_start + evenscroll);
+      end_even = dest_even + bpl_length_in_bytes * 2;
     }
 
     switch (bitplanes)
     {
-    case 6: pt6_tmp = memory_chip + bpl6pt;
-    case 5: pt5_tmp = memory_chip + bpl5pt;
-    case 4: pt4_tmp = memory_chip + bpl4pt;
-    case 3: pt3_tmp = memory_chip + bpl3pt;
-    case 2: pt2_tmp = memory_chip + bpl2pt;
-    case 1: pt1_tmp = memory_chip + bpl1pt;
+      case 6: pt6_tmp = memory_chip + bpl6pt;
+      case 5: pt5_tmp = memory_chip + bpl5pt;
+      case 4: pt4_tmp = memory_chip + bpl4pt;
+      case 3: pt3_tmp = memory_chip + bpl3pt;
+      case 2: pt2_tmp = memory_chip + bpl2pt;
+      case 1: pt1_tmp = memory_chip + bpl1pt;
     }
 
-    for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 2) 
+    for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 2)
     {
       switch (bitplanes)
       {
-      case 6:
-      case 5:	dat5 = *pt5_tmp++;
-      case 4:
-      case 3:	dat3 = *pt3_tmp++;
-      case 2:
-      case 1:	dat1 = *pt1_tmp++;
+        case 6:
+        case 5: dat5 = *pt5_tmp++;
+        case 4:
+        case 3: dat3 = *pt3_tmp++;
+        case 2:
+        case 1: dat1 = *pt1_tmp++;
       }
       dest_tmp[0] = graphDecodeDualOdd1(bitplanes, dat1, dat3, dat5);
       dest_tmp[1] = graphDecodeDualOdd2(bitplanes, dat1, dat3, dat5);
     }
 
-    if (bitplanes >= 2) 
+    if (bitplanes >= 2)
     {
       for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 2)
       {
-	switch (bitplanes)
-	{
-	case 6:	dat6 = *pt6_tmp++;
-	case 5:
-	case 4:	dat4 = *pt4_tmp++;
-	case 3:
-	case 2:	dat2 = *pt2_tmp++;
-	}
-	dest_tmp[0] = graphDecodeDualEven1(bitplanes, dat2, dat4, dat6);
-	dest_tmp[1] = graphDecodeDualEven2(bitplanes, dat2, dat4, dat6);
+        switch (bitplanes)
+        {
+          case 6: dat6 = *pt6_tmp++;
+          case 5:
+          case 4: dat4 = *pt4_tmp++;
+          case 3:
+          case 2: dat2 = *pt2_tmp++;
+        }
+        dest_tmp[0] = graphDecodeDualEven1(bitplanes, dat2, dat4, dat6);
+        dest_tmp[1] = graphDecodeDualEven2(bitplanes, dat2, dat4, dat6);
       }
     }
   }
@@ -1409,16 +1393,16 @@ void graphDecode6Dual()
 /*       Though it somehow works, so just leave it and hope it does not break*/
 /*===========================================================================*/
 
-void graphCalculateWindow() 
+void graphCalculateWindow()
 {
   if (_core.RegisterUtility.IsHiresEnabled()) // check if Hires bit is set (bit 15 of BPLCON0)
   {
     graphCalculateWindowHires();
-  } 
-  else 
+  }
+  else
   {
     // set DDF (Display Data Fetch Start) variables
-    if (ddfstop < ddfstrt) 
+    if (ddfstop < ddfstrt)
     {
       graph_DDF_start = graph_DDF_word_count = 0;
       graph_DIW_first_visible = graph_DIW_last_visible = 256;
@@ -1428,7 +1412,7 @@ void graphCalculateWindow()
     uint32_t ddfstop_aligned = ddfstop & 0x07;
     uint32_t ddfstrt_aligned = ddfstrt & 0x07;
 
-    if (ddfstop >= ddfstrt) 
+    if (ddfstop >= ddfstrt)
     {
       graph_DDF_word_count = ((ddfstop - ddfstrt) >> 3) + 1;
     }
@@ -1438,16 +1422,16 @@ void graphCalculateWindow()
       ddfstop_aligned = 0;
     }
 
-    if (ddfstop_aligned != ddfstrt_aligned) 
+    if (ddfstop_aligned != ddfstrt_aligned)
     {
       graph_DDF_word_count++;
-    } 
+    }
 
-    graph_DDF_start = ((ddfstrt << 1) + 0x11);	// 0x11 = 17 pixels = 8.5 bus cycles
+    graph_DDF_start = ((ddfstrt << 1) + 0x11); // 0x11 = 17 pixels = 8.5 bus cycles
 
     // set DIW (Display Window Start) variables (only used with drawing routines)
 
-    if (diwxleft >= diwxright) 
+    if (diwxleft >= diwxright)
     {
       graph_DDF_start = graph_DDF_word_count = 0;
       graph_DIW_first_visible = graph_DIW_last_visible = 256;
@@ -1455,26 +1439,26 @@ void graphCalculateWindow()
 
     graph_DIW_first_visible = drawGetInternalClip().left;
     if (diwxleft < graph_DDF_start)
-    {  
+    {
       if (graph_DDF_start > graph_DIW_first_visible)
-      {  
-	graph_DIW_first_visible = graph_DDF_start;
-      } 
-    } 
-    else 
+      {
+        graph_DIW_first_visible = graph_DDF_start;
+      }
+    }
+    else
     {
       if (diwxleft > graph_DIW_first_visible)
-      {  
-	graph_DIW_first_visible = diwxleft;
-      } 
+      {
+        graph_DIW_first_visible = diwxleft;
+      }
     }
 
     uint32_t last_position_in_line = (graph_DDF_word_count << 4) + graph_DDF_start;
     if (oddscroll > evenscroll)
     {
       last_position_in_line += oddscroll;
-    } 
-    else 
+    }
+    else
     {
       last_position_in_line += evenscroll;
     }
@@ -1484,14 +1468,14 @@ void graphCalculateWindow()
     {
       if (last_position_in_line < graph_DIW_last_visible)
       {
-	graph_DIW_last_visible = last_position_in_line;
+        graph_DIW_last_visible = last_position_in_line;
       }
-    } 
-    else 
+    }
+    else
     {
       if (diwxright < graph_DIW_last_visible)
       {
-	graph_DIW_last_visible = diwxright;
+        graph_DIW_last_visible = diwxright;
       }
     }
   }
@@ -1519,18 +1503,18 @@ void graphCalculateWindowHires()
 
   // DDF variables done, now check DIW variables
 
-  if ((diwxleft << 1) >= (diwxright << 1)) 
+  if ((diwxleft << 1) >= (diwxright << 1))
   {
     graph_DDF_start = graph_DDF_word_count = 0;
     graph_DIW_first_visible = graph_DIW_last_visible = 256;
   }
   uint32_t clip_left = drawGetInternalClip().left << 1;
-  if ((diwxleft << 1) < graph_DDF_start) 
+  if ((diwxleft << 1) < graph_DDF_start)
   {
     if (graph_DDF_start > clip_left)
     {
       graph_DIW_first_visible = graph_DDF_start;
-    } 
+    }
     else
     {
       graph_DIW_first_visible = clip_left;
@@ -1552,14 +1536,14 @@ void graphCalculateWindowHires()
   if (oddhiscroll > evenhiscroll)
   {
     last_position_in_line += oddhiscroll;
-  } 
-  else 
+  }
+  else
   {
     last_position_in_line += evenhiscroll;
   }
 
   uint32_t clip_right = drawGetInternalClip().right << 1;
-  if (last_position_in_line < (diwxright << 1)) 
+  if (last_position_in_line < (diwxright << 1))
   {
     if (last_position_in_line < clip_right)
     {
@@ -1586,7 +1570,7 @@ void graphCalculateWindowHires()
 void graphPlayfieldOnOff()
 {
   uint32_t currentY = busGetRasterY();
-  if (graph_playfield_on != 0) 
+  if (graph_playfield_on != 0)
   {
     // Playfield on, check if top has moved below graph_raster_y
     // Playfield on, check if playfield is turned off at this line
@@ -1594,8 +1578,8 @@ void graphPlayfieldOnOff()
     {
       graph_playfield_on = 0;
     }
-  } 
-  else 
+  }
+  else
   {
     // Playfield off, Check if playfield is turned on at this line
     if (currentY == diwytop)
@@ -1603,7 +1587,7 @@ void graphPlayfieldOnOff()
       // Don't turn on when top > bottom
       if (diwytop < diwybottom)
       {
-	graph_playfield_on = 1;
+        graph_playfield_on = 1;
       }
     }
   }
@@ -1612,22 +1596,15 @@ void graphPlayfieldOnOff()
 
 void graphDecodeNOP()
 {
-  switch (_core.RegisterUtility.GetEnabledBitplaneCount()) {
-    case 0:
-      break;
-    case 6:
-      bpl6pt = chipsetMaskPtr(bpl6pt + (graph_DDF_word_count*2) + bpl2mod);
-    case 5:
-      bpl5pt = chipsetMaskPtr(bpl5pt + (graph_DDF_word_count*2) + bpl1mod);
-    case 4:
-      bpl4pt = chipsetMaskPtr(bpl4pt + (graph_DDF_word_count*2) + bpl2mod);
-    case 3:
-      bpl3pt = chipsetMaskPtr(bpl3pt + (graph_DDF_word_count*2) + bpl1mod);
-    case 2:
-      bpl2pt = chipsetMaskPtr(bpl2pt + (graph_DDF_word_count*2) + bpl2mod);
-    case 1:
-      bpl1pt = chipsetMaskPtr(bpl1pt + (graph_DDF_word_count*2) + bpl1mod);
-      break;
+  switch (_core.RegisterUtility.GetEnabledBitplaneCount())
+  {
+    case 0: break;
+    case 6: bpl6pt = chipsetMaskPtr(bpl6pt + (graph_DDF_word_count * 2) + bpl2mod);
+    case 5: bpl5pt = chipsetMaskPtr(bpl5pt + (graph_DDF_word_count * 2) + bpl1mod);
+    case 4: bpl4pt = chipsetMaskPtr(bpl4pt + (graph_DDF_word_count * 2) + bpl2mod);
+    case 3: bpl3pt = chipsetMaskPtr(bpl3pt + (graph_DDF_word_count * 2) + bpl1mod);
+    case 2: bpl2pt = chipsetMaskPtr(bpl2pt + (graph_DDF_word_count * 2) + bpl2mod);
+    case 1: bpl1pt = chipsetMaskPtr(bpl1pt + (graph_DDF_word_count * 2) + bpl1mod); break;
   }
 }
 
@@ -1636,8 +1613,7 @@ void graphDecodeNOP()
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
-
-void graphLinedescColors(graph_line* current_graph_line)
+void graphLinedescColors(graph_line *current_graph_line)
 {
   uint32_t color;
 
@@ -1649,13 +1625,12 @@ void graphLinedescColors(graph_line* current_graph_line)
   }
 }
 
-
 /*-------------------------------------------------------------------------------
 /* Sets line routines for this line
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
-void graphLinedescRoutines(graph_line* current_graph_line)
+void graphLinedescRoutines(graph_line *current_graph_line)
 {
   /*==============================================================
   /* Set drawing routines
@@ -1669,7 +1644,7 @@ void graphLinedescRoutines(graph_line* current_graph_line)
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
-void graphLinedescGeometry(graph_line* current_graph_line)
+void graphLinedescGeometry(graph_line *current_graph_line)
 {
   uint32_t local_graph_DIW_first_visible = graph_DIW_first_visible;
   int32_t local_graph_DIW_last_visible = (int32_t)graph_DIW_last_visible;
@@ -1694,7 +1669,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible >(int32_t) local_draw_right)
+  if (local_graph_DIW_last_visible > (int32_t)local_draw_right)
   {
     local_graph_DIW_last_visible = (int32_t)local_draw_right;
   }
@@ -1719,7 +1694,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   local_graph_DIW_first_visible -= local_draw_left;
   local_draw_right -= local_graph_DIW_last_visible;
   current_graph_line->BG_pad_front = local_graph_DIW_first_visible;
-  current_graph_line->BG_pad_back  = local_draw_right;
+  current_graph_line->BG_pad_back = local_draw_right;
 
   /*==========================================================*/
   /* Need to remember playfield priorities to sort dual pf    */
@@ -1732,7 +1707,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
 /* Smart sets line routines for this line
 /* Return TRUE if routines have changed
 /*-------------------------------------------------------------------------------*/
-BOOLE graphLinedescRoutinesSmart(graph_line* current_graph_line)
+BOOLE graphLinedescRoutinesSmart(graph_line *current_graph_line)
 {
   /*==============================================================*/
   /* Set drawing routines                                         */
@@ -1757,7 +1732,7 @@ BOOLE graphLinedescRoutinesSmart(graph_line* current_graph_line)
 /* Sets line geometry data in line description
 /* Return TRUE if geometry has changed
 /*-------------------------------------------------------------------------------*/
-BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
+BOOLE graphLinedescGeometrySmart(graph_line *current_graph_line)
 {
   uint32_t local_graph_DIW_first_visible = graph_DIW_first_visible;
   int32_t local_graph_DIW_last_visible = (int32_t)graph_DIW_last_visible;
@@ -1783,9 +1758,9 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible > (int32_t) local_draw_right)
+  if (local_graph_DIW_last_visible > (int32_t)local_draw_right)
   {
-    local_graph_DIW_last_visible = (int32_t) local_draw_right;
+    local_graph_DIW_last_visible = (int32_t)local_draw_right;
   }
   local_graph_DIW_last_visible -= local_graph_DIW_first_visible;
   if (local_graph_DIW_last_visible < 0)
@@ -1848,7 +1823,7 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
 /* Return TRUE if colors have changed
 /*-------------------------------------------------------------------------------*/
 
-BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
+BOOLE graphLinedescColorsSmart(graph_line *current_graph_line)
 {
   BOOLE result = FALSE;
 
@@ -1870,7 +1845,7 @@ BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
 /* Return TRUE = not equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopyRest(uint32_t first_pixel, int32_t pixel_count, uint8_t* dest_line, uint8_t* source_line)
+static BOOLE graphCompareCopyRest(uint32_t first_pixel, int32_t pixel_count, uint8_t *dest_line, uint8_t *source_line)
 {
   // line has changed, copy the rest
   while ((first_pixel & 0x3) != 0)
@@ -1886,7 +1861,7 @@ static BOOLE graphCompareCopyRest(uint32_t first_pixel, int32_t pixel_count, uin
 
   while (pixel_count >= 4)
   {
-    *((uint32_t *) (dest_line + first_pixel)) = *((uint32_t *) (source_line + first_pixel));
+    *((uint32_t *)(dest_line + first_pixel)) = *((uint32_t *)(source_line + first_pixel));
     first_pixel += 4;
     pixel_count -= 4;
   }
@@ -1905,7 +1880,7 @@ static BOOLE graphCompareCopyRest(uint32_t first_pixel, int32_t pixel_count, uin
 /* Return TRUE = not equal FALSE = equal
 /*-------------------------------------------------------------------------------*/
 
-static BOOLE graphCompareCopy(uint32_t first_pixel, int32_t pixel_count, uint8_t* dest_line, uint8_t* source_line)
+static BOOLE graphCompareCopy(uint32_t first_pixel, int32_t pixel_count, uint8_t *dest_line, uint8_t *source_line)
 {
   BOOLE result = FALSE;
 
@@ -1916,32 +1891,32 @@ static BOOLE graphCompareCopy(uint32_t first_pixel, int32_t pixel_count, uint8_t
     {
       if (dest_line[first_pixel] == source_line[first_pixel])
       {
-	first_pixel++;
-	pixel_count--;
-	if (pixel_count == 0)
-	{
-	  return FALSE;
-	}
+        first_pixel++;
+        pixel_count--;
+        if (pixel_count == 0)
+        {
+          return FALSE;
+        }
       }
       else
       {
-	// line has changed, copy the rest
-	return graphCompareCopyRest(first_pixel, pixel_count, dest_line, source_line);
+        // line has changed, copy the rest
+        return graphCompareCopyRest(first_pixel, pixel_count, dest_line, source_line);
       }
     }
 
     // compare dword aligned values
     while (pixel_count >= 4)
     {
-      if (*((uint32_t *) (source_line + first_pixel)) == *((uint32_t *) (dest_line + first_pixel)))
+      if (*((uint32_t *)(source_line + first_pixel)) == *((uint32_t *)(dest_line + first_pixel)))
       {
-	first_pixel += 4;
-	pixel_count -= 4;
+        first_pixel += 4;
+        pixel_count -= 4;
       }
       else
       {
-	// line has changed, copy the rest
-	return graphCompareCopyRest(first_pixel, pixel_count, dest_line, source_line);
+        // line has changed, copy the rest
+        return graphCompareCopyRest(first_pixel, pixel_count, dest_line, source_line);
       }
     }
 
@@ -1950,23 +1925,22 @@ static BOOLE graphCompareCopy(uint32_t first_pixel, int32_t pixel_count, uint8_t
     {
       if (source_line[first_pixel] == dest_line[first_pixel])
       {
-	first_pixel++;
-	pixel_count--;
+        first_pixel++;
+        pixel_count--;
       }
       else
       {
-	result = TRUE;
-	dest_line[first_pixel] = source_line[first_pixel];
-	first_pixel++;
-	pixel_count--;
+        result = TRUE;
+        dest_line[first_pixel] = source_line[first_pixel];
+        first_pixel++;
+        pixel_count--;
       }
     }
   }
   return result;
 }
 
-
-BOOLE graphLinedescSetBackgroundLine(graph_line* current_graph_line)
+BOOLE graphLinedescSetBackgroundLine(graph_line *current_graph_line)
 {
   if (graph_color_shadow[0] == current_graph_line->colors[0])
   {
@@ -1987,14 +1961,14 @@ BOOLE graphLinedescSetBackgroundLine(graph_line* current_graph_line)
       if (current_graph_line->frames_left_until_BG_skip == 0)
       {
         // No changes since drawing it last time, change state to skip
-	current_graph_line->linetype = GRAPH_LINE_SKIP;
-	return FALSE;
+        current_graph_line->linetype = GRAPH_LINE_SKIP;
+        return FALSE;
       }
       else
       {
         // Still need to draw the line in some buffers
-	current_graph_line->frames_left_until_BG_skip--;
-	return TRUE;
+        current_graph_line->frames_left_until_BG_skip--;
+        return TRUE;
       }
     }
   }
@@ -2009,7 +1983,7 @@ BOOLE graphLinedescSetBackgroundLine(graph_line* current_graph_line)
   return TRUE;
 }
 
-BOOLE graphLinedescSetBitplaneLine(graph_line* current_graph_line)
+BOOLE graphLinedescSetBitplaneLine(graph_line *current_graph_line)
 {
   /*===========================================*/
   /* This is a bitplane line                   */
@@ -2029,14 +2003,14 @@ BOOLE graphLinedescSetBitplaneLine(graph_line* current_graph_line)
   line_desc_changed |= graphLinedescGeometrySmart(current_graph_line);
   line_desc_changed |= graphLinedescRoutinesSmart(current_graph_line);
   return line_desc_changed;
- }
+}
 
 /*-------------------------------------------------------------------------------
 /* Smart makes a description of this line
 /* Return TRUE if linedesc has changed
 /*-------------------------------------------------------------------------------*/
 
-BOOLE graphLinedescMakeSmart(graph_line* current_graph_line)
+BOOLE graphLinedescMakeSmart(graph_line *current_graph_line)
 {
   /*==========================================================*/
   /* Is this a bitplane or background line?                   */
@@ -2053,7 +2027,7 @@ BOOLE graphLinedescMakeSmart(graph_line* current_graph_line)
 /* Smart compose the visible layout of the line                              */
 /*===========================================================================*/
 
-void graphComposeLineOutputSmart(graph_line* current_graph_line)
+void graphComposeLineOutputSmart(graph_line *current_graph_line)
 {
   // remember the basic properties of the line
   BOOLE line_desc_changed = graphLinedescMakeSmart(current_graph_line);
@@ -2066,13 +2040,13 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
     // then copy it and compare
     graph_decode_line_ptr();
 
-    // compare line data to old data  
-    line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (int32_t) (current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
+    // compare line data to old data
+    line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (int32_t)(current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
 
     // if the line is dual playfield, compare second playfield too
     if (_core.RegisterUtility.IsDualPlayfieldEnabled())
     {
-      line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (int32_t) (current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
+      line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (int32_t)(current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
     }
 
     if (current_graph_line->has_ham_sprites_online)
@@ -2118,17 +2092,17 @@ void graphP2CTablesInit()
     d[0] = d[1] = 0;
     for (uint32_t j = 0; j < 4; j++)
     {
-      d[0] |= ((i & (0x80>>j))>>(4 + 3 - j))<<(j*8);
-      d[1] |= ((i & (0x8>>j))>>(3 - j))<<(j*8);
+      d[0] |= ((i & (0x80 >> j)) >> (4 + 3 - j)) << (j * 8);
+      d[1] |= ((i & (0x8 >> j)) >> (3 - j)) << (j * 8);
     }
     for (uint32_t j = 0; j < 2; j++)
     {
-      graph_deco1[i][j] = d[j]<<2;
-      graph_deco2[i][j] = d[j]<<3;
-      graph_deco3[i][j] = d[j]<<4;
-      graph_deco4[i][j] = d[j]<<5;
-      graph_deco5[i][j] = d[j]<<6;
-      graph_deco6[i][j] = d[j]<<7;
+      graph_deco1[i][j] = d[j] << 2;
+      graph_deco2[i][j] = d[j] << 3;
+      graph_deco3[i][j] = d[j] << 4;
+      graph_deco4[i][j] = d[j] << 5;
+      graph_deco5[i][j] = d[j] << 6;
+      graph_deco6[i][j] = d[j] << 7;
     }
   }
 }
@@ -2188,7 +2162,7 @@ void graphEndOfLine()
   }
 
   // skip this frame?
-  if (draw_frame_skip == 0) 
+  if (draw_frame_skip == 0)
   {
     uint32_t currentY = busGetRasterY();
     // update diw state
@@ -2198,16 +2172,16 @@ void graphEndOfLine()
     if (currentY >= 0x12)
     {
       // make pointer to linedesc for this line
-      graph_line* current_graph_line = graphGetLineDesc(draw_buffer_draw, currentY);
+      graph_line *current_graph_line = graphGetLineDesc(draw_buffer_draw, currentY);
 
       // decode sprites if DMA is enabled and raster is after line $18
       if ((dmacon & 0x20) == 0x20)
       {
-	if (currentY >= 0x18) 
-	{
-	  line_exact_sprites->DMASpriteHandler();
+        if (currentY >= 0x18)
+        {
+          line_exact_sprites->DMASpriteHandler();
           line_exact_sprites->ProcessActionList();
-	}
+        }
       }
 
       // sprites decoded, sprites_onlineflag is set if there are any
@@ -2217,25 +2191,25 @@ void graphEndOfLine()
       // check if we are clipped
       if ((currentY >= drawGetInternalClip().top) || (currentY < drawGetInternalClip().bottom))
       {
-	// visible line, either background or bitplanes
+        // visible line, either background or bitplanes
         graphComposeLineOutputSmart(current_graph_line);
       }
       else
       {
-	// do nop decoding, no screen output needed
-	if (draw_line_BG_routine != draw_line_routine)
-	{
-	  graphDecodeNOP();
-	}
+        // do nop decoding, no screen output needed
+        if (draw_line_BG_routine != draw_line_routine)
+        {
+          graphDecodeNOP();
+        }
       }
 
       // if diw state changing from background to bitplane output,
       // set new drawing routine pointer
 
-      if (draw_switch_bg_to_bpl != 0) 
+      if (draw_switch_bg_to_bpl != 0)
       {
-	draw_line_BPL_manage_routine = draw_line_routine;
-	draw_switch_bg_to_bpl = 0;
+        draw_line_BPL_manage_routine = draw_line_routine;
+        draw_switch_bg_to_bpl = 0;
       }
 
       if (currentY == (busGetLinesInThisFrame() - 1))
@@ -2244,7 +2218,7 @@ void graphEndOfLine()
         // this routine pads the remaining lines with background color
         for (uint32_t y = currentY + 1; y < drawGetInternalClip().bottom; ++y)
         {
-          graph_line* graph_line_y = graphGetLineDesc(draw_buffer_draw, y);
+          graph_line *graph_line_y = graphGetLineDesc(draw_buffer_draw, y);
           graphLinedescSetBackgroundLine(graph_line_y);
         }
       }
@@ -2270,7 +2244,8 @@ void graphEndOfFrame()
 /* Called on emulation hard reset                                            */
 /*===========================================================================*/
 
-void graphHardReset() {
+void graphHardReset()
+{
   graphIORegistersClear();
   graphLineDescClear();
 }
@@ -2279,7 +2254,8 @@ void graphHardReset() {
 /* Called on emulation start                                                 */
 /*===========================================================================*/
 
-void graphEmulationStart() {
+void graphEmulationStart()
+{
   graph_buffer_lost = FALSE;
   graphLineDescClear();
   graphIOHandlersInstall();
@@ -2289,14 +2265,16 @@ void graphEmulationStart() {
 /* Called on emulation stop                                                  */
 /*===========================================================================*/
 
-void graphEmulationStop() {
+void graphEmulationStop()
+{
 }
 
 /*===========================================================================*/
 /* Initializes the graphics module                                           */
 /*===========================================================================*/
 
-void graphStartup() {
+void graphStartup()
+{
   graphP2CTablesInit();
   graphP2CFunctionsInit();
   graphLineDescClear();
@@ -2307,5 +2285,6 @@ void graphStartup() {
 /* Release resources taken by the graphics module                            */
 /*===========================================================================*/
 
-void graphShutdown() {
+void graphShutdown()
+{
 }

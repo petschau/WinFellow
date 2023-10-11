@@ -33,9 +33,7 @@
 #include "CpuModule.h"
 #include "CpuIntegration.h"
 #include "fmem.h"
-#include "eventid.h"
 #include "floppy.h"
-#include "sound.h"
 #include "gameport.h"
 #include "kbd.h"
 #include "graph.h"
@@ -62,12 +60,11 @@
 #include "fellow/api/Services.h"
 #include "fellow/api/VM.h"
 
-#include "CoreHost.h"
+#include "VirtualHost/Core.h"
+#include "VirtualHost/CoreFactory.h"
 
 using namespace fellow::api::module;
 using namespace fellow::api;
-
-Core _core = Core();
 
 BOOLE fellow_request_emulation_stop;
 
@@ -77,14 +74,15 @@ BOOLE fellow_request_emulation_stop;
 
 BOOLE fellow_pre_start_reset;
 
-void fellowSetPreStartReset(BOOLE reset) {
+void fellowSetPreStartReset(BOOLE reset)
+{
   fellow_pre_start_reset = reset;
 }
 
-BOOLE fellowGetPreStartReset() {
+BOOLE fellowGetPreStartReset()
+{
   return fellow_pre_start_reset;
 }
-
 
 /*============================================================================*/
 /* setjmp support                                                             */
@@ -93,15 +91,15 @@ BOOLE fellowGetPreStartReset() {
 static jmp_buf fellow_runtime_error_env;
 static fellow_runtime_error_codes fellow_runtime_error_code;
 
-void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code) {
+void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code)
+{
   fellow_runtime_error_code = error_code;
 }
 
-
-static fellow_runtime_error_codes fellowGetRuntimeErrorCode() {
+static fellow_runtime_error_codes fellowGetRuntimeErrorCode()
+{
   return fellow_runtime_error_code;
 }
-
 
 /*============================================================================*/
 /* The run-time log                                                           */
@@ -109,16 +107,16 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode() {
 
 #define WRITE_LOG_BUF_SIZE 512
 
-void fellowAddLog2(char* msg)
+void fellowAddLog2(char *msg)
 {
   Service->Log.AddLog2(msg);
 }
 
-void fellowAddLog(const char* format, ...)
+void fellowAddLog(const char *format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
-  
+
   va_start(parms, format);
   _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
   va_end(parms);
@@ -134,15 +132,9 @@ void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 
   switch (type)
   {
-  case FELLOW_REQUESTER_TYPE_INFO:
-    uType = MB_ICONINFORMATION;
-    break;
-  case FELLOW_REQUESTER_TYPE_WARN:
-    uType = MB_ICONWARNING;
-    break;
-  case FELLOW_REQUESTER_TYPE_ERROR:
-    uType = MB_ICONERROR;
-    break;
+    case FELLOW_REQUESTER_TYPE_INFO: uType = MB_ICONINFORMATION; break;
+    case FELLOW_REQUESTER_TYPE_WARN: uType = MB_ICONWARNING; break;
+    case FELLOW_REQUESTER_TYPE_ERROR: uType = MB_ICONERROR; break;
   }
 
   va_start(parms, format);
@@ -156,7 +148,7 @@ void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
     wguiRequester(buffer, uType);
 }
 
-void fellowAddTimelessLog(const char *format,...)
+void fellowAddTimelessLog(const char *format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
@@ -170,7 +162,7 @@ void fellowAddTimelessLog(const char *format,...)
 
 char *fellowGetVersionString()
 {
-  char *result = (char *) malloc(strlen(FELLOWVERSION)+ 12);
+  char *result = (char *)malloc(strlen(FELLOWVERSION) + 12);
 
   if (!result)
   {
@@ -178,35 +170,37 @@ char *fellowGetVersionString()
   }
 
 #ifdef X64
-   sprintf(result, "%s - %d bit", FELLOWVERSION, 64);
+  sprintf(result, "%s - %d bit", FELLOWVERSION, 64);
 #else
-   sprintf(result, "%s - %d bit", FELLOWVERSION, 32);
+  sprintf(result, "%s - %d bit", FELLOWVERSION, 32);
 #endif
 
   return result;
 }
 
-
 /*============================================================================*/
 /* Runtime Error Check                                                        */
 /*============================================================================*/
 
-static void fellowRuntimeErrorCheck() {
-  switch (fellowGetRuntimeErrorCode()) {
+static void fellowRuntimeErrorCheck()
+{
+  switch (fellowGetRuntimeErrorCode())
+  {
     case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
-      fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
-	"A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
+      fellowAddLogRequester(
+          FELLOW_REQUESTER_TYPE_ERROR,
+          "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
       break;
   }
   fellowSetRuntimeErrorCode(FELLOW_RUNTIME_ERROR_NO_ERROR);
 }
 
-
 /*============================================================================*/
 /* Softreset                                                                  */
 /*============================================================================*/
 
-void fellowSoftReset() {
+void fellowSoftReset()
+{
   memorySoftReset();
   interruptSoftReset();
   HardfileHandler->HardReset();
@@ -215,7 +209,7 @@ void fellowSoftReset() {
   kbdHardReset();
   gameportHardReset();
   busSoftReset();
-  soundHardReset();
+  _core.Sound->HardReset();
   blitterHardReset();
   copperHardReset();
   floppyHardReset();
@@ -224,15 +218,15 @@ void fellowSoftReset() {
   ffilesysHardReset();
   memoryHardResetPost();
   fellowSetPreStartReset(FALSE);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.SoftReset();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.SoftReset();
 }
 
 /*============================================================================*/
 /* Hardreset                                                                  */
 /*============================================================================*/
 
-void fellowHardReset() {
+void fellowHardReset()
+{
   memoryHardReset();
   interruptHardReset();
   HardfileHandler->HardReset();
@@ -241,7 +235,7 @@ void fellowHardReset() {
   kbdHardReset();
   gameportHardReset();
   busHardReset();
-  soundHardReset();
+  _core.Sound->HardReset();
   blitterHardReset();
   copperHardReset();
   floppyHardReset();
@@ -251,8 +245,7 @@ void fellowHardReset() {
   memoryHardResetPost();
   cpuIntegrationHardReset();
   fellowSetPreStartReset(FALSE);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.HardReset();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.HardReset();
 }
 
 /*============================================================================*/
@@ -260,12 +253,13 @@ void fellowHardReset() {
 /* Emulation will stop at the beginning of the next frame                     */
 /*============================================================================*/
 
-void fellowRequestEmulationStop() {
+void fellowRequestEmulationStop()
+{
   fellow_request_emulation_stop = TRUE;
 }
 
-
-void fellowRequestEmulationStopClear() {
+void fellowRequestEmulationStopClear()
+{
   fellow_request_emulation_stop = FALSE;
 }
 
@@ -273,7 +267,8 @@ void fellowRequestEmulationStopClear() {
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
 
-BOOLE fellowEmulationStart() {
+BOOLE fellowEmulationStart()
+{
   fellowRequestEmulationStopClear();
   iniEmulationStart();
   memoryEmulationStart();
@@ -288,40 +283,37 @@ BOOLE fellowEmulationStart() {
   gameportEmulationStart();
   BOOLE result = drawEmulationStartPost();
   graphEmulationStart();
-  soundEmulationStart();
+  _core.Sound->EmulationStart();
   busEmulationStart();
   floppyEmulationStart();
   ffilesysEmulationStart();
   timerEmulationStart();
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
-    RP.EmulationStart();
+  if (RP.GetHeadlessMode()) RP.EmulationStart();
 #endif
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.EmulationStart();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStart();
 
   uart.EmulationStart();
   HardfileHandler->EmulationStart();
-  
+
   return result && memoryGetKickImageOK();
 }
-
 
 /*============================================================================*/
 /* Controls the process of halting actual emulation                           */
 /*============================================================================*/
 
-void fellowEmulationStop() {
+void fellowEmulationStop()
+{
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
-    RP.EmulationStop();
+  if (RP.GetHeadlessMode()) RP.EmulationStop();
 #endif
   HardfileHandler->EmulationStop();
   timerEmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
   busEmulationStop();
-  soundEmulationStop();
+  _core.Sound->EmulationStop();
   gameportEmulationStop();
   kbdEmulationStop();
   drawEmulationStop();
@@ -334,8 +326,7 @@ void fellowEmulationStop() {
   interruptEmulationStop();
   memoryEmulationStop();
   iniEmulationStop();
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.EmulationStop();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStop();
 
   uart.EmulationStop();
 }
@@ -346,15 +337,14 @@ void fellowEmulationStop() {
 /* FellowEmulationStop() will be called elsewhere                             */
 /*============================================================================*/
 
-void fellowRun() {
+void fellowRun()
+{
   if (fellowGetPreStartReset()) fellowHardReset();
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
-    busRun();
+  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
+  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) busRun();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
-
 
 /*============================================================================*/
 /* Steps one CPU instruction                                                  */
@@ -367,7 +357,7 @@ void fellowStepOne()
   {
     fellowHardReset();
   }
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
+  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
     busDebugStepOneInstruction();
@@ -375,7 +365,6 @@ void fellowStepOne()
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
-
 
 /*============================================================================*/
 /* Steps over a CPU instruction                                               */
@@ -393,7 +382,7 @@ void fellowStepOver()
   {
     fellowHardReset();
   }
-  
+
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
@@ -408,15 +397,15 @@ void fellowStepOver()
   fellowRuntimeErrorCheck();
 }
 
-
 /*============================================================================*/
 /* Run until we crash or is exited in debug-mode                              */
 /*============================================================================*/
 
-void fellowRunDebug(uint32_t breakpoint) {
+void fellowRunDebug(uint32_t breakpoint)
+{
   fellowRequestEmulationStopClear();
   if (fellowGetPreStartReset()) fellowHardReset();
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
+  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
       busDebugStepOneInstruction();
@@ -424,28 +413,27 @@ void fellowRunDebug(uint32_t breakpoint) {
   fellowRuntimeErrorCheck();
 }
 
-
 /*============================================================================*/
 /* Something really bad happened, immediate emulation stop                    */
 /*============================================================================*/
 
-void fellowNastyExit() {
-  longjmp(fellow_runtime_error_env, fellowGetRuntimeErrorCode());  
+void fellowNastyExit()
+{
+  longjmp(fellow_runtime_error_env, fellowGetRuntimeErrorCode());
   fprintf(stderr, "You only die twice, I give in!\n");
-  soundShutdown();
+  _core.Sound->Shutdown();
   fprintf(stderr, "Serious error! Exit.\n");
   fsNavigSetCWDStartupDir();
   exit(EXIT_FAILURE);
 }
 
-
 /*============================================================================*/
 /* Draw subsystem failure message and exit                                    */
 /*============================================================================*/
 
-static void fellowDrawFailed() {
-  fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
-    "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
+static void fellowDrawFailed()
+{
+  fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
 
   exit(EXIT_FAILURE);
 }
@@ -457,7 +445,7 @@ static void fellowDrawFailed() {
 BOOLE fellowSaveState(char *filename)
 {
   FILE *F = fopen(filename, "wb");
-  
+
   if (F == nullptr) return FALSE;
 
   cpuIntegrationSaveState(F);
@@ -478,7 +466,7 @@ BOOLE fellowSaveState(char *filename)
 BOOLE fellowLoadState(char *filename)
 {
   FILE *F = fopen(filename, "rb");
-  
+
   if (F == nullptr) return FALSE;
 
   cpuIntegrationLoadState(F);
@@ -498,6 +486,9 @@ BOOLE fellowLoadState(char *filename)
 
 static void fellowModulesStartup(int argc, char *argv[])
 {
+  CoreFactory::CreateDrivers();
+  CoreFactory::CreateModules();
+
   chipsetStartup();
   timerStartup();
   fsNavigStartup(argv);
@@ -507,26 +498,23 @@ static void fellowModulesStartup(int argc, char *argv[])
   iniStartup();
   kbdStartup();
   cfgStartup(argc, argv);
-  if (!drawStartup()) 
-    fellowDrawFailed();
+  if (!drawStartup()) fellowDrawFailed();
   gameportStartup();
   busStartup();
-  soundStartup();
+  _core.Sound->Startup();
   blitterStartup();
   copperStartup();
   floppyStartup();
-  ciaStartup();  
+  ciaStartup();
   memoryStartup();
   interruptStartup();
   graphStartup();
   cpuIntegrationStartup();
   wguiStartup();
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
-    RP.Startup();
+  if (RP.GetHeadlessMode()) RP.Startup();
 #endif
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Startup();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Startup();
 
   automator.Startup();
 }
@@ -538,11 +526,9 @@ static void fellowModulesStartup(int argc, char *argv[])
 static void fellowModulesShutdown()
 {
   automator.Shutdown();
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Shutdown();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Shutdown();
 #ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-    RP.Shutdown();
+  if (RP.GetHeadlessMode()) RP.Shutdown();
 #endif
   wguiShutdown();
   cpuIntegrationShutdown();
@@ -553,7 +539,7 @@ static void fellowModulesShutdown()
   floppyShutdown();
   copperShutdown();
   blitterShutdown();
-  soundShutdown();
+  _core.Sound->Shutdown();
   busShutdown();
   gameportShutdown();
   drawShutdown();
@@ -570,19 +556,24 @@ static void fellowModulesShutdown()
   delete HardfileHandler;
   delete fellow::api::Service;
   delete fellow::api::VM;
+
+  CoreFactory::DestroyModules();
+  CoreFactory::DestroyDrivers();
 }
 
 /*============================================================================*/
 /* main....                                                                   */
 /*============================================================================*/
 
-int __cdecl main(int argc, char *argv[]) {
+int __cdecl main(int argc, char *argv[])
+{
   sysinfoLogSysInfo();
   fellowSetPreStartReset(TRUE);
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM
-  if (!RP.GetHeadlessMode()) {
+  if (!RP.GetHeadlessMode())
+  {
 #endif
     // set DPI awareness in standalone GUI mode to system DPI aware
     wguiSetProcessDPIAwareness("2");
@@ -593,7 +584,7 @@ int __cdecl main(int argc, char *argv[]) {
   else
     RP.EnterHeadlessMode();
 #endif
-  
+
   fellowModulesShutdown();
 
   return EXIT_SUCCESS;

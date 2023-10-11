@@ -5,7 +5,7 @@
 #include "chipset.h"
 #include "FMEM.H"
 #include "BLIT.H"
-#include "CoreHost.h"
+#include "VirtualHost/Core.h"
 
 uint32_t LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
 
