@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
-	<title>WinFellow v0.5.9 RC-1 released &middot; WinFellow - Amiga Emulator for Windows</title>
+	<title>WinFellow v0.5.10 released &middot; WinFellow - Amiga Emulator for Windows</title>
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<!--[if lt IE 9]>
 	<script src="http://petschau.github.io/WinFellow/js/html5.js"></script>
@@ -121,13 +121,13 @@
 			</span>
 		</div>
 
-		<h1 class="entry-title">WinFellow v0.5.9 RC-1 released</h1>
+		<h1 class="entry-title">WinFellow v0.5.10 released</h1>
 
 		<div class="entry-meta">
 			<span class="entry-date">
-				<a href="http://petschau.github.io/WinFellow/post/2023-09-03-winfellow-v0.5.9-rc-1-released//index.html" rel="bookmark">
-					<time class="entry-date" datetime="2023-09-03 05:49:00 &#43;0000 &#43;0000">
-						September 3, 2023
+				<a href="http://petschau.github.io/WinFellow/post/2023-10-04-winfellow-v0.5.10-released//index.html" rel="bookmark">
+					<time class="entry-date" datetime="2023-10-04 05:49:00 &#43;0000 &#43;0000">
+						October 4, 2023
 					</time>
 				</a>
 			</span>
@@ -136,29 +136,51 @@
 	</header>
 	
 	<div class="entry-content">
-		<p>There is a new release candidate build of WinFellow hosted in the GitHub releases section. Compared to the earlier version 0.5.8, the following changes are included in this build:</p>
-<p><strong>System requirement changes</strong></p>
-<ul>
-<li>support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</li>
-</ul>
+		<p>There is a new public release of WinFellow v0.5.10 in the GitHub releases section; it had been published earlier as release candidate 1.</p>
+<p>Compared to the earlier version 0.5.9, the following changes are included in this build:</p>
 <p><strong>New features</strong></p>
 <ul>
-<li>implemented a new menu option to allow configuration of the emulation pause behavior when the window focus is lost/emulation is running in the background</li>
-<li>the floppy read-only state can now be adjusted on the fly, without having to restart the emulator</li>
+<li>a native ARM64 build of WinFellow is now provided as part of the release zip archive</li>
 </ul>
 <p><strong>Bug Fixes</strong></p>
 <ul>
-<li>when using alt-tab to switch to different windows, the tab keypress is no longer passed on to the emulation session</li>
-<li>mouse events via RetroPlatform are being received again</li>
-<li>fixed minor heap corruption in RetroPlatform initialization code</li>
-<li>fix a repeated error message during loading of presets when encrypted ROMs are searched and no keyfile is present</li>
+<li>Thanks to the availability of Toni Wilen&rsquo;s cputester, the following mostly CPU related issues from the basic tests could be addressed:
+<ul>
+<li>Removed address register as byte source operand in move.</li>
+<li>Various bit-field instruction fixes.</li>
+<li>Incorrect pack/unpk behaviour.</li>
+<li>Trapcc increase pc after condition check to get correct exception stack frame.</li>
+<li>Cas2 select the first compare result value when both compare registers are the same register. Set v flag.</li>
+<li>Link/Unlk incorrect result on stack when link register was a7.</li>
+<li>Split long reads in two word reads for correct values across banks that are not stored consecutively.</li>
+<li>VPOS wraparound fix.</li>
+<li>Exception cycle time changes.</li>
+<li>Fixed various instructions that overwrote exception cycle times with regular instruction time. (when triggering privilege violations etc.)</li>
+<li>Set div cycle times to values closer to the listed cycle times. Still not dynamically calculated, but should be closer.</li>
+<li>Don&rsquo;t trace when instruction was aborted by illegal, privilege or address error.</li>
+<li>CHK.w N flag fix.</li>
+<li>EOR ea vs. data register check for cycle calculation was inverted.</li>
+<li>Changes to cycle calculation for BSET/BCGH.</li>
+<li>Set undefined div flags according to behaviour on 68000.</li>
+<li>Move to SR, check supervisor level before evaluating ea.</li>
+<li>Include exception time in cycle time for chk.</li>
+<li>Handle bkpt differenly from illegal.</li>
+<li>Broken overflow and other special cases for mull.</li>
+<li>Handle supervisor check differently for move from sr to avoid returning result when throwing exception.</li>
+<li>Missing address mask in rtarea memory handling (for when upper address byte contains data).</li>
+<li>Trapcc had wrong pc in the stack frame.</li>
+</ul>
+</li>
+<li>fixed mouse capture for older RetroPlatform hosts</li>
 </ul>
 <p><strong>Maintenance updates</strong></p>
 <ul>
-<li>zlib was updated to version 1.2.11</li>
-<li>xDMS was updated to version 1.3.2</li>
-<li>Visual Studio 2022 and the Windows 11 SDK are used</li>
-<li>RetroPlatform include has been updated</li>
+<li>code refactoring:
+<ul>
+<li>solution file reorganisation</li>
+<li>static analysis/replace custom datatypes with standard sized C++ types</li>
+</ul>
+</li>
 </ul>
 <p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which may not be listed above.</p>
 
