@@ -1,11 +1,11 @@
 +++
 date = "2023-10-04T05:49:00+00:00"
 draft = false
-title = "WinFellow v0.5.10 RC-1 released"
+title = "WinFellow v0.5.10 released"
 tags = [ "News", "Releases" ]
 +++
 
-There is a new release candidate build of WinFellow v0.5.10 in the GitHub releases section. Compared to the earlier version 0.5.9, the following changes are included in this build:
+There is a new public release of WinFellow v0.5.10 in the GitHub releases section. Compared to the earlier version 0.5.9, the following changes are included in this build:
 
 **New features**
   - a native ARM64 build of WinFellow is now provided as part of the release zip archive
