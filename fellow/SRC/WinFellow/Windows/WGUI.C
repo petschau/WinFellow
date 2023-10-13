@@ -69,6 +69,7 @@
 #include "GfxDrvCommon.h"
 #include "FSWRAP.H"
 #include "FFILESYS.H"
+#include "versioninfo.h"
 
 using namespace fellow::api::module;
 using namespace CustomChipset;
@@ -3257,7 +3258,7 @@ INT_PTR CALLBACK wguiAboutDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
           break;
         case IDC_STATIC_LINK:
           SetTextColor((HDC)LOWORD(lParam), RGB(0, 0, 255));
-          ShellExecute(nullptr, "open", "http://fellow.sourceforge.net", nullptr, nullptr, SW_SHOWNORMAL);
+          ShellExecute(nullptr, "open", FELLOWHOMEPAGE, nullptr, nullptr, SW_SHOWNORMAL);
           break;
         default: break;
       }
