@@ -480,7 +480,7 @@
     <ClCompile Include="Windows\Service\FileopsWin32.cpp">
       <Filter>Windows\Service</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\Service\FSWrapperWin32.cpp">
+    <ClCompile Include="Windows\Service\FileInformationWin32.cpp">
       <Filter>Windows\Service</Filter>
     </ClCompile>
   </ItemGroup>
@@ -911,7 +911,7 @@
     <ClInclude Include="Windows\Service\FileopsWin32.h">
       <Filter>Windows\Service</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\Service\FSWrapperWin32.h">
+    <ClInclude Include="Windows\Service\FileInformationWin32.h">
       <Filter>Windows\Service</Filter>
     </ClInclude>
   </ItemGroup>

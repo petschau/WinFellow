@@ -341,20 +341,17 @@ namespace fellow::hardfile
       return false;
     }
 
-    fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(device.Configuration.Filename.c_str());
-    if (fsnp == nullptr)
+    FileProperties* fileProperties = _core.FileInformation->GetFileProperties(device.Configuration.Filename.c_str());
+    if (fileProperties == nullptr)
     {
       _core.Log->AddLog("ERROR: Unable to access hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", device.Configuration.Filename.c_str());
       return false;
     }
 
-    if (fsnp != nullptr)
-    {
-      device.Readonly = device.Configuration.Readonly || (!fsnp->writeable);
-      fopen_s(&device.F, device.Configuration.Filename.c_str(), device.Readonly ? "rb" : "r+b");
-      device.FileSize = fsnp->size;
-      delete fsnp;
-    }
+    device.Readonly = device.Configuration.Readonly || (!fileProperties->IsWritable);
+    fopen_s(&device.F, device.Configuration.Filename.c_str(), device.Readonly ? "rb" : "r+b");
+    device.FileSize = fileProperties->Size;
+    delete fileProperties;
 
     const auto& geometry = device.Configuration.Geometry;
     uint32_t cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;

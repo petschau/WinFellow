@@ -12,7 +12,7 @@ Core::Core() :
   Drivers(), 
   Log(nullptr), 
   Fileops(nullptr),
-  FSWrapper(nullptr)
+  FileInformation(nullptr)
 {
 }
 

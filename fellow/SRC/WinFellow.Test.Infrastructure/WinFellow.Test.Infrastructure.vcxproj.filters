@@ -36,7 +36,7 @@
     <ClCompile Include="mock\Core\Service\LogMock.cpp">
       <Filter>mock\Core\Service</Filter>
     </ClCompile>
-    <ClCompile Include="mock\Core\Service\FSWrapperMock.cpp">
+    <ClCompile Include="mock\Core\Service\FileInformationMock.cpp">
       <Filter>mock\Core\Service</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,7 +54,7 @@
     <ClInclude Include="mock\Core\Service\LogMock.h">
       <Filter>mock\Core\Service</Filter>
     </ClInclude>
-    <ClInclude Include="mock\Core\Service\FSWrapperMock.h">
+    <ClInclude Include="mock\Core\Service\FileInformationMock.h">
       <Filter>mock\Core\Service</Filter>
     </ClInclude>
   </ItemGroup>

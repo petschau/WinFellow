@@ -72,7 +72,7 @@
     <ClInclude Include="IO\RtcOkiMsm6242rs.h">
       <Filter>IO</Filter>
     </ClInclude>
-    <ClInclude Include="Service\IFSWrapper.h">
+    <ClInclude Include="Service\IFileInformation.h">
       <Filter>Service</Filter>
     </ClInclude>
   </ItemGroup>

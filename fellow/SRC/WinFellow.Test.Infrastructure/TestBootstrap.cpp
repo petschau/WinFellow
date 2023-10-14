@@ -2,7 +2,7 @@
 #include "VirtualHost/Core.h"
 
 #include "mock/Core/Service/LogMock.h"
-#include "mock/Core/Service/FSWrapperMock.h"
+#include "mock/Core/Service/FileInformationMock.h"
 
 #include "mock/service/HUDMock.h"
 #include "mock/service/RetroPlatformWrapperMock.h"
@@ -24,13 +24,13 @@ void InitializeTestframework()
   fellow::api::Service = new Services(hudMock, rpMock);
 
   _core.Log = new LogMock();
-  _core.FSWrapper = new FSWrapperMock();
+  _core.FileInformation = new FileInformationMock();
 }
 
 void ShutdownTestframework()
 {
-  delete _core.FSWrapper;
-  _core.FSWrapper = nullptr;
+  delete _core.FileInformation;
+  _core.FileInformation = nullptr;
 
   delete _core.Log;
   _core.Log = nullptr;

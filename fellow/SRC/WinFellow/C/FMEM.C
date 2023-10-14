@@ -3542,9 +3542,9 @@ void memoryKickLoad()
 
   memory_kickimage_none = FALSE;/* Initially Kickstart is expected to be OK */
 
-  fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(memory_kickimage);
+  FileProperties* fileProperties = _core.FileInformation->GetFileProperties(memory_kickimage);
 
-  if (fsnp == nullptr)
+  if (fileProperties == nullptr)
 
     memoryKickError(MEMORY_ROM_ERROR_EXISTS_NOT, 0);
 
@@ -3552,7 +3552,7 @@ void memoryKickLoad()
 
   {
 
-    if (fsnp->type != fs_wrapper_file_types::FS_NAVIG_FILE)
+    if (fileProperties->Type != FileType::File)
 
       memoryKickError(MEMORY_ROM_ERROR_FILE, 0);
 
@@ -3564,11 +3564,11 @@ void memoryKickLoad()
 
         memoryKickError(MEMORY_ROM_ERROR_EXISTS_NOT, 0);
 
-      else memory_kickimage_size = fsnp->size;
+      else memory_kickimage_size = fileProperties->Size;
 
     }
 
-    free(fsnp);
+    free(fileProperties);
 
   }
 
@@ -3796,13 +3796,13 @@ void memoryKickExtendedLoad()
   }
 
 
-  fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(memory_kickimage_ext);
+  FileProperties* fsnp = _core.FileInformation->GetFileProperties(memory_kickimage_ext);
 
   if (fsnp == nullptr)
 
     return;
 
-  if (fsnp->type != fs_wrapper_file_types::FS_NAVIG_FILE)
+  if (fsnp->Type != FileType::File)
 
     return;
 
@@ -3812,7 +3812,7 @@ void memoryKickExtendedLoad()
 
     return;
 
-  size = fsnp->size;
+  size = fsnp->Size;
 
   free(fsnp);
 

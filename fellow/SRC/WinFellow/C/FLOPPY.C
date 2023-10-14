@@ -1121,7 +1121,7 @@ void floppyImagePrepare(char* diskname, uint32_t drive)
 /* Returns the image status              */
 /*=======================================*/
 
-uint32_t floppyImageGeometryCheck(fs_wrapper_point* fsnp, uint32_t drive)
+uint32_t floppyImageGeometryCheck(FileProperties* fsnp, uint32_t drive)
 {
   char head[8];
   fread(head, 1, 8, floppy[drive].F);
@@ -1144,8 +1144,8 @@ uint32_t floppyImageGeometryCheck(fs_wrapper_point* fsnp, uint32_t drive)
 #endif
   else
   {
-    floppy[drive].tracks = fsnp->size / 11264;
-    if ((floppy[drive].tracks * 11264) != (uint32_t)fsnp->size)
+    floppy[drive].tracks = fsnp->Size / 11264;
+    if ((floppy[drive].tracks * 11264) != fsnp->Size)
     {
       floppyError(drive, FLOPPY_ERROR_SIZE);
     }
@@ -1289,46 +1289,46 @@ void floppySetDiskImage(uint32_t drive, char* diskname)
     return;
   }
 
-  fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(diskname);
-  if (fsnp == nullptr)
+  FileProperties* fileProperties = _core.FileInformation->GetFileProperties(diskname);
+  if (fileProperties == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
     return;
   }
 
-  if (fsnp->type != fs_wrapper_file_types::FS_NAVIG_FILE)
+  if (fileProperties->Type != FileType::File)
   {
     floppyError(drive, FLOPPY_ERROR_FILE);
-    free(fsnp);
+    free(fileProperties);
     return;
   }
 
   floppyImagePrepare(diskname, drive);
   if (floppy[drive].zipped)
   {
-    free(fsnp);
+    free(fileProperties);
 
-    fsnp = _core.FSWrapper->MakePoint(floppy[drive].imagenamereal);
-    if (fsnp == nullptr)
+    fileProperties = _core.FileInformation->GetFileProperties(floppy[drive].imagenamereal);
+    if (fileProperties == nullptr)
     {
       floppyError(drive, FLOPPY_ERROR_COMPRESS);
       return;
     }
   }
 
-  if (!fsnp->writeable)
+  if (!fileProperties->IsWritable)
     floppySetReadOnlyEnforced(drive, true);
 
   floppy[drive].F = fopen(floppy[drive].imagenamereal, floppyIsWriteProtected(drive) ? "rb" : "r+b");
   if (floppy[drive].F == nullptr)
   {
     floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
-    free(fsnp);
+    free(fileProperties);
     return;
   }
 
   strcpy(floppy[drive].imagename, diskname);
-  switch (floppyImageGeometryCheck(fsnp, drive))
+  switch (floppyImageGeometryCheck(fileProperties, drive))
   {
   case FLOPPY_STATUS_NORMAL_OK:
     floppyImageNormalLoad(drive);
@@ -1362,7 +1362,7 @@ void floppySetDiskImage(uint32_t drive, char* diskname)
   }
 #endif
 
-  free(fsnp);
+  free(fileProperties);
 }
 
 /*============================================================================*/

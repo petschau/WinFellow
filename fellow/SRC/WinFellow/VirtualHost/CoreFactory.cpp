@@ -4,7 +4,7 @@
 #include "Service/Log.h"
 
 #include "Windows/Service/FileopsWin32.h"
-#include "Windows/Service/FSWrapperWin32.h"
+#include "Windows/Service/FileInformationWin32.h"
 
 using namespace Service;
 
@@ -23,7 +23,7 @@ void CoreFactory::CreateServices()
 {
   _core.Log = new Log();
   _core.Fileops = new FileopsWin32(_core.Log);
-  _core.FSWrapper = new FSWrapperWin32();
+  _core.FileInformation = new FileInformationWin32();
 }
 
 void CoreFactory::DestroyServices()

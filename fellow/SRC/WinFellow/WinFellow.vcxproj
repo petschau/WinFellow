@@ -487,7 +487,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="VirtualHost\CoreFactory.cpp" />
     <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
     <ClCompile Include="Windows\Service\FileopsWin32.cpp" />
-    <ClCompile Include="Windows\Service\FSWrapperWin32.cpp" />
+    <ClCompile Include="Windows\Service\FileInformationWin32.cpp" />
     <ClCompile Include="zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1177,7 +1177,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h" />
     <ClInclude Include="Windows\Service\FileopsWin32.h" />
-    <ClInclude Include="Windows\Service\FSWrapperWin32.h" />
+    <ClInclude Include="Windows\Service\FileInformationWin32.h" />
     <ClInclude Include="xdms\include\cdata.h" />
     <ClInclude Include="xdms\include\crc_csum.h" />
     <ClInclude Include="xdms\include\getbits.h" />

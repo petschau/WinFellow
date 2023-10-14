@@ -346,7 +346,7 @@ BOOLE iniSetOption(ini *initdata, char *initoptionstr) {
 	iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
       }
       else {
-	if (_core.FSWrapper->Stat(value, &bla) != 0) {
+	if (_core.FileInformation->Stat(value, &bla) != 0) {
 	  _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
 	  iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
 	}

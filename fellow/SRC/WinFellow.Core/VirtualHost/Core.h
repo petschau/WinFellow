@@ -3,7 +3,7 @@
 #include "Driver/Drivers.h"
 #include "Service/ILog.h"
 #include "Service/IFileops.h"
-#include "Service/IFSWrapper.h"
+#include "Service/IFileInformation.h"
 #include "CustomChipset/Sound/Sound.h"
 #include "CustomChipset/Registers.h"
 #include "CustomChipset/RegisterUtility.h"
@@ -22,7 +22,7 @@ public:
   Drivers Drivers;
   Service::ILog* Log;
   Service::IFileops* Fileops;
-  Service::IFSWrapper* FSWrapper;
+  Service::IFileInformation* FileInformation;
 
   Core();
   ~Core();

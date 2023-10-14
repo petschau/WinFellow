@@ -1,13 +1,9 @@
-#include "Windows/Service/FSWrapperWin32.h"
+#include "Windows/Service/FileInformationWin32.h"
 #include "VirtualHost/Core.h"
 #include "DEFS.H"
 #include "FELLOW.H"
 
 using namespace Service;
-
-FSWrapperWin32::FSWrapperWin32()
-{
-}
 
 // this function is a very limited stat() workaround implementation to address
 // the stat() bug on Windows XP using later platform toolsets; the problem was 
@@ -15,12 +11,12 @@ FSWrapperWin32::FSWrapperWin32()
 // https://connect.microsoft.com/VisualStudio/feedback/details/1600505/stat-not-working-on-windows-xp-using-v14-xp-platform-toolset-vs2015
 // https://stackoverflow.com/questions/32452777/visual-c-2015-express-stat-not-working-on-windows-xp
 // limitations: only sets a limited set of mode flags and calculates size information
-int FSWrapperWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
+int FileInformationWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
 {
   int result;
 
 #ifdef _DEBUG
-  _core.Log->AddLog("FSWrapperWin32::Stat(szFilename=%s, pStatBuffer=0x%08x)\n",
+  _core.Log->AddLog("FileInformationWin32::Stat(szFilename=%s, pStatBuffer=0x%08x)\n",
     szFilename, pStatBuffer);
 #endif
 
@@ -61,7 +57,7 @@ int FSWrapperWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
       LPTSTR szErrorMessage = nullptr;
       DWORD hResult = GetLastError();
 
-      _core.Log->AddLog("  FSWrapperWin32::Stat(): GetFileAttributesEx() failed, return code=%d",
+      _core.Log->AddLog("  FileInformationWin32::Stat(): GetFileAttributesEx() failed, return code=%d",
         hResult);
 
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
@@ -105,7 +101,7 @@ int FSWrapperWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
     } // GetFileAttributesEx() successful
 
 #ifdef _DEBUG
-    _core.Log->AddLog(" fswrap result=%d mode=0x%04x nlink=%d size=%lu\n",
+    _core.Log->AddLog(" FileInformationWin32::Stat() result=%d mode=0x%04x nlink=%d size=%lu\n",
       result,
       pStatBuffer->st_mode,
       pStatBuffer->st_nlink,
@@ -118,40 +114,40 @@ int FSWrapperWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
   return result;
 }
 
-fs_wrapper_point* FSWrapperWin32::MakePoint(const char* point)
+FileProperties* FileInformationWin32::GetFileProperties(const char* filename)
 {
   struct stat mystat;
-  fs_wrapper_point* fsnp = nullptr;
+  FileProperties* fileProperties = nullptr;
 
   // check file permissions
-  if (Stat(point, &mystat) == 0) {
-    fsnp = new fs_wrapper_point();
-    fsnp->name = point;
+  if (Stat(filename, &mystat) == 0) {
+    fileProperties = new FileProperties();
+    fileProperties->Name = filename;
     if (mystat.st_mode & _S_IFREG)
-      fsnp->type = fs_wrapper_file_types::FS_NAVIG_FILE;
+      fileProperties->Type = FileType::File;
     else if (mystat.st_mode & _S_IFDIR)
-      fsnp->type = fs_wrapper_file_types::FS_NAVIG_DIR;
+      fileProperties->Type = FileType::Directory;
     else
-      fsnp->type = fs_wrapper_file_types::FS_NAVIG_OTHER;
-    fsnp->writeable = !!(mystat.st_mode & _S_IWRITE);
-    if (fsnp->writeable)
+      fileProperties->Type = FileType::Directory;
+    fileProperties->IsWritable = !!(mystat.st_mode & _S_IWRITE);
+    if (fileProperties->IsWritable)
     {
-      FILE* file_ptr = fopen(point, "a");
+      FILE* file_ptr = fopen(filename, "a");
       if (file_ptr == nullptr)
       {
-        fsnp->writeable = false;
+        fileProperties->IsWritable = false;
       }
       else
       {
         fclose(file_ptr);
       }
     }
-    fsnp->size = mystat.st_size;
+    fileProperties->Size = mystat.st_size;
   }
   else
   {
     char* strError = strerror(errno);
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "FSWrapperWin32::MakePoint(): ERROR getting file information for %s: error code %i (%s)\n", point, errno, strError);
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "FileInformationWin32::GetFileProperties(): ERROR getting file information for %s: error code %i (%s)\n", filename, errno, strError);
   }
-  return fsnp;
+  return fileProperties;
 }

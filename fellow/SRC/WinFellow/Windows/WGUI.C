@@ -1503,7 +1503,7 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile* hf, int hardfi
   }
 
   struct stat StatBuffer = {};
-  int result = _core.FSWrapper->Stat(hf->filename, &StatBuffer);
+  int result = _core.FileInformation->Stat(hf->filename, &StatBuffer);
 
   if (result != 0)
   {
