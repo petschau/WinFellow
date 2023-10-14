@@ -1,8 +1,6 @@
 #include "hardfile/rdb/RDBFileSystemHeader.h"
 #include "hardfile/rdb/CheckSumCalculator.h"
-#include "fellow/api/Services.h"
-
-using namespace fellow::api;
+#include "VirtualHost/Core.h"
 
 namespace fellow::hardfile::rdb
 {
@@ -53,28 +51,28 @@ namespace fellow::hardfile::rdb
 
   void RDBFileSystemHeader::Log()
   {
-    Service->Log.AddLogDebug("Filesystem header block\n");
-    Service->Log.AddLogDebug("-----------------------------------------\n");
-    Service->Log.AddLogDebug("0  - id:                     FSHD\n");
-    Service->Log.AddLogDebug("4  - size in longs:          %u\n", SizeInLongs);
-    Service->Log.AddLogDebug("8  - checksum:               %d (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
-    Service->Log.AddLogDebug("12 - host id:                %u\n", HostID);
-    Service->Log.AddLogDebug("16 - next:                   %d\n", Next);
-    Service->Log.AddLogDebug("20 - flags:                  %X\n", Flags);
-    Service->Log.AddLogDebug("32 - dos type:               %.8X\n", DOSType);
-    Service->Log.AddLogDebug("36 - version:                %.8X ie %d.%d\n", Version, (Version & 0xffff0000) >> 16, Version & 0xffff);
-    Service->Log.AddLogDebug("40 - patch flags:            %.8X\n", PatchFlags);
-    Service->Log.AddLogDebug("Device node:-----------------------------\n");
-    Service->Log.AddLogDebug("44 - type:                   %u\n", DnType);
-    Service->Log.AddLogDebug("48 - task:                   %u\n", DnTask);
-    Service->Log.AddLogDebug("48 - task:                   %u\n", DnTask);
-    Service->Log.AddLogDebug("52 - lock:                   %u\n", DnLock);
-    Service->Log.AddLogDebug("56 - handler:                %u\n", DnHandler);
-    Service->Log.AddLogDebug("60 - stack size:             %u\n", DnStackSize);
-    Service->Log.AddLogDebug("64 - priority:               %u\n", DnPriority);
-    Service->Log.AddLogDebug("68 - startup:                %u\n", DnStartup);
-    Service->Log.AddLogDebug("72 - seg list block:         %u\n", DnSegListBlock);
-    Service->Log.AddLogDebug("76 - global vec:             %d\n\n", DnGlobalVec);
+    _core.Log->AddLogDebug("Filesystem header block\n");
+    _core.Log->AddLogDebug("-----------------------------------------\n");
+    _core.Log->AddLogDebug("0  - id:                     FSHD\n");
+    _core.Log->AddLogDebug("4  - size in longs:          %u\n", SizeInLongs);
+    _core.Log->AddLogDebug("8  - checksum:               %d (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
+    _core.Log->AddLogDebug("12 - host id:                %u\n", HostID);
+    _core.Log->AddLogDebug("16 - next:                   %d\n", Next);
+    _core.Log->AddLogDebug("20 - flags:                  %X\n", Flags);
+    _core.Log->AddLogDebug("32 - dos type:               %.8X\n", DOSType);
+    _core.Log->AddLogDebug("36 - version:                %.8X ie %d.%d\n", Version, (Version & 0xffff0000) >> 16, Version & 0xffff);
+    _core.Log->AddLogDebug("40 - patch flags:            %.8X\n", PatchFlags);
+    _core.Log->AddLogDebug("Device node:-----------------------------\n");
+    _core.Log->AddLogDebug("44 - type:                   %u\n", DnType);
+    _core.Log->AddLogDebug("48 - task:                   %u\n", DnTask);
+    _core.Log->AddLogDebug("48 - task:                   %u\n", DnTask);
+    _core.Log->AddLogDebug("52 - lock:                   %u\n", DnLock);
+    _core.Log->AddLogDebug("56 - handler:                %u\n", DnHandler);
+    _core.Log->AddLogDebug("60 - stack size:             %u\n", DnStackSize);
+    _core.Log->AddLogDebug("64 - priority:               %u\n", DnPriority);
+    _core.Log->AddLogDebug("68 - startup:                %u\n", DnStartup);
+    _core.Log->AddLogDebug("72 - seg list block:         %u\n", DnSegListBlock);
+    _core.Log->AddLogDebug("76 - global vec:             %d\n\n", DnGlobalVec);
   }
 
   RDBFileSystemHeader::RDBFileSystemHeader() :

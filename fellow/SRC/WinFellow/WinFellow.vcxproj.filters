@@ -79,6 +79,9 @@
     <Filter Include="VirtualHost">
       <UniqueIdentifier>{25b2f21a-8c0b-4ab7-85fc-86be576fed09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Windows\Service">
+      <UniqueIdentifier>{2cc8170f-f170-4206-b604-cee8ba2d1642}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Windows\Driver">
       <UniqueIdentifier>{5cd84858-a406-4181-9bfd-143e9807bbaf}</UniqueIdentifier>
     </Filter>
@@ -318,9 +321,6 @@
     <ClCompile Include="fellow\service\HUD.cpp">
       <Filter>fellow\service</Filter>
     </ClCompile>
-    <ClCompile Include="fellow\service\Log.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
     <ClCompile Include="fellow\service\RetroPlatformWrapper.cpp">
       <Filter>fellow\service</Filter>
     </ClCompile>
@@ -408,9 +408,6 @@
     <ClCompile Include="Windows\commoncontrol_wrap.c">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\fileops.c">
-      <Filter>Windows</Filter>
-    </ClCompile>
     <ClCompile Include="Windows\FSWRAP.C">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -491,6 +488,9 @@
     </ClCompile>
     <ClCompile Include="VirtualHost\CoreFactory.cpp">
       <Filter>VirtualHost</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\Service\FileopsWin32.cpp">
+      <Filter>Windows\Service</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -719,9 +719,6 @@
     <ClInclude Include="INCLUDE\TIMER.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\uart.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\WGUI.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -779,9 +776,6 @@
     <ClInclude Include="fellow\api\service\IHUD.h">
       <Filter>fellow\api\service</Filter>
     </ClInclude>
-    <ClInclude Include="fellow\api\service\ILog.h">
-      <Filter>fellow\api\service</Filter>
-    </ClInclude>
     <ClInclude Include="fellow\api\service\IRetroPlatform.h">
       <Filter>fellow\api\service</Filter>
     </ClInclude>
@@ -789,9 +783,6 @@
       <Filter>fellow\service</Filter>
     </ClInclude>
     <ClInclude Include="fellow\service\HUD.h">
-      <Filter>fellow\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\service\Log.h">
       <Filter>fellow\service</Filter>
     </ClInclude>
     <ClInclude Include="fellow\service\RetroPlatformWrapper.h">
@@ -887,9 +878,6 @@
     <ClInclude Include="Windows\dxver.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\fileops.h">
-      <Filter>Windows</Filter>
-    </ClInclude>
     <ClInclude Include="Windows\FSWRAP.H">
       <Filter>Windows</Filter>
     </ClInclude>
@@ -943,6 +931,9 @@
     </ClInclude>
     <ClInclude Include="VirtualHost\CoreFactory.h">
       <Filter>VirtualHost</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Service\FileopsWin32.h">
+      <Filter>Windows\Service</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

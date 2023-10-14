@@ -29,7 +29,6 @@
 #include "graph.h"
 #include "draw.h"
 #include "fmem.h"
-#include "fileops.h"
 #include "SpriteRegisters.h"
 #include "SpriteP2CDecoder.h"
 #include "SpriteMerger.h"

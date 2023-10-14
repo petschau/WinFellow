@@ -1,11 +1,16 @@
 #include "fellow/api/Services.h"
-#include "mock/service/LogMock.h"
+#include "VirtualHost/Core.h"
+
+#include "mock/Core/Service/LogMock.h"
+
 #include "mock/service/HUDMock.h"
 #include "mock/service/FSWrapperMock.h"
 #include "mock/service/RetroPlatformWrapperMock.h"
 
+
 using namespace fellow::api;
 using namespace test::mock::fellow::api::service;
+using namespace mock::Core::Service;
 
 namespace fellow::api
 {
@@ -14,16 +19,18 @@ namespace fellow::api
 
 HUDMock hudMock;
 FSWrapperMock fsWrapperMock;
-LogMock logMock;
 RetroPlatformWrapperMock rpMock;
 
 void InitializeTestframework()
 {
-  Service = new Services(hudMock, fsWrapperMock, logMock, rpMock);
+  fellow::api::Service = new Services(hudMock, fsWrapperMock, rpMock);
+
+  _core.Log = new LogMock();
+
 }
 
 void ShutdownTestframework()
 {
-  delete Service;
-  Service = nullptr;
+  delete fellow::api::Service;
+  fellow::api::Service = nullptr;
 }

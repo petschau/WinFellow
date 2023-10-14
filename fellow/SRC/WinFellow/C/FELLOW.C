@@ -50,9 +50,7 @@
 #include "ffilesys.h"
 #include "ini.h"
 #include "sysinfo.h"
-#include "fileops.h"
 #include "interrupt.h"
-#include "uart.h"
 #include "RetroPlatform.h"
 
 #include "graphics/Graphics.h"
@@ -72,14 +70,14 @@ BOOLE fellow_request_emulation_stop;
 /* Perform reset before starting emulation flag                               */
 /*============================================================================*/
 
-BOOLE fellow_pre_start_reset;
+bool fellow_pre_start_reset;
 
-void fellowSetPreStartReset(BOOLE reset)
+void fellowSetPreStartReset(bool reset)
 {
   fellow_pre_start_reset = reset;
 }
 
-BOOLE fellowGetPreStartReset()
+bool fellowGetPreStartReset()
 {
   return fellow_pre_start_reset;
 }
@@ -107,12 +105,12 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode()
 
 #define WRITE_LOG_BUF_SIZE 512
 
-void fellowAddLog2(char *msg)
+void fellowAddLog2(char* msg)
 {
-  Service->Log.AddLog2(msg);
+  _core.Log->AddLog2(msg);
 }
 
-void fellowAddLog(const char *format, ...)
+void fellowAddLog(const char* format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
@@ -121,10 +119,10 @@ void fellowAddLog(const char *format, ...)
   _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
   va_end(parms);
 
-  Service->Log.AddLog(buffer);
+  _core.Log->AddLog(buffer);
 }
 
-void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
+void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char* format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
@@ -132,23 +130,23 @@ void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 
   switch (type)
   {
-    case FELLOW_REQUESTER_TYPE_INFO: uType = MB_ICONINFORMATION; break;
-    case FELLOW_REQUESTER_TYPE_WARN: uType = MB_ICONWARNING; break;
-    case FELLOW_REQUESTER_TYPE_ERROR: uType = MB_ICONERROR; break;
+  case FELLOW_REQUESTER_TYPE_INFO: uType = MB_ICONINFORMATION; break;
+  case FELLOW_REQUESTER_TYPE_WARN: uType = MB_ICONWARNING; break;
+  case FELLOW_REQUESTER_TYPE_ERROR: uType = MB_ICONERROR; break;
   }
 
   va_start(parms, format);
   _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
   va_end(parms);
 
-  Service->Log.AddLog(buffer);
+  _core.Log->AddLog(buffer);
 #ifdef RETRO_PLATFORM
   if (!RP.GetHeadlessMode())
 #endif
     wguiRequester(buffer, uType);
 }
 
-void fellowAddTimelessLog(const char *format, ...)
+void fellowAddTimelessLog(const char* format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
@@ -157,12 +155,12 @@ void fellowAddTimelessLog(const char *format, ...)
   _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
   va_end(parms);
 
-  Service->Log.AddLog2(buffer);
+  _core.Log->AddLog2(buffer);
 }
 
-char *fellowGetVersionString()
+char* fellowGetVersionString()
 {
-  char *result = (char *)malloc(strlen(FELLOWVERSION) + 12);
+  char* result = (char*)malloc(strlen(FELLOWVERSION) + 12);
 
   if (!result)
   {
@@ -186,11 +184,11 @@ static void fellowRuntimeErrorCheck()
 {
   switch (fellowGetRuntimeErrorCode())
   {
-    case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
-      fellowAddLogRequester(
-          FELLOW_REQUESTER_TYPE_ERROR,
-          "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
-      break;
+  case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
+    fellowAddLogRequester(
+      FELLOW_REQUESTER_TYPE_ERROR,
+      "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
+    break;
   }
   fellowSetRuntimeErrorCode(FELLOW_RUNTIME_ERROR_NO_ERROR);
 }
@@ -217,7 +215,7 @@ void fellowSoftReset()
   graphHardReset();
   ffilesysHardReset();
   memoryHardResetPost();
-  fellowSetPreStartReset(FALSE);
+  fellowSetPreStartReset(false);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.SoftReset();
 }
 
@@ -244,7 +242,7 @@ void fellowHardReset()
   ffilesysHardReset();
   memoryHardResetPost();
   cpuIntegrationHardReset();
-  fellowSetPreStartReset(FALSE);
+  fellowSetPreStartReset(false);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.HardReset();
 }
 
@@ -293,7 +291,7 @@ BOOLE fellowEmulationStart()
 #endif
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStart();
 
-  uart.EmulationStart();
+  _core.Uart->EmulationStart();
   HardfileHandler->EmulationStart();
 
   return result && memoryGetKickImageOK();
@@ -328,7 +326,7 @@ void fellowEmulationStop()
   iniEmulationStop();
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStop();
 
-  uart.EmulationStop();
+  _core.Uart->EmulationStop();
 }
 
 /*============================================================================*/
@@ -442,9 +440,9 @@ static void fellowDrawFailed()
 /* Save statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowSaveState(char *filename)
+BOOLE fellowSaveState(char* filename)
 {
-  FILE *F = fopen(filename, "wb");
+  FILE* F = fopen(filename, "wb");
 
   if (F == nullptr) return FALSE;
 
@@ -463,9 +461,9 @@ BOOLE fellowSaveState(char *filename)
 /* Load statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowLoadState(char *filename)
+BOOLE fellowLoadState(char* filename)
 {
-  FILE *F = fopen(filename, "rb");
+  FILE* F = fopen(filename, "rb");
 
   if (F == nullptr) return FALSE;
 
@@ -484,8 +482,12 @@ BOOLE fellowLoadState(char *filename)
 /* Inititalize all modules in the emulator, called on startup                 */
 /*============================================================================*/
 
-static void fellowModulesStartup(int argc, char *argv[])
+static void fellowModulesStartup(int argc, char* argv[])
 {
+  CoreFactory::CreateServices();
+
+  sysinfoLogSysInfo();
+
   CoreFactory::CreateDrivers();
   CoreFactory::CreateModules();
 
@@ -559,16 +561,16 @@ static void fellowModulesShutdown()
 
   CoreFactory::DestroyModules();
   CoreFactory::DestroyDrivers();
+  CoreFactory::DestroyServices();
 }
 
 /*============================================================================*/
 /* main....                                                                   */
 /*============================================================================*/
 
-int __cdecl main(int argc, char *argv[])
+int __cdecl main(int argc, char* argv[])
 {
-  sysinfoLogSysInfo();
-  fellowSetPreStartReset(TRUE);
+  fellowSetPreStartReset(true);
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM

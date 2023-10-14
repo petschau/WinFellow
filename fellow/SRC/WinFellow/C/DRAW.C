@@ -50,7 +50,7 @@
 #include "RetroPlatform.h"
 #endif
 
-cfg *draw_config;
+cfg* draw_config;
 
 /*============================================================================*/
 /* Mode list, nodes created by the graphics driver, and pointer to the mode   */
@@ -58,7 +58,7 @@ cfg *draw_config;
 /*============================================================================*/
 
 draw_mode_list draw_modes;
-draw_mode *draw_mode_current;
+draw_mode* draw_mode_current;
 draw_mode draw_mode_windowed;
 draw_buffer_information draw_buffer_info;
 
@@ -77,7 +77,7 @@ BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
 uint32_t draw_clear_buffers;
 
 /*============================================================================*/
-/* Data concerning the positioning of the Amiga screen in the host buffer     */               
+/* Data concerning the positioning of the Amiga screen in the host buffer     */
 /*============================================================================*/
 
 draw_rect draw_buffer_clip;
@@ -129,7 +129,7 @@ uint32_t drawGetBufferClipHeight()
 
 float drawGetBufferClipHeightAsFloat()
 {
-  return static_cast<float>(drawGetBufferClipHeight());	
+  return static_cast<float>(drawGetBufferClipHeight());
 }
 
 /*============================================================================*/
@@ -181,7 +181,7 @@ void drawInitializePredefinedClipRectangles()
 /* Add one mode to the list of useable modes                                  */
 /*============================================================================*/
 
-void drawAddMode(draw_mode *modenode)
+void drawAddMode(draw_mode* modenode)
 {
   draw_modes.push_back(modenode);
 }
@@ -213,12 +213,12 @@ static draw_mode* drawFindMode(uint32_t width, uint32_t height, uint32_t colorbi
 {
   auto item_iterator = std::find_if(draw_modes.begin(), draw_modes.end(),
     [width, height, colorbits, refresh, allow_any_refresh](draw_mode* dm)
-  {
-    return (dm->width == width) &&
-      (dm->height == height) &&
-      (dm->bits == colorbits) &&
-      (allow_any_refresh || (dm->refresh == refresh));
-  });
+    {
+      return (dm->width == width) &&
+        (dm->height == height) &&
+        (dm->bits == colorbits) &&
+        (allow_any_refresh || (dm->refresh == refresh));
+    });
 
   return (item_iterator != draw_modes.end()) ? *item_iterator : nullptr;
 }
@@ -293,37 +293,37 @@ bool draw_LEDs_state[DRAW_LED_COUNT];
 
 static void drawLED16(int x, int y, int width, int height, uint32_t color)
 {
-  uint16_t *bufw = ((uint16_t *) (draw_buffer_info.top_ptr + draw_buffer_info.pitch*y)) + x;
-  uint16_t color16 = (uint16_t) draw_color_table[((color & 0xf00000) >> 12) |
-		      ((color & 0x00f000) >> 8) |
-		      ((color & 0x0000f0) >> 4)];
+  uint16_t* bufw = ((uint16_t*)(draw_buffer_info.top_ptr + draw_buffer_info.pitch * y)) + x;
+  uint16_t color16 = (uint16_t)draw_color_table[((color & 0xf00000) >> 12) |
+    ((color & 0x00f000) >> 8) |
+    ((color & 0x0000f0) >> 4)];
   for (int y1 = 0; y1 < height; y1++)
   {
     for (int x1 = 0; x1 < width; x1++)
     {
       *(bufw + x1) = color16;
     }
-    bufw = (uint16_t *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
+    bufw = (uint16_t*)(((uint8_t*)bufw) + draw_buffer_info.pitch);
   }
 }
 
 
 static void drawLED24(int x, int y, int width, int height, uint32_t color)
 {
-  uint8_t *bufb = draw_buffer_info.top_ptr + draw_buffer_info.pitch*y + x * 3;
+  uint8_t* bufb = draw_buffer_info.top_ptr + draw_buffer_info.pitch * y + x * 3;
   uint32_t color24 = draw_color_table[((color & 0xf00000) >> 12) |
-		((color & 0x00f000) >> 8) |
-		((color & 0x0000f0) >> 4)];
-  uint8_t color24_1 = (uint8_t) ((color24 & 0xff0000) >> 16);
-  uint8_t color24_2 = (uint8_t) ((color24 & 0x00ff00) >> 8);
-  uint8_t color24_3 = (uint8_t) (color24 & 0x0000ff);
+    ((color & 0x00f000) >> 8) |
+    ((color & 0x0000f0) >> 4)];
+  uint8_t color24_1 = (uint8_t)((color24 & 0xff0000) >> 16);
+  uint8_t color24_2 = (uint8_t)((color24 & 0x00ff00) >> 8);
+  uint8_t color24_3 = (uint8_t)(color24 & 0x0000ff);
   for (int y1 = 0; y1 < height; y1++)
   {
     for (int x1 = 0; x1 < width; x1++)
     {
-      *(bufb + x1*3) = color24_1;
-      *(bufb + x1*3 + 1) = color24_2;
-      *(bufb + x1*3 + 2) = color24_3;
+      *(bufb + x1 * 3) = color24_1;
+      *(bufb + x1 * 3 + 1) = color24_2;
+      *(bufb + x1 * 3 + 2) = color24_3;
     }
     bufb = bufb + draw_buffer_info.pitch;
   }
@@ -331,26 +331,26 @@ static void drawLED24(int x, int y, int width, int height, uint32_t color)
 
 static void drawLED32(int x, int y, int width, int height, uint32_t color)
 {
-  uint32_t *bufl = ((uint32_t *)(draw_buffer_info.top_ptr + draw_buffer_info.pitch*y)) + x;
+  uint32_t* bufl = ((uint32_t*)(draw_buffer_info.top_ptr + draw_buffer_info.pitch * y)) + x;
   uint32_t color32 = draw_color_table[((color & 0xf00000) >> 12) |
-		((color & 0x00f000) >> 8) |
-		((color & 0x0000f0) >> 4)];
+    ((color & 0x00f000) >> 8) |
+    ((color & 0x0000f0) >> 4)];
   for (int y1 = 0; y1 < height; y1++)
   {
     for (int x1 = 0; x1 < width; x1++)
     {
       *(bufl + x1) = color32;
     }
-    bufl = (uint32_t *)(((uint8_t *)bufl) + draw_buffer_info.pitch);
+    bufl = (uint32_t*)(((uint8_t*)bufl) + draw_buffer_info.pitch);
   }
 }
 
 static void drawLED(int index, bool state)
 {
   int x, y, height, width;
-  
+
 #ifdef RETRO_PLATFORM
-  if(!RP.GetHeadlessMode())
+  if (!RP.GetHeadlessMode())
   {
 #endif
     x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP) * index + (drawGetOutputClip().left - drawGetInternalClip().left) * drawGetOutputScaleFactor();
@@ -361,8 +361,8 @@ static void drawLED(int index, bool state)
   }
   else
   {
-    x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP) * index + (drawGetOutputClip().left/2 - drawGetInternalClip().left)*2 ;
-    y = DRAW_LED_FIRST_Y + (drawGetOutputClip().top/2 - drawGetInternalClip().top)*2;
+    x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP) * index + (drawGetOutputClip().left / 2 - drawGetInternalClip().left) * 2;
+    y = DRAW_LED_FIRST_Y + (drawGetOutputClip().top / 2 - drawGetInternalClip().top) * 2;
     height = DRAW_LED_HEIGHT / 2;
     width = DRAW_LED_WIDTH / 2;
   }
@@ -372,17 +372,17 @@ static void drawLED(int index, bool state)
 
   switch (draw_buffer_info.bits)
   {
-    case 16:
-      drawLED16(x, y, DRAW_LED_WIDTH, height, color);
-      break;
-    case 24:
-      drawLED24(x, y, DRAW_LED_WIDTH, height, color);
-      break;
-    case 32:
-      drawLED32(x, y, DRAW_LED_WIDTH, height, color);
-      break;
-    default:
-      break;
+  case 16:
+    drawLED16(x, y, DRAW_LED_WIDTH, height, color);
+    break;
+  case 24:
+    drawLED24(x, y, DRAW_LED_WIDTH, height, color);
+    break;
+  case 32:
+    drawLED32(x, y, DRAW_LED_WIDTH, height, color);
+    break;
+  default:
+    break;
   }
 }
 
@@ -416,7 +416,7 @@ static void drawFpsChar(int character, int x)
   {
     for (int j = 0; j < 4; j++)
     {
-      draw_fps_buffer[i][x*4 + j] = draw_fps_font[character][i][j];
+      draw_fps_buffer[i][x * 4 + j] = draw_fps_font[character][i][j];
     }
   }
 }
@@ -426,38 +426,38 @@ static void drawFpsChar(int character, int x)
 /* Draws text in the FPS counter buffer                                       */
 /*============================================================================*/
 
-static void drawFpsText(char *text)
+static void drawFpsText(char* text)
 {
   for (int i = 0; i < 4; i++)
   {
     char c = *text++;
     switch (c)
     {
-      case '0': drawFpsChar(9, i);
-	break;
-      case '1': drawFpsChar(0, i);
-	break;
-      case '2': drawFpsChar(1, i);
-	break;
-      case '3': drawFpsChar(2, i);
-	break;
-      case '4': drawFpsChar(3, i);
-	break;
-      case '5': drawFpsChar(4, i);
-	break;
-      case '6': drawFpsChar(5, i);
-	break;
-      case '7': drawFpsChar(6, i);
-	break;
-      case '8': drawFpsChar(7, i);
-	break;
-      case '9': drawFpsChar(8, i);
-	break;
-      case '%': drawFpsChar(10, i);
-	break;
-      case ' ':
-      default:  drawFpsChar(11, i);
-	break;
+    case '0': drawFpsChar(9, i);
+      break;
+    case '1': drawFpsChar(0, i);
+      break;
+    case '2': drawFpsChar(1, i);
+      break;
+    case '3': drawFpsChar(2, i);
+      break;
+    case '4': drawFpsChar(3, i);
+      break;
+    case '5': drawFpsChar(4, i);
+      break;
+    case '6': drawFpsChar(5, i);
+      break;
+    case '7': drawFpsChar(6, i);
+      break;
+    case '8': drawFpsChar(7, i);
+      break;
+    case '9': drawFpsChar(8, i);
+      break;
+    case '%': drawFpsChar(10, i);
+      break;
+    case ' ':
+    default:  drawFpsChar(11, i);
+      break;
     }
   }
 }
@@ -469,14 +469,14 @@ static void drawFpsText(char *text)
 
 static void drawFpsToFramebuffer16()
 {
-  uint16_t *bufw = ((uint16_t *) draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
+  uint16_t* bufw = ((uint16_t*)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
     {
       *(bufw + x) = draw_fps_buffer[y][x] ? 0xffff : 0;
     }
-    bufw = (uint16_t *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
+    bufw = (uint16_t*)(((uint8_t*)bufw) + draw_buffer_info.pitch);
   }
 }
 
@@ -487,16 +487,16 @@ static void drawFpsToFramebuffer16()
 
 static void drawFpsToFramebuffer24()
 {
-  uint8_t *bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
+  uint8_t* bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
 
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
     {
       uint8_t color = draw_fps_buffer[y][x] ? 0xff : 0;
-      *(bufb + x*3) = color;
-      *(bufb + x*3 + 1) = color;
-      *(bufb + x*3 + 2) = color;
+      *(bufb + x * 3) = color;
+      *(bufb + x * 3 + 1) = color;
+      *(bufb + x * 3 + 2) = color;
     }
     bufb += draw_buffer_info.pitch;
   }
@@ -547,17 +547,17 @@ static void drawFpsCounter()
     drawFpsText(s);
     switch (draw_buffer_info.bits)
     {
-      case 16:
-	drawFpsToFramebuffer16();
-	break;
-      case 24:
-	drawFpsToFramebuffer24();
-	break;
-      case 32:
-	drawFpsToFramebuffer32();
-	break;
-      default:
-	break;
+    case 16:
+      drawFpsToFramebuffer16();
+      break;
+    case 24:
+      drawFpsToFramebuffer24();
+      break;
+    case 32:
+      drawFpsToFramebuffer32();
+      break;
+    default:
+      break;
     }
   }
 }
@@ -569,15 +569,15 @@ static void drawFpsCounter()
 void drawSetFullScreenMode(uint32_t width, uint32_t height, uint32_t colorbits, uint32_t refresh)
 {
 #ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode())
+  if (RP.GetHeadlessMode())
   {
     height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
-    width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
+    width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
   }
 #endif
 
   // Find with exact refresh
-  draw_mode *mode_found = drawFindMode(width, height, colorbits, refresh, false);
+  draw_mode* mode_found = drawFindMode(width, height, colorbits, refresh, false);
   if (mode_found == nullptr)
   {
     // Try to ignore refresh
@@ -604,7 +604,7 @@ void drawSetWindowedMode(uint32_t width, uint32_t height)
   draw_mode_windowed.refresh = 0;
 
   draw_mode_current = &draw_mode_windowed;
-  
+
   gfxDrvGetBufferInformation(&draw_buffer_info);
 }
 
@@ -644,18 +644,18 @@ uint32_t drawGetOutputScaleFactor()
 
   switch (drawGetDisplayScale())
   {
-    case DISPLAYSCALE::DISPLAYSCALE_1X:
-      output_scale_factor = 2;
-      break;
-    case DISPLAYSCALE::DISPLAYSCALE_2X:
-      output_scale_factor = 4;
-      break;
-    case DISPLAYSCALE::DISPLAYSCALE_3X:
-      output_scale_factor = 6;
-      break;
-    case DISPLAYSCALE::DISPLAYSCALE_4X:
-      output_scale_factor = 8;
-      break;
+  case DISPLAYSCALE::DISPLAYSCALE_1X:
+    output_scale_factor = 2;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_2X:
+    output_scale_factor = 4;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_3X:
+    output_scale_factor = 6;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_4X:
+    output_scale_factor = 8;
+    break;
   }
   return output_scale_factor;
 }
@@ -683,7 +683,7 @@ DISPLAYDRIVER drawGetDisplayDriver()
 void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode)
 {
   GRAPHICSEMULATIONMODE oldgraphicsemulationmode = draw_graphicsemulationmode;
-  
+
   draw_graphicsemulationmode = graphicsemulationmode;
 
   if (oldgraphicsemulationmode != draw_graphicsemulationmode)
@@ -743,7 +743,7 @@ uint32_t drawGetBufferCount()
 static void drawColorTranslationInitialize()
 {
   /* create color translation table */
-  for (uint32_t k = 0; k < 4096; k++) 
+  for (uint32_t k = 0; k < 4096; k++)
   {
     uint32_t r = ((k & 0xf00) >> 8) << (draw_buffer_info.redpos + draw_buffer_info.redsize - 4);
     uint32_t g = ((k & 0xf0) >> 4) << (draw_buffer_info.greenpos + draw_buffer_info.greensize - 4);
@@ -751,7 +751,7 @@ static void drawColorTranslationInitialize()
     draw_color_table[k] = r | g | b;
     if (draw_buffer_info.bits <= 16)
     {
-      draw_color_table[k] = draw_color_table[k]<<16 | draw_color_table[k];
+      draw_color_table[k] = draw_color_table[k] << 16 | draw_color_table[k];
     }
   }
 }
@@ -864,7 +864,7 @@ static void drawAmigaScreenGeometry(uint32_t buffer_width, uint32_t buffer_heigh
 
   const draw_rect& internal_clip = drawGetInternalClip();
 
-  if(!RP.GetHeadlessMode())
+  if (!RP.GetHeadlessMode())
   {
     buffer_clip_left = (output_clip.left - internal_clip.left) * internal_scale_factor;
     buffer_clip_top = (output_clip.top - internal_clip.top) * internal_scale_factor;
@@ -872,13 +872,13 @@ static void drawAmigaScreenGeometry(uint32_t buffer_width, uint32_t buffer_heigh
     buffer_clip_height = output_clip.GetHeight() * internal_scale_factor;
   }
   else
-  {    
+  {
     buffer_clip_left = output_clip.left - (internal_clip.left * internal_scale_factor);
     buffer_clip_top = output_clip.top - (internal_clip.top * internal_scale_factor);
     buffer_clip_width = output_clip.GetWidth();
     buffer_clip_height = output_clip.GetHeight();
   }
-  
+
   drawSetBufferClip(draw_rect(buffer_clip_left, buffer_clip_top, buffer_clip_left + buffer_clip_width, buffer_clip_top + buffer_clip_height));
 }
 
@@ -934,7 +934,7 @@ static void drawBufferFlip()
 /* The stats are cleared every time emulation is started. */
 
 /*
-The interface for getting stats are: 
+The interface for getting stats are:
 
 uint32_t drawStatLast50FramesFps();
 uint32_t drawStatLastFrameFps();
@@ -1017,7 +1017,7 @@ uint32_t drawStatSessionFps()
   {
     return 0;
   }
-  return (draw_frame_count*20) / (session_time + 14);
+  return (draw_frame_count * 20) / (session_time + 14);
 }
 
 
@@ -1185,14 +1185,12 @@ void drawShutdown()
 {
   drawClearModeList();
   gfxDrvShutdown();
-
-  drawWriteProfilingResultsToFile();
 }
 
-void drawUpdateDrawmode() 
+void drawUpdateDrawmode()
 {
   draw_line_routine = draw_line_BG_routine;
-  if (graph_playfield_on == 1) 
+  if (graph_playfield_on == 1)
   {
     // check if bit 8 of register dmacon is 1; check if bitplane DMA is enabled
     // check if bit 12, 13 and 14 of register bplcon0 is 1; 
@@ -1251,23 +1249,23 @@ void drawEndOfFrame()
       if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
       {
         uint32_t height = drawGetInternalClip().GetHeight();
-	uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
-	for (uint32_t i = 0; i < height; i++)
+        uint8_t* draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+        for (uint32_t i = 0; i < height; i++)
         {
-	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);
-	  if (graph_frame_ptr != nullptr)
-	  {
-	    if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
-	    {
-	      if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
-	      {
-		((draw_line_func)(graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
-	      }
-	    }
-	  }
-	  draw_buffer_current_ptr_local += pitch_in_bytes;
-	  draw_buffer_info.current_ptr = draw_buffer_current_ptr_local;
-	}
+          graph_line* graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);
+          if (graph_frame_ptr != nullptr)
+          {
+            if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
+            {
+              if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
+              {
+                ((draw_line_func)(graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
+              }
+            }
+          }
+          draw_buffer_current_ptr_local += pitch_in_bytes;
+          draw_buffer_info.current_ptr = draw_buffer_current_ptr_local;
+        }
       }
       else
       {
@@ -1278,7 +1276,7 @@ void drawEndOfFrame()
       drawFpsCounter();
       drawInvalidateBufferPointer();
 
-//      drawClipScroll();
+      //      drawClipScroll();
       drawStatTimestamp();
       drawBufferFlip();
     }
@@ -1287,7 +1285,7 @@ void drawEndOfFrame()
   draw_frame_count++; // count frames
   draw_frame_skip--;  // frame skipping
 
-  if (draw_frame_skip < 0) 
+  if (draw_frame_skip < 0)
   {
     draw_frame_skip = draw_frame_skip_factor;
   }

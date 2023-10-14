@@ -38,9 +38,8 @@
 #include "timer.h"
 #include "draw.h"
 #include "draw_interlace_control.h"
-#include "fileops.h"
 #include "interrupt.h"
-#include "uart.h"
+#include "IO/Uart.h"
 #include "../automation/Automator.h"
 
 #ifdef RETRO_PLATFORM
@@ -98,7 +97,7 @@ void busEndOfLine()
   kbdQueueHandler();
   kbdEventEOLHandler();
 
-  uart.EndOfLine();
+  _core.Uart->EndOfLine();
   automator.EndOfLine();
 
   /*==============================================================*/
@@ -148,7 +147,7 @@ void busEndOfFrame()
   /*==============================================================*/
   blitterEndOfFrame();
 
-  uart.EndOfFrame();
+  _core.Uart->EndOfFrame();
 
   /*==============================================================*/
   /* Flag vertical refresh IRQ                                    */
@@ -277,48 +276,6 @@ bus_event *busPopEvent()
   bus.events->prev = nullptr;
   return tmp;
 }
-
-#ifdef ENABLE_BUS_EVENT_LOGGING
-
-FILE *BUSLOG = NULL;
-BOOLE bus_log = FALSE;
-
-FILE *busOpenLog()
-{
-  char filename[MAX_PATH];
-  fileopsGetGenericFileName(filename, "WinFellow", "bus.log");
-  return fopen(filename, "w");
-}
-
-void busCloseLog()
-{
-  if (BUSLOG) fclose(BUSLOG);
-}
-
-void busEventLog(bus_event *e)
-{
-  if (!bus_log) return;
-  if (BUSLOG == NULL) BUSLOG = busOpenLog();
-  if (e == &copperEvent)
-    fprintf(BUSLOG, "%d copper\n", e->cycle);
-  else if (e == &ciaEvent)
-    fprintf(BUSLOG, "%d cia\n", e->cycle);
-  else if (e == &blitterEvent)
-    fprintf(BUSLOG, "%d blitter\n", e->cycle);
-  else if (e == &eolEvent)
-    fprintf(BUSLOG, "%d eol\n", e->cycle);
-  else if (e == &eofEvent)
-    fprintf(BUSLOG, "%d eof\n", e->cycle);
-}
-
-void busLogCpu(char *s)
-{
-  if (!bus_log) return;
-  if (BUSLOG == NULL) BUSLOG = busOpenLog();
-  if (BUSLOG) fprintf(BUSLOG, "%d %s\n", cpuEvent.cycle, s);
-}
-
-#endif
 
 void busSetCycle(uint32_t cycle)
 {

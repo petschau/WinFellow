@@ -267,9 +267,6 @@
     <ClCompile Include="CustomChipset\RegistersUtilityTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WinFellow.Core\WinFellow.Core.vcxproj">
-      <Project>{4de2d749-c890-4c60-847d-fed10c4dad40}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\WinFellow.Test.Infrastructure\WinFellow.Test.Infrastructure.vcxproj">
       <Project>{04390558-960c-4acb-b98b-87a2047cd69d}</Project>
     </ProjectReference>

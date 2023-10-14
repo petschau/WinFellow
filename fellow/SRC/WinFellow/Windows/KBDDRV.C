@@ -60,9 +60,9 @@ Sunday, February 10, 2008: carfesh
 #include "kbdparser.h"
 #include "fellow.h"
 #include "GfxDrvCommon.h"
+#include "VirtualHost/Core.h"
 
 #include "dxver.h"
-#include "fileops.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -1630,7 +1630,7 @@ void kbdDrvStartup()
 
   kbdDrvInitializeDIKToSymbolKeyTable();
 
-  fileopsGetGenericFileName(kbd_drv_mapping_filename, "WinFellow", MAPPING_FILENAME);
+  _core.Fileops->GetGenericFileName(kbd_drv_mapping_filename, "WinFellow", MAPPING_FILENAME);
 
   prs_rewrite_mapping_file = prsReadFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 

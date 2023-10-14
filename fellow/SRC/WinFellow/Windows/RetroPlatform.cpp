@@ -1979,7 +1979,8 @@ void RetroPlatform::EnterHeadlessMode()
   {
     cfgManagerSetCurrentConfig(&cfg_manager, pConfig);
     // check for manual or needed reset
-    fellowSetPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+    bool configurationRequiresReset = cfgManagerConfigurationActivate(&cfg_manager) == TRUE;
+    fellowSetPreStartReset(fellowGetPreStartReset() || configurationRequiresReset);
 
     RetroPlatform::SendEnabledFloppyDrives();
     RetroPlatform::SendEnabledHardDrives();

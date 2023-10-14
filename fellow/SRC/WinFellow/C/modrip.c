@@ -32,7 +32,6 @@
 #include "fmem.h"
 #include "floppy.h"
 #include "fellow.h"
-#include "fileops.h"
 
 /* own includes */
 #include <stdio.h>
@@ -47,6 +46,8 @@
 #else
 #include "modrip_linux.h"
 #endif
+
+#include "VirtualHost/Core.h"
 
 #define MODRIPDOLOGGING 1
 
@@ -907,18 +908,18 @@ void modripChipDump()
   if(modripGuiDumpChipMem()) {
     char filenamechip[MAX_PATH];
 
-    fileopsGetGenericFileName(filenamechip, "WinFellow", "chip.mem");
+    _core.Fileops->GetGenericFileName(filenamechip, "WinFellow", "chip.mem");
     Saved = modripSaveChipMem(filenamechip);
     if(memoryGetSlowSize())
     {
       char filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "bogo.mem");
+      _core.Fileops->GetGenericFileName(filename, "WinFellow", "bogo.mem");
       modripSaveSlowMem(filename);
     }
     if(memoryGetFastSize())
     {
       char filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "fast.mem");
+      _core.Fileops->GetGenericFileName(filename, "WinFellow", "fast.mem");
       modripSaveFastMem(filename);
     }
     if(Saved) {

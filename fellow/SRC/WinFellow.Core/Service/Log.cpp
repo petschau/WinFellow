@@ -1,26 +1,30 @@
 #include <time.h>
+#include <cstdarg>
 #include <string>
 #include <list>
-#include "fellow/service/Log.h"
-#include "fileops.h"
 
-#define WRITE_LOG_BUF_SIZE 512
+#include "Service/Log.h"
+#include "VirtualHost/Core.h"
+
+constexpr auto WRITE_LOG_BUF_SIZE = 512;
 
 using namespace std;
 
-namespace fellow::service
+namespace Service
 {
   Log::Log() :
-    _new_line(true), _first_time(true), _enabled(true), 
+    _new_line(true), _first_time(true), _enabled(true),
 #ifdef _DEBUG
-      _level(LogLevelDebug)
+    _level(LogLevelDebug)
 #else
-      _level(LogLevelInformation)
+    _level(LogLevelInformation)
 #endif
   {
   }
 
-  void Log::AddLogDebug(const char *format, ...)
+  Log::~Log() = default;
+
+  void Log::AddLogDebug(const char* format, ...)
   {
     if (!_enabled)
     {
@@ -31,7 +35,7 @@ namespace fellow::service
     {
       va_list parms;
       char buffer[WRITE_LOG_BUF_SIZE];
-      char *buffer2 = LogTime(buffer);
+      char* buffer2 = LogTime(buffer);
 
       va_start(parms, format);
       vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
@@ -45,7 +49,7 @@ namespace fellow::service
     }
   }
 
-  void Log::AddLog(const char *format, ...)
+  void Log::AddLog(const char* format, ...)
   {
     if (!_enabled)
     {
@@ -54,7 +58,7 @@ namespace fellow::service
 
     va_list parms;
     char buffer[WRITE_LOG_BUF_SIZE];
-    char *buffer2 = LogTime(buffer);
+    char* buffer2 = LogTime(buffer);
 
     va_start(parms, format);
     vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
@@ -66,7 +70,7 @@ namespace fellow::service
     }
     va_end(parms);
   }
-  
+
   void Log::AddLogList(const list<string>& messages)
   {
     if (!_enabled)
@@ -87,14 +91,14 @@ namespace fellow::service
     CloseLogFile(F);
   }
 
-  void Log::AddLog2(char *msg)
+  void Log::AddLog2(char* msg)
   {
     if (!_enabled)
     {
       return;
     }
 
-    FILE *F = OpenLogFile();
+    FILE* F = OpenLogFile();
     if (F != nullptr)
     {
       AddLogInternal(F, msg);
@@ -102,13 +106,13 @@ namespace fellow::service
     }
   }
 
-  void Log::AddLogInternal(FILE *F, char* msg)
+  void Log::AddLogInternal(FILE* F, char* msg)
   {
     fprintf(F, "%s", msg);
     _new_line = (msg[strlen(msg) - 1] == '\n');
   }
 
-  char *Log::LogTime(char* buffer)
+  char* Log::LogTime(char* buffer)
   {
     if (_new_line)
     {
@@ -132,8 +136,8 @@ namespace fellow::service
 
     if (_first_time)
     {
-      char logfilename[MAX_PATH];
-      fileopsGetFellowLogfileName(logfilename);
+      char logfilename[FILEOPS_MAX_FILE_PATH];
+      _core.Fileops->GetFellowLogfileName(logfilename);
       _logfilename = logfilename;
       fopen_s(&F, _logfilename.c_str(), "w");
       _first_time = false;
@@ -145,7 +149,7 @@ namespace fellow::service
     return F;
   }
 
-  void Log::CloseLogFile(FILE *F)
+  void Log::CloseLogFile(FILE* F)
   {
     fflush(F);
     fclose(F);

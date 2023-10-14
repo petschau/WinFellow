@@ -1,7 +1,5 @@
 #include "hardfile/hunks/CodeHunk.h"
-#include "fellow/api/Services.h"
-
-using namespace fellow::api;
+#include "VirtualHost/Core.h"
 
 namespace fellow::hardfile::hunks
 {
@@ -15,7 +13,7 @@ namespace fellow::hardfile::hunks
     _contentSizeInLongwords = rawDataReader.GetNextByteswappedLong();
     _rawData.reset(rawDataReader.GetNextBytes(GetContentSizeInLongwords()));
 
-    Service->Log.AddLogDebug("fhfile: RDB Filesystem - Code hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, GetContentSizeInBytes(), GetAllocateSizeInBytes());
+    _core.Log->AddLogDebug("fhfile: RDB Filesystem - Code hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, GetContentSizeInBytes(), GetAllocateSizeInBytes());
   }
 
   CodeHunk::CodeHunk(uint32_t allocateSizeInLongwords)

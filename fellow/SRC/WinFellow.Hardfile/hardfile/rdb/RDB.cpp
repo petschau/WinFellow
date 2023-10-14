@@ -1,10 +1,9 @@
 #include "fellow/api/defs.h"
 #include "hardfile/rdb/RDB.h"
 #include "hardfile/rdb/CheckSumCalculator.h"
-#include "fellow/api/Services.h"
+#include "VirtualHost/Core.h"
 
 using namespace std;
-using namespace fellow::api;
 
 namespace fellow::hardfile::rdb
 {
@@ -52,7 +51,7 @@ namespace fellow::hardfile::rdb
 
     if (!HasValidCheckSum)
     {
-      Service->Log.AddLog("Hardfile RDB header checksum error.\n");
+      _core.Log->AddLog("Hardfile RDB header checksum error.\n");
       return;
     }
 
@@ -65,7 +64,7 @@ namespace fellow::hardfile::rdb
 
       if (!partition->HasValidCheckSum)
       {
-        Service->Log.AddLog("Hardfile RDB partition checksum error.\n");
+        _core.Log->AddLog("Hardfile RDB partition checksum error.\n");
         Partitions.clear();
         HasPartitionErrors = true;
         return;
@@ -73,7 +72,7 @@ namespace fellow::hardfile::rdb
 
       if (nextPartition == partition->Next)
       {
-        Service->Log.AddLog("Hardfile RDB partition list error, next partition points to the previous.\n");
+        _core.Log->AddLog("Hardfile RDB partition list error, next partition points to the previous.\n");
         Partitions.clear();
         HasPartitionErrors = true;
         return;
@@ -94,7 +93,7 @@ namespace fellow::hardfile::rdb
 
         if (!fileSystemHeader->HasValidCheckSum)
         {
-          Service->Log.AddLog("Hardfile RDB filesystem header checksum error.\n");
+          _core.Log->AddLog("Hardfile RDB filesystem header checksum error.\n");
           FileSystemHeaders.clear();
           HasFileSystemHandlerErrors = true;
           return;
@@ -102,7 +101,7 @@ namespace fellow::hardfile::rdb
 
         if (fileSystemHeader->HasFileSystemDataErrors)
         {
-          Service->Log.AddLog("Hardfile RDB filesystem data checksum error.\n");
+          _core.Log->AddLog("Hardfile RDB filesystem data checksum error.\n");
           FileSystemHeaders.clear();
           HasFileSystemHandlerErrors = true;
           return;
@@ -110,7 +109,7 @@ namespace fellow::hardfile::rdb
 
         if (nextFilesystemHeader == fileSystemHeader->Next)
         {
-          Service->Log.AddLog("Hardfile RDB filesystem list error, next filesystem points to the previous.\n");
+          _core.Log->AddLog("Hardfile RDB filesystem list error, next filesystem points to the previous.\n");
           FileSystemHeaders.clear();
           HasFileSystemHandlerErrors = true;
           return;
@@ -124,43 +123,43 @@ namespace fellow::hardfile::rdb
 
   void RDB::Log()
   {
-    Service->Log.AddLogDebug("RDB Hardfile\n");
-    Service->Log.AddLogDebug("-----------------------------------------\n");
-    Service->Log.AddLogDebug("0   - id:                     %s\n", ID.c_str());
-    Service->Log.AddLogDebug("4   - size in longs:          %u\n", SizeInLongs);
-    Service->Log.AddLogDebug("8   - checksum:               %.8X (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
-    Service->Log.AddLogDebug("12  - host id:                %u\n", HostID);
-    Service->Log.AddLogDebug("16  - block size:             %u\n", BlockSize);
-    Service->Log.AddLogDebug("20  - flags:                  %X\n", Flags);
-    Service->Log.AddLogDebug("24  - bad block list:         %d\n", BadBlockList);
-    Service->Log.AddLogDebug("28  - partition list:         %d\n", PartitionList);
-    Service->Log.AddLogDebug("32  - filesystem header list: %d\n", FilesystemHeaderList);
-    Service->Log.AddLogDebug("36  - drive init code:        %X\n", DriveInitCode);
-    Service->Log.AddLogDebug("Physical drive characteristics:---------\n");
-    Service->Log.AddLogDebug("64  - cylinders:              %u\n", Cylinders);
-    Service->Log.AddLogDebug("68  - sectors per track:      %u\n", SectorsPerTrack);
-    Service->Log.AddLogDebug("72  - heads:                  %u\n", Heads);
-    Service->Log.AddLogDebug("76  - interleave:             %u\n", Interleave);
-    Service->Log.AddLogDebug("80  - parking zone:           %u\n", ParkingZone);
-    Service->Log.AddLogDebug("96  - write pre-compensation: %u\n", WritePreComp);
-    Service->Log.AddLogDebug("100 - reduced write:          %u\n", ReducedWrite);
-    Service->Log.AddLogDebug("104 - step rate:              %u\n", StepRate);
-    Service->Log.AddLogDebug("Logical drive characteristics:----------\n");
-    Service->Log.AddLogDebug("128 - RDB block low:          %u\n", RDBBlockLow);
-    Service->Log.AddLogDebug("132 - RDB block high:         %u\n", RDBBlockHigh);
-    Service->Log.AddLogDebug("136 - low cylinder:           %u\n", LowCylinder);
-    Service->Log.AddLogDebug("140 - high cylinder:          %u\n", HighCylinder);
-    Service->Log.AddLogDebug("144 - cylinder blocks:        %u\n", CylinderBlocks);
-    Service->Log.AddLogDebug("148 - auto park seconds:      %u\n", AutoParkSeconds);
-    Service->Log.AddLogDebug("152 - high RDSK block:        %u\n", HighRDSKBlock);
-    Service->Log.AddLogDebug("Drive identification:-------------------\n");
-    Service->Log.AddLogDebug("160 - disk vendor:            %.8s\n", DiskVendor.c_str());
-    Service->Log.AddLogDebug("168 - disk product:           %.16s\n", DiskProduct.c_str());
-    Service->Log.AddLogDebug("184 - disk revision:          %.4s\n", DiskRevision.c_str());
-    Service->Log.AddLogDebug("188 - controller vendor:      %.8s\n", ControllerVendor.c_str());
-    Service->Log.AddLogDebug("196 - controller product:     %.16s\n", ControllerProduct.c_str());
-    Service->Log.AddLogDebug("212 - controller revision:    %.4s\n", ControllerRevision.c_str());
-    Service->Log.AddLogDebug("-----------------------------------------\n\n");
+    _core.Log->AddLogDebug("RDB Hardfile\n");
+    _core.Log->AddLogDebug("-----------------------------------------\n");
+    _core.Log->AddLogDebug("0   - id:                     %s\n", ID.c_str());
+    _core.Log->AddLogDebug("4   - size in longs:          %u\n", SizeInLongs);
+    _core.Log->AddLogDebug("8   - checksum:               %.8X (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
+    _core.Log->AddLogDebug("12  - host id:                %u\n", HostID);
+    _core.Log->AddLogDebug("16  - block size:             %u\n", BlockSize);
+    _core.Log->AddLogDebug("20  - flags:                  %X\n", Flags);
+    _core.Log->AddLogDebug("24  - bad block list:         %d\n", BadBlockList);
+    _core.Log->AddLogDebug("28  - partition list:         %d\n", PartitionList);
+    _core.Log->AddLogDebug("32  - filesystem header list: %d\n", FilesystemHeaderList);
+    _core.Log->AddLogDebug("36  - drive init code:        %X\n", DriveInitCode);
+    _core.Log->AddLogDebug("Physical drive characteristics:---------\n");
+    _core.Log->AddLogDebug("64  - cylinders:              %u\n", Cylinders);
+    _core.Log->AddLogDebug("68  - sectors per track:      %u\n", SectorsPerTrack);
+    _core.Log->AddLogDebug("72  - heads:                  %u\n", Heads);
+    _core.Log->AddLogDebug("76  - interleave:             %u\n", Interleave);
+    _core.Log->AddLogDebug("80  - parking zone:           %u\n", ParkingZone);
+    _core.Log->AddLogDebug("96  - write pre-compensation: %u\n", WritePreComp);
+    _core.Log->AddLogDebug("100 - reduced write:          %u\n", ReducedWrite);
+    _core.Log->AddLogDebug("104 - step rate:              %u\n", StepRate);
+    _core.Log->AddLogDebug("Logical drive characteristics:----------\n");
+    _core.Log->AddLogDebug("128 - RDB block low:          %u\n", RDBBlockLow);
+    _core.Log->AddLogDebug("132 - RDB block high:         %u\n", RDBBlockHigh);
+    _core.Log->AddLogDebug("136 - low cylinder:           %u\n", LowCylinder);
+    _core.Log->AddLogDebug("140 - high cylinder:          %u\n", HighCylinder);
+    _core.Log->AddLogDebug("144 - cylinder blocks:        %u\n", CylinderBlocks);
+    _core.Log->AddLogDebug("148 - auto park seconds:      %u\n", AutoParkSeconds);
+    _core.Log->AddLogDebug("152 - high RDSK block:        %u\n", HighRDSKBlock);
+    _core.Log->AddLogDebug("Drive identification:-------------------\n");
+    _core.Log->AddLogDebug("160 - disk vendor:            %.8s\n", DiskVendor.c_str());
+    _core.Log->AddLogDebug("168 - disk product:           %.16s\n", DiskProduct.c_str());
+    _core.Log->AddLogDebug("184 - disk revision:          %.4s\n", DiskRevision.c_str());
+    _core.Log->AddLogDebug("188 - controller vendor:      %.8s\n", ControllerVendor.c_str());
+    _core.Log->AddLogDebug("196 - controller product:     %.16s\n", ControllerProduct.c_str());
+    _core.Log->AddLogDebug("212 - controller revision:    %.4s\n", ControllerRevision.c_str());
+    _core.Log->AddLogDebug("-----------------------------------------\n\n");
   }
 
   RDB::RDB() :

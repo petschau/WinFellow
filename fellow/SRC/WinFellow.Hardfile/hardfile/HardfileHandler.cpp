@@ -33,6 +33,7 @@
 #include "hardfile/HardfileHandler.h"
 #include "hardfile/rdb/RDBHandler.h"
 #include "hardfile/hunks/HunkRelocator.h"
+#include "VirtualHost/Core.h"
 
 using namespace fellow::hardfile::rdb;
 using namespace fellow::api::service;
@@ -42,7 +43,7 @@ using namespace std;
 
 namespace fellow::api::module
 {
-  IHardfileHandler *HardfileHandler = new fellow::hardfile::HardfileHandler();
+  IHardfileHandler* HardfileHandler = new fellow::hardfile::HardfileHandler();
 }
 
 namespace fellow::hardfile
@@ -156,13 +157,13 @@ namespace fellow::hardfile
 
   uint16_t HardfileHandler::ReadWord(uint32_t address)
   {
-    uint8_t *p = _rom + (address & 0xffff);
+    uint8_t* p = _rom + (address & 0xffff);
     return (static_cast<uint16_t>(p[0]) << 8) | static_cast<uint16_t>(p[1]);
   }
 
   uint32_t HardfileHandler::ReadLong(uint32_t address)
   {
-    uint8_t *p = _rom + (address & 0xffff);
+    uint8_t* p = _rom + (address & 0xffff);
     return (static_cast<uint32_t>(p[0]) << 24) | (static_cast<uint32_t>(p[1]) << 16) | (static_cast<uint32_t>(p[2]) << 8) | static_cast<uint32_t>(p[3]);
   }
 
@@ -215,7 +216,7 @@ namespace fellow::hardfile
       {
         if (_devices[deviceIndex].HasRDB)
         {
-          RDB *rdbHeader = _devices[deviceIndex].RDB;
+          RDB* rdbHeader = _devices[deviceIndex].RDB;
 
           for (unsigned int partitionIndex = 0; partitionIndex < rdbHeader->Partitions.size(); partitionIndex++)
           {
@@ -236,7 +237,7 @@ namespace fellow::hardfile
 
   bool HardfileHandler::FindOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version, unsigned int& olderOrSameFileSystemIndex)
   {
-    unsigned int size = (unsigned int) _fileSystems.size();
+    unsigned int size = (unsigned int)_fileSystems.size();
     for (unsigned int index = 0; index < size; index++)
     {
       if (_fileSystems[index]->IsOlderOrSameFileSystemVersion(DOSType, version))
@@ -248,7 +249,7 @@ namespace fellow::hardfile
     return false;
   }
 
-  HardfileFileSystemEntry *HardfileHandler::GetFileSystemForDOSType(uint32_t DOSType)
+  HardfileFileSystemEntry* HardfileHandler::GetFileSystemForDOSType(uint32_t DOSType)
   {
     for (auto& fileSystemEntry : _fileSystems)
     {
@@ -298,7 +299,7 @@ namespace fellow::hardfile
     bool hasOlderOrSameFileSystemVersion = FindOlderOrSameFileSystemVersion(DOSType, version, olderOrSameFileSystemIndex);
     if (hasOlderOrSameFileSystemVersion)
     {
-      Service->Log.AddLogDebug("fhfile: Erased RDB filesystem entry (%.8X, %.8X), newer version (%.8X, %.8X) found in RDB or newer/same version supported by Kickstart.\n",
+      _core.Log->AddLogDebug("fhfile: Erased RDB filesystem entry (%.8X, %.8X), newer version (%.8X, %.8X) found in RDB or newer/same version supported by Kickstart.\n",
         _fileSystems[olderOrSameFileSystemIndex]->GetDOSType(), _fileSystems[olderOrSameFileSystemIndex]->GetVersion(), DOSType, version);
 
       _fileSystems.erase(_fileSystems.begin() + olderOrSameFileSystemIndex);
@@ -316,7 +317,7 @@ namespace fellow::hardfile
     geometry.Tracks = rdb->Cylinders * rdb->Heads;
 
     config.Partitions.clear();
-    unsigned int partitionCount = (unsigned int) rdb->Partitions.size();
+    unsigned int partitionCount = (unsigned int)rdb->Partitions.size();
     for (unsigned int i = 0; i < partitionCount; i++)
     {
       fellow::hardfile::rdb::RDBPartition* rdbPartition = rdb->Partitions[i].get();
@@ -339,10 +340,10 @@ namespace fellow::hardfile
       return false;
     }
 
-    fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
+    fs_wrapper_point* fsnp = fellow::api::Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
     if (fsnp == nullptr)
     {
-      Service->Log.AddLog("ERROR: Unable to access hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", device.Configuration.Filename.c_str());
+      _core.Log->AddLog("ERROR: Unable to access hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", device.Configuration.Filename.c_str());
       return false;
     }
 
@@ -360,7 +361,7 @@ namespace fellow::hardfile
     {
       fclose(device.F);
       device.F = nullptr;
-      Service->Log.AddLog("ERROR: Hardfile '%s' was not mounted, size is less than one cylinder.\n", device.Configuration.Filename.c_str());
+      _core.Log->AddLog("ERROR: Hardfile '%s' was not mounted, size is less than one cylinder.\n", device.Configuration.Filename.c_str());
       return false;
     }
     return true;
@@ -402,7 +403,7 @@ namespace fellow::hardfile
       {
         ClearDeviceRuntimeInfo(device);
 
-        Service->Log.AddLog("Hardfile: File skipped '%s', RDB header has checksum error.\n", device.Configuration.Filename.c_str());
+        _core.Log->AddLog("Hardfile: File skipped '%s', RDB header has checksum error.\n", device.Configuration.Filename.c_str());
         return;
       }
 
@@ -410,7 +411,7 @@ namespace fellow::hardfile
       {
         ClearDeviceRuntimeInfo(device);
 
-        Service->Log.AddLog("Hardfile: File skipped '%s', RDB partition has checksum error.\n", device.Configuration.Filename.c_str());
+        _core.Log->AddLog("Hardfile: File skipped '%s', RDB partition has checksum error.\n", device.Configuration.Filename.c_str());
         return;
       }
 
@@ -425,7 +426,7 @@ namespace fellow::hardfile
         {
           ClearDeviceRuntimeInfo(device);
 
-          Service->Log.AddLog("Hardfile: File skipped '%s', RDB filesystem handler has checksum error.\n", device.Configuration.Filename.c_str());
+          _core.Log->AddLog("Hardfile: File skipped '%s', RDB filesystem handler has checksum error.\n", device.Configuration.Filename.c_str());
           return;
         }
 
@@ -450,7 +451,7 @@ namespace fellow::hardfile
       {
         ClearDeviceRuntimeInfo(device);
 
-        Service->Log.AddLog("Hardfile: File skipped, geometry for %s is larger than the file.\n", device.Configuration.Filename.c_str());
+        _core.Log->AddLog("Hardfile: File skipped, geometry for %s is larger than the file.\n", device.Configuration.Filename.c_str());
       }
     }
   }
@@ -484,7 +485,7 @@ namespace fellow::hardfile
 
     if (lun > 7)
     {
-      Service->Log.AddLogDebug("ERROR: Unit number is not in a valid format.\n");
+      _core.Log->AddLogDebug("ERROR: Unit number is not in a valid format.\n");
       return 0xffffffff;
     }
     return lun + address * 8;
@@ -509,9 +510,9 @@ namespace fellow::hardfile
     device.Configuration = configuration;
     InitializeHardfile(index);
 
-    Service->Log.AddLog("SetHardfile('%s', %u)\n", configuration.Filename.c_str(), index);
+    _core.Log->AddLog("SetHardfile('%s', %u)\n", configuration.Filename.c_str(), index);
 
-    Service->RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
+    fellow::api::Service->RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
   }
 
   bool HardfileHandler::CompareHardfile(const HardfileConfiguration& configuration, unsigned int index)
@@ -574,7 +575,7 @@ namespace fellow::hardfile
 
     if (_devices[index].F == nullptr)
     {
-      Service->Log.AddLogDebug("CMD_READ Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);
+      _core.Log->AddLogDebug("CMD_READ Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);
       return 32; // TDERR_BadUnitNum
     }
 
@@ -582,20 +583,20 @@ namespace fellow::hardfile
     uint32_t offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
     uint32_t length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
 
-    Service->Log.AddLogDebug("CMD_READ Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
+    _core.Log->AddLogDebug("CMD_READ Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
 
     if ((offset + length) > _devices[index].GeometrySize)
     {
       return -3; // TODO: Out of range, -3 is not the right code
     }
 
-    Service->HUD.SetHarddiskLED(index, true, false);
+    fellow::api::Service->HUD.SetHarddiskLED(index, true, false);
 
     fseek(_devices[index].F, offset, SEEK_SET);
     fread(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
     SetIOActual(length);
 
-    Service->HUD.SetHarddiskLED(index, false, false);
+    fellow::api::Service->HUD.SetHarddiskLED(index, false, false);
 
     return 0;
   }
@@ -604,7 +605,7 @@ namespace fellow::hardfile
   {
     if (_devices[index].F == nullptr)
     {
-      Service->Log.AddLogDebug("CMD_WRITE Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);
+      _core.Log->AddLogDebug("CMD_WRITE Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);
       return 32; // TDERR_BadUnitNum
     }
 
@@ -612,20 +613,20 @@ namespace fellow::hardfile
     uint32_t offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
     uint32_t length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
 
-    Service->Log.AddLogDebug("CMD_WRITE Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
+    _core.Log->AddLogDebug("CMD_WRITE Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
 
     if (_devices[index].Readonly || (offset + length) > _devices[index].GeometrySize)
     {
       return -3;  // TODO: Out of range, -3 is probably not the right one.
     }
 
-    Service->HUD.SetHarddiskLED(index, true, true);
+    fellow::api::Service->HUD.SetHarddiskLED(index, true, true);
 
     fseek(_devices[index].F, offset, SEEK_SET);
     fwrite(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
     SetIOActual(length);
 
-    Service->HUD.SetHarddiskLED(index, false, true);
+    fellow::api::Service->HUD.SetHarddiskLED(index, false, true);
 
     return 0;
   }
@@ -663,25 +664,25 @@ namespace fellow::hardfile
     int8_t error = 0;
     uint32_t scsiCmdStruct = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40); // io_Data
 
-    Service->Log.AddLogDebug("HD_SCSICMD Unit %d (%d) ScsiCmd at %.8X\n", GetUnitNumberFromIndex(index), index, scsiCmdStruct);
+    _core.Log->AddLogDebug("HD_SCSICMD Unit %d (%d) ScsiCmd at %.8X\n", GetUnitNumberFromIndex(index), index, scsiCmdStruct);
 
     uint32_t scsiCommand = VM->Memory.ReadLong(scsiCmdStruct + 12);
     uint16_t scsiCommandLength = VM->Memory.ReadWord(scsiCmdStruct + 16);
 
-    Service->Log.AddLogDebug("HD_SCSICMD Command length %d, data", scsiCommandLength);
+    _core.Log->AddLogDebug("HD_SCSICMD Command length %d, data", scsiCommandLength);
 
     for (int i = 0; i < scsiCommandLength; i++)
     {
-      Service->Log.AddLogDebug(" %.2X", VM->Memory.ReadByte(scsiCommand + i));
+      _core.Log->AddLogDebug(" %.2X", VM->Memory.ReadByte(scsiCommand + i));
     }
-    Service->Log.AddLogDebug("\n");
+    _core.Log->AddLogDebug("\n");
 
     uint8_t commandNumber = VM->Memory.ReadByte(scsiCommand);
     uint32_t returnData = VM->Memory.ReadLong(scsiCmdStruct);
     switch (commandNumber)
     {
     case 0x25: // Read capacity (10)
-      Service->Log.AddLogDebug("SCSI direct command 0x25 Read Capacity\n");
+      _core.Log->AddLogDebug("SCSI direct command 0x25 Read Capacity\n");
       {
         uint32_t bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
         bool pmi = !!(VM->Memory.ReadByte(scsiCommand + 8) & 1);
@@ -716,12 +717,12 @@ namespace fellow::hardfile
       }
       break;
     case 0x37: // Read defect Data (10)
-      Service->Log.AddLogDebug("SCSI direct command 0x37 Read defect Data\n");
+      _core.Log->AddLogDebug("SCSI direct command 0x37 Read defect Data\n");
 
       VM->Memory.WriteByte(0, returnData);
       VM->Memory.WriteByte(VM->Memory.ReadByte(scsiCommand + 2), returnData + 1);
       VM->Memory.WriteByte(0, returnData + 2); // No defects (word)
-      VM->Memory.WriteByte(0, returnData + 3); 
+      VM->Memory.WriteByte(0, returnData + 3);
 
       VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
       VM->Memory.WriteByte(0, scsiCmdStruct + 9);
@@ -731,12 +732,12 @@ namespace fellow::hardfile
       VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
       break;
     case 0x12: // Inquiry
-      Service->Log.AddLogDebug("SCSI direct command 0x12 Inquiry\n");
+      _core.Log->AddLogDebug("SCSI direct command 0x12 Inquiry\n");
 
       VM->Memory.WriteByte(0, returnData); // Pheripheral type 0 connected (magnetic disk)
       VM->Memory.WriteByte(0, returnData + 1); // Not removable
       VM->Memory.WriteByte(0, returnData + 2); // Does not claim conformance to any standard
-      VM->Memory.WriteByte(2, returnData + 3); 
+      VM->Memory.WriteByte(2, returnData + 3);
       VM->Memory.WriteByte(32, returnData + 4); // Additional length
       VM->Memory.WriteByte(0, returnData + 5);
       VM->Memory.WriteByte(0, returnData + 6);
@@ -778,7 +779,7 @@ namespace fellow::hardfile
       VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
       break;
     case 0x1a: // Mode sense
-      Service->Log.AddLogDebug("SCSI direct command 0x1a Mode sense\n");
+      _core.Log->AddLogDebug("SCSI direct command 0x1a Mode sense\n");
       {
         // Show values for debug
         uint32_t senseData = VM->Memory.ReadLong(scsiCmdStruct + 22); // senseData and related fields are only used for autosensing error condition when the command fail
@@ -887,7 +888,7 @@ namespace fellow::hardfile
       }
       break;
     default:
-      Service->Log.AddLogDebug("SCSI direct command Unimplemented 0x%.2X\n", commandNumber);
+      _core.Log->AddLogDebug("SCSI direct command Unimplemented 0x%.2X\n", commandNumber);
 
       error = -3;
       break;
@@ -980,83 +981,83 @@ namespace fellow::hardfile
       error = Write(index);
       break;
     case 11: // TD_FORMAT
-      Service->Log.AddLogDebug("TD_FORMAT Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_FORMAT Unit %d\n", unit);
       error = Write(index);
       break;
     case 18: // TD_GETDRIVETYPE
-      Service->Log.AddLogDebug("TD_GETDRIVETYPE Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_GETDRIVETYPE Unit %d\n", unit);
       // This does not make sense for us, options are 3.5" and 5 1/4"
       error = GetDiskDriveType(index);
       break;
     case 19: // TD_GETNUMTRACKS
-      Service->Log.AddLogDebug("TD_GETNUMTRACKS Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_GETNUMTRACKS Unit %d\n", unit);
       error = GetNumberOfTracks(index);
       break;
     case 15: // TD_PROTSTATUS
-      Service->Log.AddLogDebug("TD_PROTSTATUS Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_PROTSTATUS Unit %d\n", unit);
       WriteProt(index);
       break;
     case 4: // CMD_UPDATE ie. flush
-      Service->Log.AddLogDebug("CMD_UPDATE Unit %d\n", unit);
+      _core.Log->AddLogDebug("CMD_UPDATE Unit %d\n", unit);
       IgnoreOK(index);
       break;
     case 5: // CMD_CLEAR
-      Service->Log.AddLogDebug("CMD 5 Unit %d\n", unit);
+      _core.Log->AddLogDebug("CMD 5 Unit %d\n", unit);
       IgnoreOK(index);
       break;
     case 9:  // TD_MOTOR Only really used to turn motor off since device will turn on the motor automatically if reads and writes are received
-      Service->Log.AddLogDebug("TD_MOTOR Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_MOTOR Unit %d\n", unit);
       // Should set previous state of motor
       IgnoreOK(index);
       break;
     case 10: // TD_SEEK Used to pre-seek in advance, but reads and writes will also do the necessary seeks, so not useful here.
-      Service->Log.AddLogDebug("TD_SEEK Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_SEEK Unit %d\n", unit);
       IgnoreOK(index);
       break;
     case 12: // TD_REMOVE
-      Service->Log.AddLogDebug("TD_REMOVE Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_REMOVE Unit %d\n", unit);
       // Perhaps unsupported instead?
       IgnoreOK(index);
       break;
     case 13: // TD_CHANGENUM
-      Service->Log.AddLogDebug("TD_CHANGENUM Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_CHANGENUM Unit %d\n", unit);
       // Should perhaps set some data here
       IgnoreOK(index);
       break;
     case 14: // TD_CHANGESTATE - check if a disk is currently in a drive. io_Actual - 0 - disk, 1 - no disk
-      Service->Log.AddLogDebug("TD_CHANGESTATE Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_CHANGESTATE Unit %d\n", unit);
       SetIOError(0); // io_Error - 0 - success
       SetIOActual(0);
       break;
     case 20: // TD_ADDCHANGEINT
-      Service->Log.AddLogDebug("TD_ADDCHANGEINT Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_ADDCHANGEINT Unit %d\n", unit);
       IgnoreOK(index);
       break;
     case 21: // TD_REMCHANGEINT
-      Service->Log.AddLogDebug("TD_REMCHANGEINT Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_REMCHANGEINT Unit %d\n", unit);
       IgnoreOK(index);
       break;
     case 16: // TD_RAWREAD
-      Service->Log.AddLogDebug("TD_RAWREAD Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_RAWREAD Unit %d\n", unit);
       error = -3;
       break;
     case 17: // TD_RAWWRITE
-      Service->Log.AddLogDebug("TD_RAWWRITE Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_RAWWRITE Unit %d\n", unit);
       error = -3;
       break;
     case 22: // TD_GETGEOMETRY
-      Service->Log.AddLogDebug("TD_GEOMETRY Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_GEOMETRY Unit %d\n", unit);
       error = -3;
       break;
     case 23: // TD_EJECT
-      Service->Log.AddLogDebug("TD_EJECT Unit %d\n", unit);
+      _core.Log->AddLogDebug("TD_EJECT Unit %d\n", unit);
       error = -3;
       break;
     case 28:
       error = ScsiDirect(index);
       break;
     default:
-      Service->Log.AddLogDebug("CMD Unknown %d Unit %d\n", cmd, unit);
+      _core.Log->AddLogDebug("CMD Unknown %d Unit %d\n", cmd, unit);
       error = -3;
       break;
     }
@@ -1075,27 +1076,27 @@ namespace fellow::hardfile
   uint32_t HardfileHandler::DoGetRDBFileSystemCount()
   {
     uint32_t count = (uint32_t)_fileSystems.size();
-    Service->Log.AddLogDebug("fhfile: DoGetRDBFilesystemCount() - Returns %u\n", count);
+    _core.Log->AddLogDebug("fhfile: DoGetRDBFilesystemCount() - Returns %u\n", count);
     return count;
   }
 
   uint32_t HardfileHandler::DoGetRDBFileSystemHunkCount(uint32_t fileSystemIndex)
   {
     uint32_t hunkCount = (uint32_t)_fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunkCount();
-    Service->Log.AddLogDebug("fhfile: DoGetRDBFileSystemHunkCount(fileSystemIndex: %u) Returns %u\n", fileSystemIndex, hunkCount);
+    _core.Log->AddLogDebug("fhfile: DoGetRDBFileSystemHunkCount(fileSystemIndex: %u) Returns %u\n", fileSystemIndex, hunkCount);
     return hunkCount;
   }
 
   uint32_t HardfileHandler::DoGetRDBFileSystemHunkSize(uint32_t fileSystemIndex, uint32_t hunkIndex)
   {
     uint32_t hunkSize = _fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex)->GetAllocateSizeInBytes();
-    Service->Log.AddLogDebug("fhfile: DoGetRDBFileSystemHunkSize(fileSystemIndex: %u, hunkIndex: %u) Returns %u\n", fileSystemIndex, hunkIndex, hunkSize);
+    _core.Log->AddLogDebug("fhfile: DoGetRDBFileSystemHunkSize(fileSystemIndex: %u, hunkIndex: %u) Returns %u\n", fileSystemIndex, hunkIndex, hunkSize);
     return hunkSize;
   }
 
   void HardfileHandler::DoCopyRDBFileSystemHunk(uint32_t destinationAddress, uint32_t fileSystemIndex, uint32_t hunkIndex)
   {
-    Service->Log.AddLogDebug("fhfile: DoCopyRDBFileSystemHunk(destinationAddress: %.8X, fileSystemIndex: %u, hunkIndex: %u)\n", destinationAddress, fileSystemIndex, hunkIndex);
+    _core.Log->AddLogDebug("fhfile: DoCopyRDBFileSystemHunk(destinationAddress: %.8X, fileSystemIndex: %u, hunkIndex: %u)\n", destinationAddress, fileSystemIndex, hunkIndex);
 
     HardfileFileSystemEntry* fileSystem = _fileSystems[fileSystemIndex].get();
     fileSystem->CopyHunkToAddress(destinationAddress + 8, hunkIndex);
@@ -1113,7 +1114,7 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoRelocateFileSystem(uint32_t fileSystemIndex)
   {
-    Service->Log.AddLogDebug("fhfile: DoRelocateFileSystem(fileSystemIndex: %u\n", fileSystemIndex);
+    _core.Log->AddLogDebug("fhfile: DoRelocateFileSystem(fileSystemIndex: %u\n", fileSystemIndex);
     HardfileFileSystemEntry* fsEntry = _fileSystems[fileSystemIndex].get();
     fellow::hardfile::hunks::HunkRelocator hunkRelocator(fsEntry->Header->FileSystemHandler.FileImage);
     hunkRelocator.RelocateHunks();
@@ -1121,7 +1122,7 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoInitializeRDBFileSystemEntry(uint32_t fileSystemEntry, uint32_t fileSystemIndex)
   {
-    Service->Log.AddLogDebug("fhfile: DoInitializeRDBFileSystemEntry(fileSystemEntry: %.8X, fileSystemIndex: %u\n", fileSystemEntry, fileSystemIndex);
+    _core.Log->AddLogDebug("fhfile: DoInitializeRDBFileSystemEntry(fileSystemEntry: %.8X, fileSystemIndex: %u\n", fileSystemEntry, fileSystemIndex);
 
     HardfileFileSystemEntry* fsEntry = _fileSystems[fileSystemIndex].get();
     RDBFileSystemHeader* fsHeader = fsEntry->Header;
@@ -1173,12 +1174,12 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoLogAvailableResources()
   {
-    Service->Log.AddLogDebug("fhfile: DoLogAvailableResources()\n");
+    _core.Log->AddLogDebug("fhfile: DoLogAvailableResources()\n");
 
     uint32_t execBase = VM->Memory.ReadLong(4);  // Fetch list from exec
     uint32_t rsListHeader = VM->Memory.ReadLong(execBase + 0x150);
 
-    Service->Log.AddLogDebug("fhfile: Resource list header (%.8X): Head %.8X Tail %.8X TailPred %.8X Type %d\n",
+    _core.Log->AddLogDebug("fhfile: Resource list header (%.8X): Head %.8X Tail %.8X TailPred %.8X Type %d\n",
       rsListHeader,
       VM->Memory.ReadLong(rsListHeader),
       VM->Memory.ReadLong(rsListHeader + 4),
@@ -1187,14 +1188,14 @@ namespace fellow::hardfile
 
     if (rsListHeader == VM->Memory.ReadLong(rsListHeader + 8))
     {
-      Service->Log.AddLogDebug("fhfile: Resource list is empty.\n");
+      _core.Log->AddLogDebug("fhfile: Resource list is empty.\n");
       return;
     }
 
     uint32_t fsNode = VM->Memory.ReadLong(rsListHeader);
     while (fsNode != 0 && (fsNode != rsListHeader + 4))
     {
-      Service->Log.AddLogDebug("fhfile: ResourceEntry Node (%.8X): Succ %.8X Pred %.8X Type %d Pri %d NodeName '%s'\n",
+      _core.Log->AddLogDebug("fhfile: ResourceEntry Node (%.8X): Succ %.8X Pred %.8X Type %d Pri %d NodeName '%s'\n",
         fsNode,
         VM->Memory.ReadLong(fsNode),
         VM->Memory.ReadLong(fsNode + 4),
@@ -1208,22 +1209,22 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoLogAllocMemResult(uint32_t result)
   {
-    Service->Log.AddLogDebug("fhfile: AllocMem() returned %.8X\n", result);
+    _core.Log->AddLogDebug("fhfile: AllocMem() returned %.8X\n", result);
   }
 
   void HardfileHandler::DoLogOpenResourceResult(uint32_t result)
   {
-    Service->Log.AddLogDebug("fhfile: OpenResource() returned %.8X\n", result);
+    _core.Log->AddLogDebug("fhfile: OpenResource() returned %.8X\n", result);
   }
 
   void HardfileHandler::DoRemoveRDBFileSystemsAlreadySupportedBySystem(uint32_t filesystemResource)
   {
-    Service->Log.AddLogDebug("fhfile: DoRemoveRDBFileSystemsAlreadySupportedBySystem(filesystemResource: %.8X)\n", filesystemResource);
+    _core.Log->AddLogDebug("fhfile: DoRemoveRDBFileSystemsAlreadySupportedBySystem(filesystemResource: %.8X)\n", filesystemResource);
 
     uint32_t fsList = filesystemResource + 18;
     if (fsList == VM->Memory.ReadLong(fsList + 8))
     {
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
@@ -1234,18 +1235,18 @@ namespace fellow::hardfile
       uint32_t dosType = VM->Memory.ReadLong(fsEntry);
       uint32_t version = VM->Memory.ReadLong(fsEntry + 4);
 
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", VM->Memory.ReadLong(fsEntry));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", VM->Memory.ReadLong(fsEntry + 4));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", VM->Memory.ReadLong(fsEntry));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", VM->Memory.ReadLong(fsEntry + 4));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
       fsNode = VM->Memory.ReadLong(fsNode);
 
       EraseOlderOrSameFileSystemVersion(dosType, version);
@@ -1255,12 +1256,12 @@ namespace fellow::hardfile
   // D0 - pointer to FileSystem.resource
   void HardfileHandler::DoLogAvailableFileSystems(uint32_t fileSystemResource)
   {
-    Service->Log.AddLogDebug("fhfile: DoLogAvailableFileSystems(fileSystemResource: %.8X)\n", fileSystemResource);
+    _core.Log->AddLogDebug("fhfile: DoLogAvailableFileSystems(fileSystemResource: %.8X)\n", fileSystemResource);
 
     uint32_t fsList = fileSystemResource + 18;
     if (fsList == VM->Memory.ReadLong(fsList + 8))
     {
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
@@ -1272,31 +1273,31 @@ namespace fellow::hardfile
       uint32_t dosType = VM->Memory.ReadLong(fsEntry);
       uint32_t version = VM->Memory.ReadLong(fsEntry + 4);
 
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", dosType);
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", version);
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
-      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", dosType);
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", version);
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
+      _core.Log->AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
       fsNode = VM->Memory.ReadLong(fsNode);
     }
   }
 
   void HardfileHandler::DoPatchDOSDeviceNode(uint32_t node, uint32_t packet)
   {
-    Service->Log.AddLogDebug("fhfile: DoPatchDOSDeviceNode(node: %.8X, packet: %.8X)\n", node, packet);
+    _core.Log->AddLogDebug("fhfile: DoPatchDOSDeviceNode(node: %.8X, packet: %.8X)\n", node, packet);
 
     VM->Memory.WriteLong(0, node + 8); // dn_Task = 0
     VM->Memory.WriteLong(0, node + 16); // dn_Handler = 0
     VM->Memory.WriteLong(static_cast<uint32_t>(-1), node + 36); // dn_GlobalVec = -1
 
-    HardfileFileSystemEntry *fs = GetFileSystemForDOSType(VM->Memory.ReadLong(packet + 80));
+    HardfileFileSystemEntry* fs = GetFileSystemForDOSType(VM->Memory.ReadLong(packet + 80));
     if (fs != nullptr)
     {
       if (fs->Header->PatchFlags & 0x10)
@@ -1316,7 +1317,7 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoUnknownOperation(uint32_t operation)
   {
-    Service->Log.AddLogDebug("fhfile: Unknown operation called %X\n", operation);
+    _core.Log->AddLogDebug("fhfile: Unknown operation called %X\n", operation);
   }
 
   /*=================================================*/
@@ -1948,18 +1949,18 @@ namespace fellow::hardfile
         if (SetFilePointer(hf, size, &high, FILE_BEGIN) == size)
           result = SetEndOfFile(hf) == TRUE;
         else
-          Service->Log.AddLog("SetFilePointer() failure.\n");
+          _core.Log->AddLog("SetFilePointer() failure.\n");
         CloseHandle(hf);
       }
       else
-        Service->Log.AddLog("CreateFile() failed.\n");
+        _core.Log->AddLog("CreateFile() failed.\n");
     }
     return result;
 #else	/* os independent implementation */
 #define BUFSIZE 32768
     unsigned int tobewritten;
     char buffer[BUFSIZE];
-    FILE *hf;
+    FILE* hf;
 
     tobewritten = size;
     errno = 0;
@@ -1975,7 +1976,7 @@ namespace fellow::hardfile
           fwrite(buffer, sizeof(char), BUFSIZE, hf);
           if (errno != 0)
           {
-            Service->Log.AddLog("Creating hardfile failed. Check the available space.\n");
+            _core.Log->AddLog("Creating hardfile failed. Check the available space.\n");
             fclose(hf);
             return result;
           }
@@ -1984,7 +1985,7 @@ namespace fellow::hardfile
         fwrite(buffer, sizeof(char), tobewritten, hf);
         if (errno != 0)
         {
-          Service->Log.AddLog("Creating hardfile failed. Check the available space.\n");
+          _core.Log->AddLog("Creating hardfile failed. Check the available space.\n");
           fclose(hf);
           return result;
         }
@@ -1992,7 +1993,7 @@ namespace fellow::hardfile
         result = true;
       }
       else
-        Service->Log.AddLog("fhfileCreate is unable to open output file.\n");
+        _core.Log->AddLog("fhfileCreate is unable to open output file.\n");
     }
     return result;
 #endif
@@ -2001,7 +2002,7 @@ namespace fellow::hardfile
   rdb_status HardfileHandler::HasRDB(const std::string& filename)
   {
     rdb_status result = rdb_status::RDB_NOT_FOUND;
-    FILE *F = nullptr;
+    FILE* F = nullptr;
     fopen_s(&F, filename.c_str(), "rb");
     if (F != nullptr)
     {
@@ -2015,12 +2016,12 @@ namespace fellow::hardfile
   HardfileConfiguration HardfileHandler::GetConfigurationFromRDBGeometry(const std::string& filename)
   {
     HardfileConfiguration configuration;
-    FILE *F = nullptr;
+    FILE* F = nullptr;
     fopen_s(&F, filename.c_str(), "rb");
     if (F != nullptr)
     {
       RDBFileReader reader(F);
-      RDB *rdb = RDBHandler::GetDriveInformation(reader, true);
+      RDB* rdb = RDBHandler::GetDriveInformation(reader, true);
       fclose(F);
 
       if (rdb != nullptr)

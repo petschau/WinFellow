@@ -1,9 +1,8 @@
 #include "fellow/api/defs.h"
 #include "hardfile/hunks/Reloc32Hunk.h"
-#include "fellow/api/Services.h"
+#include "VirtualHost/Core.h"
 
 using namespace std;
-using namespace fellow::api;
 
 namespace fellow::hardfile::hunks
 {
@@ -14,7 +13,7 @@ namespace fellow::hardfile::hunks
 
   uint32_t Reloc32Hunk::GetOffsetTableCount()
   {
-    return (uint32_t) _offsetTables.size();
+    return (uint32_t)_offsetTables.size();
   }
 
   Reloc32OffsetTable* Reloc32Hunk::GetOffsetTable(uint32_t index)
@@ -33,7 +32,7 @@ namespace fellow::hardfile::hunks
       _offsetTables.push_back(unique_ptr<Reloc32OffsetTable>(offsetTable));
       offsetCount = rawDataReader.GetNextByteswappedLong();
 
-      Service->Log.AddLogDebug("fhfile: RDB filesystem - Reloc32 hunk (%u), entry %u for hunk %u offset count %u\n", ID, _offsetTables.size() - 1, relatedHunk, offsetCount);
+      _core.Log->AddLogDebug("fhfile: RDB filesystem - Reloc32 hunk (%u), entry %u for hunk %u offset count %u\n", ID, _offsetTables.size() - 1, relatedHunk, offsetCount);
     }
   }
 
