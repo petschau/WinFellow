@@ -67,7 +67,6 @@
 #include "GFXDRV.H"
 #include "VirtualHost/Core.h"
 #include "GfxDrvCommon.h"
-#include "FSWRAP.H"
 #include "FFILESYS.H"
 #include "versioninfo.h"
 
@@ -1504,7 +1503,7 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile* hf, int hardfi
   }
 
   struct stat StatBuffer = {};
-  int result = fsWrapStat(hf->filename, &StatBuffer);
+  int result = _core.FileInformation->Stat(hf->filename, &StatBuffer);
 
   if (result != 0)
   {

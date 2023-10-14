@@ -24,7 +24,6 @@
 #include "ini.h"
 #include "draw.h"
 #include "fellow.h"
-#include "fswrap.h"
 #include "VirtualHost/Core.h"
 
 #define INI_FILENAME "WinFellow.ini"
@@ -343,16 +342,17 @@ BOOLE iniSetOption(ini *initdata, char *initoptionstr) {
 
     if (stricmp(option, "last_used_configuration") == 0) {
       if (strcmp(value, "") == 0) {
-        _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
-        iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
-      } else {
-	      if(fsWrapStat(value,&bla) != 0) {
-	        _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
-	        iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
-	      } 
-	      else {
-	        iniSetCurrentConfigurationFilename(initdata, value);
-	      }
+	_core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
+	iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
+      }
+      else {
+	if (_core.FileInformation->Stat(value, &bla) != 0) {
+	  _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
+	  iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
+	}
+	else {
+	  iniSetCurrentConfigurationFilename(initdata, value);
+	}
       }
     }
     else if (stricmp(option, "last_used_cfg_dir") == 0) {

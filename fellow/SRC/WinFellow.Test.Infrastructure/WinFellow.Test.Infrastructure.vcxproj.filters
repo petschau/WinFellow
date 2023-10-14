@@ -26,9 +26,6 @@
     <ClCompile Include="catch\catch_amalgamated.cpp">
       <Filter>catch</Filter>
     </ClCompile>
-    <ClCompile Include="mock\service\FSWrapperMock.cpp">
-      <Filter>mock\service</Filter>
-    </ClCompile>
     <ClCompile Include="mock\service\HUDMock.cpp">
       <Filter>mock\service</Filter>
     </ClCompile>
@@ -39,13 +36,13 @@
     <ClCompile Include="mock\Core\Service\LogMock.cpp">
       <Filter>mock\Core\Service</Filter>
     </ClCompile>
+    <ClCompile Include="mock\Core\Service\FileInformationMock.cpp">
+      <Filter>mock\Core\Service</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch\catch_amalgamated.hpp">
       <Filter>catch</Filter>
-    </ClInclude>
-    <ClInclude Include="mock\service\FSWrapperMock.h">
-      <Filter>mock\service</Filter>
     </ClInclude>
     <ClInclude Include="mock\service\HUDMock.h">
       <Filter>mock\service</Filter>
@@ -55,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="TestBootstrap.h" />
     <ClInclude Include="mock\Core\Service\LogMock.h">
+      <Filter>mock\Core\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="mock\Core\Service\FileInformationMock.h">
       <Filter>mock\Core\Service</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,7 +11,8 @@ Core::Core() :
   RtcOkiMsm6242rs(nullptr), 
   Drivers(), 
   Log(nullptr), 
-  Fileops(nullptr)
+  Fileops(nullptr),
+  FileInformation(nullptr)
 {
 }
 

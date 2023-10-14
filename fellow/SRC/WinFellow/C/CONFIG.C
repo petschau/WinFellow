@@ -39,7 +39,6 @@
 #include "blit.h"
 #include "fellow.h"
 #include "ListTree.h"
-#include "fswrap.h"
 #include "config.h"
 #include "fellow/api/module/IHardfileHandler.h"
 #include "ffilesys.h"

@@ -234,9 +234,6 @@
     <ClCompile Include="C\FMEM.C">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\FSNAVIG.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="C\GAMEPORT.C">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -311,9 +308,6 @@
     </ClCompile>
     <ClCompile Include="DXGI\GfxDrvDXGIOutputEnumerator.cpp">
       <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\service\FSWrapper.cpp">
-      <Filter>fellow\service</Filter>
     </ClCompile>
     <ClCompile Include="fellow\service\HUD.cpp">
       <Filter>fellow\service</Filter>
@@ -405,9 +399,6 @@
     <ClCompile Include="Windows\commoncontrol_wrap.c">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\FSWRAP.C">
-      <Filter>Windows</Filter>
-    </ClCompile>
     <ClCompile Include="Windows\fsysamnt.c">
       <Filter>Windows</Filter>
     </ClCompile>
@@ -487,6 +478,9 @@
       <Filter>VirtualHost</Filter>
     </ClCompile>
     <ClCompile Include="Windows\Service\FileopsWin32.cpp">
+      <Filter>Windows\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\Service\FileInformationWin32.cpp">
       <Filter>Windows\Service</Filter>
     </ClCompile>
   </ItemGroup>
@@ -650,9 +644,6 @@
     <ClInclude Include="INCLUDE\FONTS.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\FSNAVIG.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\GAMEPORT.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -764,17 +755,11 @@
     <ClInclude Include="fellow\api\vm\IMemorySystem.h">
       <Filter>fellow\api\vm</Filter>
     </ClInclude>
-    <ClInclude Include="fellow\api\service\IFSWrapper.h">
-      <Filter>fellow\api\service</Filter>
-    </ClInclude>
     <ClInclude Include="fellow\api\service\IHUD.h">
       <Filter>fellow\api\service</Filter>
     </ClInclude>
     <ClInclude Include="fellow\api\service\IRetroPlatform.h">
       <Filter>fellow\api\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\service\FSWrapper.h">
-      <Filter>fellow\service</Filter>
     </ClInclude>
     <ClInclude Include="fellow\service\HUD.h">
       <Filter>fellow\service</Filter>
@@ -872,9 +857,6 @@
     <ClInclude Include="Windows\dxver.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\FSWRAP.H">
-      <Filter>Windows</Filter>
-    </ClInclude>
     <ClInclude Include="Windows\gfxdrv_directdraw.h">
       <Filter>Windows</Filter>
     </ClInclude>
@@ -927,6 +909,9 @@
       <Filter>VirtualHost</Filter>
     </ClInclude>
     <ClInclude Include="Windows\Service\FileopsWin32.h">
+      <Filter>Windows\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Service\FileInformationWin32.h">
       <Filter>Windows\Service</Filter>
     </ClInclude>
   </ItemGroup>
