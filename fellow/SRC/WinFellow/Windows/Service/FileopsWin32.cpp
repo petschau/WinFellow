@@ -155,7 +155,7 @@ bool FileopsWin32::GetDefaultConfigFileName(char* szPath)
 
 /* fileopsGetWinFellowExecutablePath                                */
 /* writes WinFellow executable full path into strBuffer             */
-bool FileopsWin32::fileopsGetWinFellowExecutablePath(char* strBuffer, const uint32_t lBufferSize)
+bool FileopsWin32::GetWinFellowExecutablePath(char* strBuffer, const uint32_t lBufferSize)
 {
   if (GetModuleFileName(nullptr, strBuffer, lBufferSize) != 0)
     return true;
@@ -169,7 +169,7 @@ bool FileopsWin32::GetWinFellowInstallationPath(char* strBuffer, const uint32_t 
 {
   char strWinFellowExePath[CFG_FILENAME_LENGTH] = "";
 
-  if (fileopsGetWinFellowExecutablePath(strWinFellowExePath, CFG_FILENAME_LENGTH))
+  if (GetWinFellowExecutablePath(strWinFellowExePath, CFG_FILENAME_LENGTH))
   {
     char* strLastBackslash = strrchr(strWinFellowExePath, '\\');
 
@@ -184,7 +184,7 @@ bool FileopsWin32::GetWinFellowInstallationPath(char* strBuffer, const uint32_t 
     return false;
 }
 
-bool FileopsWin32::fileopsDirectoryExists(const char* strPath)
+bool FileopsWin32::DirectoryExists(const char* strPath)
 {
   DWORD dwAttrib = GetFileAttributes(strPath);
 
@@ -201,7 +201,7 @@ bool FileopsWin32::GetWinFellowPresetPath(char* strBuffer, const uint32_t lBuffe
   {
     strncat(strWinFellowInstallPath, "\\Presets", 9);
 
-    if (fileopsDirectoryExists(strWinFellowInstallPath)) {
+    if (DirectoryExists(strWinFellowInstallPath)) {
       strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
       return true;
     }
@@ -215,7 +215,7 @@ bool FileopsWin32::GetWinFellowPresetPath(char* strBuffer, const uint32_t lBuffe
       strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\Presets", 21);
 #endif
 
-      if (fileopsDirectoryExists(strWinFellowInstallPath)) {
+      if (DirectoryExists(strWinFellowInstallPath)) {
         strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
         return true;
       }

@@ -8,8 +8,8 @@ class FileopsWin32 : public Service::IFileops
 private:
   Service::ILog* _log;
 
-  bool fileopsGetWinFellowExecutablePath(char* strBuffer, const uint32_t lBufferSize);
-  bool fileopsDirectoryExists(const char* strPath);
+  bool GetWinFellowExecutablePath(char* strBuffer, const uint32_t lBufferSize);
+  bool DirectoryExists(const char* strPath);
 
 public:
   bool GetFellowLogfileName(char*) override;
