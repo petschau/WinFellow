@@ -19,11 +19,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include <ctime>
-#include "rtc.h"
 #include "RtcOkiMsm6242rs.h"
-#include "FELLOW.H"
-#include "VirtualHost/Core.h"
 
 int RtcOkiMsm6242rs::GetRegisterNumberFromAddress(uint32_t address)
 {
@@ -409,7 +405,7 @@ void RtcOkiMsm6242rs::logRtcTime(char *msg)
   struct tm *datetime = GetCurrentOrHeldTime();
 
   if(datetime) {
-    _core.Log->AddLog("RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n",
+    _log->AddLog("RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n",
       msg,
       datetime->tm_year + 1900,
       datetime->tm_mon + 1,
@@ -464,8 +460,10 @@ void RtcOkiMsm6242rs::InitializeRegisterSetters()
   _registerSetters[15] = &RtcOkiMsm6242rs::SetControlRegisterF;
 }
 
-RtcOkiMsm6242rs::RtcOkiMsm6242rs()
+RtcOkiMsm6242rs::RtcOkiMsm6242rs(Service::ILog* log)
 {
+  _log = log;
+
   _rtcLastActualTime = _rtcTime = time(nullptr);
   _rtcWeekdayModifier = 0;
 

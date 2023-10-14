@@ -1107,7 +1107,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\ListTree.cpp" />
     <ClCompile Include="C\modrip.c" />
     <ClCompile Include="C\rtc.cpp" />
-    <ClCompile Include="C\RtcOkiMsm6242rs.cpp" />
     <ClCompile Include="C\Sound.cpp" />
     <ClCompile Include="C\SPRITE.C" />
     <ClCompile Include="C\SpriteMerger.cpp" />
@@ -1285,7 +1284,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\modrip.h" />
     <ClInclude Include="INCLUDE\MOUSEDRV.H" />
     <ClInclude Include="INCLUDE\rtc.h" />
-    <ClInclude Include="INCLUDE\RtcOkiMsm6242rs.h" />
     <ClInclude Include="INCLUDE\SPRITE.H" />
     <ClInclude Include="INCLUDE\SpriteMerger.h" />
     <ClInclude Include="INCLUDE\SpriteP2CDecoder.h" />

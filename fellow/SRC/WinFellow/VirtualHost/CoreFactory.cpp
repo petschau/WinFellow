@@ -37,6 +37,7 @@ void CoreFactory::CreateModules()
 {
   _core.Sound = new Sound();
   _core.Uart = new Uart();
+  _core.RtcOkiMsm6242rs = new RtcOkiMsm6242rs(_core.Log);
 }
 
 void CoreFactory::DestroyModules()

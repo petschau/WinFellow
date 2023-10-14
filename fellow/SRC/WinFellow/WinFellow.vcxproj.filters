@@ -264,9 +264,6 @@
     <ClCompile Include="C\rtc.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\RtcOkiMsm6242rs.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="C\Sound.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -699,9 +696,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\rtc.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\RtcOkiMsm6242rs.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\SPRITE.H">

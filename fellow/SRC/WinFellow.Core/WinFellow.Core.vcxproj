@@ -35,6 +35,7 @@
     <ClInclude Include="Driver\Drivers.h" />
     <ClInclude Include="Driver\ISoundDriver.h" />
     <ClInclude Include="Driver\SoundDriverRuntimeConfiguration.h" />
+    <ClInclude Include="IO\RtcOkiMsm6242rs.h" />
     <ClInclude Include="IO\Uart.h" />
     <ClInclude Include="NullDriver\Sound\NullSound.h" />
     <ClInclude Include="Service\IFileops.h" />
@@ -45,6 +46,7 @@
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp" />
     <ClCompile Include="CustomChipset\RegisterUtility.cpp" />
+    <ClCompile Include="IO\RtcOkiMsm6242rs.cpp" />
     <ClCompile Include="NullDriver\Sound\NullSound.cpp" />
     <ClCompile Include="Service\Log.cpp" />
     <ClCompile Include="VirtualHost\Core.cpp" />
