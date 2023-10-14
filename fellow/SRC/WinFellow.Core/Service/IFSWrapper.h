@@ -11,15 +11,13 @@ namespace Service
     FS_NAVIG_OTHER
   } fs_wrapper_file_types;
 
-  typedef struct
+  struct fs_wrapper_point
   {
-    uint8_t drive;
     std::string name;
-    bool relative;
     bool writeable;
     uint32_t size;
     fs_wrapper_file_types type;
-  } fs_wrapper_point;
+  };
 
   class IFSWrapper
   {
