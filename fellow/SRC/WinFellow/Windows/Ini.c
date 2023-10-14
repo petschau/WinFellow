@@ -464,9 +464,9 @@ void iniManagerStartup(iniManager *initdatamanager) {
 
   // load the ini-file into the m_current_initdata data structure
   if (iniLoadIniFromFilename(initdata, ini_filename) == FALSE) {
-    fellowAddLog("ini-file not found\n");
+    _core.Log->AddLog("ini-file not found\n");
   } else {
-    fellowAddLog("ini-file succesfully loaded\n");
+    _core.Log->AddLog("ini-file succesfully loaded\n");
   }
 
   initdata = iniManagerGetNewIni(initdatamanager);

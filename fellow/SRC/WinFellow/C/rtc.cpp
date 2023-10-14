@@ -19,21 +19,21 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "RtcOkiMsm6242rs.h"
+#include "IO/RtcOkiMsm6242rs.h"
 #include "FMEM.H"
 #include "FELLOW.H"
 #include "rtc.h"
+#include "VirtualHost/Core.h"
 
 bool rtc_enabled = false;
-RtcOkiMsm6242rs rtc;
 
 uint8_t rtcReadByte(uint32_t address)
 {
-  uint16_t result = rtc.read(address);
+  uint16_t result = _core.RtcOkiMsm6242rs->read(address);
   uint8_t byte_result = (uint8_t) ((address & 1) ? result : (result>>8));
 
 #ifdef RTC_LOG
-  fellowAddLog("RTC Byte Read: %.8X, returned %.2X\n", address, byte_result);
+  _core.Log->AddLog("RTC Byte Read: %.8X, returned %.2X\n", address, byte_result);
 #endif
 
   return byte_result;
@@ -41,10 +41,10 @@ uint8_t rtcReadByte(uint32_t address)
 
 uint16_t rtcReadWord(uint32_t address)
 {
-  uint16_t result = rtc.read(address);
+  uint16_t result = _core.RtcOkiMsm6242rs->read(address);
 
 #ifdef RTC_LOG
-  fellowAddLog("RTC Word Read: %.8X, returned %.4X\n", address, result);
+  _core.Log->AddLog("RTC Word Read: %.8X, returned %.4X\n", address, result);
 #endif
 
   return result;
@@ -52,12 +52,12 @@ uint16_t rtcReadWord(uint32_t address)
 
 uint32_t rtcReadLong(uint32_t address)
 {
-  uint32_t w1 = (uint32_t) rtc.read(address);
-  uint32_t w2 = (uint32_t) rtc.read(address+2);
+  uint32_t w1 = (uint32_t)_core.RtcOkiMsm6242rs->read(address);
+  uint32_t w2 = (uint32_t)_core.RtcOkiMsm6242rs->read(address+2);
   uint32_t result = (w1 << 16) | w2;
 
 #ifdef RTC_LOG
-  fellowAddLog("RTC Long Read: %.8X, returned %.8X\n", address, result);
+  _core.Log->AddLog("RTC Long Read: %.8X, returned %.8X\n", address, result);
 #endif
 
   return result;
@@ -65,29 +65,29 @@ uint32_t rtcReadLong(uint32_t address)
 
 void rtcWriteByte(uint8_t data, uint32_t address)
 {
-  rtc.write(data, address);
+  _core.RtcOkiMsm6242rs->write(data, address);
 
 #ifdef RTC_LOG
-  fellowAddLog("RTC Byte Write: %.8X %.2X\n", address, data);
+  _core.Log->AddLog("RTC Byte Write: %.8X %.2X\n", address, data);
 #endif
 }
 
 void rtcWriteWord(uint16_t data, uint32_t address)
 {
-  rtc.write(data, address);
+  _core.RtcOkiMsm6242rs->write(data, address);
 
 #ifdef RTC_LOG
-  fellowAddLog("RTC Word Write: %.8X %.4X\n", address, data);
+  _core.Log->AddLog("RTC Word Write: %.8X %.4X\n", address, data);
 #endif
 }
 
 void rtcWriteLong(uint32_t data, uint32_t address)
 {
-  rtc.write(data, address);
-  rtc.write(data, address + 2);
+  _core.RtcOkiMsm6242rs->write(data, address);
+  _core.RtcOkiMsm6242rs->write(data, address + 2);
 
 #ifdef RTC_LOG
-  fellowAddLog("RTC Long Write: %.8X %.8X\n", address, data);
+  _core.Log->AddLog("RTC Long Write: %.8X %.8X\n", address, data);
 #endif
 }
 
@@ -119,7 +119,7 @@ void rtcMap()
       FALSE);
 
 #ifdef RTC_LOG
-  fellowAddLog("Mapped RTC at $DC0000\n");
+    _core.Log->AddLog("Mapped RTC at $DC0000\n");
 #endif
   }
 }

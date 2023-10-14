@@ -47,6 +47,7 @@ Tuesday, September 05, 2000: nova
 #include "keycodes.h"
 #include "kbdparser.h"
 #include "fellow.h"
+#include "VirtualHost/Core.h"
 #include <stdio.h>
 
 
@@ -400,7 +401,7 @@ BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_re
   f = fopen( szFilename, "r" );
   if( !f )
   {
-    fellowAddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
+    _core.Log->AddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
     return TRUE;
   }
 
@@ -440,13 +441,13 @@ BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_re
 
     if(( AmigaIndex < 0 ) && ( ReplIndex < 0 ))
     {
-      fellowAddLog( "Amiga key: %s unrecognized\n", pAmigaName );
+      _core.Log->AddLog( "Amiga key: %s unrecognized\n", pAmigaName );
       continue;
     }
 
     if( PcIndex < 0 )
     {
-      fellowAddLog( "Pc    key: %s unrecognized\n", pWinName );
+      _core.Log->AddLog( "Pc    key: %s unrecognized\n", pWinName );
       continue;
     }
 
@@ -480,12 +481,12 @@ BOOLE prsWriteFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_r
   f = fopen( szFilename, "w" );
   if( !f )
   {
-    fellowAddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
+    _core.Log->AddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
     return TRUE;
   }
 
 #ifdef _DEBUG
-  fellowAddLog( "rewriting mapping file %s\n", szFilename );
+  _core.Log->AddLog( "rewriting mapping file %s\n", szFilename );
 #endif
 
   for( AmigaIndex = 0; AmigaIndex < MAX_AMIGA_NAMES; AmigaIndex++ )

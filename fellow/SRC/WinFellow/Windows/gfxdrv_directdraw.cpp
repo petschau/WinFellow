@@ -292,7 +292,7 @@ void gfxDrvDDrawFailure(const char* header, HRESULT err)
 {
   char s[255];
   sprintf(s, "gfxdrv: %s %s\n", header, gfxDrvDDrawErrorString(err));
-  fellowAddLog(s);
+  _core.Log->AddLog(s);
 }
 
 /*==========================================================================*/
@@ -418,14 +418,14 @@ void gfxDrvDDrawDeviceInformationDump()
   char s[120];
 
   sprintf(s, "gfxdrv: DirectDraw devices found: %u\n", listCount(gfx_drv_ddraw_devices));
-  fellowAddLog(s);
+  _core.Log->AddLog(s);
   for (felist* l = gfx_drv_ddraw_devices; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_device* tmpdev = (gfx_drv_ddraw_device*)listNode(l);
     sprintf(s, "gfxdrv: DirectDraw Driver Description: %s\n", tmpdev->lpDriverDescription);
-    fellowAddLog(s);
+    _core.Log->AddLog(s);
     sprintf(s, "gfxdrv: DirectDraw Driver Name       : %s\n", tmpdev->lpDriverName);
-    fellowAddLog(s);
+    _core.Log->AddLog(s);
   }
 }
 
@@ -520,12 +520,12 @@ bool gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device* ddraw_device)
         (caps.dwFXCaps & DDFXCAPS_BLTSHRINKYN);
       if (!ddraw_device->can_stretch_y)
       {
-        fellowAddLog("gfxdrv: WARNING: No hardware stretch\n");
+        _core.Log->AddLog("gfxdrv: WARNING: No hardware stretch\n");
       }
       ddraw_device->no_dd_hardware = !!(caps.dwCaps & DDCAPS_NOHARDWARE);
       if (ddraw_device->no_dd_hardware)
       {
-        fellowAddLog("gfxdrv: WARNING: No DirectDraw hardware\n");
+        _core.Log->AddLog("gfxdrv: WARNING: No DirectDraw hardware\n");
       }
     }
   }
@@ -753,7 +753,7 @@ HRESULT WINAPI gfxDrvDDrawEnumerateFullScreenMode(LPDDSURFACEDESC lpDDSurfaceDes
   {
     if ((lpDDSurfaceDesc->dwRefreshRate > 1 && lpDDSurfaceDesc->dwRefreshRate < 50) || lpDDSurfaceDesc->dwWidth < 640)
     {
-      // fellowAddLog("gfxDrvDDrawModeEnumerate(): ignoring mode %ux%u, %u bit, %u Hz\n",
+      // _core.Log->AddLog("gfxDrvDDrawModeEnumerate(): ignoring mode %ux%u, %u bit, %u Hz\n",
       //   lpDDSurfaceDesc->dwWidth,
       //   lpDDSurfaceDesc->dwHeight,
       //   lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
@@ -801,7 +801,7 @@ bool gfxDrvDDrawInitializeFullScreenModeInformation(gfx_drv_ddraw_device* ddraw_
 
     if (!result)
     {
-      fellowAddLog("gfxdrv: no valid draw modes found, retry while ignoring refresh rates...\n");
+      _core.Log->AddLog("gfxdrv: no valid draw modes found, retry while ignoring refresh rates...\n");
       err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2, 0, nullptr, (LPVOID)ddraw_device, gfxDrvDDrawEnumerateFullScreenMode);
 
       result = listCount(ddraw_device->fullscreen_modes) != 0;
@@ -872,7 +872,7 @@ void gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device* ddraw_device, LPDIRECTDRAWSUR
   {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceClear(): ", err);
   }
-  fellowAddLog("gfxdrv: Clearing surface\n");
+  _core.Log->AddLog("gfxdrv: Clearing surface\n");
 }
 
 /*==========================================================================*/
@@ -883,7 +883,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device* ddraw_device, LPDIRECTDR
 {
   if (IDirectDrawSurface_IsLost(surface) != DDERR_SURFACELOST)
   {
-    fellowAddLog("gfxDrvDDrawSurfaceRestore(): Called but surface was not lost.\n");
+    _core.Log->AddLog("gfxDrvDDrawSurfaceRestore(): Called but surface was not lost.\n");
     return DD_OK;
   }
   HRESULT err = IDirectDrawSurface_Restore(surface);
@@ -1128,13 +1128,13 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device* ddraw_devi
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() 0x%x\n", err);
-      fellowAddLog("gfxdrv: Failed to allocate second offscreen surface in %s\n", gfxDrvDDrawVideomemLocationStr(pass));
+      _core.Log->AddLog("gfxdrv: Failed to allocate second offscreen surface in %s\n", gfxDrvDDrawVideomemLocationStr(pass));
       result = false;
     }
     else
     {
       buffer_allocated = true;
-      fellowAddLog("gfxdrv: Allocated second offscreen surface in %s (%d, %d)\n", gfxDrvDDrawVideomemLocationStr(pass), draw_buffer_info.width, draw_buffer_info.height);
+      _core.Log->AddLog("gfxdrv: Allocated second offscreen surface in %s (%d, %d)\n", gfxDrvDDrawVideomemLocationStr(pass), draw_buffer_info.width, draw_buffer_info.height);
       gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSSecondary);
       result = true;
     }
@@ -1187,12 +1187,12 @@ uint32_t gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device* ddraw_device)
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): ", err);
-      fellowAddLog("gfxdrv: Failed to allocate primary surface with %d backbuffers\n", buffer_count_want - 1);
+      _core.Log->AddLog("gfxdrv: Failed to allocate primary surface with %d backbuffers\n", buffer_count_want - 1);
       success = false;
     }
     else
     { /* Here we have got a buffer, clear it */
-      fellowAddLog("gfxdrv: Allocated primary surface with %d backbuffers\n", buffer_count_want - 1);
+      _core.Log->AddLog("gfxdrv: Allocated primary surface with %d backbuffers\n", buffer_count_want - 1);
       if (buffer_count_want > 1)
       {
         ddscaps.dwCaps = DDSCAPS_BACKBUFFER;
@@ -1253,7 +1253,7 @@ uint32_t gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device* ddraw_device)
       {
         char pixelFormats[512];
         gfxDrvDDrawPrintPixelFlags(ddpf.dwFlags, pixelFormats);
-        fellowAddLog(
+        _core.Log->AddLog(
           "gfxdrv: Surface has pixelformat flags %s (%.8X), (%d, %d, %d, %d, %d, %d, %d)\n",
           pixelFormats,
           ddpf.dwFlags,
@@ -1286,7 +1286,7 @@ uint32_t gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device* ddraw_device)
       }
       else
       { /* Unsupported pixel format..... */
-        fellowAddLog("gfxdrv: gfxDrvDDrawSurfacesInitialized(): Window mode - unsupported Pixelformat, flags (%.8X)\n", ddpf.dwFlags);
+        _core.Log->AddLog("gfxdrv: gfxDrvDDrawSurfacesInitialized(): Window mode - unsupported Pixelformat, flags (%.8X)\n", ddpf.dwFlags);
         gfxDrvDDrawSurfacesRelease(ddraw_device);
         success = false;
       }
@@ -1400,7 +1400,7 @@ uint8_t* gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device* ddraw_device, uint32_t* pi
     else
     {
       /* Here we are in deep trouble, we can not provide a buffer pointer */
-      fellowAddLog("gfxDrvDDrawSurfaceLock(): (Unkown reason for failure to lock surface)\n");
+      _core.Log->AddLog("gfxDrvDDrawSurfaceLock(): (Unkown reason for failure to lock surface)\n");
       return nullptr;
     }
   }
@@ -1595,13 +1595,13 @@ void gfxDrvDDrawSizeChanged(unsigned int width, unsigned int height)
     gfx_drv_output_width = width;
     gfx_drv_output_height = height;
 
-    fellowAddLog("DDraw Size changed: %u %u\n", width, height);
+    _core.Log->AddLog("DDraw Size changed: %u %u\n", width, height);
 
     gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device_current);
     gfx_drv_ddraw_clear_borders = true;
   }
   else
-    fellowAddLog("DDraw fullscreen size ignored: %u %u\n", width, height);
+    _core.Log->AddLog("DDraw fullscreen size ignored: %u %u\n", width, height);
 }
 
 void gfxDrvDDrawPositionChanged()
@@ -1631,7 +1631,7 @@ void gfxDrvDDrawSetMode(draw_mode* dm, bool windowed)
     gfx_drv_ddraw_device_current->fullscreen_mode = static_cast<gfx_drv_ddraw_fullscreen_mode*>(listNode(listIndex(gfx_drv_ddraw_device_current->fullscreen_modes, dm->id)));
     gfx_drv_output_width = dm->width;
     gfx_drv_output_height = dm->height;
-    fellowAddLog("gfxdrv: SetMode() - Fullscreen\n");
+    _core.Log->AddLog("gfxdrv: SetMode() - Fullscreen\n");
   }
 }
 
@@ -1667,7 +1667,7 @@ unsigned int gfxDrvDDrawEmulationStartPost()
 
   if (buffers == 0)
   {
-    fellowAddLog("gfxdrv: gfxDrvDDrawEmulationStartPost(): Zero buffers, gfxDrvDDrawSetMode() failed\n");
+    _core.Log->AddLog("gfxdrv: gfxDrvDDrawEmulationStartPost(): Zero buffers, gfxDrvDDrawSetMode() failed\n");
   }
 
   return buffers;
@@ -1780,7 +1780,7 @@ cleanup:
   if (file) fclose(file);
   if (bitmap) DeleteObject(bitmap);
 
-  fellowAddLog(
+  _core.Log->AddLog(
     "gfxDrvDDrawSaveScreenshotFromDCArea(hDC=0x%x, width=%d, height=%d, bits=%d, filename='%s' %s.\n",
     hDC,
     width,
@@ -1861,7 +1861,7 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char* f
     bResult = gfxDrvDDrawSaveScreenshotFromSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, 1, filename);
   }
 
-  fellowAddLog("gfxDrvDDrawSaveScreenshot(filtered=%d, filename='%s') %s.\n", bTakeFilteredScreenshot, filename, bResult ? "successful" : "failed");
+  _core.Log->AddLog("gfxDrvDDrawSaveScreenshot(filtered=%d, filename='%s') %s.\n", bTakeFilteredScreenshot, filename, bResult ? "successful" : "failed");
 
   return bResult;
 }

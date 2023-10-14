@@ -1,12 +1,15 @@
 #pragma once
 
 #include "Service/IFileops.h"
+#include "Service/ILog.h"
 
 class FileopsWin32 : public Service::IFileops
 {
 private:
-  bool fileopsGetWinFellowExecutablePath(char* strBuffer, const uint32_t lBufferSize);
-  bool fileopsDirectoryExists(const char* strPath);
+  Service::ILog* _log;
+
+  bool GetWinFellowExecutablePath(char* strBuffer, const uint32_t lBufferSize);
+  bool DirectoryExists(const char* strPath);
 
 public:
   bool GetFellowLogfileName(char*) override;
@@ -19,6 +22,6 @@ public:
   bool GetWinFellowInstallationPath(char*, const uint32_t) override;
   bool GetKickstartByCRC32(const char*, const uint32_t, char*, const uint32_t) override;
 
-  FileopsWin32() = default;
+  FileopsWin32(Service::ILog* log);
   virtual ~FileopsWin32() = default;
 };

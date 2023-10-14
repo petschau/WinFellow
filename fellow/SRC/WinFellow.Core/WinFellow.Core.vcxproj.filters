@@ -69,6 +69,9 @@
     <ClInclude Include="IO\Uart.h">
       <Filter>IO</Filter>
     </ClInclude>
+    <ClInclude Include="IO\RtcOkiMsm6242rs.h">
+      <Filter>IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -85,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="Service\Log.cpp">
       <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\RtcOkiMsm6242rs.cpp">
+      <Filter>IO</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

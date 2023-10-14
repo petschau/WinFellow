@@ -668,12 +668,12 @@ char* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 
 void kbdDrvDInputFailure(char *header, HRESULT err)
 {
-  fellowAddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
+  _core.Log->AddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
 void kbdDrvDInputUnacquireFailure(char* header, HRESULT err)
 {
-  fellowAddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
+  _core.Log->AddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
 }
 
 /*===========================================================================*/
@@ -695,7 +695,7 @@ void kbdDrvDInputAcquireFailure(char* header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
-    fellowAddLog("%s %s\n", header, "The device was already in an acquired state.");
+    _core.Log->AddLog("%s %s\n", header, "The device was already in an acquired state.");
   }
   else
   {
@@ -717,7 +717,7 @@ void kbdDrvEOFHandler()
 
   if(t && (RP.GetTime() - RP.GetEscapeKeyHeldSince()) > RP.GetEscapeKeyHoldTime())
   {
-    fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
+    _core.Log->AddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
 #ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     RP.PostEscaped();
 #endif
@@ -732,7 +732,7 @@ void kbdDrvEOFHandler()
     if(t < tCurrentTime) {
       uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
-      fellowAddLog("RetroPlatform escape key simulation interval ended.\n");
+      _core.Log->AddLog("RetroPlatform escape key simulation interval ended.\n");
       RP.SetEscapeKeySimulatedTargetTime(0);
       kbdKeyAdd(a_code | 0x80); // release escape key
     }
@@ -870,7 +870,7 @@ bool kbdDrvDInputInitialize()
   kbd_drv_DIevent = CreateEvent(nullptr, 0, 0, nullptr);
   if (kbd_drv_DIevent == nullptr)
   {
-    fellowAddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
+    _core.Log->AddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
     kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
     return false;
@@ -944,7 +944,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
     {
 
 #ifdef _DEBUG
-      fellowAddLog( "Key captured: %s\n", kbdDrvKeyString( symbol_key ));
+      _core.Log->AddLog( "Key captured: %s\n", kbdDrvKeyString( symbol_key ));
 #endif
 
       kbd_drv_captured_key = symbol_key;
@@ -1010,7 +1010,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 	  {
             uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
-	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
+	    _core.Log->AddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
               t);
             RP.SetEscapeKeySimulatedTargetTime(RP.GetTime() + RP.GetEscapeKeyHoldTime());
             kbdKeyAdd(a_code); // hold escape key
@@ -1110,7 +1110,7 @@ void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
 
   /* DEBUG info, not needed now*/
 #ifdef _DEBUG
-  fellowAddLog("Keypress %s %s%s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released", kbd_in_task_switcher ? " ignored due to ALT-TAB" : "");
+  _core.Log->AddLog("Keypress %s %s%s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released", kbd_in_task_switcher ? " ignored due to ALT-TAB" : "");
 #endif
 
   // Bad hack
@@ -1120,7 +1120,7 @@ void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
   // left-alt already pressed, and now TAB pressed as well
   if (!kbd_in_task_switcher && keys[map(PCK_LEFT_ALT)] && keycode == map(PCK_TAB) && pressed)
   {
-    fellowAddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
+    _core.Log->AddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
 
     // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
     kbd_in_task_switcher = gfxDrvCommon->GetOutputWindowed();
@@ -1133,16 +1133,16 @@ void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
     keycode_was_pressed = prevkeys[keycode];
 
 #ifdef _DEBUG
-    fellowAddLog("Keypress TAB converted to %s %s due to ALT-TAB started\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
+    _core.Log->AddLog("Keypress TAB converted to %s %s due to ALT-TAB started\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
 #endif
   }
   else if (kbd_in_task_switcher && symbolic_key == PCK_LEFT_ALT && !pressed)
   {
-    fellowAddLog("kbdDrvKeypress(): ALT-TAB end detected\n");
+    _core.Log->AddLog("kbdDrvKeypress(): ALT-TAB end detected\n");
     kbd_in_task_switcher = false;
 
 #ifdef _DEBUG
-    fellowAddLog("Keypress LEFT-ALT released ignored due to ALT-TAB ending\n");
+    _core.Log->AddLog("Keypress LEFT-ALT released ignored due to ALT-TAB ending\n");
 #endif    
     return;
   }
@@ -1186,7 +1186,7 @@ void kbdDrvKeypressRaw(uint32_t lRawKeyCode, BOOL pressed)
 #endif
 
 #ifdef _DEBUG
-  fellowAddLog("  kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n", 
+  _core.Log->AddLog("  kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n", 
     lRawKeyCode, pressed ? "pressed" : "released", 
     kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
 #endif

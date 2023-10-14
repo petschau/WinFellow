@@ -34,6 +34,7 @@
 #include "fswrap.h"
 #include "fellow.h"
 #include <cerrno>
+#include "VirtualHost/Core.h"
 
 
 /*===========================================================================*/
@@ -99,19 +100,19 @@ void fsWrapMakeRelativePath(char *root_dir, char *file_path) {
 // https://connect.microsoft.com/VisualStudio/feedback/details/1600505/stat-not-working-on-windows-xp-using-v14-xp-platform-toolset-vs2015
 // https://stackoverflow.com/questions/32452777/visual-c-2015-express-stat-not-working-on-windows-xp
 // limitations: only sets a limited set of mode flags and calculates size information
-int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
+int fsWrapStat(const char* szFilename, struct stat* pStatBuffer)
 {
   int result;
 
 #ifdef _DEBUG
-  fellowAddLog("fsWrapStat(szFilename=%s, pStatBuffer=0x%08x)\n", 
+  _core.Log->AddLog("fsWrapStat(szFilename=%s, pStatBuffer=0x%08x)\n",
     szFilename, pStatBuffer);
 #endif
 
   result = stat(szFilename, pStatBuffer);
 
 #ifdef _DEBUG
-  fellowAddLog(" native result=%d mode=0x%04x nlink=%d size=%lu\n",
+  _core.Log->AddLog(" native result=%d mode=0x%04x nlink=%d size=%lu\n",
     result,
     pStatBuffer->st_mode,
     pStatBuffer->st_nlink,
@@ -129,67 +130,67 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
 
   BOOL bIsLegacyOS = osvi.dwMajorVersion == 5;
 
-  if(bIsLegacyOS)
+  if (bIsLegacyOS)
   {
     WIN32_FILE_ATTRIBUTE_DATA hFileAttributeData;
     // mark files as readable by default; set flags for user, group and other
-    unsigned short mode = _S_IREAD  | (_S_IREAD  >> 3) | (_S_IREAD  >> 6);
+    unsigned short mode = _S_IREAD | (_S_IREAD >> 3) | (_S_IREAD >> 6);
 
     memset(pStatBuffer, 0, sizeof(struct stat));
     pStatBuffer->st_nlink = 1;
 
-    if(!GetFileAttributesEx(szFilename, GetFileExInfoStandard, &hFileAttributeData))
+    if (!GetFileAttributesEx(szFilename, GetFileExInfoStandard, &hFileAttributeData))
     {
 
 #ifdef _DEBUG
-      LPTSTR szErrorMessage= nullptr;
+      LPTSTR szErrorMessage = nullptr;
       DWORD hResult = GetLastError();
 
-      fellowAddLog("  fsWrapStat(): GetFileAttributesEx() failed, return code=%d", 
+      _core.Log->AddLog("  fsWrapStat(): GetFileAttributesEx() failed, return code=%d",
         hResult);
 
       FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                    nullptr, hResult, MAKELANGID(0, SUBLANG_ENGLISH_US), (LPTSTR)&szErrorMessage, 0, nullptr);
+        nullptr, hResult, MAKELANGID(0, SUBLANG_ENGLISH_US), (LPTSTR)&szErrorMessage, 0, nullptr);
       if (szErrorMessage != nullptr)
       {
-          fellowAddTimelessLog(" (%s)\n", szErrorMessage);
-          LocalFree(szErrorMessage);
-          szErrorMessage = nullptr;
+        _core.Log->AddTimelessLog(" (%s)\n", szErrorMessage);
+        LocalFree(szErrorMessage);
+        szErrorMessage = nullptr;
       }
       else
-        fellowAddTimelessLog("\n");
+        _core.Log->AddTimelessLog("\n");
 #endif
 
-      *_errno() = ENOENT;
+      * _errno() = ENOENT;
       result = -1;
     }
     else
     {
       // directory?
-      if(hFileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+      if (hFileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
       {
-        mode |= _S_IFDIR | _S_IEXEC  | (_S_IEXEC  >> 3) | (_S_IEXEC  >> 6);
+        mode |= _S_IFDIR | _S_IEXEC | (_S_IEXEC >> 3) | (_S_IEXEC >> 6);
       }
       else
       {
         mode |= _S_IFREG;
         // detection of executable files is not supported for the time being
 
-        pStatBuffer->st_size  = ((__int64)hFileAttributeData.nFileSizeHigh << 32) + hFileAttributeData.nFileSizeLow;
+        pStatBuffer->st_size = ((__int64)hFileAttributeData.nFileSizeHigh << 32) + hFileAttributeData.nFileSizeLow;
       }
 
-      if(!(hFileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_READONLY))
+      if (!(hFileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_READONLY))
       {
         mode |= _S_IWRITE | (_S_IWRITE >> 3) | (_S_IWRITE >> 6);
       }
-      
-      pStatBuffer->st_mode  = mode;
+
+      pStatBuffer->st_mode = mode;
 
       result = 0;
     } // GetFileAttributesEx() successful
 
 #ifdef _DEBUG
-    fellowAddLog(" fswrap result=%d mode=0x%04x nlink=%d size=%lu\n",
+    _core.Log->AddLog(" fswrap result=%d mode=0x%04x nlink=%d size=%lu\n",
       result,
       pStatBuffer->st_mode,
       pStatBuffer->st_nlink,
@@ -242,7 +243,7 @@ fs_navig_point *fsWrapMakePoint(const char *point) {
   else
   {
     char* strError = strerror(errno);
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "fsWrapMakePoint(): ERROR getting file information for %s: error code %i (%s)\n", point, errno, strError);
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "fsWrapMakePoint(): ERROR getting file information for %s: error code %i (%s)\n", point, errno, strError);
   }
   return fsnp;
 }

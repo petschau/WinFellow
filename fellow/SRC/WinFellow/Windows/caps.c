@@ -69,10 +69,10 @@ BOOLE capsStartup() {
 
   if(result != 0)
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_INFO, 
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_INFO, 
 	    "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
     capsUserIsNotified = TRUE;
-    fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
+    _core.Log->AddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
     return FALSE;
   }
 
@@ -82,7 +82,7 @@ BOOLE capsStartup() {
     capsDriveContainer[i] = CapsAddImage();
 
   capsIsInitialized = TRUE;
-  fellowAddLog("capsStartup(): CAPS IPF Image library loaded successfully.\n");
+  _core.Log->AddLog("capsStartup(): CAPS IPF Image library loaded successfully.\n");
 
   return TRUE;
 }
@@ -98,7 +98,7 @@ BOOLE capsUnloadImage(uint32_t drive) {
   CapsUnlockAllTracks(capsDriveContainer[drive]);
   CapsUnlockImage(capsDriveContainer[drive]);
   capsDriveIsLocked[drive] = FALSE;
-  fellowAddLog("capsUnloadImage(): Image %s unloaded from drive no %u.\n", floppy[drive].imagename, drive);
+  _core.Log->AddLog("capsUnloadImage(): Image %s unloaded from drive no %u.\n", floppy[drive].imagename, drive);
   return TRUE;
 }
 
@@ -144,15 +144,15 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, uint32_t drive
   }
 
   /* log the information */
-  fellowAddTimelessLog("\nCAPS Image Information:\n");
-  fellowAddTimelessLog("Floppy Drive No: %u\n", drive);
-  fellowAddTimelessLog("Filename: %s\n", floppy[drive].imagename);
-  fellowAddTimelessLog("Type:%s\n", TypeString);
-  fellowAddTimelessLog("Date:%s\n", DateString);
-  fellowAddTimelessLog("Release:%04d Revision:%d\n",
+  _core.Log->AddTimelessLog("\nCAPS Image Information:\n");
+  _core.Log->AddTimelessLog("Floppy Drive No: %u\n", drive);
+  _core.Log->AddTimelessLog("Filename: %s\n", floppy[drive].imagename);
+  _core.Log->AddTimelessLog("Type:%s\n", TypeString);
+  _core.Log->AddTimelessLog("Date:%s\n", DateString);
+  _core.Log->AddTimelessLog("Release:%04d Revision:%d\n",
     capsImageInfo->release, 
     capsImageInfo->revision);
-  fellowAddTimelessLog("Intended platform(s):%s\n\n", PlatformString);
+  _core.Log->AddTimelessLog("Intended platform(s):%s\n\n", PlatformString);
 }
 
 BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
@@ -165,7 +165,7 @@ BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
 
   capsUnloadImage(drive);
 
-  fellowAddLog("capsLoadImage(): Attempting to load IPF Image %s into drive %u.\n", floppy[drive].imagename, drive);
+  _core.Log->AddLog("capsLoadImage(): Attempting to load IPF Image %s into drive %u.\n", floppy[drive].imagename, drive);
 
   fseek(F, 0, SEEK_END);
   uint32_t ImageSize = ftell(F);
@@ -191,7 +191,7 @@ BOOLE capsLoadImage(uint32_t drive, FILE *F, uint32_t *tracks) {
 
   CapsLoadImage(capsDriveContainer[drive], capsFlags);
   capsLogImageInfo(&capsImageInfo, drive);
-  fellowAddLog("capsLoadImage(): Image loaded successfully.\n");
+  _core.Log->AddLog("capsLoadImage(): Image loaded successfully.\n");
   return TRUE;
 }
 
@@ -237,7 +237,7 @@ BOOLE capsLoadTrack(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t 
       timebuf[i] = (uint32_t) capsTrackInfo.timebuf[i];
 
 #if TRACECAPS
-  fellowAddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
+  _core.Log->AddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
     drive, 
     track, 
     *flakey ? "TRUE " : "FALSE", 
@@ -259,7 +259,7 @@ BOOLE capsLoadNextRevolution(uint32_t drive, uint32_t track, uint8_t *mfm_data, 
   uint32_t len = capsTrackInfo.tracksize[revolution];
   /*if(*tracklength != len)
   {
-  fellowAddLog("capsLoadRevolution(): Variable track size not implemented, will result in MFM buffer corruption!!!\n");
+  _core.Log->AddLog("capsLoadRevolution(): Variable track size not implemented, will result in MFM buffer corruption!!!\n");
   assert(0);
   }*/
   *tracklength = len;

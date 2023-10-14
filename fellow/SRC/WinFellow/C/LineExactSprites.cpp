@@ -161,7 +161,7 @@ spr_action_list_item* LineExactSprites::ActionListAddLast(spr_action_list_master
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
   }
 #endif
 
@@ -204,7 +204,7 @@ spr_action_list_item* LineExactSprites::ActionListAddSorted(spr_action_list_mast
       }
       if (l->count >= SPRITE_MAX_LIST_ITEMS)
       {
-        fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+        fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
       }
 #endif
 
@@ -226,7 +226,7 @@ spr_merge_list_item* LineExactSprites::MergeListAddLast(spr_merge_list_master* l
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
   }
 #endif
   return &l->items[l->count++];
@@ -1124,7 +1124,7 @@ void LineExactSprites::NotifySprpthChanged(uint16_t data, unsigned int sprite_nu
       (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
       chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
       chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
-    fellowAddLog2(buffer);
+    _core.Log->AddLog2(buffer);
   }
 }
 
@@ -1148,7 +1148,7 @@ void LineExactSprites::NotifySprptlChanged(uint16_t data, unsigned int sprite_nu
       (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
       chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
       chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
-    fellowAddLog2(buffer);
+    _core.Log->AddLog2(buffer);
   }
 }
 
@@ -1168,7 +1168,7 @@ void LineExactSprites::NotifySprposChanged(uint16_t data, unsigned int sprite_nu
   if (output_sprite_log == TRUE)
   {
     sprintf(buffer, "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number, sprx_debug[sprite_number], sprly_debug[sprite_number]);
-    fellowAddLog2(buffer);
+    _core.Log->AddLog2(buffer);
   }
 }
 
@@ -1189,7 +1189,7 @@ void LineExactSprites::NotifySprctlChanged(uint16_t data, unsigned int sprite_nu
   if (output_sprite_log == TRUE)
   {
     sprintf(buffer, "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number, sprx_debug[sprite_number], spry_debug[sprite_number], sprly_debug[sprite_number]);
-    fellowAddLog2(buffer);
+    _core.Log->AddLog2(buffer);
   }
 }
 
@@ -1207,7 +1207,7 @@ void LineExactSprites::NotifySprdataChanged(uint16_t data, unsigned int sprite_n
   if (output_sprite_log == TRUE)
   {
     sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number);
-    fellowAddLog2(buffer);
+    _core.Log->AddLog2(buffer);
   }
 }
 
@@ -1223,7 +1223,7 @@ void LineExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_n
   if (output_sprite_log == TRUE)
   {
     sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number);
-    fellowAddLog2(buffer);
+    _core.Log->AddLog2(buffer);
   }
 }
 
@@ -1252,7 +1252,7 @@ void LineExactSprites::Log()
       spratt[no & 6],
       spratt[no | 1],
       sprite_registers.sprpt[no]);
-    fellowAddLog(s);
+    _core.Log->AddLog(s);
   }
 }
 
@@ -1305,7 +1305,7 @@ void LineExactSprites::LogActiveSprites()
     if (sprite_online[i])
     {
       sprintf(s, "Sprite %d position %u\n", i, sprx[i]);
-      fellowAddLog(s);
+      _core.Log->AddLog(s);
     }
   }
 }
@@ -1670,7 +1670,7 @@ void LineExactSprites::ProcessActionList()
               {
                 sprintf((char*)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n",
                   sprnr, busGetRasterY(), sprx[sprnr]);
-                fellowAddLog2(buffer);
+                _core.Log->AddLog2(buffer);
               }
             }
           }
@@ -1723,7 +1723,7 @@ void LineExactSprites::ProcessActionList()
         {
           sprintf((char*)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n",
             sprnr, busGetRasterY(), sprx[sprnr]);
-          fellowAddLog2(buffer);
+          _core.Log->AddLog2(buffer);
         }
       }
     }

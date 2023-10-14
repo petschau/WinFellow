@@ -25,6 +25,8 @@
 #include <windows.h>
 #include "fellow.h"
 #include "TIMER.H"
+#include "VirtualHost/Core.h"
+
 
 bool timer_running;
 uint32_t timer_mmresolution;
@@ -73,19 +75,19 @@ void timerEmulationStart()
   MMRESULT mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
   if (mmres != TIMERR_NOERROR)
   {
-    fellowAddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
+    _core.Log->AddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
     timer_running = false;
     return;
   }
 
-  fellowAddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+  _core.Log->AddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
 
   timer_mmresolution = timecaps.wPeriodMin;
 
   mmres = timeBeginPeriod(timer_mmresolution);
   if (mmres != TIMERR_NOERROR)
   {
-    fellowAddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
+    _core.Log->AddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
     timer_running = false;
     return;
   }
@@ -93,7 +95,7 @@ void timerEmulationStart()
   mmres = timeSetEvent(1, 0, timerCallback, (DWORD_PTR)0, (UINT)TIME_PERIODIC);
   if (mmres == 0)
   {
-    fellowAddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
+    _core.Log->AddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
     timer_running = false;
     return;
   }
@@ -109,7 +111,7 @@ void timerEmulationStop()
     mmres = timeEndPeriod(timer_mmresolution);
     if (mmres != TIMERR_NOERROR)
     {
-      fellowAddLog("timer: timerEmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
+      _core.Log->AddLog("timer: timerEmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
     }
     timer_running = false;
   }

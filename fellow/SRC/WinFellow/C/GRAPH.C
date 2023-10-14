@@ -265,7 +265,7 @@ void wvpos(uint16_t data, uint32_t address)
 {
   lof = (uint32_t)(data & 0x8000);
 
-  // fellowAddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+  // _core.Log->AddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 /*===========================================================================*/
@@ -553,7 +553,7 @@ void wbpl1pth(uint16_t data, uint32_t address)
 
   bpl1pt = chipsetReplaceHighPtr(bpl1pt, data);
 
-  //  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+  //  _core.Log->AddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 /*===========================================================================*/
@@ -567,7 +567,7 @@ void wbpl1ptl(uint16_t data, uint32_t address)
 
   bpl1pt = chipsetReplaceLowPtr(bpl1pt, data);
 
-  //  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+  //  _core.Log->AddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 /*===========================================================================*/

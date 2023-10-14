@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include "FELLOW.H"
 #include "DRAW.H"
 
 typedef enum {
@@ -78,5 +79,6 @@ extern void wguiShutdown();
 extern BOOLE wguiCheckEmulationNecessities();
 extern BOOLE wguiEnter();
 extern void wguiRequester(char *szMessage, UINT uType);
+extern void wguiShowRequester(char* szMessage, FELLOW_REQUESTER_TYPE requesterType);
 extern void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert);
 extern void wguiSetProcessDPIAwareness(const char *pszAwareness);

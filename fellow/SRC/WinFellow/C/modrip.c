@@ -54,9 +54,9 @@
 #if MODRIPDOLOGGING
 
 /* define this to have logfile output */
-#define RIPLOG1(x)       fellowAddLog(x);
-#define RIPLOG2(x, y)    fellowAddLog(x, y);
-#define RIPLOG3(x, y, z) fellowAddLog(x, y, z);
+#define RIPLOG1(x)       _core.Log->AddLog(x);
+#define RIPLOG2(x, y)    _core.Log->AddLog(x, y);
+#define RIPLOG3(x, y, z) _core.Log->AddLog(x, y, z);
 #else
 #define RIPLOG1(x)
 #define RIPLOG2(x)
@@ -928,9 +928,9 @@ void modripChipDump()
 	if(modripGuiRunProWiz()) {
 	  char commandline[MAX_PATH];
           sprintf(commandline, "prowiz.exe \"%s\"", filenamechip);
-	  fellowAddLog("Running Pro-Wizard: %s ...\n", commandline);
+	  _core.Log->AddLog("Running Pro-Wizard: %s ...\n", commandline);
 	  int result = system(commandline);
-	  fellowAddLog("Pro-Wizard call returned: %d\n", result);
+	  _core.Log->AddLog("Pro-Wizard call returned: %d\n", result);
 	}
       }
     }

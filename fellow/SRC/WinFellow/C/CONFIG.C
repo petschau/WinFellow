@@ -384,7 +384,7 @@ void cfgSetDisplayDriver(cfg* config, DISPLAYDRIVER display_driver)
 
   if (!gfxDrvDXGIValidateRequirements())
   {
-    fellowAddLog("cfgSetDisplayDriver(): Direct3D requirements not met, falling back to DirectDraw.\n");
+    _core.Log->AddLog("cfgSetDisplayDriver(): Direct3D requirements not met, falling back to DirectDraw.\n");
     config->m_displaydriver = DISPLAYDRIVER_DIRECTDRAW;
   }
 }
@@ -2066,7 +2066,7 @@ bool cfgLoadFromFilename(cfg* config, const char* filename, const bool bIsPreset
 
   if (!bIsPreset)
   {
-    fellowAddLog("cfg: loading configuration filename %s...\n", filename);
+    _core.Log->AddLog("cfg: loading configuration filename %s...\n", filename);
 
     // remove existing hardfiles
     cfgHardfilesFree(config);
@@ -2085,7 +2085,7 @@ bool cfgLoadFromFilename(cfg* config, const char* filename, const bool bIsPreset
 
     if (!bIsPreset && cfgGetConfigFileVersion(config) < CONFIG_CURRENT_FILE_VERSION)
     {
-      fellowAddLog("cfg: Upgrading config from old version.\n");
+      _core.Log->AddLog("cfg: Upgrading config from old version.\n");
       cfgUpgradeConfig(config);
     }
   }
@@ -2121,17 +2121,17 @@ static BOOLE cfgParseCommandLine(cfg* config, int argc, char* argv[])
 {
   int i;
 
-  fellowAddLog("cfg: list of commandline parameters: ");
+  _core.Log->AddLog("cfg: list of commandline parameters: ");
   for (i = 1; i < argc; i++)
   {
-    fellowAddLog("%s ", argv[i]);
+    _core.Log->AddLog("%s ", argv[i]);
   }
-  fellowAddLog("\n");
+  _core.Log->AddLog("\n");
 
   i = 1;
   while (i < argc)
   {
-    // fellowAddLog("cfg: parsing parameter: %s\n", argv[i]);
+    // _core.Log->AddLog("cfg: parsing parameter: %s\n", argv[i]);
     if (stricmp(argv[i], "-h") == 0)
     { /* Command line synposis */
       cfgSynopsis(config);
@@ -2153,7 +2153,7 @@ static BOOLE cfgParseCommandLine(cfg* config, int argc, char* argv[])
       i++;
       if (i < argc)
       {
-        fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
+        _core.Log->AddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
       }
       i++;
     }
@@ -2203,16 +2203,16 @@ static BOOLE cfgParseCommandLine(cfg* config, int argc, char* argv[])
       i++;
       if (i < argc)
       {
-        fellowAddLog("cfg: configuration file: %s\n", argv[i]);
+        _core.Log->AddLog("cfg: configuration file: %s\n", argv[i]);
         if (!cfgLoadFromFilename(config, argv[i], false))
         {
-          fellowAddLog("cfg: ERROR using -f option, failed reading configuration file %s\n", argv[i]);
+          _core.Log->AddLog("cfg: ERROR using -f option, failed reading configuration file %s\n", argv[i]);
         }
         i++;
       }
       else
       {
-        fellowAddLog("cfg: ERROR using -f option, please supply a filename\n");
+        _core.Log->AddLog("cfg: ERROR using -f option, please supply a filename\n");
       }
     }
     else if (stricmp(argv[i], "-autosnap") == 0)
@@ -2244,17 +2244,17 @@ static BOOLE cfgParseCommandLine(cfg* config, int argc, char* argv[])
       i++;
       if (i < argc)
       {
-        if (!cfgSetOption(config, argv[i])) fellowAddLog("cfg: -s option, unrecognized setting %s\n", argv[i]);
+        if (!cfgSetOption(config, argv[i])) _core.Log->AddLog("cfg: -s option, unrecognized setting %s\n", argv[i]);
         i++;
       }
       else
       {
-        fellowAddLog("cfg: -s option, please supply a configuration setting\n");
+        _core.Log->AddLog("cfg: -s option, please supply a configuration setting\n");
       }
     }
     else
     { /* unrecognized configuration option */
-      fellowAddLog("cfg: parameter %s not recognized.\n", argv[i]);
+      _core.Log->AddLog("cfg: parameter %s not recognized.\n", argv[i]);
       i++;
     }
   }

@@ -952,7 +952,7 @@ BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
 
     dmsErrMsg(result, (char*)diskname, gzname, (char*)szErrorMessage);
 
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
 
     free(gzname);
     return FALSE;
@@ -1013,12 +1013,12 @@ void floppyImageCompressedRemove(uint32_t drive)
         {
           if (!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
           {
-            fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n",
+            _core.Log->AddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n",
               floppy[drive].imagename);
           }
           else
           {
-            fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
+            _core.Log->AddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
               floppy[drive].imagename);
           }
         }
@@ -1238,7 +1238,7 @@ void floppyImageIPFLoad(uint32_t drive)
 
   if (!capsLoadImage(drive, floppy[drive].F, &floppy[drive].tracks))
   {
-    fellowAddLog("floppyImageIPFLoad(): Unable to load CAPS IPF Image. Is the Plug-In installed correctly?\n");
+    _core.Log->AddLog("floppyImageIPFLoad(): Unable to load CAPS IPF Image. Is the Plug-In installed correctly?\n");
     return;
   }
 
@@ -1273,7 +1273,7 @@ void floppySetDiskImage(uint32_t drive, char* diskname)
 
   if (floppy[drive].enabled)
   {
-    fellowAddLog("floppySetDiskImage(%u, '%s')...\n", drive, diskname);
+    _core.Log->AddLog("floppySetDiskImage(%u, '%s')...\n", drive, diskname);
   }
 
   if (strcmp(diskname, floppy[drive].imagename) == 0)
@@ -1333,7 +1333,7 @@ void floppySetDiskImage(uint32_t drive, char* diskname)
               bSuccess = TRUE;
               break;
             case FLOPPY_STATUS_EXTENDED2_OK:
-              fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n",
+              _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n",
                 drive, diskname);
               break;
 #ifdef FELLOW_SUPPORT_CAPS
@@ -1344,7 +1344,7 @@ void floppySetDiskImage(uint32_t drive, char* diskname)
 #endif
             default:
               /* Error already set by floppyImageGeometryCheck() */
-              fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: unexpected floppy image geometry status.\n",
+              _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: unexpected floppy image geometry status.\n",
                 drive, diskname);
               break;
             }
@@ -1568,7 +1568,7 @@ void floppyDMAReadInit(uint32_t drive)
 
   // Workaround, require normal sync with MFM generated from ADF. (North and South (?), Prince of Persia, Lemmings 2)
   if (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
-    fellowAddLog("floppyDMAReadInit(): WARNING: unusual dsksync value encountered: 0x%x\n", dsksync);
+    _core.Log->AddLog("floppyDMAReadInit(): WARNING: unusual dsksync value encountered: 0x%x\n", dsksync);
 
   floppy_DMA.wait_for_sync = (adcon & 0x0400)
     && ((floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) ||
@@ -1643,7 +1643,7 @@ void floppyDMAWriteInit(int32_t drive)
     }
     else
     {
-      fellowAddLog("Floppy write MFM ended with an incomplete sector.\n");
+      _core.Log->AddLog("Floppy write MFM ended with an incomplete sector.\n");
       break;
     }
   }
@@ -1890,7 +1890,7 @@ void floppyShutdown()
   floppyMfmDataFree();
 #ifdef FELLOW_SUPPORT_CAPS
   floppyTimeBufDataFree();
-  fellowAddLog("Unloading CAPS Image library...\n");
+  _core.Log->AddLog("Unloading CAPS Image library...\n");
   capsShutdown();
 #endif
 #ifdef FLOPPY_LOG

@@ -144,7 +144,7 @@ draw_rect draw_output_clip;
 void drawSetInternalClip(const draw_rect& internal_clip)
 {
 #ifdef _DEBUG
-  fellowAddLog("drawSetInternalClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
+  _core.Log->AddLog("drawSetInternalClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
     internal_clip.left, internal_clip.top, internal_clip.right, internal_clip.bottom);
 #endif
   draw_internal_clip = internal_clip;
@@ -158,7 +158,7 @@ const draw_rect& drawGetInternalClip()
 void drawSetOutputClip(const draw_rect& output_clip)
 {
 #ifdef _DEBUG
-  fellowAddLog("drawSetOutputClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
+  _core.Log->AddLog("drawSetOutputClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
     output_clip.left, output_clip.top, output_clip.right, output_clip.bottom);
 #endif
   draw_output_clip = output_clip;
@@ -1035,7 +1035,7 @@ uint32_t drawValidateBufferPointer(uint32_t amiga_line_number)
 
   if (draw_buffer_info.top_ptr == nullptr)
   {
-    fellowAddLog("Buffer ptr is nullptr\n");
+    _core.Log->AddLog("Buffer ptr is nullptr\n");
     return 0;
   }
 
@@ -1110,9 +1110,9 @@ BOOLE drawEmulationStartPost()
   }
   else
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
   }
-  fellowAddLog("drawEmulationStartPost(): Buffer is (%d,%d,%d)\n", draw_buffer_info.width, draw_buffer_info.height, draw_buffer_info.bits);
+  _core.Log->AddLog("drawEmulationStartPost(): Buffer is (%d,%d,%d)\n", draw_buffer_info.width, draw_buffer_info.height, draw_buffer_info.bits);
   return result;
 }
 

@@ -34,7 +34,4 @@ extern BOOLE fellowEmulationStart();
 extern void fellowEmulationStop();
 extern void fellowRequestEmulationStop();
 
-extern void fellowAddLog(const char *, ...);
-extern void fellowAddLogRequester(FELLOW_REQUESTER_TYPE, const char *, ...);
-extern void fellowAddTimelessLog(const char *, ...);
-extern void fellowAddLog2(char *msg);
+extern void fellowShowRequester(FELLOW_REQUESTER_TYPE, const char *, ...);

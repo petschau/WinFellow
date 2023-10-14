@@ -23,10 +23,11 @@ namespace Service
     void AddLogInternal(FILE* F, char* msg);
 
   public:
-    void AddLogDebug(const char* format, ...);
-    void AddLog(const char*, ...);
-    void AddLogList(const std::list<std::string>& messages);
-    void AddLog2(char* msg);
+    void AddLogDebug(const char* format, ...) override;
+    void AddLog(const char*, ...) override;
+    void AddLogList(const std::list<std::string>& messages) override;
+    void AddLog2(char* msg) override;
+    void AddTimelessLog(const char* format, ...) override;
 
     Log();
     virtual ~Log();

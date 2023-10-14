@@ -2773,7 +2773,7 @@ void memoryKickA1000BootstrapSetMapped(const bool bBootstrapMapped)
 
 
 
-  fellowAddLog("memoryKickSetA1000BootstrapMapped(%s)\n",
+  _core.Log->AddLog("memoryKickSetA1000BootstrapMapped(%s)\n",
 
     bBootstrapMapped ? "true" : "false");
 
@@ -2936,7 +2936,7 @@ void memoryKickError(uint32_t errorcode, uint32_t data)
 
   }
 
-  fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "%s\n%s\n%s\n", error1, error2, error3);
+  fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "%s\n%s\n%s\n", error1, error2, error3);
 
   memoryKickSettingsClear();
 
@@ -4670,7 +4670,7 @@ void memoryHardReset()
 
 {
 
-  fellowAddLog("memoryHardReset()\n");
+  _core.Log->AddLog("memoryHardReset()\n");
 
 
 

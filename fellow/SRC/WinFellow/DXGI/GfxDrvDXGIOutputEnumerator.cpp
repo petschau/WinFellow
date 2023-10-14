@@ -2,6 +2,7 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "DEFS.H"
 #include "FELLOW.H"
+#include "VirtualHost/Core.h"
 
 void GfxDrvDXGIOutputEnumerator::EnumerateOutputs(IDXGIAdapter *adapter, GfxDrvDXGIOutputList& outputs)
 {
@@ -14,7 +15,7 @@ void GfxDrvDXGIOutputEnumerator::EnumerateOutputs(IDXGIAdapter *adapter, GfxDrvD
   }
   if (i == 0)
   {
-    fellowAddLog("Device has no outputs.\n");
+    _core.Log->AddLog("Device has no outputs.\n");
   }
 }
 

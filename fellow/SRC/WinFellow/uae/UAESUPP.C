@@ -37,6 +37,7 @@
 
 #include "uae2fell.h"
 #include "fmem.h"
+#include "VirtualHost/Core.h"
 
 char uaehf0[256];
 uint32_t hardfile_size = 0;
@@ -109,6 +110,6 @@ void write_log (const char *format,...)
 
     va_start (parms, format);
     count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-	fellowAddLog(buffer);
+	_core.Log->AddLog(buffer);
     va_end (parms);
 }
