@@ -106,6 +106,18 @@ namespace Service
     }
   }
 
+  void Log::AddTimelessLog(const char* format, ...)
+  {
+    char buffer[WRITE_LOG_BUF_SIZE];
+    va_list parms;
+
+    va_start(parms, format);
+    _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
+    va_end(parms);
+
+    AddLog2(buffer);
+  }
+
   void Log::AddLogInternal(FILE* F, char* msg)
   {
     fprintf(F, "%s", msg);

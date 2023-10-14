@@ -105,12 +105,7 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode()
 
 #define WRITE_LOG_BUF_SIZE 512
 
-void fellowAddLog2(char* msg)
-{
-  _core.Log->AddLog2(msg);
-}
-
-void fellowAddLog(const char* format, ...)
+void fellowShowRequester(FELLOW_REQUESTER_TYPE type, const char* format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
@@ -120,42 +115,11 @@ void fellowAddLog(const char* format, ...)
   va_end(parms);
 
   _core.Log->AddLog(buffer);
-}
 
-void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char* format, ...)
-{
-  char buffer[WRITE_LOG_BUF_SIZE];
-  va_list parms;
-  UINT uType = 0;
-
-  switch (type)
-  {
-  case FELLOW_REQUESTER_TYPE_INFO: uType = MB_ICONINFORMATION; break;
-  case FELLOW_REQUESTER_TYPE_WARN: uType = MB_ICONWARNING; break;
-  case FELLOW_REQUESTER_TYPE_ERROR: uType = MB_ICONERROR; break;
-  }
-
-  va_start(parms, format);
-  _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
-  va_end(parms);
-
-  _core.Log->AddLog(buffer);
 #ifdef RETRO_PLATFORM
   if (!RP.GetHeadlessMode())
 #endif
-    wguiRequester(buffer, uType);
-}
-
-void fellowAddTimelessLog(const char* format, ...)
-{
-  char buffer[WRITE_LOG_BUF_SIZE];
-  va_list parms;
-
-  va_start(parms, format);
-  _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
-  va_end(parms);
-
-  _core.Log->AddLog2(buffer);
+    wguiShowRequester(buffer, type);
 }
 
 char* fellowGetVersionString()
@@ -185,7 +149,7 @@ static void fellowRuntimeErrorCheck()
   switch (fellowGetRuntimeErrorCode())
   {
   case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
-    fellowAddLogRequester(
+    fellowShowRequester(
       FELLOW_REQUESTER_TYPE_ERROR,
       "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
     break;
@@ -431,7 +395,7 @@ void fellowNastyExit()
 
 static void fellowDrawFailed()
 {
-  fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
+  fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
 
   exit(EXIT_FAILURE);
 }

@@ -2,10 +2,11 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "DEFS.H"
 #include "FELLOW.H"
+#include "VirtualHost/Core.h"
 
 GfxDrvDXGIAdapterList* GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(IDXGIFactory *factory)
 {
-  fellowAddLog("GfxDrvDXGI: Enumerating adapters starting\n");
+  _core.Log->AddLog("GfxDrvDXGI: Enumerating adapters starting\n");
 
   GfxDrvDXGIAdapterList *adapters = new GfxDrvDXGIAdapterList();
   IDXGIAdapter *adapter;
@@ -18,10 +19,10 @@ GfxDrvDXGIAdapterList* GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(IDXGIFacto
 
   if (i == 0)
   {
-    fellowAddLog("No adapters found!\n");
+    _core.Log->AddLog("No adapters found!\n");
   }
 
-  fellowAddLog("GfxDrvDXGI: Enumerating adapters finished\n");	
+  _core.Log->AddLog("GfxDrvDXGI: Enumerating adapters finished\n");	
 
   return adapters;
 }

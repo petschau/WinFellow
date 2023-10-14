@@ -21,7 +21,7 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput* output, GfxDrvDXGIMod
     return;
   }
 
-  fellowAddLog("Output has %d modes.\n", numModes);
+  _core.Log->AddLog("Output has %d modes.\n", numModes);
 
   DXGI_MODE_DESC* descs = new DXGI_MODE_DESC[numModes];
   hr = output->GetDisplayModeList(format, flags, &numModes, descs);

@@ -48,6 +48,7 @@ Sunday, February 03, 2008: carfesh
 #include "mousedrv.h"
 #include "windrv.h"
 #include "GfxDrvCommon.h"
+#include "VirtualHost/Core.h"
 
 #include <initguid.h>
 #include "dxver.h"
@@ -126,19 +127,19 @@ char* mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
 
 void mouseDrvDInputFailure(char *header, HRESULT err)
 {
-  fellowAddLog("%s %s\n", header, mouseDrvDInputErrorString(err));
+  _core.Log->AddLog("%s %s\n", header, mouseDrvDInputErrorString(err));
 }
 
 void mouseDrvDInputUnacquireFailure(char* header, HRESULT err)
 {
-  fellowAddLog("%s %s\n", header, mouseDrvDInputUnaquireReturnValueString(err));
+  _core.Log->AddLog("%s %s\n", header, mouseDrvDInputUnaquireReturnValueString(err));
 }
 
 void mouseDrvDInputAcquireFailure(char* header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
-    fellowAddLog("%s %s\n", header, "The device was already in an acquired state.");
+    _core.Log->AddLog("%s %s\n", header, "The device was already in an acquired state.");
   }
   else
   {
@@ -155,7 +156,7 @@ void mouseDrvDInputAcquire()
   HRESULT res;
 
 #ifdef _DEBUG
-  fellowAddLog("mouseDrvDInputAcquire(mouse_drv_in_use=%d, mouse_drv_lpDID=%d, mouse_drv_unacquired=%d)\n", 
+  _core.Log->AddLog("mouseDrvDInputAcquire(mouse_drv_in_use=%d, mouse_drv_lpDID=%d, mouse_drv_unacquired=%d)\n", 
     mouse_drv_in_use, mouse_drv_lpDID, mouse_drv_unacquired);
 #endif
 
@@ -220,7 +221,7 @@ void mouseDrvDInputRelease()
 
 BOOL FAR PASCAL GetMouseInfo(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef) 
 { 
-  fellowAddLog( "**** mouse %d ****\n", num_mouse_attached++ );
+  _core.Log->AddLog( "**** mouse %d ****\n", num_mouse_attached++ );
   return DIENUM_CONTINUE; 
 }
 	
@@ -247,7 +248,7 @@ BOOLE mouseDrvDInputInitialize()
     DINPUT_BUFFERSIZE            /* dwData */
   };
 
-  fellowAddLog("mouseDrvDInputInitialize()\n");
+  _core.Log->AddLog("mouseDrvDInputInitialize()\n");
 
   /* Create Direct Input object */
   
@@ -271,7 +272,7 @@ BOOLE mouseDrvDInputInitialize()
   res = IDirectInput_EnumDevices( mouse_drv_lpDI, DI8DEVTYPE_MOUSE, GetMouseInfo, NULL, DIEDFL_ALLDEVICES);
   if (res != DI_OK)
   {
-    fellowAddLog("Mouse Enum Devices failed %s\n", mouseDrvDInputErrorString( res ));
+    _core.Log->AddLog("Mouse Enum Devices failed %s\n", mouseDrvDInputErrorString( res ));
   }
   
   /* Create Direct Input 1 mouse device */
@@ -317,7 +318,7 @@ BOOLE mouseDrvDInputInitialize()
   mouse_drv_DIevent = CreateEvent(nullptr, 0, 0, nullptr);
   if (mouse_drv_DIevent == nullptr)
   {
-    fellowAddLog("mouseDrvDInputInitialize(): CreateEvent() failed\n");
+    _core.Log->AddLog("mouseDrvDInputInitialize(): CreateEvent() failed\n");
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
@@ -378,7 +379,7 @@ void mouseDrvToggleFocus()
 #ifdef RETRO_PLATFORM
   if(RP.GetHeadlessMode())
   {
-    fellowAddLog("mouseDrvToggleFocus(): mouse focus changed to to %s\n", mouse_drv_focus ? "true" : "false");
+    _core.Log->AddLog("mouseDrvToggleFocus(): mouse focus changed to to %s\n", mouse_drv_focus ? "true" : "false");
     RP.SendMouseCapture(mouse_drv_focus ? true : false);
   }
 #endif
@@ -396,7 +397,7 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
 {
   if (bNewFocus != mouse_drv_focus)
   {
-    fellowAddLog("mouseDrvSetFocus(bNewFocus=%s, bRequestedByRPHost=%s)\n", 
+    _core.Log->AddLog("mouseDrvSetFocus(bNewFocus=%s, bRequestedByRPHost=%s)\n", 
       bNewFocus ? "true" : "false",
       bRequestedByRPHost ? "true" : "false");
     
@@ -407,7 +408,7 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
     if(RP.GetHeadlessMode())
       if(!bRequestedByRPHost)
       {
-        fellowAddLog("mouseDrvSetFocus(%s): notifiying, as not requested by host.\n", 
+        _core.Log->AddLog("mouseDrvSetFocus(%s): notifiying, as not requested by host.\n", 
           bNewFocus ? "true" : "false");
         RP.SendMouseCapture(mouse_drv_focus ? true : false);
       }
@@ -514,7 +515,7 @@ BOOLE mouseDrvGetFocus()
 
 void mouseDrvHardReset()
 {
-  fellowAddLog("mouseDrvHardReset\n");
+  _core.Log->AddLog("mouseDrvHardReset\n");
 }
 
 
@@ -524,7 +525,7 @@ void mouseDrvHardReset()
 
 BOOLE mouseDrvEmulationStart() 
 {
-  fellowAddLog("mouseDrvEmulationStart\n");
+  _core.Log->AddLog("mouseDrvEmulationStart\n");
   return mouseDrvDInputInitialize();
 }
 
@@ -535,7 +536,7 @@ BOOLE mouseDrvEmulationStart()
 
 void mouseDrvEmulationStop() 
 {
-  fellowAddLog("mouseDrvEmulationStop\n");
+  _core.Log->AddLog("mouseDrvEmulationStop\n");
   mouseDrvDInputRelease();
 }
 
@@ -546,7 +547,7 @@ void mouseDrvEmulationStop()
 
 void mouseDrvStartup() 
 {
-  fellowAddLog("mouseDrvStartup\n");
+  _core.Log->AddLog("mouseDrvStartup\n");
   mouse_drv_active = FALSE;
   mouse_drv_focus = TRUE;
   mouse_drv_in_use = FALSE;
@@ -566,6 +567,6 @@ void mouseDrvStartup()
 
 void mouseDrvShutdown() 
 {
-  fellowAddLog("mouseDrvShutdown\n");
+  _core.Log->AddLog("mouseDrvShutdown\n");
 }
 

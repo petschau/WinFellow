@@ -1,6 +1,8 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "DEFS.H"
 #include "FELLOW.H"
+#include "VirtualHost/Core.h"
+
 
 const char* GfxDrvDXGIErrorLogger::GetErrorString(const HRESULT hResult)
 {
@@ -33,5 +35,5 @@ const char* GfxDrvDXGIErrorLogger::GetErrorString(const HRESULT hResult)
 
 void GfxDrvDXGIErrorLogger::LogError(const char* headline, const HRESULT hResult)
 {
-  fellowAddLog("%s %s\n", headline, GetErrorString(hResult));
+  _core.Log->AddLog("%s %s\n", headline, GetErrorString(hResult));
 }

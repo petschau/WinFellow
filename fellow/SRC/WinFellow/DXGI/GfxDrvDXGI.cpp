@@ -7,6 +7,7 @@
 #include "GfxDrvCommon.h"
 #include "FELLOW.H"
 #include "gfxdrv_directdraw.h"
+#include "VirtualHost/Core.h"
 
 #include "VertexShader.h"
 #include "PixelShader.h"
@@ -33,7 +34,7 @@ bool GfxDrvDXGI::ValidateRequirements()
   }
   else
   {
-    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
+    _core.Log->AddLog("gfxDrvDXGIValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
     _requirementsValidationResult = false;
     return false;
   }
@@ -44,7 +45,7 @@ bool GfxDrvDXGI::ValidateRequirements()
   }
   else
   {
-    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
+    _core.Log->AddLog("gfxDrvDXGIValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
     _requirementsValidationResult = false;
     return false;
   }
@@ -53,7 +54,7 @@ bool GfxDrvDXGI::ValidateRequirements()
   bool adaptersFound = dxgi.CreateAdapterList();
   if (!adaptersFound)
   {
-    fellowAddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    _core.Log->AddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
     _requirementsValidationResult = false;
     return false;
   }
@@ -64,24 +65,24 @@ bool GfxDrvDXGI::ValidateRequirements()
 
 bool GfxDrvDXGI::Startup()
 {
-  fellowAddLog("GfxDrvDXGI: Starting up DXGI driver\n");
+  _core.Log->AddLog("GfxDrvDXGI: Starting up DXGI driver\n");
 
   bool success = CreateAdapterList();
   if (success)
   {
     RegisterModes();
   }
-  fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n", success ? "successful" : "failed");
+  _core.Log->AddLog("GfxDrvDXGI: Startup of DXGI driver %s\n", success ? "successful" : "failed");
   return success;
 }
 
 void GfxDrvDXGI::Shutdown()
 {
-  fellowAddLog("GfxDrvDXGI: Starting to shut down DXGI driver\n");
+  _core.Log->AddLog("GfxDrvDXGI: Starting to shut down DXGI driver\n");
 
   DeleteAdapterList();
 
-  fellowAddLog("GfxDrvDXGI: Finished shutdown of DXGI driver\n");
+  _core.Log->AddLog("GfxDrvDXGI: Finished shutdown of DXGI driver\n");
 }
 
 // Returns true if adapter enumeration was successful and the DXGI system actually has an adapter. (Like with VirtualBox in some hosts DXGI/D3D11 is present, but no adapters.)
@@ -163,7 +164,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
 
   if (FAILED(hr))
   {
-    fellowAddLog("Failed to query interface for IDXGIDevice\n");
+    _core.Log->AddLog("Failed to query interface for IDXGIDevice\n");
     return false;
   }
 
@@ -173,13 +174,13 @@ bool GfxDrvDXGI::CreateD3D11Device()
   if (FAILED(hr))
   {
     ReleaseCOM(&dxgiDevice);
-    fellowAddLog("Failed to get IDXGIAdapter via GetParent() on IDXGIDevice\n");
+    _core.Log->AddLog("Failed to get IDXGIAdapter via GetParent() on IDXGIDevice\n");
     return false;
   }
 
-  fellowAddLog("The adapter we got was:\n\n");
+  _core.Log->AddLog("The adapter we got was:\n\n");
   GfxDrvDXGIAdapter adapter(dxgiAdapter); // Note: This will eventually release dxgiAdapter in COM. Maybe restructure the enum code later, the code structure ended up not being very practical.
-  fellowAddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
+  _core.Log->AddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
 
   hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory); // Used later to create the swap-chain
 
@@ -187,7 +188,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
   {
     ReleaseCOM(&dxgiDevice);
 
-    fellowAddLog("Failed to get IDXGIFactory via GetParent() on IDXGIAdapter\n");
+    _core.Log->AddLog("Failed to get IDXGIFactory via GetParent() on IDXGIAdapter\n");
     return false;
   }
 
@@ -374,12 +375,12 @@ void GfxDrvDXGI::SetViewport()
 
 bool GfxDrvDXGI::InitiateSwitchToFullScreen()
 {
-  fellowAddLog("GfxDrvDXGI::InitiateSwitchToFullScreen()\n");
+  _core.Log->AddLog("GfxDrvDXGI::InitiateSwitchToFullScreen()\n");
 
   DXGI_MODE_DESC *modeDescription = GetDXGIMode(_current_draw_mode->id);
   if (modeDescription == nullptr)
   {
-    fellowAddLog("Selected fullscreen mode was not found.\n");
+    _core.Log->AddLog("Selected fullscreen mode was not found.\n");
     return false;
   }
   HRESULT result = _swapChain->SetFullscreenState(TRUE, nullptr); // TODO: Set which screen to use.
@@ -418,7 +419,7 @@ DXGI_MODE_DESC* GfxDrvDXGI::GetDXGIMode(unsigned int id)
 
 void GfxDrvDXGI::NotifyActiveStatus(bool active)
 {
-  fellowAddLog("GfxDrvDXGI::NotifyActiveStatus(%s)\n", active ? "TRUE" : "FALSE");
+  _core.Log->AddLog("GfxDrvDXGI::NotifyActiveStatus(%s)\n", active ? "TRUE" : "FALSE");
   if (!gfxDrvCommon->GetOutputWindowed() && _swapChain != nullptr)
   {
     _swapChain->SetFullscreenState(active, nullptr);
@@ -438,7 +439,7 @@ void GfxDrvDXGI::PositionChanged()
 
 void GfxDrvDXGI::ResizeSwapChainBuffers()
 {
-  fellowAddLog("GfxDrvDXGI: ResizeSwapChainBuffers()\n");
+  _core.Log->AddLog("GfxDrvDXGI: ResizeSwapChainBuffers()\n");
 
   _resize_swapchain_buffers = false;
 
@@ -452,7 +453,7 @@ void GfxDrvDXGI::ResizeSwapChainBuffers()
   SetViewport();
   if (!CreateVertexAndIndexBuffers())
   {
-    fellowAddLog("GfxDrvDXGI::ResizeSwapChainBuffers() - Failed to re-create vertex and index buffers\n");
+    _core.Log->AddLog("GfxDrvDXGI::ResizeSwapChainBuffers() - Failed to re-create vertex and index buffers\n");
   }
 }
 
@@ -1001,37 +1002,37 @@ bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
 {
   if (!CreateD3D11Device())
   {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create d3d11 device for host window\n");
+    _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create d3d11 device for host window\n");
     return false;
   }
 
   if (!CreateSwapChain())
   {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create swap chain for host window\n");
+    _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create swap chain for host window\n");
     return false;
   }
 
   if (!CreateAmigaScreenTexture())
   {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create amiga screen texture\n");
+    _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create amiga screen texture\n");
     return false;
   }
 
   if (!CreatePixelShader())
   {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create pixel shader\n");
+    _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create pixel shader\n");
     return false;
   }
 
   if (!CreateVertexShader())
   {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex shader\n");
+    _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex shader\n");
     return false;
   }
 
   if (!CreateDepthDisabledStencil())
   {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create depth disabled stencil\n");
+    _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create depth disabled stencil\n");
     return false;
   }
   return true;
@@ -1041,7 +1042,7 @@ unsigned int GfxDrvDXGI::EmulationStartPost()
 {
   if (!CreateVertexAndIndexBuffers())
   {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex and index buffers\n");
+    _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex and index buffers\n");
     return false;
   }
 
@@ -1115,7 +1116,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *
   HDC hDC = nullptr;
 
 #ifdef _DEBUG
-  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename=%s)\n",
+  _core.Log->AddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename=%s)\n",
     bSaveFilteredScreenshot ? "true" : "false", filename);
 #endif
   
@@ -1203,7 +1204,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *
     ReleaseCOM(&screenshotTexture);
   }
 
-  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename='%s') %s.\n", 
+  _core.Log->AddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename='%s') %s.\n", 
     bSaveFilteredScreenshot ? "true" : "false", filename, bResult ? "successful" : "failed");
 
   pSurface1->ReleaseDC(nullptr);

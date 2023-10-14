@@ -495,7 +495,7 @@ void wguiConvertDrawModeListToGuiDrawModes()
 
   if (has8BitDesktop)
   {
-    fellowAddLogRequester(
+    fellowShowRequester(
       FELLOW_REQUESTER_TYPE_ERROR, "Your desktop is currently running an 8-bit color resolution.\nThis is not supported.\nOnly fullscreen modes will be available");
   }
 
@@ -2124,7 +2124,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
         strncpy(strFilename, wgui_presets[lIndex].strPresetFilename, CFG_FILENAME_LENGTH);
 
-        fellowAddLog("Applying preset %s...\n", strFilename);
+        _core.Log->AddLog("Applying preset %s...\n", strFilename);
 
         if (cfgLoadFromFilename(wgui_cfg, strFilename, true))
         {
@@ -2140,7 +2140,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
               cfgSetKickImageExtended(wgui_cfg, "");
             }
             else
-              fellowAddLog(" WARNING: could not locate ROM with checksum %X in %s.\n", lCRC32, strROMSearchPath);
+              _core.Log->AddLog(" WARNING: could not locate ROM with checksum %X in %s.\n", lCRC32, strROMSearchPath);
           }
 
           wguiInstallCPUConfig(wgui_propsheetHWND[PROPSHEETCPU], wgui_cfg);
@@ -2151,10 +2151,10 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
           wguiInstallGameportConfig(wgui_propsheetHWND[PROPSHEETGAMEPORT], wgui_cfg);
           wguiInstallVariousConfig(wgui_propsheetHWND[PROPSHEETVARIOUS], wgui_cfg);
 
-          fellowAddLog(" Preset applied successfully.\n");
+          _core.Log->AddLog(" Preset applied successfully.\n");
         }
         else
-          fellowAddLog(" ERROR applying preset.\n");
+          _core.Log->AddLog(" ERROR applying preset.\n");
       }
       break;
       default: break;
@@ -2172,7 +2172,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
         index = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
 #ifdef _DEBUG
-        fellowAddLog("preset selected: %s\n", wgui_presets[index].strPresetFilename);
+        _core.Log->AddLog("preset selected: %s\n", wgui_presets[index].strPresetFilename);
 #endif
 
         ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_ROM);
@@ -2227,7 +2227,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 cfgSetKickImage(cfgTemp, strKickstart);
               }
               else
-                fellowAddLog(" WARNING: could not locate ROM with checksum %X in %s.\n", lCRC32, strROMSearchPath);
+                _core.Log->AddLog(" WARNING: could not locate ROM with checksum %X in %s.\n", lCRC32, strROMSearchPath);
             }
 
             ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_ROM, cfgGetKickDescription(cfgTemp));
@@ -2586,20 +2586,20 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
           {
             if (!gfxDrvDXGIValidateRequirements())
             {
-              fellowAddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+              _core.Log->AddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
               displaydriver = DISPLAYDRIVER_DIRECTDRAW;
               cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
-              fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "DirectX 11 is required but could not be loaded, revert back to DirectDraw.");
+              fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "DirectX 11 is required but could not be loaded, revert back to DirectDraw.");
             }
           }
 
           bool result = gfxDrvRestart(displaydriver);
           if (!result)
           {
-            fellowAddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
+            _core.Log->AddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
             displaydriver = DISPLAYDRIVER_DIRECTDRAW;
             cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
-            fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver");
+            fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver");
           }
           wguiConvertDrawModeListToGuiDrawModes();
           wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
@@ -3421,6 +3421,22 @@ void wguiRequester(char* szMessage, UINT uType)
   MessageBox(nullptr, szMessage, "WinFellow Amiga Emulator", uType);
 }
 
+void wguiShowRequester(char* szMessage, FELLOW_REQUESTER_TYPE requesterType)
+{
+  UINT uType = 0;
+
+  switch (requesterType)
+  {
+  case FELLOW_REQUESTER_TYPE_INFO: uType = MB_ICONINFORMATION; break;
+  case FELLOW_REQUESTER_TYPE_WARN: uType = MB_ICONWARNING; break;
+  case FELLOW_REQUESTER_TYPE_ERROR: uType = MB_ICONERROR; break;
+  }
+
+  wguiRequester(szMessage, uType);
+}
+
+
+
 /*============================================================================*/
 /* Runs the GUI                                                               */
 /*============================================================================*/
@@ -3650,7 +3666,7 @@ static bool wguiInitializePresets(wgui_preset** wgui_presets, uint32_t* wgui_num
   hFind = FindFirstFile(strSearchPattern, &ffd);
   if (hFind == INVALID_HANDLE_VALUE)
   {
-    fellowAddLog("wguiInitializePresets(): FindFirstFile failed.\n");
+    _core.Log->AddLog("wguiInitializePresets(): FindFirstFile failed.\n");
     return false;
   }
 
@@ -3664,7 +3680,7 @@ static bool wguiInitializePresets(wgui_preset** wgui_presets, uint32_t* wgui_num
   } while (FindNextFile(hFind, &ffd) != 0);
   FindClose(hFind);
 
-  fellowAddLog("wguiInitializePresets(): %u preset(s) found.\n", *wgui_num_presets);
+  _core.Log->AddLog("wguiInitializePresets(): %u preset(s) found.\n", *wgui_num_presets);
 
   // then we allocate the memory to store preset information, and read the information
   if (*wgui_num_presets > 0)
@@ -3691,7 +3707,7 @@ static bool wguiInitializePresets(wgui_preset** wgui_presets, uint32_t* wgui_num
           {
             strncpy((*wgui_presets)[i].strPresetDescription, cfgGetDescription(cfgTemp), CFG_FILENAME_LENGTH);
 #ifdef _DEBUG
-            fellowAddLog(" preset %u: %s - %s\n", i, ffd.cFileName, (*wgui_presets)[i].strPresetDescription);
+            _core.Log->AddLog(" preset %u: %s - %s\n", i, ffd.cFileName, (*wgui_presets)[i].strPresetDescription);
 #endif
             i++;
           }
@@ -3721,7 +3737,7 @@ void wguiSetProcessDPIAwareness(const char* pszAwareness)
   typedef HRESULT(WINAPI* PFN_SetProcessDpiAwareness)(Process_DPI_Awareness);
   typedef BOOL(WINAPI* PFN_SetProcessDPIAware)();
 
-  fellowAddLog("wguiSetProcessDPIAwareness(%s)\n", pszAwareness);
+  _core.Log->AddLog("wguiSetProcessDPIAwareness(%s)\n", pszAwareness);
 
   Process_DPI_Awareness nAwareness = (Process_DPI_Awareness)strtoul(pszAwareness, nullptr, 0);
   HRESULT hr = E_NOTIMPL;
@@ -3731,7 +3747,7 @@ void wguiSetProcessDPIAwareness(const char* pszAwareness)
   {
     PFN_SetProcessDpiAwareness pfnSetProcessDpiAwareness = (PFN_SetProcessDpiAwareness)GetProcAddress(hCoreDll, "SetProcessDpiAwareness");
     if (pfnSetProcessDpiAwareness) hr = pfnSetProcessDpiAwareness(nAwareness);
-    if (hr == S_OK) fellowAddLog(" SetProcessDPIAwareness() executed succesfully.\n");
+    if (hr == S_OK) _core.Log->AddLog(" SetProcessDPIAwareness() executed succesfully.\n");
     FreeLibrary(hCoreDll);
   }
 
@@ -3740,12 +3756,12 @@ void wguiSetProcessDPIAwareness(const char* pszAwareness)
     HINSTANCE hUser32 = LoadLibrary("user32.dll");
     if (hUser32)
     {
-      fellowAddLog("hUser32");
+      _core.Log->AddLog("hUser32");
       PFN_SetProcessDPIAware pfnSetProcessDPIAware = (PFN_SetProcessDPIAware)GetProcAddress(hUser32, "SetProcessDPIAware");
       if (pfnSetProcessDPIAware)
       {
         hr = pfnSetProcessDPIAware();
-        if (hr != 0) fellowAddLog(" SetProcessDPIAware() executed succesfully.\n");
+        if (hr != 0) _core.Log->AddLog(" SetProcessDPIAware() executed succesfully.\n");
       }
       FreeLibrary(hUser32);
     }
@@ -3764,7 +3780,7 @@ void wguiStartup()
 
   if (_core.Fileops->GetWinFellowPresetPath(wgui_preset_path, CFG_FILENAME_LENGTH))
   {
-    fellowAddLog("wguiStartup(): preset path = %s\n", wgui_preset_path);
+    _core.Log->AddLog("wguiStartup(): preset path = %s\n", wgui_preset_path);
     wguiInitializePresets(&wgui_presets, &wgui_num_presets);
   }
 }

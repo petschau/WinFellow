@@ -23,4 +23,9 @@ namespace mock::Core::Service
   {
     // Stub
   }
+
+  void LogMock::AddTimelessLog(const char*, ...)
+  {
+    // Stub
+  }
 }

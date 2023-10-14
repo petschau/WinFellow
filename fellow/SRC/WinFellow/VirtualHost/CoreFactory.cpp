@@ -20,17 +20,17 @@ void CoreFactory::DestroyDrivers()
 
 void CoreFactory::CreateServices()
 {
-  _core.Fileops = new FileopsWin32();
   _core.Log = new Log();
+  _core.Fileops = new FileopsWin32(_core.Log);
 }
 
 void CoreFactory::DestroyServices()
 {
-  delete _core.Log;
-  _core.Log = nullptr;
-
   delete _core.Fileops;
   _core.Fileops = nullptr;
+
+  delete _core.Log;
+  _core.Log = nullptr;
 }
 
 void CoreFactory::CreateModules()

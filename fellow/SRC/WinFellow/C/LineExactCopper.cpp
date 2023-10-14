@@ -62,7 +62,7 @@ uint32_t LineExactCopper::GetCheckedWaitCycle(uint32_t waitCycle)
   {
     // Do not ever go back in time
     waitCycle = bus.cycle + 4;
-    //fellowAddLog("Warning: Copper went back in time.\n");
+    //_core.Log->AddLog("Warning: Copper went back in time.\n");
   }
   return waitCycle;
 }

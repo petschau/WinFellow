@@ -35,6 +35,8 @@ Tuesday, September 19, 2000
 #include "mousedrv.h"
 #include "joydrv.h"
 #include "../automation/Automator.h"
+#include "VirtualHost/Core.h"
+
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
 #endif
@@ -314,7 +316,7 @@ void gameportHardReset() {
 
 void gameportEmulationStart() {
   gameportIOHandlersInstall();
-  fellowAddLog("gameportEmulationStart()\n");
+  _core.Log->AddLog("gameportEmulationStart()\n");
   mouseDrvEmulationStart();
   joyDrvEmulationStart();
   gameportIORegistersClear(FALSE);

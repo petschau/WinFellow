@@ -82,7 +82,7 @@ void drawDecideInterlaceStatusForNextFrame()
     drawReinitializeRendering();
   }
 
-  //    fellowAddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
+  //    _core.Log->AddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
 }
 
 void drawInterlaceStartup()

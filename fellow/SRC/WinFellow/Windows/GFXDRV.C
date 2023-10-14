@@ -186,7 +186,7 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const char *szFile
     result = gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
   }
 
-  fellowAddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n",
+  _core.Log->AddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n",
     bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
 
   return result;
@@ -223,7 +223,7 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
   {
     if (!gfxDrvDXGIValidateRequirements())
     {
-      fellowAddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+      _core.Log->AddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
       gfx_drv_use_dxgi = false;
       return gfxDrvDDrawStartup();
     }
@@ -234,7 +234,7 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
     {
       return true;
     }
-    fellowAddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    _core.Log->AddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
     gfx_drv_use_dxgi = false;
   }
 

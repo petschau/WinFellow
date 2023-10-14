@@ -23,6 +23,7 @@
 #include "rtc.h"
 #include "RtcOkiMsm6242rs.h"
 #include "FELLOW.H"
+#include "VirtualHost/Core.h"
 
 int RtcOkiMsm6242rs::GetRegisterNumberFromAddress(uint32_t address)
 {
@@ -408,7 +409,7 @@ void RtcOkiMsm6242rs::logRtcTime(char *msg)
   struct tm *datetime = GetCurrentOrHeldTime();
 
   if(datetime) {
-    fellowAddLog("RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n",
+    _core.Log->AddLog("RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n",
       msg,
       datetime->tm_year + 1900,
       datetime->tm_mon + 1,

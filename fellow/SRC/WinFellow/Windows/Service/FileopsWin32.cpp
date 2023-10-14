@@ -37,6 +37,8 @@
 #include <ctime>
 #include <io.h>
 
+using namespace Service;
+
 /** @file
  * The fileops module contains abtract functions to generate filenames in a
  * platform specific manner.
@@ -266,7 +268,7 @@ bool FileopsWin32::GetKickstartByCRC32(const char* strSearchPath, const uint32_t
 
   hFind = FindFirstFile(strSearchPattern, &ffd);
   if (hFind == INVALID_HANDLE_VALUE) {
-    fellowAddLog("GetKickstartByCRC32(): FindFirstFile failed.\n");
+    _log->AddLog("GetKickstartByCRC32(): FindFirstFile failed.\n");
     return false;
   }
 
@@ -332,4 +334,8 @@ bool FileopsWin32::GetKickstartByCRC32(const char* strSearchPath, const uint32_t
   FindClose(hFind);
 
   return false;
+}
+
+FileopsWin32::FileopsWin32(ILog* log) : _log(log)
+{
 }

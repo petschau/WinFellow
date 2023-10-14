@@ -165,7 +165,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   enum MultiEventTypes object_mapping[4];
 
   win_drv_emulation_ended = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-  fellowAddLog("fellowEmulationStart() finished\n");
+  _core.Log->AddLog("fellowEmulationStart() finished\n");
   HANDLE FellowThread = CreateThread(nullptr, // Security attr
                                      0, // Stack Size
                                      startfunc, // Thread procedure
@@ -188,7 +188,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
       {
         case met_emulation_ended:
 	  /* Emulation session is ending */
-          fellowAddLog("met_emulation_ended\n");
+          _core.Log->AddLog("met_emulation_ended\n");
 	  keep_on_waiting = FALSE;
 	  break;
         case met_mouse_data:
@@ -225,7 +225,7 @@ void winDrvEmulationStart()
   }
   else 
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, 
       "Emulation session failed to start up");
   }
   fellowEmulationStop();
@@ -451,7 +451,7 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
 
   _core.Fileops->GetGenericFileName(name, "WinFellow", filename);
 
-  fellowAddLog("Unhandled exception detected, write minidump to %s...\n", name);
+  _core.Log->AddLog("Unhandled exception detected, write minidump to %s...\n", name);
 
   HANDLE hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 

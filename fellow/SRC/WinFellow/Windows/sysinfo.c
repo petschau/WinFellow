@@ -33,6 +33,7 @@
 #include "defs.h"
 #include "fellow.h"
 #include "sysinfo.h"
+#include "VirtualHost/Core.h"
 
 #define MYREGBUFFERSIZE 1024
 
@@ -56,7 +57,7 @@ void sysinfoLogErrorMessageFromSystem ()
                                 (LPTSTR)&msgBuf, MYREGBUFFERSIZE, nullptr);
   if(cMsgLen) {
     strcat (szTemp, msgBuf);
-    fellowAddTimelessLog ("%s\n", szTemp);
+    _core.Log->AddTimelessLog("%s\n", szTemp);
   }
 }
 
@@ -196,8 +197,8 @@ static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
 		{
 		  char* szDevice = sysinfoRegistryQueryStringValue(hKey2, szSubKeyName2, TEXT("DeviceDesc"));
 		  if (szDevice) {
-		      fellowAddTimelessLog("\t%s: %s\n", strlwr(szClass), szDevice);
-		      free (szDevice);
+                    _core.Log->AddTimelessLog("\t%s: %s\n", strlwr(szClass), szDevice);
+		    free (szDevice);
 		  }
 		}
 	      free (szClass);
@@ -283,12 +284,12 @@ bool sysinfoIs64BitWindows()
   {
     if(!fnIsWow64Process(GetCurrentProcess(), &bIsWow64))
     {
-      fellowAddLog("sysinfoIs64BitWindows(): ERROR: IsWow64Process() failed.\n");
+      _core.Log->AddLog("sysinfoIs64BitWindows(): ERROR: IsWow64Process() failed.\n");
     }
   }
   else
   {
-    fellowAddLog("sysinfoIs64BitWindows(): ERROR: GetProcAddress() failed.\n");
+    _core.Log->AddLog("sysinfoIs64BitWindows(): ERROR: GetProcAddress() failed.\n");
   }
   return (bool) bIsWow64;
 #else
@@ -304,10 +305,10 @@ static void sysinfoParseSystemInfo ()
 {
   SYSTEM_INFO SystemInfo;
   GetNativeSystemInfo(&SystemInfo);
-  fellowAddTimelessLog("\tlogical processors: \t%d\n", SystemInfo.dwNumberOfProcessors);
-  fellowAddTimelessLog("\tarchitecture: \t\t%s\n", sysinfoGetProcessorArchitectureDescription(SystemInfo.wProcessorArchitecture));
-  fellowAddTimelessLog("\tlevel: \t\t\t%d\n", SystemInfo.wProcessorLevel);
-  fellowAddTimelessLog("\trevision: \t\t%d\n", SystemInfo.wProcessorRevision);
+  _core.Log->AddTimelessLog("\tlogical processors: \t%d\n", SystemInfo.dwNumberOfProcessors);
+  _core.Log->AddTimelessLog("\tarchitecture: \t\t%s\n", sysinfoGetProcessorArchitectureDescription(SystemInfo.wProcessorArchitecture));
+  _core.Log->AddTimelessLog("\tlevel: \t\t\t%d\n", SystemInfo.wProcessorLevel);
+  _core.Log->AddTimelessLog("\trevision: \t\t%d\n", SystemInfo.wProcessorRevision);
 }
 
 // https://docs.microsoft.com/de-de/windows/desktop/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformation
@@ -348,7 +349,7 @@ static int sysinfoParseProcessorInformation()
     "GetLogicalProcessorInformation");
   if (nullptr == glpi)
   {
-    fellowAddTimelessLog("\n\tGetLogicalProcessorInformation is not supported.\n");
+    _core.Log->AddTimelessLog("\n\tGetLogicalProcessorInformation is not supported.\n");
     return (1);
   }
 
@@ -368,13 +369,13 @@ static int sysinfoParseProcessorInformation()
 
         if (nullptr == buffer)
         {
-          fellowAddTimelessLog("\n\tError: Allocation failure\n");
+          _core.Log->AddTimelessLog("\n\tError: Allocation failure\n");
           return (2);
         }
       }
       else
       {
-        fellowAddTimelessLog(("\n\tError %d\n"), GetLastError());
+        _core.Log->AddTimelessLog(("\n\tError %d\n"), GetLastError());
         return (3);
       }
     }
@@ -425,22 +426,22 @@ static int sysinfoParseProcessorInformation()
       break;
 
     default:
-      fellowAddTimelessLog("\n\tError: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
+      _core.Log->AddTimelessLog("\n\tError: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
       break;
     }
     byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
     ptr++;
   }
 
-  fellowAddTimelessLog("\tnumber of NUMA nodes: \t\t\t%d\n", numaNodeCount);
-  fellowAddTimelessLog("\tnumber of physical processor packages: \t%d\n", processorPackageCount);
-  fellowAddTimelessLog("\tnumber of processor cores: \t\t%d\n", processorCoreCount);
-  fellowAddTimelessLog("\tnumber of logical processors: \t\t%d\n", logicalProcessorCount);
-  fellowAddTimelessLog("\tnumber of processor L1/L2/L3 caches: \t%d/%d/%d\n",
+  _core.Log->AddTimelessLog("\tnumber of NUMA nodes: \t\t\t%d\n", numaNodeCount);
+  _core.Log->AddTimelessLog("\tnumber of physical processor packages: \t%d\n", processorPackageCount);
+  _core.Log->AddTimelessLog("\tnumber of processor cores: \t\t%d\n", processorCoreCount);
+  _core.Log->AddTimelessLog("\tnumber of logical processors: \t\t%d\n", logicalProcessorCount);
+  _core.Log->AddTimelessLog("\tnumber of processor L1/L2/L3 caches: \t%d/%d/%d\n",
     processorL1CacheCount,
     processorL2CacheCount,
     processorL3CacheCount);
-  fellowAddTimelessLog("\n");
+  _core.Log->AddTimelessLog("\n");
 
   free(buffer);
 
@@ -454,199 +455,201 @@ static void sysinfoParseOSVersionInfo() {
   ZeroMemory(&osInfo, sizeof(OSVERSIONINFOEX));
   osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-  if(!(osVersionInfoEx = GetVersionEx((OSVERSIONINFO *) &osInfo))) {
+  if (!(osVersionInfoEx = GetVersionEx((OSVERSIONINFO*)&osInfo))) {
     // OSVERSIONINFOEX didn't work, we try OSVERSIONINFO.
-    osInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
-    if (!GetVersionEx((OSVERSIONINFO *) &osInfo)) {
+    osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    if (!GetVersionEx((OSVERSIONINFO*)&osInfo)) {
       sysinfoLogErrorMessageFromSystem();
-      return;  
+      return;
     }
   }
 
   switch (osInfo.dwPlatformId) {
-    case VER_PLATFORM_WIN32s:
-      fellowAddTimelessLog("\toperating system: \tWindows %d.%d\n", osInfo.dwMajorVersion, osInfo.dwMinorVersion);
-      break;
-    case VER_PLATFORM_WIN32_WINDOWS:
-      if((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 0)) {
-	      fellowAddTimelessLog("\toperating system: \tWindows 95 ");
-	      if (osInfo.szCSDVersion[1] == 'C' || osInfo.szCSDVersion[1] == 'B' ) {
-          fellowAddTimelessLog("OSR2\n");
-        } else {
-          fellowAddTimelessLog("\n");
-	      }
+  case VER_PLATFORM_WIN32s:
+    _core.Log->AddTimelessLog("\toperating system: \tWindows %d.%d\n", osInfo.dwMajorVersion, osInfo.dwMinorVersion);
+    break;
+  case VER_PLATFORM_WIN32_WINDOWS:
+    if ((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 0)) {
+      _core.Log->AddTimelessLog("\toperating system: \tWindows 95 ");
+      if (osInfo.szCSDVersion[1] == 'C' || osInfo.szCSDVersion[1] == 'B') {
+        _core.Log->AddTimelessLog("OSR2\n");
       }
-
-      if((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 10)) {
-	fellowAddTimelessLog("\toperating system: \tWindows 98 ");
-	if ( osInfo.szCSDVersion[1] == 'A' ) {
-          fellowAddTimelessLog("SE\n" );
-	} else {
-    	  fellowAddTimelessLog("\n");
-	}
-      } 
-
-      if((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 90)) {
-        fellowAddTimelessLog("\toperating system: \tWindows ME\n");
+      else {
+        _core.Log->AddTimelessLog("\n");
       }
+    }
+
+    if ((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 10)) {
+      _core.Log->AddTimelessLog("\toperating system: \tWindows 98 ");
+      if (osInfo.szCSDVersion[1] == 'A') {
+        _core.Log->AddTimelessLog("SE\n");
+      }
+      else {
+        _core.Log->AddTimelessLog("\n");
+      }
+    }
+
+    if ((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 90)) {
+      _core.Log->AddTimelessLog("\toperating system: \tWindows ME\n");
+    }
+    break;
+  case VER_PLATFORM_WIN32_NT:
+    switch (osInfo.dwMajorVersion) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      _core.Log->AddTimelessLog("\toperating system: \tWindows NT 3\n");
       break;
-    case VER_PLATFORM_WIN32_NT: 
-      switch (osInfo.dwMajorVersion) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-	fellowAddTimelessLog("\toperating system: \tWindows NT 3\n");
-	break;
-      case 4:
-	fellowAddTimelessLog("\toperating system: \tWindows NT 4\n");
-	break;
-      case 5:
-	switch (osInfo.dwMinorVersion) {
-	  case 0:
-	    fellowAddTimelessLog("\toperating system: \tWindows 2000\n");
-	    break;
-	  case 1:
-	    fellowAddTimelessLog("\toperating system: \tWindows XP\n");
-	    break;
-	  default:
-	    fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
-	}
-	break;
-      case 6:
-        switch (osInfo.dwMinorVersion) {
-        case 0:
-          fellowAddTimelessLog("\toperating system: \tWindows Vista\n");
-          break;
-        case 1:
-          fellowAddTimelessLog("\toperating system: \tWindows 7\n");
-          break;
-        case 2:
-          fellowAddTimelessLog("\toperating system: \tWindows 8\n");
-          break;
-        case 3:
-          fellowAddTimelessLog("\toperating system: \tWindows 8.1\n");
-          break;
-        }
-        break;
-	  case 10:
+    case 4:
+      _core.Log->AddTimelessLog("\toperating system: \tWindows NT 4\n");
+      break;
+    case 5:
       switch (osInfo.dwMinorVersion) {
-        case 0:
-          char strOS[24] = "Windows 10 or 11";
-          switch (osInfo.dwBuildNumber)
-          {
-            case 10240:
-              sprintf(strOS, "Windows 10 version 1507");
-              break;
-            case 10586:
-              sprintf(strOS, "Windows 10 version 1511");
-              break;
-            case 14393:
-              sprintf(strOS, "Windows 10 version 1607");
-              break;
-            case 15063:
-              sprintf(strOS, "Windows 10 version 1703");
-              break;
-            case 16299:
-              sprintf(strOS, "Windows 10 version 1709");
-              break;
-            case 17134:
-              sprintf(strOS, "Windows 10 version 1803");
-              break;
-            case 17763:
-              sprintf(strOS, "Windows 10 version 1809");
-              break;
-            case 18362:
-              sprintf(strOS, "Windows 10 version 1903");
-              break;
-            case 18363:
-              sprintf(strOS, "Windows 10 version 1909");
-              break;
-            case 19041:
-              sprintf(strOS, "Windows 10 version 2004");
-              break;
-            case 19042:
-              sprintf(strOS, "Windows 10 version 20H2");
-              break;
-            case 19043:
-              sprintf(strOS, "Windows 10 version 21H1");
-              break;
-            case 19044:
-              sprintf(strOS, "Windows 10 version 21H2");
-              break;
-            case 22000:
-              sprintf(strOS, "Windows 11 version 21H2");
-              break;
-          }
-          fellowAddTimelessLog("\toperating system : \t%s\n", strOS);
-          break;
-        }
+      case 0:
+        _core.Log->AddTimelessLog("\toperating system: \tWindows 2000\n");
+        break;
+      case 1:
+        _core.Log->AddTimelessLog("\toperating system: \tWindows XP\n");
         break;
       default:
-        fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
+        _core.Log->AddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
       }
       break;
-    default:	
-      fellowAddTimelessLog("\toperating system: \tunknown\n");	
+    case 6:
+      switch (osInfo.dwMinorVersion) {
+      case 0:
+        _core.Log->AddTimelessLog("\toperating system: \tWindows Vista\n");
+        break;
+      case 1:
+        _core.Log->AddTimelessLog("\toperating system: \tWindows 7\n");
+        break;
+      case 2:
+        _core.Log->AddTimelessLog("\toperating system: \tWindows 8\n");
+        break;
+      case 3:
+        _core.Log->AddTimelessLog("\toperating system: \tWindows 8.1\n");
+        break;
+      }
+      break;
+    case 10:
+      switch (osInfo.dwMinorVersion) {
+      case 0:
+        char strOS[24] = "Windows 10 or 11";
+        switch (osInfo.dwBuildNumber)
+        {
+        case 10240:
+          sprintf(strOS, "Windows 10 version 1507");
+          break;
+        case 10586:
+          sprintf(strOS, "Windows 10 version 1511");
+          break;
+        case 14393:
+          sprintf(strOS, "Windows 10 version 1607");
+          break;
+        case 15063:
+          sprintf(strOS, "Windows 10 version 1703");
+          break;
+        case 16299:
+          sprintf(strOS, "Windows 10 version 1709");
+          break;
+        case 17134:
+          sprintf(strOS, "Windows 10 version 1803");
+          break;
+        case 17763:
+          sprintf(strOS, "Windows 10 version 1809");
+          break;
+        case 18362:
+          sprintf(strOS, "Windows 10 version 1903");
+          break;
+        case 18363:
+          sprintf(strOS, "Windows 10 version 1909");
+          break;
+        case 19041:
+          sprintf(strOS, "Windows 10 version 2004");
+          break;
+        case 19042:
+          sprintf(strOS, "Windows 10 version 20H2");
+          break;
+        case 19043:
+          sprintf(strOS, "Windows 10 version 21H1");
+          break;
+        case 19044:
+          sprintf(strOS, "Windows 10 version 21H2");
+          break;
+        case 22000:
+          sprintf(strOS, "Windows 11 version 21H2");
+          break;
+        }
+        _core.Log->AddTimelessLog("\toperating system : \t%s\n", strOS);
+        break;
+      }
+      break;
+    default:
+      _core.Log->AddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
+    }
+    break;
+  default:
+    _core.Log->AddTimelessLog("\toperating system: \tunknown\n");
   }
 
-  fellowAddTimelessLog("\tparameters: \t\tOS %d.%d build %d, %s\n", 
+  _core.Log->AddTimelessLog("\tparameters: \t\tOS %d.%d build %d, %s\n",
     osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
     strcmp(osInfo.szCSDVersion, "") != 0 ? osInfo.szCSDVersion : "no servicepack");
 
   switch (osInfo.wProductType)
   {
-    case VER_NT_WORKSTATION:
-      fellowAddTimelessLog("\tproduct type: \t\tworkstation\n");
-      break;
-    case VER_NT_SERVER:
-      fellowAddTimelessLog("\tproduct type: \t\tserver\n");
-      break;
-    case VER_NT_DOMAIN_CONTROLLER:
-      fellowAddTimelessLog("\tproduct type: \t\tdomain controller\n");
-      break;
-    default:
-      fellowAddTimelessLog("\tproduct type: \t\tunknown product type\n");
-      break;
+  case VER_NT_WORKSTATION:
+    _core.Log->AddTimelessLog("\tproduct type: \t\tworkstation\n");
+    break;
+  case VER_NT_SERVER:
+    _core.Log->AddTimelessLog("\tproduct type: \t\tserver\n");
+    break;
+  case VER_NT_DOMAIN_CONTROLLER:
+    _core.Log->AddTimelessLog("\tproduct type: \t\tdomain controller\n");
+    break;
+  default:
+    _core.Log->AddTimelessLog("\tproduct type: \t\tunknown product type\n");
+    break;
   }
 
-  fellowAddTimelessLog("\t64 bit OS:\t\t%s\n", sysinfoIs64BitWindows() ? "yes" : "no");
+  _core.Log->AddTimelessLog("\t64 bit OS:\t\t%s\n", sysinfoIs64BitWindows() ? "yes" : "no");
 }
 
 static void sysinfoParseRegistry() {
-  char *tempstr = nullptr;
-  DWORD *dwTemp = nullptr;
+  char* tempstr = nullptr;
+  DWORD* dwTemp = nullptr;
 
   tempstr = sysinfoRegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
-    ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
-    TEXT ("VendorIdentifier"));
+  ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
+    TEXT("VendorIdentifier"));
   if (tempstr) {
-    fellowAddTimelessLog("\tCPU vendor: \t\t%s\n", tempstr);
+    _core.Log->AddTimelessLog("\tCPU vendor: \t\t%s\n", tempstr);
     free(tempstr);
   }
 
   tempstr = sysinfoRegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
-    ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
-    TEXT ("ProcessorNameString"));
+  ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
+    TEXT("ProcessorNameString"));
   if (tempstr) {
-    fellowAddTimelessLog("\tCPU type: \t\t%s\n", tempstr);
+    _core.Log->AddTimelessLog("\tCPU type: \t\t%s\n", tempstr);
     free(tempstr);
   }
 
   tempstr = sysinfoRegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
-    ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
-    TEXT ("Identifier")); 
+  ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
+    TEXT("Identifier"));
   if (tempstr) {
-    fellowAddTimelessLog("\tCPU identifier: \t%s\n", tempstr);
-    free (tempstr);
+    _core.Log->AddTimelessLog("\tCPU identifier: \t%s\n", tempstr);
+    free(tempstr);
   }
 
   /* clock speed seems to be only available on NT systems here */
   dwTemp = sysinfoRegistryQueryDWORDValue(HKEY_LOCAL_MACHINE, TEXT
-     ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), TEXT ("~MHz"));
+  ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), TEXT("~MHz"));
   if (dwTemp) {
-      fellowAddTimelessLog("\tCPU clock: \t\t%d MHz\n", *dwTemp);
-      free(dwTemp);
+    _core.Log->AddTimelessLog("\tCPU clock: \t\t%d MHz\n", *dwTemp);
+    free(dwTemp);
   }
 }
 
@@ -657,24 +660,24 @@ static void sysinfoParseMemoryStatus () {
   MemoryStatusEx.dwLength = sizeof (MEMORYSTATUSEX);
   GlobalMemoryStatusEx(&MemoryStatusEx);
 
-  fellowAddTimelessLog("\ttotal physical memory: \t\t%I64d MB\n", MemoryStatusEx.ullTotalPhys / 1024 / 1024);
-  fellowAddTimelessLog("\tfree physical memory: \t\t%I64d MB\n", MemoryStatusEx.ullAvailPhys / 1024 / 1024);
-  fellowAddTimelessLog("\tmemory in use: \t\t\t%u%%\n", MemoryStatusEx.dwMemoryLoad);
-  fellowAddTimelessLog("\ttotal size of pagefile: \t%I64d MB\n", MemoryStatusEx.ullTotalPageFile / 1024 / 1024);
-  fellowAddTimelessLog("\tfree size of pagefile: \t\t%I64d MB\n", MemoryStatusEx.ullAvailPageFile / 1024 / 1024);
-  fellowAddTimelessLog("\ttotal virtual address space: \t%I64d MB\n", MemoryStatusEx.ullTotalVirtual / 1024 / 1024);
-  fellowAddTimelessLog("\tfree virtual address space: \t%I64d MB\n", MemoryStatusEx.ullAvailVirtual / 1024 / 1024);
+  _core.Log->AddTimelessLog("\ttotal physical memory: \t\t%I64d MB\n", MemoryStatusEx.ullTotalPhys / 1024 / 1024);
+  _core.Log->AddTimelessLog("\tfree physical memory: \t\t%I64d MB\n", MemoryStatusEx.ullAvailPhys / 1024 / 1024);
+  _core.Log->AddTimelessLog("\tmemory in use: \t\t\t%u%%\n", MemoryStatusEx.dwMemoryLoad);
+  _core.Log->AddTimelessLog("\ttotal size of pagefile: \t%I64d MB\n", MemoryStatusEx.ullTotalPageFile / 1024 / 1024);
+  _core.Log->AddTimelessLog("\tfree size of pagefile: \t\t%I64d MB\n", MemoryStatusEx.ullAvailPageFile / 1024 / 1024);
+  _core.Log->AddTimelessLog("\ttotal virtual address space: \t%I64d MB\n", MemoryStatusEx.ullTotalVirtual / 1024 / 1024);
+  _core.Log->AddTimelessLog("\tfree virtual address space: \t%I64d MB\n", MemoryStatusEx.ullAvailVirtual / 1024 / 1024);
 }
 
 static void sysinfoVersionInfo () {
   char *versionstring = fellowGetVersionString();
-  fellowAddTimelessLog(versionstring);
+  _core.Log->AddTimelessLog(versionstring);
   free(versionstring);
 
   #ifdef _DEBUG
-    fellowAddTimelessLog(" (debug build)\n");
+  _core.Log->AddTimelessLog(" (debug build)\n");
   #else
-    fellowAddTimelessLog(" (release build)\n");
+  _core.Log->AddTimelessLog(" (release build)\n");
   #endif
 }
 
@@ -684,17 +687,17 @@ static void sysinfoVersionInfo () {
 void sysinfoLogSysInfo()
 {
   sysinfoVersionInfo();
-  fellowAddTimelessLog("\nsystem information:\n\n");
+  _core.Log->AddTimelessLog("\nsystem information:\n\n");
   sysinfoParseRegistry();
-  fellowAddTimelessLog("\n");
+  _core.Log->AddTimelessLog("\n");
   sysinfoParseOSVersionInfo();
-  fellowAddTimelessLog("\n");
+  _core.Log->AddTimelessLog("\n");
   sysinfoParseSystemInfo();
-  fellowAddTimelessLog("\n");
+  _core.Log->AddTimelessLog("\n");
   sysinfoParseProcessorInformation();
   sysinfoParseMemoryStatus();
-  fellowAddTimelessLog("\n");
+  _core.Log->AddTimelessLog("\n");
   sysinfoEnumRegistry();
-  fellowAddTimelessLog("\n\ndebug information:\n\n");
+  _core.Log->AddTimelessLog("\n\ndebug information:\n\n");
 }
 

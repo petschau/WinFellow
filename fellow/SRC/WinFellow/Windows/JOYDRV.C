@@ -76,6 +76,7 @@ Monday, February 04, 2008
 #include "joydrv.h"
 #include "windrv.h"
 #include "GfxDrvCommon.h"
+#include "VirtualHost/Core.h"
 
 #include "dxver.h"
 #include <mmsystem.h>
@@ -191,7 +192,7 @@ char *joyDrvDInputErrorString(HRESULT hResult)
 
 void joyDrvDInputFailure(char *header, HRESULT err)
 {
-  fellowAddLog("%s %s\n", header, joyDrvDInputErrorString(err));
+  _core.Log->AddLog("%s %s\n", header, joyDrvDInputErrorString(err));
 }
 
 
@@ -204,7 +205,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   DIPROPRANGE diprg; 
   DIPROPDWORD dipdw;
 
-  fellowAddLog( "joyDrvDInputSetCooperativeLevel(%d)\n", port );
+  _core.Log->AddLog( "joyDrvDInputSetCooperativeLevel(%d)\n", port );
 
   if (joy_drv_failed)
   {
@@ -275,7 +276,7 @@ void joyDrvDInputUnacquire(int port)
 {
   if (gameportGetAnalogJoystickInUse())
   {
-    fellowAddLog("joyDrvDInputUnacquire(%d)\n", port);
+    _core.Log->AddLog("joyDrvDInputUnacquire(%d)\n", port);
 
     if (!joy_drv_failed)
     {
@@ -297,7 +298,7 @@ void joyDrvDInputAcquire(int port)
 {
   if (gameportGetAnalogJoystickInUse())
   {
-    fellowAddLog("joyDrvDInputAcquire(%d)\n", port);
+    _core.Log->AddLog("joyDrvDInputAcquire(%d)\n", port);
 
     if (joy_drv_in_use)
     {
@@ -350,7 +351,7 @@ BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef
 { 
   IDirectInput8 *pdi = (IDirectInput8*)pvRef; 
 
-  fellowAddLog( "**** Joystick %d **** '%s'\n", num_joy_attached, pdinst->tszProductName );
+  _core.Log->AddLog( "**** Joystick %d **** '%s'\n", num_joy_attached, pdinst->tszProductName );
 
   if( !joyDrvDxCreateAndInitDevice( pdi, joy_drv_lpDID, pdinst->guidInstance, num_joy_attached++ ))
   {
@@ -375,7 +376,7 @@ BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef
 
 void joyDrvDInputInitialize()
 {
-  fellowAddLog("joyDrvDInputInitialize()\n");
+  _core.Log->AddLog("joyDrvDInputInitialize()\n");
 
   if (!joy_drv_lpDI)
   {
@@ -406,7 +407,7 @@ void joyDrvDInputInitialize()
       return;
     }
 
-    fellowAddLog( "njoy: %d\n", num_joy_attached );
+    _core.Log->AddLog( "njoy: %d\n", num_joy_attached );
   }
 }
 
@@ -417,7 +418,7 @@ void joyDrvDInputInitialize()
 
 void joyDrvDInputRelease()
 {
-  fellowAddLog("joyDrvDInputRelease()\n");
+  _core.Log->AddLog("joyDrvDInputRelease()\n");
 
   for(int port = 0; port < MAX_JOY_PORT; port++ )
   {
@@ -622,7 +623,7 @@ void joyDrvMovementHandler()
 
       if( joyDrvCheckJoyMovement( joystickNo, &Up, &Down, &Left, &Right, &Button1, &Button2 ))
       {
-	fellowAddLog( "joyDrvCheckJoyMovement failed\n" );
+	_core.Log->AddLog( "joyDrvCheckJoyMovement failed\n" );
 	return;
       }
 
@@ -692,7 +693,7 @@ void joyDrvStartup()
   HRESULT res = CoInitialize(nullptr);
   if(res != S_OK)
   {
-    fellowAddLog("joyDrvStartup(): Could not initialize COM library: %d\n", res);
+    _core.Log->AddLog("joyDrvStartup(): Could not initialize COM library: %d\n", res);
   }
 
   num_joy_supported = 0;
