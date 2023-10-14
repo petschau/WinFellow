@@ -150,7 +150,7 @@ void WavFileWriter::FileInit(sound_rates rate, bool is16Bits, bool isStereo, uin
     char filename[FILEOPS_MAX_FILE_PATH];
     sprintf(filename, "FWAV%u.WAV", _serial++);
 
-    _core.Fileops->fileopsGetGenericFileName(generic_wav_filename, "WinFellow", filename);
+    _core.Fileops->GetGenericFileName(generic_wav_filename, "WinFellow", filename);
     strcpy(_filename, generic_wav_filename);
 
     _rate = rate;

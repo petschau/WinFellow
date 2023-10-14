@@ -153,7 +153,7 @@ void ffilesysDumpConfig()
 {
   char filename[MAX_PATH];
 
-  _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "fsysdump.txt");
+  _core.Fileops->GetGenericFileName(filename, "WinFellow", "fsysdump.txt");
   FILE* F = fopen(filename, "w");
   for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++) {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)

@@ -3144,7 +3144,7 @@ int memoryKickDecodeAF(char* filename, char* keyfile, uint8_t* memory_kick, cons
 
     // than what is installed)
 
-    if (_core.Fileops->fileopsGetWinFellowInstallationPath(strPath, CFG_FILENAME_LENGTH)) {
+    if (_core.Fileops->GetWinFellowInstallationPath(strPath, CFG_FILENAME_LENGTH)) {
 
       strncat(strPath, "\\..\\Player\\", 11);
 

@@ -137,7 +137,7 @@ namespace Service
     if (_first_time)
     {
       char logfilename[FILEOPS_MAX_FILE_PATH];
-      _core.Fileops->fileopsGetFellowLogfileName(logfilename);
+      _core.Fileops->GetFellowLogfileName(logfilename);
       _logfilename = logfilename;
       fopen_s(&F, _logfilename.c_str(), "w");
       _first_time = false;

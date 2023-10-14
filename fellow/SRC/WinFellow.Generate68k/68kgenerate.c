@@ -143,7 +143,7 @@ void cgProfileLogHeader()
 
   fprintf(profilef, "\tchar filename[MAX_PATH];\n");
   fprintf(profilef, "\tFILE *F = NULL;\n");
-  fprintf(profilef, "\tfileopsGetGenericFileName(filename, \"WinFellow\", \"cpuprofile.txt\");\n");
+  fprintf(profilef, "\tGetGenericFileName(filename, \"WinFellow\", \"cpuprofile.txt\");\n");
   fprintf(profilef, "\tF = fopen(filename, \"w\");\n");
   fprintf(profilef, "\tif (F != NULL)\n");
   fprintf(profilef, "\t{\n");

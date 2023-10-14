@@ -194,7 +194,7 @@ void cpuInstructionLogOpen()
   if (CPUINSTRUCTIONLOG == nullptr)
   {
     char filename[MAX_PATH];
-    _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "cpuinstructions.log");
+    _core.Fileops->GetGenericFileName(filename, "WinFellow", "cpuinstructions.log");
     CPUINSTRUCTIONLOG = fopen(filename, "w");
   }
 }

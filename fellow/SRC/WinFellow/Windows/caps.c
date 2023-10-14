@@ -225,7 +225,7 @@ BOOLE capsLoadTrack(uint32_t drive, uint32_t track, uint8_t *mfm_data, uint32_t 
   {
     char filename[MAX_PATH];
 
-    _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "CAPSDump.txt");
+    _core.Fileops->GetGenericFileName(filename, "WinFellow", "CAPSDump.txt");
     FILE* f = fopen(filename, "wb");
     fwrite(capsTrackInfo.trackdata[0], len, 1, f);
     fclose(f);

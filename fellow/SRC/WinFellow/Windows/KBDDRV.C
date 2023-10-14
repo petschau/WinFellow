@@ -1630,7 +1630,7 @@ void kbdDrvStartup()
 
   kbdDrvInitializeDIKToSymbolKeyTable();
 
-  _core.Fileops->fileopsGetGenericFileName(kbd_drv_mapping_filename, "WinFellow", MAPPING_FILENAME);
+  _core.Fileops->GetGenericFileName(kbd_drv_mapping_filename, "WinFellow", MAPPING_FILENAME);
 
   prs_rewrite_mapping_file = prsReadFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 

@@ -241,7 +241,7 @@ Uart::Uart()
   : _outputFile(nullptr)
 {
   char tempFileName[256];
-  _core.Fileops->fileopsGetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");
+  _core.Fileops->GetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");
   _outputFileName = tempFileName;
   ClearState();
 }

@@ -917,7 +917,7 @@ BOOLE floppyImageCompressedBZipPrepare(char* diskname, uint32_t drive)
   char* gzname;
   char cmdline[512];
 
-  if ((gzname = _core.Fileops->fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = _core.Fileops->GetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -939,7 +939,7 @@ BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
 {
   char* gzname;
 
-  if ((gzname = _core.Fileops->fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = _core.Fileops->GetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -971,7 +971,7 @@ BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
 BOOLE floppyImageCompressedGZipPrepare(char* diskname, uint32_t drive)
 {
   char* gzname;
-  if ((gzname = _core.Fileops->fileopsGetTemporaryFilename()) == nullptr)
+  if ((gzname = _core.Fileops->GetTemporaryFilename()) == nullptr)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -1876,7 +1876,7 @@ void floppyStartup()
   floppyClearDMAState();
   floppyDriveTableInit();
 #ifdef FLOPPY_LOG
-  fileopsGetGenericFileName(floppylogfilename, "WinFellow", "floppy.log");
+  GetGenericFileName(floppylogfilename, "WinFellow", "floppy.log");
   floppyLogClear();
 #endif
 }

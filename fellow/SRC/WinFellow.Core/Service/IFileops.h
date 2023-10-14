@@ -10,15 +10,15 @@ namespace Service
   {
   public:
 
-    virtual bool fileopsGetFellowLogfileName(char*) = 0;
-    virtual bool fileopsGetGenericFileName(char*, const char*, const char*) = 0;
-    virtual bool fileopsGetDefaultConfigFileName(char*) = 0;
-    virtual bool fileopsResolveVariables(const char*, char*) = 0;
-    virtual bool fileopsGetWinFellowPresetPath(char*, const uint32_t) = 0;
-    virtual bool fileopsGetScreenshotFileName(char*) = 0;
-    virtual char* fileopsGetTemporaryFilename() = 0;
-    virtual bool fileopsGetWinFellowInstallationPath(char*, const uint32_t) = 0;
-    virtual bool fileopsGetKickstartByCRC32(const char*, const uint32_t, char*, const uint32_t) = 0;
+    virtual bool GetFellowLogfileName(char*) = 0;
+    virtual bool GetGenericFileName(char*, const char*, const char*) = 0;
+    virtual bool GetDefaultConfigFileName(char*) = 0;
+    virtual bool ResolveVariables(const char*, char*) = 0;
+    virtual bool GetWinFellowPresetPath(char*, const uint32_t) = 0;
+    virtual bool GetScreenshotFileName(char*) = 0;
+    virtual char* GetTemporaryFilename() = 0;
+    virtual bool GetWinFellowInstallationPath(char*, const uint32_t) = 0;
+    virtual bool GetKickstartByCRC32(const char*, const uint32_t, char*, const uint32_t) = 0;
 
     IFileops() = default;
     virtual ~IFileops() = default;

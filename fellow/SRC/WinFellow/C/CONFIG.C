@@ -2062,7 +2062,7 @@ bool cfgLoadFromFilename(cfg* config, const char* filename, const bool bIsPreset
 {
   char newfilename[CFG_FILENAME_LENGTH];
 
-  _core.Fileops->fileopsResolveVariables(filename, newfilename);
+  _core.Fileops->ResolveVariables(filename, newfilename);
 
   if (!bIsPreset)
   {

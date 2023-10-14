@@ -47,7 +47,7 @@
   * @param[out] szNewPath path name with resolved variables
   * @return true, if variable was successfully resolved, false otherwise.
   */
-bool FileopsWin32::fileopsResolveVariables(const char* szPath, char* szNewPath) {
+bool FileopsWin32::ResolveVariables(const char* szPath, char* szNewPath) {
   DWORD nRet = ExpandEnvironmentStrings(szPath, szNewPath, CFG_FILENAME_LENGTH);
 
   if (nRet < CFG_FILENAME_LENGTH)
@@ -66,13 +66,13 @@ bool FileopsWin32::fileopsResolveVariables(const char* szPath, char* szNewPath) 
  * compiling a RetroPlatform specific build.
  * @return true if successful, false otherwise
  */
-bool FileopsWin32::fileopsGetGenericFileName(char* szPath, const char* szSubDir, const char* filename)
+bool FileopsWin32::GetGenericFileName(char* szPath, const char* szSubDir, const char* filename)
 {
   HRESULT hr;
 
 #ifdef RETRO_PLATFORM
   // first check if AmigaForever is installed, prefer Amiga files path
-  if (!fileopsResolveVariables("%AMIGAFOREVERDATA%", szPath)) {
+  if (!ResolveVariables("%AMIGAFOREVERDATA%", szPath)) {
 #endif
     if (SUCCEEDED(hr = SHGetFolderPathAndSubDir(NULL,
       CSIDL_APPDATA | CSIDL_FLAG_CREATE,
@@ -101,7 +101,7 @@ bool FileopsWin32::fileopsGetGenericFileName(char* szPath, const char* szSubDir,
 * @return true if successful, false otherwise
 */
 
-bool FileopsWin32::fileopsGetScreenshotFileName(char* szFilename)
+bool FileopsWin32::GetScreenshotFileName(char* szFilename)
 {
   char szFolderPath[MAX_PATH];
 
@@ -132,23 +132,23 @@ bool FileopsWin32::fileopsGetScreenshotFileName(char* szFilename)
   return FALSE;
 }
 
-/* fileopsGetFellowLogfileName                                      */
+/* GetFellowLogfileName                                      */
 /* build fellow.log filename pointing to Application Data\WinFellow */
 /* return true if successfull, false otherwise                      */
 
-bool FileopsWin32::fileopsGetFellowLogfileName(char* szPath)
+bool FileopsWin32::GetFellowLogfileName(char* szPath)
 {
-  return fileopsGetGenericFileName(szPath, "WinFellow", "fellow.log");
+  return GetGenericFileName(szPath, "WinFellow", "fellow.log");
 }
 
-/* fileopsGetDefaultConfigFileName                                  */
+/* GetDefaultConfigFileName                                  */
 /* build default.wfc filename pointing to                           */
 /* Application Data\WinFellow\configurations                        */
 /* return true if successfull, false otherwise                      */
 
-bool FileopsWin32::fileopsGetDefaultConfigFileName(char* szPath)
+bool FileopsWin32::GetDefaultConfigFileName(char* szPath)
 {
-  return fileopsGetGenericFileName(szPath, "WinFellow\\configurations", "default.wfc");
+  return GetGenericFileName(szPath, "WinFellow\\configurations", "default.wfc");
 }
 
 /* fileopsGetWinFellowExecutablePath                                */
@@ -163,7 +163,7 @@ bool FileopsWin32::fileopsGetWinFellowExecutablePath(char* strBuffer, const uint
 
 /* fileopsGetWinFellowExecutablePath                                */
 /* writes WinFellow installation path into strBuffer                */
-bool FileopsWin32::fileopsGetWinFellowInstallationPath(char* strBuffer, const uint32_t lBufferSize)
+bool FileopsWin32::GetWinFellowInstallationPath(char* strBuffer, const uint32_t lBufferSize)
 {
   char strWinFellowExePath[CFG_FILENAME_LENGTH] = "";
 
@@ -191,11 +191,11 @@ bool FileopsWin32::fileopsDirectoryExists(const char* strPath)
 
 /* fileopsGetWinFellowExecutablePath                                */
 /* writes WinFellow preset directory path into strBuffer            */
-bool FileopsWin32::fileopsGetWinFellowPresetPath(char* strBuffer, const uint32_t lBufferSize)
+bool FileopsWin32::GetWinFellowPresetPath(char* strBuffer, const uint32_t lBufferSize)
 {
   char strWinFellowInstallPath[CFG_FILENAME_LENGTH] = "";
 
-  if (fileopsGetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH))
+  if (GetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH))
   {
     strncat(strWinFellowInstallPath, "\\Presets", 9);
 
@@ -206,7 +206,7 @@ bool FileopsWin32::fileopsGetWinFellowPresetPath(char* strBuffer, const uint32_t
     else {
 #ifdef _DEBUG
       // in debug mode, look for presets directory also with relative path from output exe
-      fileopsGetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH);
+      GetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH);
 #ifdef X64
       strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\..\\Presets", 24);
 #else
@@ -232,7 +232,7 @@ bool FileopsWin32::fileopsGetWinFellowPresetPath(char* strBuffer, const uint32_t
 /* the volumes rootdir                     */
 /*=========================================*/
 
-char* FileopsWin32::fileopsGetTemporaryFilename()
+char* FileopsWin32::GetTemporaryFilename()
 {
   char* result;
 
@@ -248,7 +248,7 @@ char* FileopsWin32::fileopsGetTemporaryFilename()
   return result;
 }
 
-bool FileopsWin32::fileopsGetKickstartByCRC32(const char* strSearchPath, const uint32_t lCRC32, char* strDestFilename, const uint32_t strDestLen)
+bool FileopsWin32::GetKickstartByCRC32(const char* strSearchPath, const uint32_t lCRC32, char* strDestFilename, const uint32_t strDestLen)
 {
   char strSearchPattern[CFG_FILENAME_LENGTH] = "";
   WIN32_FIND_DATA ffd;
@@ -266,7 +266,7 @@ bool FileopsWin32::fileopsGetKickstartByCRC32(const char* strSearchPath, const u
 
   hFind = FindFirstFile(strSearchPattern, &ffd);
   if (hFind == INVALID_HANDLE_VALUE) {
-    fellowAddLog("fileopsGetKickstartByCRC32(): FindFirstFile failed.\n");
+    fellowAddLog("GetKickstartByCRC32(): FindFirstFile failed.\n");
     return false;
   }
 
@@ -278,7 +278,7 @@ bool FileopsWin32::fileopsGetKickstartByCRC32(const char* strSearchPath, const u
         strncat(strSubDir, "\\", 2);
         strncat(strSubDir, ffd.cFileName, CFG_FILENAME_LENGTH);
 
-        if (fileopsGetKickstartByCRC32(strSubDir, lCRC32, strDestFilename, strDestLen))
+        if (GetKickstartByCRC32(strSubDir, lCRC32, strDestFilename, strDestLen))
           return true;
       }
 #endif

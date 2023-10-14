@@ -170,7 +170,7 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const char *szFile
   if (szFilename[0] == 0)
   {
     // filename not set, automatically generate one
-    _core.Fileops->fileopsGetScreenshotFileName(szActualFilename);
+    _core.Fileops->GetScreenshotFileName(szActualFilename);
   }
   else
   {

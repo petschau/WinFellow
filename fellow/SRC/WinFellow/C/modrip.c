@@ -908,18 +908,18 @@ void modripChipDump()
   if(modripGuiDumpChipMem()) {
     char filenamechip[MAX_PATH];
 
-    _core.Fileops->fileopsGetGenericFileName(filenamechip, "WinFellow", "chip.mem");
+    _core.Fileops->GetGenericFileName(filenamechip, "WinFellow", "chip.mem");
     Saved = modripSaveChipMem(filenamechip);
     if(memoryGetSlowSize())
     {
       char filename[MAX_PATH];
-      _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "bogo.mem");
+      _core.Fileops->GetGenericFileName(filename, "WinFellow", "bogo.mem");
       modripSaveSlowMem(filename);
     }
     if(memoryGetFastSize())
     {
       char filename[MAX_PATH];
-      _core.Fileops->fileopsGetGenericFileName(filename, "WinFellow", "fast.mem");
+      _core.Fileops->GetGenericFileName(filename, "WinFellow", "fast.mem");
       modripSaveFastMem(filename);
     }
     if(Saved) {

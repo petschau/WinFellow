@@ -264,7 +264,7 @@ void iniSetDefaults(ini *initdata) {
   /* Default configuration filename                                           */
   /*==========================================================================*/ 
 
-  _core.Fileops->fileopsGetDefaultConfigFileName(ini_default_config_filename);
+  _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
   iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
 
   /*==========================================================================*/
@@ -343,11 +343,11 @@ BOOLE iniSetOption(ini *initdata, char *initoptionstr) {
 
     if (stricmp(option, "last_used_configuration") == 0) {
       if (strcmp(value, "") == 0) {
-        _core.Fileops->fileopsGetDefaultConfigFileName(ini_default_config_filename);
+        _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
         iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
       } else {
 	      if(fsWrapStat(value,&bla) != 0) {
-	        _core.Fileops->fileopsGetDefaultConfigFileName(ini_default_config_filename);
+	        _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
 	        iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
 	      } 
 	      else {
@@ -460,7 +460,7 @@ void iniManagerStartup(iniManager *initdatamanager) {
   ini *initdata = iniManagerGetNewIni(initdatamanager);
   iniManagerSetCurrentInitdata(initdatamanager, initdata);
 
-  _core.Fileops->fileopsGetGenericFileName(ini_filename, "WinFellow", INI_FILENAME);
+  _core.Fileops->GetGenericFileName(ini_filename, "WinFellow", INI_FILENAME);
 
   // load the ini-file into the m_current_initdata data structure
   if (iniLoadIniFromFilename(initdata, ini_filename) == FALSE) {

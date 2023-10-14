@@ -2073,7 +2073,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     if (strncmp(strLastPresetROMDir, "", CFG_FILENAME_LENGTH) == 0)
     {
       // last preset directory not set
-      if (_core.Fileops->fileopsResolveVariables("%AMIGAFOREVERDATA%Shared\\rom", strAmigaForeverROMDir))
+      if (_core.Fileops->ResolveVariables("%AMIGAFOREVERDATA%Shared\\rom", strAmigaForeverROMDir))
       {
         strLastPresetROMDir = strAmigaForeverROMDir;
         iniSetLastUsedPresetROMDir(wgui_ini, strAmigaForeverROMDir);
@@ -2133,7 +2133,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
           if (lCRC32 = cfgGetKickCRC32(wgui_cfg))
           {
             ccwEditGetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strROMSearchPath, CFG_FILENAME_LENGTH);
-            if (_core.Fileops->fileopsGetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
+            if (_core.Fileops->GetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
             {
               cfgSetKickImage(wgui_cfg, strKickstart);
               // model presets do not support extended ROMs (yet), reset any extended ROM that might be configured
@@ -2222,7 +2222,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             if (lCRC32 = cfgGetKickCRC32(cfgTemp))
             {
               ccwEditGetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strROMSearchPath, CFG_FILENAME_LENGTH);
-              if (_core.Fileops->fileopsGetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
+              if (_core.Fileops->GetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
               {
                 cfgSetKickImage(cfgTemp, strKickstart);
               }
@@ -3762,7 +3762,7 @@ void wguiStartup()
   wgui_ini = iniManagerGetCurrentInitdata(&ini_manager);
   wguiConvertDrawModeListToGuiDrawModes();
 
-  if (_core.Fileops->fileopsGetWinFellowPresetPath(wgui_preset_path, CFG_FILENAME_LENGTH))
+  if (_core.Fileops->GetWinFellowPresetPath(wgui_preset_path, CFG_FILENAME_LENGTH))
   {
     fellowAddLog("wguiStartup(): preset path = %s\n", wgui_preset_path);
     wguiInitializePresets(&wgui_presets, &wgui_num_presets);
