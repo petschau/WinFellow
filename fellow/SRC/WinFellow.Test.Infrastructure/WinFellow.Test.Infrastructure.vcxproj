@@ -31,16 +31,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="catch\catch_amalgamated.cpp" />
+    <ClCompile Include="mock\Core\Service\FSWrapperMock.cpp" />
     <ClCompile Include="mock\Core\Service\LogMock.cpp" />
-    <ClCompile Include="mock\service\FSWrapperMock.cpp" />
     <ClCompile Include="mock\service\HUDMock.cpp" />
     <ClCompile Include="mock\service\RetroPlatformWrapperMock.cpp" />
     <ClCompile Include="TestBootstrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch\catch_amalgamated.hpp" />
+    <ClInclude Include="mock\Core\Service\FSWrapperMock.h" />
     <ClInclude Include="mock\Core\Service\LogMock.h" />
-    <ClInclude Include="mock\service\FSWrapperMock.h" />
     <ClInclude Include="mock\service\HUDMock.h" />
     <ClInclude Include="mock\service\RetroPlatformWrapperMock.h" />
     <ClInclude Include="TestBootstrap.h" />

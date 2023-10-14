@@ -43,7 +43,6 @@
 #include "cia.h"
 #include "blit.h"
 #include "sprite.h"
-#include "fswrap.h"
 #include "timer.h"
 #include "config.h"
 #include "wgui.h"
@@ -385,7 +384,6 @@ void fellowNastyExit()
   fprintf(stderr, "You only die twice, I give in!\n");
   _core.Sound->Shutdown();
   fprintf(stderr, "Serious error! Exit.\n");
-  fsNavigSetCWDStartupDir();
   exit(EXIT_FAILURE);
 }
 
@@ -457,7 +455,6 @@ static void fellowModulesStartup(int argc, char* argv[])
 
   chipsetStartup();
   timerStartup();
-  fsNavigStartup(argv);
   HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
@@ -515,8 +512,6 @@ static void fellowModulesShutdown()
   spriteShutdown();
   ffilesysShutdown();
   HardfileHandler->Shutdown();
-  fsNavigSetCWDStartupDir();
-  fsNavigShutdown();
   timerShutdown();
 
   delete HardfileHandler;

@@ -487,6 +487,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="VirtualHost\CoreFactory.cpp" />
     <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
     <ClCompile Include="Windows\Service\FileopsWin32.cpp" />
+    <ClCompile Include="Windows\Service\FSWrapperWin32.cpp" />
     <ClCompile Include="zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1097,7 +1098,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\FFILESYS.C" />
     <ClCompile Include="C\FLOPPY.C" />
     <ClCompile Include="C\FMEM.C" />
-    <ClCompile Include="C\FSNAVIG.C" />
     <ClCompile Include="C\GAMEPORT.C" />
     <ClCompile Include="C\GRAPH.C" />
     <ClCompile Include="C\interrupt.c" />
@@ -1123,7 +1123,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="DXGI\GfxDrvDXGIModeEnumerator.cpp" />
     <ClCompile Include="DXGI\GfxDrvDXGIOutput.cpp" />
     <ClCompile Include="DXGI\GfxDrvDXGIOutputEnumerator.cpp" />
-    <ClCompile Include="fellow\service\FSWrapper.cpp" />
     <ClCompile Include="fellow\service\HUD.cpp" />
     <ClCompile Include="fellow\service\RetroPlatformWrapper.cpp" />
     <ClCompile Include="fellow\service\Services.cpp" />
@@ -1155,7 +1154,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="uae\UAESUPP.C" />
     <ClCompile Include="Windows\caps.c" />
     <ClCompile Include="Windows\commoncontrol_wrap.c" />
-    <ClCompile Include="Windows\FSWRAP.C" />
     <ClCompile Include="Windows\fsysamnt.c" />
     <ClCompile Include="Windows\GFXDRV.C" />
     <ClCompile Include="Windows\GfxDrvCommon.cpp" />
@@ -1179,6 +1177,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h" />
     <ClInclude Include="Windows\Service\FileopsWin32.h" />
+    <ClInclude Include="Windows\Service\FSWrapperWin32.h" />
     <ClInclude Include="xdms\include\cdata.h" />
     <ClInclude Include="xdms\include\crc_csum.h" />
     <ClInclude Include="xdms\include\getbits.h" />
@@ -1216,13 +1215,11 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="fellow\api\module\IHardfileHandler.h" />
     <ClInclude Include="fellow\api\portable.h" />
     <ClInclude Include="fellow\api\Services.h" />
-    <ClInclude Include="fellow\api\service\IFSWrapper.h" />
     <ClInclude Include="fellow\api\service\IHUD.h" />
     <ClInclude Include="fellow\api\service\IRetroPlatform.h" />
     <ClInclude Include="fellow\api\VM.h" />
     <ClInclude Include="fellow\api\vm\IM68K.h" />
     <ClInclude Include="fellow\api\vm\IMemorySystem.h" />
-    <ClInclude Include="fellow\service\FSWrapper.h" />
     <ClInclude Include="fellow\service\HUD.h" />
     <ClInclude Include="fellow\service\RetroPlatformWrapper.h" />
     <ClInclude Include="fellow\vm\M68K.h" />
@@ -1268,7 +1265,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\FLOPPY.H" />
     <ClInclude Include="INCLUDE\FMEM.H" />
     <ClInclude Include="INCLUDE\FONTS.H" />
-    <ClInclude Include="INCLUDE\FSNAVIG.H" />
     <ClInclude Include="INCLUDE\GAMEPORT.H" />
     <ClInclude Include="INCLUDE\GFXDRV.H" />
     <ClInclude Include="INCLUDE\GRAPH.H" />
@@ -1307,7 +1303,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\caps.h" />
     <ClInclude Include="Windows\commoncontrol_wrap.h" />
     <ClInclude Include="Windows\dxver.h" />
-    <ClInclude Include="Windows\FSWRAP.H" />
     <ClInclude Include="Windows\GfxDrvCommon.h" />
     <ClInclude Include="Windows\gfxdrv_directdraw.h" />
     <ClInclude Include="Windows\kbdparser.h" />

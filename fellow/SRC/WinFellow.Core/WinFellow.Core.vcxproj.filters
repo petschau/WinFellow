@@ -72,6 +72,9 @@
     <ClInclude Include="IO\RtcOkiMsm6242rs.h">
       <Filter>IO</Filter>
     </ClInclude>
+    <ClInclude Include="Service\IFSWrapper.h">
+      <Filter>Service</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">

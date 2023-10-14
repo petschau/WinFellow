@@ -35,6 +35,7 @@
 #include "hardfile/hunks/HunkRelocator.h"
 #include "VirtualHost/Core.h"
 
+using namespace Service;
 using namespace fellow::hardfile::rdb;
 using namespace fellow::api::service;
 using namespace fellow::api::module;
@@ -340,7 +341,7 @@ namespace fellow::hardfile
       return false;
     }
 
-    fs_wrapper_point* fsnp = fellow::api::Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
+    fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(device.Configuration.Filename.c_str());
     if (fsnp == nullptr)
     {
       _core.Log->AddLog("ERROR: Unable to access hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", device.Configuration.Filename.c_str());

@@ -78,8 +78,6 @@
 
 #include "fmem.h"
 
-#include "fswrap.h"
-
 #include "wgui.h"
 
 #include "rtc.h"
@@ -98,6 +96,7 @@
 
 
 using namespace fellow::api::module;
+using namespace Service;
 
 
 
@@ -3538,13 +3537,14 @@ void memoryKickLoad()
 
 
 
-  fs_navig_point* fsnp;
 
 
 
   memory_kickimage_none = FALSE;/* Initially Kickstart is expected to be OK */
 
-  if ((fsnp = fsWrapMakePoint(memory_kickimage)) == nullptr)
+  fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(memory_kickimage);
+
+  if (fsnp == nullptr)
 
     memoryKickError(MEMORY_ROM_ERROR_EXISTS_NOT, 0);
 
@@ -3552,7 +3552,7 @@ void memoryKickLoad()
 
   {
 
-    if (fsnp->type != FS_NAVIG_FILE)
+    if (fsnp->type != fs_wrapper_file_types::FS_NAVIG_FILE)
 
       memoryKickError(MEMORY_ROM_ERROR_FILE, 0);
 
@@ -3774,7 +3774,6 @@ void memoryKickExtendedLoad()
 
   FILE* F;
 
-  fs_navig_point* fsnp;
 
   uint32_t size = 0;
 
@@ -3797,12 +3796,13 @@ void memoryKickExtendedLoad()
   }
 
 
+  fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(memory_kickimage_ext);
 
-  if ((fsnp = fsWrapMakePoint(memory_kickimage_ext)) == nullptr)
+  if (fsnp == nullptr)
 
     return;
 
-  if (fsnp->type != FS_NAVIG_FILE)
+  if (fsnp->type != fs_wrapper_file_types::FS_NAVIG_FILE)
 
     return;
 

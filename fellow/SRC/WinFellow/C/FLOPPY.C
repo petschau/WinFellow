@@ -56,7 +56,6 @@
 #include "fmem.h"
 #include "floppy.h"
 #include "draw.h"
-#include "fswrap.h"
 #include "graph.h"
 #include "cia.h"
 #include "bus.h"
@@ -76,6 +75,7 @@
 #endif
 
 using namespace CustomChipset;
+using namespace Service;
 
 #define MFM_FILLB 0xaa
 #define MFM_FILLL 0xaaaaaaaa
@@ -1121,7 +1121,7 @@ void floppyImagePrepare(char* diskname, uint32_t drive)
 /* Returns the image status              */
 /*=======================================*/
 
-uint32_t floppyImageGeometryCheck(fs_navig_point* fsnp, uint32_t drive)
+uint32_t floppyImageGeometryCheck(fs_wrapper_point* fsnp, uint32_t drive)
 {
   char head[8];
   fread(head, 1, 8, floppy[drive].F);
@@ -1268,7 +1268,6 @@ void floppyImageIPFLoad(uint32_t drive)
  */
 void floppySetDiskImage(uint32_t drive, char* diskname)
 {
-  fs_navig_point* fsnp;
   BOOLE bSuccess = FALSE;
 
   if (floppy[drive].enabled)
@@ -1280,86 +1279,90 @@ void floppySetDiskImage(uint32_t drive, char* diskname)
   {
     return; /* Same image */
   }
+
   floppyImageRemove(drive);
   if (strcmp(diskname, "") == 0)
   {
     floppy[drive].inserted = FALSE;
     floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
     strcpy(floppy[drive].imagename, "");
+    return;
   }
-  else
+
+  fs_wrapper_point* fsnp = _core.FSWrapper->MakePoint(diskname);
+  if (fsnp == nullptr)
   {
-    if ((fsnp = fsWrapMakePoint(diskname)) == nullptr)
+    floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
+    return;
+  }
+
+  if (fsnp->type != fs_wrapper_file_types::FS_NAVIG_FILE)
+  {
+    floppyError(drive, FLOPPY_ERROR_FILE);
+    free(fsnp);
+    return;
+  }
+
+  floppyImagePrepare(diskname, drive);
+  if (floppy[drive].zipped)
+  {
+    free(fsnp);
+
+    fsnp = _core.FSWrapper->MakePoint(floppy[drive].imagenamereal);
+    if (fsnp == nullptr)
     {
-      floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
-    }
-    else
-    {
-      if (fsnp->type != FS_NAVIG_FILE)
-      {
-        floppyError(drive, FLOPPY_ERROR_FILE);
-      }
-      else
-      {
-        floppyImagePrepare(diskname, drive);
-        if (floppy[drive].zipped)
-        {
-          free(fsnp);
-          if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == nullptr)
-          {
-            floppyError(drive, FLOPPY_ERROR_COMPRESS);
-          }
-        }
-        if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR)
-        {
-          if (!fsnp->writeable)
-            floppySetReadOnlyEnforced(drive, true);
-          if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
-            (floppyIsWriteProtected(drive) ? "rb" : "r+b"))) == nullptr)
-          {
-            floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
-          }
-          else
-          {
-            strcpy(floppy[drive].imagename, diskname);
-            switch (floppyImageGeometryCheck(fsnp, drive))
-            {
-            case FLOPPY_STATUS_NORMAL_OK:
-              floppyImageNormalLoad(drive);
-              bSuccess = TRUE;
-              break;
-            case FLOPPY_STATUS_EXTENDED_OK:
-              floppyImageExtendedLoad(drive);
-              bSuccess = TRUE;
-              break;
-            case FLOPPY_STATUS_EXTENDED2_OK:
-              _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n",
-                drive, diskname);
-              break;
-#ifdef FELLOW_SUPPORT_CAPS
-            case FLOPPY_STATUS_IPF_OK:
-              floppyImageIPFLoad(drive);
-              bSuccess = TRUE;
-              break;
-#endif
-            default:
-              /* Error already set by floppyImageGeometryCheck() */
-              _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: unexpected floppy image geometry status.\n",
-                drive, diskname);
-              break;
-            }
-#ifdef RETRO_PLATFORM
-            if (RP.GetHeadlessMode() && bSuccess)
-            {
-              RP.SendFloppyDriveContent(drive, diskname, floppyIsWriteProtected(drive) ? true : false);
-            }
-#endif
-          }
-        }
-      }
-      free(fsnp);
+      floppyError(drive, FLOPPY_ERROR_COMPRESS);
+      return;
     }
   }
+
+  if (!fsnp->writeable)
+    floppySetReadOnlyEnforced(drive, true);
+
+  floppy[drive].F = fopen(floppy[drive].imagenamereal, floppyIsWriteProtected(drive) ? "rb" : "r+b");
+  if (floppy[drive].F == nullptr)
+  {
+    floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
+    free(fsnp);
+    return;
+  }
+
+  strcpy(floppy[drive].imagename, diskname);
+  switch (floppyImageGeometryCheck(fsnp, drive))
+  {
+  case FLOPPY_STATUS_NORMAL_OK:
+    floppyImageNormalLoad(drive);
+    bSuccess = TRUE;
+    break;
+  case FLOPPY_STATUS_EXTENDED_OK:
+    floppyImageExtendedLoad(drive);
+    bSuccess = TRUE;
+    break;
+  case FLOPPY_STATUS_EXTENDED2_OK:
+    _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n",
+      drive, diskname);
+    break;
+#ifdef FELLOW_SUPPORT_CAPS
+  case FLOPPY_STATUS_IPF_OK:
+    floppyImageIPFLoad(drive);
+    bSuccess = TRUE;
+    break;
+#endif
+  default:
+    /* Error already set by floppyImageGeometryCheck() */
+    _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: unexpected floppy image geometry status.\n",
+      drive, diskname);
+    break;
+  }
+
+#ifdef RETRO_PLATFORM
+  if (RP.GetHeadlessMode() && bSuccess)
+  {
+    RP.SendFloppyDriveContent(drive, diskname, floppyIsWriteProtected(drive) ? true : false);
+  }
+#endif
+
+  free(fsnp);
 }
 
 /*============================================================================*/
