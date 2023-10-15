@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fellow/api/defs.h"
+#include <cstdint>
 
 namespace fellow::hardfile::hunks
 {

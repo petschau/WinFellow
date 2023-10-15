@@ -1,7 +1,7 @@
+#include "catch/catch_amalgamated.hpp"
 #include <memory>
 #include "hardfile/rdb/RDBHandler.h"
 #include "TestBootstrap.h"
-#include "catch/catch_amalgamated.hpp"
 
 using namespace std;
 using namespace fellow::hardfile::rdb;
@@ -220,7 +220,7 @@ namespace test::fellow::hardfile::rdb
       REQUIRE(partition->DriveNameLength == 5);
       REQUIRE(partition->DriveName == "FFS13");
 
-            // DOS Environment Vector
+      // DOS Environment Vector
       REQUIRE(partition->SizeOfVector == 0x10);
       REQUIRE(partition->SizeBlock == 0x80);
       REQUIRE(partition->SecOrg == 0);

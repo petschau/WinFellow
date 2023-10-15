@@ -8,12 +8,12 @@
 #include "GfxDrvDXGIAdapter.h"
 #include "DRAW.H"
 
-using namespace DirectX;
+//using namespace DirectX;
 
 const static unsigned int AmigaScreenTextureCount = 1;
 const static unsigned int BackBufferCount = 2;
 
-template<typename T> void ReleaseCOM(T **comobject)
+template<typename T> void ReleaseCOM(T** comobject)
 {
   if (*comobject != nullptr)
   {
@@ -32,24 +32,24 @@ private:
   GfxDrvDXGIAdapterList* _adapters;
 
   // Current session
-  ID3D11Device *_d3d11device;
-  ID3D11DeviceContext *_immediateContext;
-  IDXGIFactory *_dxgiFactory;
-  IDXGISwapChain *_swapChain;
-  ID3D11VertexShader *_vertexShader;
-  ID3D11PixelShader *_pixelShader;
-  ID3D11Buffer *_vertexBuffer;
+  ID3D11Device* _d3d11device;
+  ID3D11DeviceContext* _immediateContext;
+  IDXGIFactory* _dxgiFactory;
+  IDXGISwapChain* _swapChain;
+  ID3D11VertexShader* _vertexShader;
+  ID3D11PixelShader* _pixelShader;
+  ID3D11Buffer* _vertexBuffer;
   ID3D11InputLayout* _polygonLayout;
-  ID3D11Buffer *_indexBuffer;
+  ID3D11Buffer* _indexBuffer;
   ID3D11Buffer* _matrixBuffer;
-  ID3D11Texture2D *_shaderInputTexture;
-  ID3D11Texture2D *_amigaScreenTexture[AmigaScreenTextureCount];
+  ID3D11Texture2D* _shaderInputTexture;
+  ID3D11Texture2D* _amigaScreenTexture[AmigaScreenTextureCount];
   ID3D11DepthStencilState* _depthDisabledStencil;
   ID3D11SamplerState* _samplerState;
 
   unsigned int _amigaScreenTextureCount;
   unsigned int _currentAmigaScreenTexture;
-  draw_mode *_current_draw_mode;
+  draw_mode* _current_draw_mode;
 
   bool _resize_swapchain_buffers;
 
@@ -63,7 +63,7 @@ private:
 
   bool CreateD3D11Device();
   void DeleteD3D11Device();
-  
+
   void DeleteDXGIFactory();
   void DeleteImmediateContext();
 
@@ -77,7 +77,7 @@ private:
 
   bool CreateAmigaScreenTexture();
   void DeleteAmigaScreenTexture();
-  ID3D11Texture2D *GetCurrentAmigaScreenTexture();
+  ID3D11Texture2D* GetCurrentAmigaScreenTexture();
 
   bool RenderAmigaScreenToBackBuffer();
 
@@ -97,7 +97,7 @@ private:
   bool CreateDepthDisabledStencil();
   void DeleteDepthDisabledStencil();
 
-  bool SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix, const XMMATRIX& projectionMatrix);
+  bool SetShaderParameters(const DirectX::XMMATRIX& worldMatrix, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projectionMatrix);
 
   void CalculateDestinationRectangle(uint32_t output_width, uint32_t output_height, float& dstHalfWidth, float& dstHalfHeight);
   void CalculateSourceRectangle(float& srcLeft, float& srcTop, float& srcRight, float& srcBottom);
@@ -105,7 +105,7 @@ private:
 public:
 
   void ClearCurrentBuffer();
-  void SetMode(draw_mode *dm, bool windowed);
+  void SetMode(draw_mode* dm, bool windowed);
   void SizeChanged(unsigned int width, unsigned int height);
   void PositionChanged();
   void NotifyActiveStatus(bool active);
@@ -117,12 +117,12 @@ public:
   bool Startup();
   void Shutdown();
 
-  unsigned char *ValidateBufferPointer();
+  unsigned char* ValidateBufferPointer();
   void InvalidateBufferPointer();
-  void GetBufferInformation(draw_buffer_information *buffer_information);
+  void GetBufferInformation(draw_buffer_information* buffer_information);
   void Flip();
 
-  bool SaveScreenshot(const bool, const char *);
+  bool SaveScreenshot(const bool, const char*);
 
   static bool ValidateRequirements();
 

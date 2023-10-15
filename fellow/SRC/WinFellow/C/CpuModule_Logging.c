@@ -48,7 +48,7 @@ void cpuSetExceptionLoggingFunc(cpuExceptionLoggingFunc func)
   cpu_exception_logging_func = func;
 }
 
-void cpuCallExceptionLoggingFunc(char *description, uint32_t original_pc, uint16_t opcode)
+void cpuCallExceptionLoggingFunc(const char* description, uint32_t original_pc, uint16_t opcode)
 {
   if (cpu_exception_logging_func != nullptr)
     cpu_exception_logging_func(description, original_pc, opcode);

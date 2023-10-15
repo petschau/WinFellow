@@ -54,9 +54,9 @@ void cpuSetResetExceptionFunc(cpuResetExceptionFunc func)
   cpu_reset_exception_func = func;
 }
 
-static char *cpuGetExceptionName(uint32_t vector_offset)
+static const char* cpuGetExceptionName(uint32_t vector_offset)
 {
-  char *name;
+  const char* name;
 
   if (vector_offset == 0x8)
     name = "Exception: 2 - Bus error";
@@ -66,22 +66,22 @@ static char *cpuGetExceptionName(uint32_t vector_offset)
     name = "Exception: 4 - Illegal Instruction";
   else if (vector_offset == 0x14)
     name = "Exception: 5 - Integer division by zero";
-  else if (vector_offset == 0x18) 
+  else if (vector_offset == 0x18)
     name = "Exception: 6 - CHK, CHK2";
-  else if (vector_offset == 0x1c) 
+  else if (vector_offset == 0x1c)
     name = "Exception: 7 - FTRAPcc, TRAPcc, TRAPV";
-  else if (vector_offset == 0x20) 
+  else if (vector_offset == 0x20)
     name = "Exception: 8 - Privilege Violation";
-  else if (vector_offset == 0x24) 
+  else if (vector_offset == 0x24)
     name = "Exception: 9 - Trace";
-  else if (vector_offset == 0x28) 
+  else if (vector_offset == 0x28)
     name = "Exception: 10 - A-Line";
-  else if (vector_offset == 0x2c) 
+  else if (vector_offset == 0x2c)
     name = "Exception: 11 - F-Line";
-  else if (vector_offset == 0x38) 
+  else if (vector_offset == 0x38)
     name = "Exception: 14 - Format error";
   else if (vector_offset >= 0x80 && vector_offset <= 0xbc)
-    name = "Exception: TRAP"; 
+    name = "Exception: TRAP";
   else
     name = "Exception: Unknown";
 
@@ -132,7 +132,7 @@ void cpuThrowException(uint32_t vector_offset, uint32_t pc, BOOLE executejmp)
     return;
   }
 
-  cpuStackFrameGenerate((uint16_t) vector_offset, pc);
+  cpuStackFrameGenerate((uint16_t)vector_offset, pc);
 
   // read a memory position
   vector_address = memoryReadLong(cpuGetVbr() + vector_offset);
@@ -144,7 +144,7 @@ void cpuThrowException(uint32_t vector_offset, uint32_t pc, BOOLE executejmp)
   else
   {
     // set supervisor modus
-    cpuSetSR(cpuGetSR() | 0x2000); 
+    cpuSetSR(cpuGetSR() | 0x2000);
     cpuSetSR(cpuGetSR() & 0x3fff);
 
     // restart cpu, if needed
@@ -245,7 +245,7 @@ void cpuThrowDivisionByZeroException()
 void cpuThrowTrapException(uint32_t vector_no)
 {
   // The saved pc points to the next instruction, which is now in pc
-  cpuThrowException(0x80 + vector_no*4, cpuGetPC(), FALSE);
+  cpuThrowException(0x80 + vector_no * 4, cpuGetPC(), FALSE);
 }
 
 void cpuThrowChkException()

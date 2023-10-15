@@ -26,11 +26,11 @@ extern void memoryChipWriteWord(uint16_t data, uint32_t address);
 #define memoryReadWordFromPointer(address) ((address[0] << 8) | address[1])
 #define memoryReadLongFromPointer(address) ((address[0] << 24) | (address[1] << 16) | (address[2] << 8) | address[3])
 
-extern void memoryWriteLongToPointer(uint32_t data, uint8_t *address);
+extern void memoryWriteLongToPointer(uint32_t data, uint8_t* address);
 
 /* IO Bank functions */
 
-typedef uint16_t (*memoryIoReadFunc)(uint32_t address);
+typedef uint16_t(*memoryIoReadFunc)(uint32_t address);
 typedef void (*memoryIoWriteFunc)(uint16_t data, uint32_t address);
 
 extern void memorySetIoReadStub(uint32_t index, memoryIoReadFunc ioreadfunction);
@@ -46,9 +46,9 @@ typedef void (*memoryEmemCardMapFunc)(uint32_t);
 
 extern void memoryEmemClear();
 extern void memoryEmemCardAdd(memoryEmemCardInitFunc cardinit,
-			      memoryEmemCardMapFunc cardmap);
+  memoryEmemCardMapFunc cardmap);
 extern void memoryEmemSet(uint32_t index, uint32_t data);
-extern void memoryEmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size);
+extern void memoryEmemMirror(uint32_t emem_offset, uint8_t* src, uint32_t size);
 
 /* Device memory functions. fhfile is using these. */
 
@@ -56,7 +56,7 @@ extern void memoryDmemSetByte(uint8_t data);
 extern void memoryDmemSetWord(uint16_t data);
 extern void memoryDmemSetLong(uint32_t data);
 extern void memoryDmemSetLongNoCounter(uint32_t data, uint32_t offset);
-extern void memoryDmemSetString(const char *data);
+extern void memoryDmemSetString(const char* data);
 extern void memoryDmemSetCounter(uint32_t val);
 extern uint32_t memoryDmemGetCounter();
 extern uint32_t memoryDmemGetCounterWithoutOffset();
@@ -64,8 +64,8 @@ extern void memoryDmemClear();
 
 /* Module management functions */
 
-extern void memorySaveState(FILE *F);
-extern void memoryLoadState(FILE *F);
+extern void memorySaveState(FILE* F);
+extern void memoryLoadState(FILE* F);
 extern void memorySoftReset();
 extern void memoryHardReset();
 extern void memoryHardResetPost();
@@ -76,9 +76,9 @@ extern void memoryShutdown();
 
 /* Memory bank functions */
 
-typedef uint8_t (*memoryReadByteFunc)(uint32_t address);
-typedef uint16_t (*memoryReadWordFunc)(uint32_t address);
-typedef uint32_t (*memoryReadLongFunc)(uint32_t address);
+typedef uint8_t(*memoryReadByteFunc)(uint32_t address);
+typedef uint16_t(*memoryReadWordFunc)(uint32_t address);
+typedef uint32_t(*memoryReadLongFunc)(uint32_t address);
 typedef void (*memoryWriteByteFunc)(uint8_t data, uint32_t address);
 typedef void (*memoryWriteWordFunc)(uint16_t data, uint32_t address);
 typedef void (*memoryWriteLongFunc)(uint32_t data, uint32_t address);
@@ -90,20 +90,20 @@ extern memoryWriteByteFunc memory_bank_writebyte[65536];
 extern memoryWriteWordFunc memory_bank_writeword[65536];
 extern memoryWriteLongFunc memory_bank_writelong[65536];
 
-extern uint8_t *memory_bank_pointer[65536];
-extern uint8_t *memory_bank_datapointer[65536];
+extern uint8_t* memory_bank_pointer[65536];
+extern uint8_t* memory_bank_datapointer[65536];
 
 extern void memoryBankSet(memoryReadByteFunc rb,
-			  memoryReadWordFunc rw,
-			  memoryReadLongFunc rl,
-			  memoryWriteByteFunc wb,
-			  memoryWriteWordFunc ww,
-			  memoryWriteLongFunc wl,
-			  uint8_t *basep,
-			  uint32_t bank, 
-			  uint32_t basebank,
-			  BOOLE pointer_can_write);
-extern uint8_t *memoryAddressToPtr(uint32_t address);
+  memoryReadWordFunc rw,
+  memoryReadLongFunc rl,
+  memoryWriteByteFunc wb,
+  memoryWriteWordFunc ww,
+  memoryWriteLongFunc wl,
+  uint8_t* basep,
+  uint32_t bank,
+  uint32_t basebank,
+  BOOLE pointer_can_write);
+extern uint8_t* memoryAddressToPtr(uint32_t address);
 extern void memoryChipMap(bool overlay);
 
 /* Memory configuration properties */
@@ -120,11 +120,11 @@ extern bool memorySetUseAutoconfig(bool useautoconfig);
 extern bool memoryGetUseAutoconfig();
 extern BOOLE memorySetAddress32Bit(BOOLE address32bit);
 extern BOOLE memoryGetAddress32Bit();
-extern BOOLE memorySetKickImage(char *kickimage);
-extern BOOLE memorySetKickImageExtended(char *kickimageext);
-extern char *memoryGetKickImage();
-extern void memorySetKey(char *key);
-extern char *memoryGetKey();
+extern BOOLE memorySetKickImage(const char* kickimage);
+extern BOOLE memorySetKickImageExtended(const char* kickimageext);
+extern char* memoryGetKickImage();
+extern void memorySetKey(const char* key);
+extern char* memoryGetKey();
 extern BOOLE memoryGetKickImageOK();
 
 /* Derived from memory configuration */
@@ -135,7 +135,7 @@ extern uint32_t memoryInitialPC();
 extern uint32_t memoryInitialSP();
 
 /* Kickstart decryption */
-extern int memoryKickLoadAF2(char *filename, FILE *F, uint8_t *memory_kick, const bool);
+extern int memoryKickLoadAF2(char* filename, FILE* F, uint8_t* memory_kick, const bool);
 
 /* Kickstart load error handling */
 
@@ -153,7 +153,7 @@ extern int memoryKickLoadAF2(char *filename, FILE *F, uint8_t *memory_kick, cons
 /* Global variables */
 
 extern uint8_t memory_chip[];
-extern uint8_t *memory_fast;
+extern uint8_t* memory_fast;
 extern uint8_t memory_slow[];
 extern uint8_t memory_kick[];
 extern uint32_t memory_chipsize;

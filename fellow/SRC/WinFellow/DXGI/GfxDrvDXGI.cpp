@@ -16,6 +16,8 @@
 #include "RetroPlatform.h"
 #endif
 
+using namespace DirectX;
+
 bool GfxDrvDXGI::_requirementsValidated = false;
 bool GfxDrvDXGI::_requirementsValidationResult = false;
 
@@ -90,7 +92,7 @@ bool GfxDrvDXGI::CreateAdapterList()
 {
   DeleteAdapterList();
 
-  IDXGIFactory *enumerationFactory;
+  IDXGIFactory* enumerationFactory;
   const HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&enumerationFactory);
   if (FAILED(result))
   {
@@ -118,12 +120,12 @@ const char* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
 {
   switch (featureLevel)
   {
-    case D3D_FEATURE_LEVEL_11_0: return "D3D_FEATURE_LEVEL_11_0";
-    case D3D_FEATURE_LEVEL_10_1: return "D3D_FEATURE_LEVEL_10_1";
-    case D3D_FEATURE_LEVEL_10_0: return "D3D_FEATURE_LEVEL_10_0";
-    case D3D_FEATURE_LEVEL_9_3: return "D3D_FEATURE_LEVEL_9_3";
-    case D3D_FEATURE_LEVEL_9_2: return "D3D_FEATURE_LEVEL_9_2";
-    case D3D_FEATURE_LEVEL_9_1: return "D3D_FEATURE_LEVEL_9_1";
+  case D3D_FEATURE_LEVEL_11_0: return "D3D_FEATURE_LEVEL_11_0";
+  case D3D_FEATURE_LEVEL_10_1: return "D3D_FEATURE_LEVEL_10_1";
+  case D3D_FEATURE_LEVEL_10_0: return "D3D_FEATURE_LEVEL_10_0";
+  case D3D_FEATURE_LEVEL_9_3: return "D3D_FEATURE_LEVEL_9_3";
+  case D3D_FEATURE_LEVEL_9_2: return "D3D_FEATURE_LEVEL_9_2";
+  case D3D_FEATURE_LEVEL_9_1: return "D3D_FEATURE_LEVEL_9_1";
   }
   return "Unknown feature level";
 }
@@ -144,23 +146,23 @@ bool GfxDrvDXGI::CreateD3D11Device()
 #endif
 
   hr = D3D11CreateDevice(nullptr,
-                         D3D_DRIVER_TYPE_HARDWARE,
-                         nullptr,
-                         creationFlags,
-                         nullptr,
-                         0,
-                         D3D11_SDK_VERSION,
-                         &_d3d11device,
-                         &featureLevelsSupported,
-                         &_immediateContext);
+    D3D_DRIVER_TYPE_HARDWARE,
+    nullptr,
+    creationFlags,
+    nullptr,
+    0,
+    D3D11_SDK_VERSION,
+    &_d3d11device,
+    &featureLevelsSupported,
+    &_immediateContext);
   if (FAILED(hr))
   {
     GfxDrvDXGIErrorLogger::LogError("D3D11CreateDevice failed with the error: ", hr);
     return false;
   }
 
-  IDXGIDevice *dxgiDevice;
-  hr = _d3d11device->QueryInterface(__uuidof(IDXGIDevice), (void **)&dxgiDevice);
+  IDXGIDevice* dxgiDevice;
+  hr = _d3d11device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice);
 
   if (FAILED(hr))
   {
@@ -168,8 +170,8 @@ bool GfxDrvDXGI::CreateD3D11Device()
     return false;
   }
 
-  IDXGIAdapter *dxgiAdapter;
-  hr = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void **)&dxgiAdapter);
+  IDXGIAdapter* dxgiAdapter;
+  hr = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter);
 
   if (FAILED(hr))
   {
@@ -182,7 +184,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
   GfxDrvDXGIAdapter adapter(dxgiAdapter); // Note: This will eventually release dxgiAdapter in COM. Maybe restructure the enum code later, the code structure ended up not being very practical.
   _core.Log->AddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
 
-  hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory); // Used later to create the swap-chain
+  hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&_dxgiFactory); // Used later to create the swap-chain
 
   if (FAILED(hr))
   {
@@ -201,7 +203,7 @@ void GfxDrvDXGI::DeleteD3D11Device()
 #ifdef _DEBUG
   if (_d3d11device != nullptr)
   {
-    ID3D11Debug *d3d11Debug;
+    ID3D11Debug* d3d11Debug;
     _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3d11Debug));
     if (d3d11Debug != nullptr)
     {
@@ -295,16 +297,16 @@ void GfxDrvDXGI::DeleteAmigaScreenTexture()
   ReleaseCOM(&_shaderInputTexture);
 }
 
-ID3D11Texture2D *GfxDrvDXGI::GetCurrentAmigaScreenTexture()
+ID3D11Texture2D* GfxDrvDXGI::GetCurrentAmigaScreenTexture()
 {
   return _amigaScreenTexture[_currentAmigaScreenTexture];
 }
 
-void GfxDrvDXGI::GetBufferInformation(draw_buffer_information *buffer_information)
+void GfxDrvDXGI::GetBufferInformation(draw_buffer_information* buffer_information)
 {
   uint32_t internal_scale_factor = drawGetInternalScaleFactor();
-  buffer_information->width = drawGetInternalClip().GetWidth()*internal_scale_factor;
-  buffer_information->height = drawGetInternalClip().GetHeight()*internal_scale_factor;
+  buffer_information->width = drawGetInternalClip().GetWidth() * internal_scale_factor;
+  buffer_information->height = drawGetInternalClip().GetHeight() * internal_scale_factor;
   buffer_information->pitch = 0;  // Replaced later by actual value
   buffer_information->redpos = 16;
   buffer_information->redsize = 8;
@@ -377,7 +379,7 @@ bool GfxDrvDXGI::InitiateSwitchToFullScreen()
 {
   _core.Log->AddLog("GfxDrvDXGI::InitiateSwitchToFullScreen()\n");
 
-  DXGI_MODE_DESC *modeDescription = GetDXGIMode(_current_draw_mode->id);
+  DXGI_MODE_DESC* modeDescription = GetDXGIMode(_current_draw_mode->id);
   if (modeDescription == nullptr)
   {
     _core.Log->AddLog("Selected fullscreen mode was not found.\n");
@@ -400,14 +402,14 @@ DXGI_MODE_DESC* GfxDrvDXGI::GetDXGIMode(unsigned int id)
   {
     return nullptr;
   }
-  GfxDrvDXGIAdapter *firstAdapter = _adapters->front();
+  GfxDrvDXGIAdapter* firstAdapter = _adapters->front();
   if (firstAdapter->GetOutputs().empty())
   {
     return nullptr;
   }
 
-  GfxDrvDXGIOutput *firstOutput = firstAdapter->GetOutputs().front();
-  for (GfxDrvDXGIMode *mode : firstOutput->GetModes())
+  GfxDrvDXGIOutput* firstOutput = firstAdapter->GetOutputs().front();
+  for (GfxDrvDXGIMode* mode : firstOutput->GetModes())
   {
     if (mode->GetId() == id)
     {
@@ -457,17 +459,17 @@ void GfxDrvDXGI::ResizeSwapChainBuffers()
   }
 }
 
-unsigned char *GfxDrvDXGI::ValidateBufferPointer()
+unsigned char* GfxDrvDXGI::ValidateBufferPointer()
 {
   if (_resize_swapchain_buffers)
   {
     ResizeSwapChainBuffers();
   }
 
-  ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
+  ID3D11Texture2D* hostBuffer = GetCurrentAmigaScreenTexture();
   D3D11_MAPPED_SUBRESOURCE mappedRect;
   D3D11_MAP mapFlag = D3D11_MAP_WRITE;
-  
+
   HRESULT mapResult = _immediateContext->Map(hostBuffer, 0, mapFlag, 0, &mappedRect);
 
   if (FAILED(mapResult))
@@ -482,7 +484,7 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
 
 void GfxDrvDXGI::InvalidateBufferPointer()
 {
-  ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
+  ID3D11Texture2D* hostBuffer = GetCurrentAmigaScreenTexture();
   if (hostBuffer != nullptr)
   {
     _immediateContext->Unmap(hostBuffer, 0);
@@ -554,8 +556,8 @@ bool GfxDrvDXGI::CreatePixelShader()
 
   // Create a texture sampler state description.
   D3D11_SAMPLER_DESC samplerDesc;
-//  samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  samplerDesc.Filter = D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;  
+  //  samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+  samplerDesc.Filter = D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
   samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
   samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
   samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -820,8 +822,8 @@ bool GfxDrvDXGI::SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX
   // Now set the constant buffer in the vertex shader with the updated values.
   _immediateContext->VSSetConstantBuffers(bufferNumber, 1, &_matrixBuffer);
 
-    // Set shader texture resource in the pixel shader.
-  ID3D11ShaderResourceView *shaderResourceView;
+  // Set shader texture resource in the pixel shader.
+  ID3D11ShaderResourceView* shaderResourceView;
   result = _d3d11device->CreateShaderResourceView(_shaderInputTexture, nullptr, &shaderResourceView);
   if (FAILED(result))
   {
@@ -873,10 +875,10 @@ bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
 
 void GfxDrvDXGI::FlipTexture()
 {
-  ID3D11Texture2D *amigaScreenBuffer = GetCurrentAmigaScreenTexture();
+  ID3D11Texture2D* amigaScreenBuffer = GetCurrentAmigaScreenTexture();
   _immediateContext->CopyResource(_shaderInputTexture, amigaScreenBuffer);
 
-  ID3D11Texture2D *backBuffer;
+  ID3D11Texture2D* backBuffer;
   HRESULT getBufferResult = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
   if (FAILED(getBufferResult))
   {
@@ -884,7 +886,7 @@ void GfxDrvDXGI::FlipTexture()
     return;
   }
 
-  ID3D11RenderTargetView *renderTargetView;
+  ID3D11RenderTargetView* renderTargetView;
   HRESULT createRenderTargetViewResult = _d3d11device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
 
   if (FAILED(createRenderTargetViewResult))
@@ -922,14 +924,14 @@ void GfxDrvDXGI::Flip()
   }
 }
 
-void GfxDrvDXGI::SetMode(draw_mode *dm, bool windowed)
+void GfxDrvDXGI::SetMode(draw_mode* dm, bool windowed)
 {
   _current_draw_mode = dm;
 }
 
 void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int height, unsigned int refreshRate)
 {
-  draw_mode *mode = new draw_mode();
+  draw_mode* mode = new draw_mode();
 
   if (mode != nullptr)
   {
@@ -958,14 +960,14 @@ void GfxDrvDXGI::AddFullScreenModes()
   {
     return;
   }
-  GfxDrvDXGIAdapter *firstAdapter = _adapters->front();
+  GfxDrvDXGIAdapter* firstAdapter = _adapters->front();
   if (firstAdapter->GetOutputs().empty())
   {
     return;
   }
 
-  GfxDrvDXGIOutput *firstOutput = firstAdapter->GetOutputs().front();
-  for (GfxDrvDXGIMode *mode : firstOutput->GetModes())
+  GfxDrvDXGIOutput* firstOutput = firstAdapter->GetOutputs().front();
+  for (GfxDrvDXGIMode* mode : firstOutput->GetModes())
   {
     if (mode->CanUseMode())
     {
@@ -987,7 +989,7 @@ void GfxDrvDXGI::ClearCurrentBuffer()
   {
     for (unsigned int y = 0; y < draw_buffer_info.height; y++)
     {
-      uint32_t *line_ptr = (uint32_t *)buffer;
+      uint32_t* line_ptr = (uint32_t*)buffer;
       for (unsigned int x = 0; x < draw_buffer_info.width; x++)
       {
         *line_ptr++ = 0;
@@ -1107,7 +1109,7 @@ GfxDrvDXGI::~GfxDrvDXGI()
   Shutdown();
 }
 
-bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *filename)
+bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char* filename)
 {
   bool bResult = false;
   DWORD width = 0, height = 0, x = 0, y = 0;
@@ -1119,8 +1121,8 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *
   _core.Log->AddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename=%s)\n",
     bSaveFilteredScreenshot ? "true" : "false", filename);
 #endif
-  
-  if(bSaveFilteredScreenshot) 
+
+  if (bSaveFilteredScreenshot)
   {
     HRESULT hr = _swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)&pSurface1);
     if (FAILED(hr))
@@ -1139,8 +1141,8 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
     {
-      width         = RP.GetScreenWidthAdjusted();
-      height        = RP.GetScreenHeightAdjusted();
+      width = RP.GetScreenWidthAdjusted();
+      height = RP.GetScreenHeightAdjusted();
       lDisplayScale = RP.GetDisplayScale();
     }
     else
@@ -1159,8 +1161,8 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *
     // height = _current_draw_mode->height;
     width = draw_buffer_info.width;
     height = draw_buffer_info.height;
-    ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
-    ID3D11Texture2D *screenshotTexture = nullptr;
+    ID3D11Texture2D* hostBuffer = GetCurrentAmigaScreenTexture();
+    ID3D11Texture2D* screenshotTexture = nullptr;
     D3D11_TEXTURE2D_DESC texture2DDesc;
     texture2DDesc.Width = width;
     texture2DDesc.Height = height;
@@ -1185,7 +1187,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *
     // ID3D11DeviceContext::CopyResource: Cannot invoke CopyResource when the source and destination are not the same Resource type, nor have equivalent dimensions.
     _immediateContext->CopyResource(screenshotTexture, hostBuffer);
 
-    hr = screenshotTexture->QueryInterface(__uuidof(IDXGISurface1), (void **)&pSurface1);
+    hr = screenshotTexture->QueryInterface(__uuidof(IDXGISurface1), (void**)&pSurface1);
     if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain IDXGISurface1 interface for unfiltered screenshot.", hr);
@@ -1198,13 +1200,13 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain GDI compatible device context for unfiltered screenshot.", hr);
       return false;
     }
-    
+
     bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
 
     ReleaseCOM(&screenshotTexture);
   }
 
-  _core.Log->AddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename='%s') %s.\n", 
+  _core.Log->AddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename='%s') %s.\n",
     bSaveFilteredScreenshot ? "true" : "false", filename, bResult ? "successful" : "failed");
 
   pSurface1->ReleaseDC(nullptr);

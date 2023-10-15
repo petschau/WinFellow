@@ -104,14 +104,14 @@ BOOLE cpuIntegrationSetModel(cpu_integration_models model)
   BOOLE needreset = (cpu_integration_model != model);
   cpu_integration_model = model;
 
-  switch (cpu_integration_model) 
+  switch (cpu_integration_model)
   {
   case M68000: cpuSetModel(0, 0); break;
   case M68010: cpuSetModel(1, 0); break;
   case M68020: cpuSetModel(2, 0); break;
   case M68030: cpuSetModel(3, 0); break;
   case M68EC20: cpuSetModel(2, 1); break;
-  case M68EC30: cpuSetModel(3, 1); break;  
+  case M68EC30: cpuSetModel(3, 1); break;
   }
   return needreset;
 }
@@ -186,7 +186,7 @@ void cpuIntegrationResetExceptionFunc()
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
-FILE *CPUINSTRUCTIONLOG;
+FILE* CPUINSTRUCTIONLOG;
 int cpu_disable_instruction_log = TRUE;
 
 void cpuInstructionLogOpen()
@@ -211,28 +211,28 @@ void cpuIntegrationInstructionLogging()
   if (cpu_disable_instruction_log) return;
   cpuInstructionLogOpen();
   /*
-  fprintf(CPUINSTRUCTIONLOG, 
-	  "D0:%.8X D1:%.8X D2:%.8X D3:%.8X D4:%.8X D5:%.8X D6:%.8X D7:%.8X\n", 
-	  cpuGetDReg(0),
-	  cpuGetDReg(1),
-	  cpuGetDReg(2),
-	  cpuGetDReg(3),
-	  cpuGetDReg(4),
-	  cpuGetDReg(5),
-	  cpuGetDReg(6),
-	  cpuGetDReg(7));
+  fprintf(CPUINSTRUCTIONLOG,
+          "D0:%.8X D1:%.8X D2:%.8X D3:%.8X D4:%.8X D5:%.8X D6:%.8X D7:%.8X\n",
+          cpuGetDReg(0),
+          cpuGetDReg(1),
+          cpuGetDReg(2),
+          cpuGetDReg(3),
+          cpuGetDReg(4),
+          cpuGetDReg(5),
+          cpuGetDReg(6),
+          cpuGetDReg(7));
 
-  fprintf(CPUINSTRUCTIONLOG, 
-	  "A0:%.8X A1:%.8X A2:%.8X A3:%.8X A4:%.8X A5:%.8X A6:%.8X A7:%.8X\n", 
-	  cpuGetAReg(0),
-	  cpuGetAReg(1),
-	  cpuGetAReg(2),
-	  cpuGetAReg(3),
-	  cpuGetAReg(4),
-	  cpuGetAReg(5),
-	  cpuGetAReg(6),
-	  cpuGetAReg(7));
-	  */
+  fprintf(CPUINSTRUCTIONLOG,
+          "A0:%.8X A1:%.8X A2:%.8X A3:%.8X A4:%.8X A5:%.8X A6:%.8X A7:%.8X\n",
+          cpuGetAReg(0),
+          cpuGetAReg(1),
+          cpuGetAReg(2),
+          cpuGetAReg(3),
+          cpuGetAReg(4),
+          cpuGetAReg(5),
+          cpuGetAReg(6),
+          cpuGetAReg(7));
+          */
   saddress[0] = '\0';
   sdata[0] = '\0';
   sinstruction[0] = '\0';
@@ -241,7 +241,7 @@ void cpuIntegrationInstructionLogging()
   fprintf(CPUINSTRUCTIONLOG, "SSP:%.6X USP:%.6X SP:%.4X %s %s\t%s\t%s\n", cpuGetSspDirect(), cpuGetUspDirect(), cpuGetSR(), saddress, sdata, sinstruction, soperands);
 }
 
-void cpuIntegrationExceptionLogging(char *description, uint32_t original_pc, uint16_t opcode)
+void cpuIntegrationExceptionLogging(const char* description, uint32_t original_pc, uint16_t opcode)
 {
   if (cpu_disable_instruction_log) return;
   cpuInstructionLogOpen();
@@ -267,11 +267,11 @@ void cpuIntegrationExecuteInstructionEventHandler68000Fast()
 
   if (cpuGetStop())
   {
-      cpuEvent.cycle = BUS_CYCLE_DISABLE;
+    cpuEvent.cycle = BUS_CYCLE_DISABLE;
   }
-  else  
+  else
   {
-    cpuEvent.cycle += ((cycles*cpuIntegrationGetChipSlowdown())>>1) + cpuIntegrationGetChipCycles();
+    cpuEvent.cycle += ((cycles * cpuIntegrationGetChipSlowdown()) >> 1) + cpuIntegrationGetChipCycles();
   }
   cpuIntegrationSetChipCycles(0);
 }
@@ -284,18 +284,17 @@ void cpuIntegrationExecuteInstructionEventHandler68000General()
   do
   {
     cycles = cpuExecuteInstruction();
-    cycles = cycles*cpuIntegrationGetChipSlowdown(); // Compensate for blitter time
-    time_used += (cpuIntegrationGetChipCycles()<<12) + (cycles<<cpuIntegrationGetSpeedMultiplier());
-  }
-  while (time_used < 8192 && !cpuGetStop());
+    cycles = cycles * cpuIntegrationGetChipSlowdown(); // Compensate for blitter time
+    time_used += (cpuIntegrationGetChipCycles() << 12) + (cycles << cpuIntegrationGetSpeedMultiplier());
+  } while (time_used < 8192 && !cpuGetStop());
 
   if (cpuGetStop())
   {
     cpuEvent.cycle = BUS_CYCLE_DISABLE;
   }
-  else  
+  else
   {
-    cpuEvent.cycle += (time_used>>12);
+    cpuEvent.cycle += (time_used >> 12);
   }
   cpuIntegrationSetChipCycles(0);
 }
@@ -306,17 +305,16 @@ void cpuIntegrationExecuteInstructionEventHandler68020()
   do
   {
     cpuExecuteInstruction();
-    time_used += (cpuIntegrationGetChipCycles()<<12) + (4<<cpuIntegrationGetSpeedMultiplier());
-  }
-  while (time_used < 8192 && !cpuGetStop());
+    time_used += (cpuIntegrationGetChipCycles() << 12) + (4 << cpuIntegrationGetSpeedMultiplier());
+  } while (time_used < 8192 && !cpuGetStop());
 
   if (cpuGetStop())
   {
     cpuEvent.cycle = BUS_CYCLE_DISABLE;
   }
-  else  
+  else
   {
-    cpuEvent.cycle += (time_used>>12);
+    cpuEvent.cycle += (time_used >> 12);
   }
   cpuIntegrationSetChipCycles(0);
 }
@@ -343,7 +341,7 @@ void cpuIntegrationSetDefaultConfig()
 /* Fellow lifecycle events */
 /*=========================*/
 
-void cpuIntegrationSaveState(FILE *F)
+void cpuIntegrationSaveState(FILE* F)
 {
   cpuSaveState(F);
 
@@ -351,7 +349,7 @@ void cpuIntegrationSaveState(FILE *F)
   // Everything else is configuration options which will be set when the associated config-file is loaded.
 }
 
-void cpuIntegrationLoadState(FILE *F)
+void cpuIntegrationLoadState(FILE* F)
 {
   cpuLoadState(F);
 

@@ -158,15 +158,15 @@ enum
 
 #define NUMBER_OF_CHIPRAM_SIZES 8
 
-char* wgui_chipram_strings[NUMBER_OF_CHIPRAM_SIZES] = { "256 KB", "512 KB", "768 KB", "1024 KB", "1280 KB", "1536 KB", "1792 KB", "2048 KB" };
+const char* wgui_chipram_strings[NUMBER_OF_CHIPRAM_SIZES] = { "256 KB", "512 KB", "768 KB", "1024 KB", "1280 KB", "1536 KB", "1792 KB", "2048 KB" };
 
 #define NUMBER_OF_FASTRAM_SIZES 5
 
-char* wgui_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = { "0 MB", "1 MB", "2 MB", "4 MB", "8 MB" };
+const char* wgui_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = { "0 MB", "1 MB", "2 MB", "4 MB", "8 MB" };
 
 #define NUMBER_OF_BOGORAM_SIZES 8
 
-char* wgui_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = { "0 KB", "256 KB", "512 KB", "768 KB", "1024 KB", "1280 KB", "1536 KB", "1792 KB" };
+const char* wgui_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = { "0 KB", "256 KB", "512 KB", "768 KB", "1024 KB", "1280 KB", "1536 KB", "1792 KB" };
 
 // from sound.h: typedef enum {SOUND_15650, SOUND_22050, SOUND_31300, SOUND_44100} sound_rates;
 #define NUMBER_OF_SOUND_RATES 4
@@ -194,7 +194,7 @@ int wgui_cpus_cci[NUMBER_OF_CPUS] = {
 
 // from gameport.h: typedef enum {GP_NONE, GP_JOYKEY0, GP_JOYKEY1, GP_ANALOG0, GP_ANALOG1, GP_MOUSE0, GP_MOUSE1} gameport_inputs;
 #define NUMBER_OF_GAMEPORT_STRINGS 6
-char* wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = { "none", "keyboard layout 1", "keyboard layout 2", "joystick 1", "joystick 2", "mouse" };
+const char* wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = { "none", "keyboard layout 1", "keyboard layout 2", "joystick 1", "joystick 2", "mouse" };
 
 // preset handling
 char wgui_preset_path[CFG_FILENAME_LENGTH] = "";
@@ -628,7 +628,7 @@ static char FileType[7][CFG_FILENAME_LENGTH] = {
     "Amiga Modules (.amod)\0*.amod\0\0\0",
     "State Files (.fst)\0\0\0" };
 
-BOOLE wguiSelectFile(HWND hwndDlg, char* filename, uint32_t filenamesize, char* title, SelectFileFlags SelectFileType)
+BOOLE wguiSelectFile(HWND hwndDlg, char* filename, uint32_t filenamesize, const char* title, SelectFileFlags SelectFileType)
 {
   OPENFILENAME ofn;
   char filters[CFG_FILENAME_LENGTH];
@@ -687,12 +687,12 @@ BOOLE wguiSelectFile(HWND hwndDlg, char* filename, uint32_t filenamesize, char* 
   return GetOpenFileName(&ofn);
 }
 
-BOOLE wguiSaveFile(HWND hwndDlg, char* filename, uint32_t filenamesize, char* title, SelectFileFlags SelectFileType)
+BOOLE wguiSaveFile(HWND hwndDlg, const char* filename, uint32_t filenamesize, const char* title, SelectFileFlags selectFileType)
 {
   OPENFILENAME ofn;
   char filters[CFG_FILENAME_LENGTH];
 
-  memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
+  memcpy(filters, &FileType[selectFileType], CFG_FILENAME_LENGTH);
   char* pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn); /* Set all members to familiarize with */
@@ -702,12 +702,12 @@ BOOLE wguiSaveFile(HWND hwndDlg, char* filename, uint32_t filenamesize, char* ti
   ofn.lpstrCustomFilter = nullptr;
   ofn.nMaxCustFilter = 0;
   ofn.nFilterIndex = 1;
-  ofn.lpstrFile = filename;
+  ofn.lpstrFile = (LPSTR)filename;
   ofn.nMaxFile = filenamesize;
   ofn.lpstrFileTitle = nullptr;
   ofn.nMaxFileTitle = 0;
 
-  switch (SelectFileType)
+  switch (selectFileType)
   {
   case FSEL_ROM: ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini); break;
   case FSEL_ADF:
@@ -746,7 +746,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, char* filename, uint32_t filenamesize, char* ti
   return GetSaveFileName(&ofn);
 }
 
-BOOLE wguiSelectDirectory(HWND hwndDlg, char* szPath, char* szDescription, uint32_t filenamesize, char* szTitle)
+BOOLE wguiSelectDirectory(HWND hwndDlg, char* szPath, char* szDescription, uint32_t filenamesize, const char* szTitle)
 {
   BROWSEINFO bi = {
       hwndDlg,              // hwndOwner
@@ -846,7 +846,7 @@ void wguiPutCfgInHistoryOnTop(uint32_t cfgtotop)
   wguiInstallHistoryIntoMenu();
 }
 
-void wguiInsertCfgIntoHistory(char* cfgfilenametoinsert)
+void wguiInsertCfgIntoHistory(const char* cfgfilenametoinsert)
 {
   char cfgfilename[CFG_FILENAME_LENGTH];
 
@@ -1419,7 +1419,7 @@ void wguiToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
   gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ischecked);
 }
 
-void wguiHardfileSetInformationString(char* s, char* deviceName, int partitionNumber, const HardfilePartition& partition)
+void wguiHardfileSetInformationString(char* s, const char* deviceName, int partitionNumber, const HardfilePartition& partition)
 {
   char preferredName[512];
   preferredName[0] = '\0';
@@ -1465,7 +1465,7 @@ HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, char* filename, rdb_status 
   return TreeView_InsertItem(hwndTree, &tvInsert);
 }
 
-void wguiHardfileTreeViewAddPartition(HWND hwndTree, HTREEITEM parent, int partitionNumber, char* deviceName, const HardfilePartition& partition, int hardfileIndex)
+void wguiHardfileTreeViewAddPartition(HWND hwndTree, HTREEITEM parent, int partitionNumber, const char* deviceName, const HardfilePartition& partition, int hardfileIndex)
 {
   char s[256];
   wguiHardfileSetInformationString(s, deviceName, partitionNumber, partition);
@@ -1594,7 +1594,7 @@ bool wguiHardfileCreate(HWND hwndDlg, cfg* conf, uint32_t index, cfg_hardfile* t
 
 /* Update filesystem description in the list view box */
 
-void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys* fs, uint32_t i, BOOL add, char* prefix)
+void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys* fs, uint32_t i, BOOL add, const char* prefix)
 {
   LV_ITEM lvi;
   char stmp[48];
@@ -1632,7 +1632,7 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg* conf)
 {
   LV_COLUMN lvc;
   HWND lvHWND = GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS);
-  char* colheads[FILESYSTEM_COLS] = { "Unit", "Volume", "Root Path", "RW" };
+  const char* colheads[FILESYSTEM_COLS] = { "Unit", "Volume", "Root Path", "RW" };
 
   /* Create list view control columns */
 
@@ -1648,7 +1648,7 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg* conf)
       colwidth += 164;
     else
       colwidth += 16;
-    lvc.pszText = colheads[i];
+    lvc.pszText = (LPSTR)colheads[i];
     lvc.cchTextMax = (int)strlen(colheads[i]);
     lvc.cx = colwidth;
     ListView_InsertColumn(lvHWND, i, &lvc);
@@ -2067,7 +2067,7 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     char strAmigaForeverROMDir[CFG_FILENAME_LENGTH] = "";
 
     wgui_propsheetHWND[PROPSHEETPRESETS] = hwndDlg;
-    char* strLastPresetROMDir = iniGetLastUsedPresetROMDir(wgui_ini);
+    const char* strLastPresetROMDir = iniGetLastUsedPresetROMDir(wgui_ini);
 
     if (strncmp(strLastPresetROMDir, "", CFG_FILENAME_LENGTH) == 0)
     {
@@ -3415,12 +3415,12 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
 /* Shows a message box                                                        */
 /*============================================================================*/
 
-void wguiRequester(char* szMessage, UINT uType)
+void wguiRequester(const char* szMessage, UINT uType)
 {
   MessageBox(nullptr, szMessage, "WinFellow Amiga Emulator", uType);
 }
 
-void wguiShowRequester(char* szMessage, FELLOW_REQUESTER_TYPE requesterType)
+void wguiShowRequester(const char* szMessage, FELLOW_REQUESTER_TYPE requesterType)
 {
   UINT uType = 0;
 

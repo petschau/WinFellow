@@ -802,7 +802,7 @@ static void floppyWriteDiskChecksum(const uint8_t* strBuffer, uint8_t* strChecks
 
 bool floppyValidateAmigaDOSVolumeName(const char* strVolumeName)
 {
-  char* strIllegalVolumeNames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
+  const char* strIllegalVolumeNames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
   char strIllegalCharacters[2] = { ':', '/' };
   int i;
 
@@ -912,7 +912,7 @@ bool floppyImageADFCreate(char* strImageFilename, char* strVolumeLabel, bool bFo
 /* Uncompress a BZip image */
 /*=========================*/
 
-BOOLE floppyImageCompressedBZipPrepare(char* diskname, uint32_t drive)
+BOOLE floppyImageCompressedBZipPrepare(const char* diskname, uint32_t drive)
 {
   char* gzname;
   char cmdline[512];
@@ -935,7 +935,7 @@ BOOLE floppyImageCompressedBZipPrepare(char* diskname, uint32_t drive)
 /* Uncompress a DMS image */
 /*========================*/
 
-BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
+BOOLE floppyImageCompressedDMSPrepare(const char* diskname, uint32_t drive)
 {
   char* gzname;
 
@@ -968,7 +968,7 @@ BOOLE floppyImageCompressedDMSPrepare(char* diskname, uint32_t drive)
 /* Uncompress a GZipped image */
 /*============================*/
 
-BOOLE floppyImageCompressedGZipPrepare(char* diskname, uint32_t drive)
+BOOLE floppyImageCompressedGZipPrepare(const char* diskname, uint32_t drive)
 {
   char* gzname;
   if ((gzname = _core.Fileops->GetTemporaryFilename()) == nullptr)
@@ -1035,9 +1035,9 @@ void floppyImageCompressedRemove(uint32_t drive)
 /* compressed.                */
 /*============================*/
 
-BOOLE floppyImageCompressedPrepare(char* diskname, uint32_t drive)
+BOOLE floppyImageCompressedPrepare(const char* diskname, uint32_t drive)
 {
-  char* dotptr = strrchr(diskname, '.');
+  const char* dotptr = strrchr(diskname, '.');
   if (dotptr == nullptr)
   {
     return FALSE;
@@ -1104,7 +1104,7 @@ void floppyImageRemove(uint32_t drive)
 /* Prepare a disk image, ie. uncompress and report errors */
 /*========================================================*/
 
-void floppyImagePrepare(char* diskname, uint32_t drive)
+void floppyImagePrepare(const char* diskname, uint32_t drive)
 {
   if (!floppyImageCompressedPrepare(diskname, drive))
   {
@@ -1266,7 +1266,7 @@ void floppyImageIPFLoad(uint32_t drive)
 
 /** Insert an image into a floppy drive
  */
-void floppySetDiskImage(uint32_t drive, char* diskname)
+void floppySetDiskImage(uint32_t drive, const char* diskname)
 {
   BOOLE bSuccess = FALSE;
 

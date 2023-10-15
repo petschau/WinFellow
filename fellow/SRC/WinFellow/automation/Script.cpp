@@ -4,6 +4,8 @@
 #include "KBD.H"
 #include "GAMEPORT.H"
 
+using namespace std;
+
 ScriptLine::ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const string& command, const string& parameters)
   : FrameNumber(frameNumber), LineNumber(lineNumber), Command(command), Parameters(parameters)
 {
@@ -152,7 +154,7 @@ void Script::Load(const string& filename)
   _nextLine = 0;
   _lines.clear();
 
-  FILE *F = fopen(filename.c_str(), "r");
+  FILE* F = fopen(filename.c_str(), "r");
   if (F == nullptr)
   {
     return;
@@ -182,7 +184,7 @@ void Script::Load(const string& filename)
 
 void Script::Save(const string& filename)
 {
-  FILE *F = fopen(filename.c_str(), "w");
+  FILE* F = fopen(filename.c_str(), "w");
 
   for (const ScriptLine& line : _lines)
   {

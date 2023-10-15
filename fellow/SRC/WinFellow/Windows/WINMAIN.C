@@ -44,7 +44,7 @@
 #include <Dbghelp.h>
 
 
-extern int __cdecl main(int, char **);
+extern int __cdecl main(int, const char**);
 
 
 /*===========================================================================*/
@@ -58,10 +58,10 @@ int win_drv_nCmdShow;
 
 typedef struct tagTHREADNAME_INFO
 {
-   DWORD dwType; // must be 0x1000
-   LPCSTR szName; // pointer to name (in user addr space)
-   DWORD dwThreadID; // thread ID (-1=caller thread)
-   DWORD dwFlags; // reserved for future use, must be zero
+  DWORD dwType; // must be 0x1000
+  LPCSTR szName; // pointer to name (in user addr space)
+  DWORD dwThreadID; // thread ID (-1=caller thread)
+  DWORD dwFlags; // reserved for future use, must be zero
 } THREADNAME_INFO;
 
 /*===========================================================================*/
@@ -99,17 +99,17 @@ DWORD WINAPI winDrvFellowStepOverStart(LPVOID in)
 DWORD WINAPI winDrvFellowRunDebugStart(LPVOID in)
 {
   winDrvSetThreadName(-1, "fellowRunDebug()");
-  fellowRunDebug((uint32_t) in);
+  fellowRunDebug((uint32_t)in);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
 
 
-enum MultiEventTypes 
+enum MultiEventTypes
 {
-  met_emulation_ended = 0, 
-  met_mouse_data = 1, 
-  met_kbd_data = 2, 
+  met_emulation_ended = 0,
+  met_mouse_data = 1,
+  met_kbd_data = 2,
   met_messages = 3
 };
 
@@ -118,18 +118,18 @@ extern HANDLE mouse_drv_DIevent;
 extern bool kbd_drv_initialization_failed;
 extern HANDLE kbd_drv_DIevent;
 
-uint32_t winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *object_mapping) 
+uint32_t winDrvInitializeMultiEventArray(HANDLE* multi_events, enum MultiEventTypes* object_mapping)
 {
   uint32_t event_count = 0;
 
   multi_events[event_count] = win_drv_emulation_ended;
   object_mapping[event_count++] = met_emulation_ended;
-  if (!mouse_drv_initialization_failed) 
+  if (!mouse_drv_initialization_failed)
   {
     multi_events[event_count] = mouse_drv_DIevent;
     object_mapping[event_count++] = met_mouse_data;
   }
-  if (!kbd_drv_initialization_failed) 
+  if (!kbd_drv_initialization_failed)
   {
     multi_events[event_count] = kbd_drv_DIevent;
     object_mapping[event_count++] = met_kbd_data;
@@ -150,14 +150,14 @@ void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
 
   __try
   {
-    RaiseException(0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info);
+    RaiseException(0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR*)&info);
   }
-  __except(EXCEPTION_CONTINUE_EXECUTION)
+  __except (EXCEPTION_CONTINUE_EXECUTION)
   {
   }
 }
 
-void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
+void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void* param)
 {
   DWORD dwThreadId;
   MSG myMsg;
@@ -167,49 +167,49 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   win_drv_emulation_ended = CreateEvent(nullptr, FALSE, FALSE, nullptr);
   _core.Log->AddLog("fellowEmulationStart() finished\n");
   HANDLE FellowThread = CreateThread(nullptr, // Security attr
-                                     0, // Stack Size
-                                     startfunc, // Thread procedure
-                                     param, // Thread parameter
-                                     0, // Creation flags
-                                     &dwThreadId);        // ThreadId
+    0, // Stack Size
+    startfunc, // Thread procedure
+    param, // Thread parameter
+    0, // Creation flags
+    &dwThreadId);        // ThreadId
   SetTimer(gfxDrvCommon->GetHWND(), 1, 10, nullptr);
   uint32_t event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   BOOLE keep_on_waiting = TRUE;
   while (keep_on_waiting)
   {
     DWORD dwEvt = MsgWaitForMultipleObjects(event_count,
-                                            multi_events,
-                                            FALSE,
-                                            INFINITE,
-                                            QS_ALLINPUT);
-    if ((dwEvt >= WAIT_OBJECT_0) && (dwEvt <= (WAIT_OBJECT_0 + event_count))) 
+      multi_events,
+      FALSE,
+      INFINITE,
+      QS_ALLINPUT);
+    if ((dwEvt >= WAIT_OBJECT_0) && (dwEvt <= (WAIT_OBJECT_0 + event_count)))
     {
-      switch (object_mapping[dwEvt - WAIT_OBJECT_0]) 
+      switch (object_mapping[dwEvt - WAIT_OBJECT_0])
       {
-        case met_emulation_ended:
-	  /* Emulation session is ending */
-          _core.Log->AddLog("met_emulation_ended\n");
-	  keep_on_waiting = FALSE;
-	  break;
-        case met_mouse_data:
-	  /* Deal with mouse input */
-          mouseDrvMovementHandler();
-	  break;
-        case met_kbd_data:
-	  /* Deal with kbd input */
-          kbdDrvKeypressHandler();
-	  break;
-        case met_messages:
-	  /* Deal with windows messages */
-          while (PeekMessage(&myMsg,
-                             nullptr,
-		             0,
-		             0,
-		             PM_REMOVE)) 
-	  {
-            TranslateMessage(&myMsg);
-            DispatchMessage(&myMsg);
-	  }
+      case met_emulation_ended:
+        /* Emulation session is ending */
+        _core.Log->AddLog("met_emulation_ended\n");
+        keep_on_waiting = FALSE;
+        break;
+      case met_mouse_data:
+        /* Deal with mouse input */
+        mouseDrvMovementHandler();
+        break;
+      case met_kbd_data:
+        /* Deal with kbd input */
+        kbdDrvKeypressHandler();
+        break;
+      case met_messages:
+        /* Deal with windows messages */
+        while (PeekMessage(&myMsg,
+          nullptr,
+          0,
+          0,
+          PM_REMOVE))
+        {
+          TranslateMessage(&myMsg);
+          DispatchMessage(&myMsg);
+        }
       }
     }
   }
@@ -217,15 +217,15 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   CloseHandle(win_drv_emulation_ended);
 }
 
-void winDrvEmulationStart() 
+void winDrvEmulationStart()
 {
   if (fellowEmulationStart())
   {
     winDrvEmulate(winDrvFellowRunStart, nullptr);
   }
-  else 
+  else
   {
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, 
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR,
       "Emulation session failed to start up");
   }
   fellowEmulationStop();
@@ -258,15 +258,15 @@ DWORD WINAPI winDrvFellowRunDebug(LPVOID in)
 }
 
 
-BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg) 
+BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg)
 {
 
-  switch (operation) 
+  switch (operation)
   {
-    case DBG_STEP:      winDrvFellowStepOne((LPVOID) 1); break;
-    case DBG_STEP_OVER: winDrvFellowStepOver((LPVOID) 1); break;
-    case DBG_RUN:       winDrvFellowRunDebug((LPVOID) nullptr); break;
-    default:            return FALSE;
+  case DBG_STEP:      winDrvFellowStepOne((LPVOID)1); break;
+  case DBG_STEP_OVER: winDrvFellowStepOver((LPVOID)1); break;
+  case DBG_RUN:       winDrvFellowRunDebug((LPVOID) nullptr); break;
+  default:            return FALSE;
   }
   return TRUE;
 }
@@ -276,7 +276,7 @@ BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg)
 /* Timer controls execution of this function                                 */
 /*===========================================================================*/
 
-void winDrvHandleInputDevices() 
+void winDrvHandleInputDevices()
 {
   joyDrvMovementHandler();
 }
@@ -285,34 +285,34 @@ void winDrvHandleInputDevices()
 /* Sets the version and path registry keys                                   */
 /*===========================================================================*/
 
-void winDrvSetKey(char *path, char *name, char *value) 
+void winDrvSetKey(const char* path, const char* name, const char* value)
 {
   HKEY hkey;
   DWORD disposition;
   LONG result = RegCreateKeyEx(HKEY_LOCAL_MACHINE,
-			       path,
-			       0,
-			       nullptr,
-			       REG_OPTION_NON_VOLATILE,
-			       KEY_ALL_ACCESS,
-                               nullptr,
-			       &hkey,
-			       &disposition);
+    path,
+    0,
+    nullptr,
+    REG_OPTION_NON_VOLATILE,
+    KEY_ALL_ACCESS,
+    nullptr,
+    &hkey,
+    &disposition);
   if ((result == ERROR_SUCCESS) &&
-      ((disposition == REG_CREATED_NEW_KEY) ||
-       (disposition == REG_OPENED_EXISTING_KEY)))
+    ((disposition == REG_CREATED_NEW_KEY) ||
+      (disposition == REG_OPENED_EXISTING_KEY)))
   {
     RegSetValueEx(hkey,
-		  name,
-		  0,
-		  REG_SZ,
-		  (BYTE*)value,
-		  (DWORD)strlen(value));
+      name,
+      0,
+      REG_SZ,
+      (BYTE*)value,
+      (DWORD)strlen(value));
     RegCloseKey(hkey);
   }
 }
 
-void winDrvSetRegistryKeys(char **argv) 
+void winDrvSetRegistryKeys(const char** argv)
 {
   char p[1024];
   p[0] = '\0';
@@ -323,7 +323,7 @@ void winDrvSetRegistryKeys(char **argv)
   {
     p[0] = '\0';
   }
-  else 
+  else
   {
     BOOLE isreadonly = FALSE;
     *locc = '\0';
@@ -349,7 +349,7 @@ void winDrvSetRegistryKeys(char **argv)
 
 /* Returns the first character in the next argument                          */
 
-char *winDrvCmdLineGetNextFirst(char *lpCmdLine) 
+char* winDrvCmdLineGetNextFirst(char* lpCmdLine)
 {
   while (*lpCmdLine == ' ' && *lpCmdLine != '\0')
   {
@@ -361,12 +361,12 @@ char *winDrvCmdLineGetNextFirst(char *lpCmdLine)
 
 /* Returns the first character after the next argument                       */
 
-char *winDrvCmdLineGetNextEnd(char *lpCmdLine) 
+char* winDrvCmdLineGetNextEnd(char* lpCmdLine)
 {
   int InString = FALSE;
-  
+
   while (((*lpCmdLine != ' ') && (*lpCmdLine != '\0')) ||
-    (InString && (*lpCmdLine != '\0'))) 
+    (InString && (*lpCmdLine != '\0')))
   {
     if (*lpCmdLine == '\"')
     {
@@ -380,23 +380,23 @@ char *winDrvCmdLineGetNextEnd(char *lpCmdLine)
 /* Returns an argv vector and takes argc as a pointer parameter              */
 /* Must free memory argv on exit                                             */
 
-char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc) 
+const char** winDrvCmdLineMakeArgv(char* lpCmdLine, int* argc)
 {
   int elements = 0;
 
   char* tmp = winDrvCmdLineGetNextFirst(lpCmdLine);
-  if (tmp != nullptr) 
+  if (tmp != nullptr)
   {
-    while ((tmp = winDrvCmdLineGetNextFirst(tmp)) != nullptr) 
+    while ((tmp = winDrvCmdLineGetNextFirst(tmp)) != nullptr)
     {
       tmp = winDrvCmdLineGetNextEnd(tmp);
       elements++;
     }
   }
-  char** argv = (char**)malloc(sizeof(char**)*(elements + 2));
+  const char** argv = (const char**)malloc(sizeof(const char**) * (elements + 2));
   argv[0] = "winfellow.exe";
   char* argend = lpCmdLine;
-  for (int i = 1; i <= elements; i++) 
+  for (int i = 1; i <= elements; i++)
   {
     char* argstart = winDrvCmdLineGetNextFirst(argend);
     argend = winDrvCmdLineGetNextEnd(argstart);
@@ -420,7 +420,7 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
 /* exception handling to generate minidumps                                   */
 /*============================================================================*/
 
-typedef BOOL (__stdcall *tMDWD)(
+typedef BOOL(__stdcall* tMDWD)(
   IN HANDLE hProcess,
   IN DWORD ProcessId,
   IN HANDLE hFile,
@@ -435,18 +435,18 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
   HINSTANCE hDbgHelp = LoadLibraryA("dbghelp.dll");
   SYSTEMTIME t;
 
-  if(hDbgHelp == nullptr)
+  if (hDbgHelp == nullptr)
     return;
 
-  tMDWD pMiniDumpWriteDump = (tMDWD) GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
+  tMDWD pMiniDumpWriteDump = (tMDWD)GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
 
-  if(pMiniDumpWriteDump == nullptr)
+  if (pMiniDumpWriteDump == nullptr)
     return;
 
   GetSystemTime(&t);
 
-  wsprintfA(filename, "WinFellow_%s_%4d%02d%02d_%02d%02d%02d.dmp", 
-    FELLOWNUMERICVERSION, 
+  wsprintfA(filename, "WinFellow_%s_%4d%02d%02d_%02d%02d%02d.dmp",
+    FELLOWNUMERICVERSION,
     t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
 
   _core.Fileops->GetGenericFileName(name, "WinFellow", filename);
@@ -455,8 +455,8 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
 
   HANDLE hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-  if(hFile == INVALID_HANDLE_VALUE)
-      return;
+  if (hFile == INVALID_HANDLE_VALUE)
+    return;
 
   MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
   exceptionInfo.ThreadId = GetCurrentThreadId();
@@ -470,7 +470,7 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
     MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpScanMemory),
     e ? &exceptionInfo : nullptr,
     nullptr,
-  nullptr);
+    nullptr);
 
   CloseHandle(hFile);
 
@@ -485,9 +485,9 @@ LONG CALLBACK winDrvUnhandledExceptionHandler(EXCEPTION_POINTERS* e) {
 // #endif
 
 int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance 
-		   HINSTANCE hPrevInstance, // handle to previous instance 
-		   LPSTR lpCmdLine,	    // pointer to command line 
-		   int nCmdShow)  	    // show state of window 
+  HINSTANCE hPrevInstance, // handle to previous instance 
+  LPSTR lpCmdLine,	    // pointer to command line 
+  int nCmdShow)  	    // show state of window 
 {
   SetUnhandledExceptionFilter(winDrvUnhandledExceptionHandler);
 
@@ -495,14 +495,14 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-  char *cmdline = (char *) malloc(strlen(lpCmdLine) + 1);
+  char* cmdline = (char*)malloc(strlen(lpCmdLine) + 1);
   int argc;
 
   winDrvSetThreadName(-1, "WinMain()");
   win_drv_nCmdShow = nCmdShow;
   win_drv_hInstance = hInstance;
   strcpy(cmdline, lpCmdLine);
-  char** argv = winDrvCmdLineMakeArgv(cmdline, &argc);
+  const char** argv = winDrvCmdLineMakeArgv(cmdline, &argc);
   winDrvSetRegistryKeys(argv);
 
   int result = main(argc, argv);
@@ -535,13 +535,13 @@ int winDrvDetectMemoryLeaks()
   _core.Fileops->GetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
 
   HANDLE hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE,
-                               FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS,
-                               FILE_ATTRIBUTE_NORMAL, nullptr);
+    FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS,
+    FILE_ATTRIBUTE_NORMAL, nullptr);
 
   _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
   _CrtSetReportFile(_CRT_WARN, hLogFile);
 
-  if(!_CrtDumpMemoryLeaks()) 
+  if (!_CrtDumpMemoryLeaks())
   {
     CloseHandle(hLogFile);
     remove(stOutputFileName);
@@ -559,7 +559,7 @@ int winDrvDetectMemoryLeaks()
 typedef int cb();
 
 #pragma data_seg(".CRT$XPU")
-static cb *autoexit[] = { winDrvDetectMemoryLeaks };
+static cb* autoexit[] = { winDrvDetectMemoryLeaks };
 
 #pragma data_seg()    /* reset data-segment */
 

@@ -8,8 +8,6 @@
 
 #include <string>
 
-using namespace fellow::api::module;
-
 /*============================================================================*/
 /* struct that holds a complete hardfile configuration                        */
 /*============================================================================*/
@@ -21,7 +19,7 @@ typedef struct {
   uint32_t   sectorspertrack;
   uint32_t   surfaces;
   uint32_t   reservedblocks;
-  rdb_status rdbstatus;
+  fellow::api::module::rdb_status rdbstatus;
 } cfg_hardfile;
 
 /*============================================================================*/
@@ -215,16 +213,16 @@ extern char* cfgGetDescription(cfg* config);
 /* Floppy disk configuration property access                                  */
 /*============================================================================*/
 
-extern void cfgSetDiskImage(cfg* config, uint32_t index, char* diskimage);
-extern char* cfgGetDiskImage(cfg* config, uint32_t index);
+extern void cfgSetDiskImage(cfg* config, uint32_t index, const std::string& diskimage);
+extern const char* cfgGetDiskImage(cfg* config, uint32_t index);
 extern void cfgSetDiskEnabled(cfg* config, uint32_t index, BOOLE enabled);
 extern BOOLE cfgGetDiskEnabled(cfg* config, uint32_t index);
 extern void cfgSetDiskReadOnly(cfg* config, uint32_t index, BOOLE readonly);
 extern BOOLE cfgGetDiskReadOnly(cfg* config, uint32_t index);
 extern void cfgSetDiskFast(cfg* config, BOOLE fast);
 extern BOOLE cfgGetDiskFast(cfg* config);
-extern void cfgSetLastUsedDiskDir(cfg* config, char* directory);
-extern char* cfgGetLastUsedDiskDir(cfg* config);
+extern void cfgSetLastUsedDiskDir(cfg* config, const std::string& directory);
+extern const char* cfgGetLastUsedDiskDir(cfg* config);
 
 /*============================================================================*/
 /* Memory configuration property access                                       */
@@ -236,16 +234,16 @@ extern void cfgSetFastSize(cfg* config, uint32_t fastsize);
 extern uint32_t cfgGetFastSize(cfg* config);
 extern void cfgSetBogoSize(cfg* config, uint32_t bogosize);
 extern uint32_t cfgGetBogoSize(cfg* config);
-extern void cfgSetKickImage(cfg* config, char* kickimage);
-extern char* cfgGetKickImage(cfg* config);
-extern void cfgSetKickImageExtended(cfg* config, char* kickimageext);
-extern char* cfgGetKickImageExtended(cfg* config);
-extern void cfgSetKickDescription(cfg* config, char* kickdescription);
-extern char* cfgGetKickDescription(cfg* config);
+extern void cfgSetKickImage(cfg* config, const std::string& kickimage);
+extern const char* cfgGetKickImage(cfg* config);
+extern void cfgSetKickImageExtended(cfg* config, const std::string& kickimageext);
+extern const char* cfgGetKickImageExtended(cfg* config);
+extern void cfgSetKickDescription(cfg* config, const std::string& kickdescription);
+extern const char* cfgGetKickDescription(cfg* config);
 extern void cfgSetKickCRC32(cfg* config, uint32_t kickcrc32);
 extern uint32_t  cfgGetKickCRC32(cfg* config);
-extern void cfgSetKey(cfg* config, char* key);
-extern char* cfgGetKey(cfg* config);
+extern void cfgSetKey(cfg* config, const std::string& key);
+extern const char* cfgGetKey(cfg* config);
 extern void cfgSetUseAutoconfig(cfg* config, bool useautoconfig);
 extern bool cfgGetUseAutoconfig(cfg* config);
 extern BOOLE cfgGetAddress32Bit(cfg* config);
@@ -373,8 +371,8 @@ extern void cfgSetFilesystemAutomountDrives(cfg* config,
   BOOLE automount_drives);
 extern BOOLE cfgGetFilesystemAutomountDrives(cfg* config);
 
-extern void cfgSetFilesystemDeviceNamePrefix(cfg* config, char* prefix);
-extern char* cfgGetFilesystemDeviceNamePrefix(cfg* config);
+extern void cfgSetFilesystemDeviceNamePrefix(cfg* config, const std::string& prefix);
+extern const char* cfgGetFilesystemDeviceNamePrefix(cfg* config);
 
 
 /*============================================================================*/
@@ -405,10 +403,10 @@ extern bool cfgGetMeasureSpeed(cfg* config);
 /*============================================================================*/
 
 extern void cfgSetDefaults(cfg* config);
-extern BOOLE cfgSetOption(cfg* config, char* optionstr);
+extern BOOLE cfgSetOption(cfg* config, const char* optionstr);
 extern BOOLE cfgSaveOptions(cfg* config, FILE* cfgfile);
 extern bool cfgLoadFromFilename(cfg*, const char*, const bool);
-extern BOOLE cfgSaveToFilename(cfg* config, char* filename);
+extern BOOLE cfgSaveToFilename(cfg* config, const char* filename);
 extern void cfgSynopsis(cfg* config);
 
 /*============================================================================*/
@@ -446,7 +444,7 @@ extern void cfgManagerShutdown(cfgManager* configmanager);
 
 extern cfgManager cfg_manager;
 
-extern void cfgStartup(int argc, char** argv);
+extern void cfgStartup(int argc, const char** argv);
 extern void cfgShutdown();
 
 /*============================================================================*/

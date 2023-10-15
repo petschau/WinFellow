@@ -3127,7 +3127,7 @@ int memoryKickDecodeAF(char* filename, char* keyfile, uint8_t* memory_kick, cons
 
     HMODULE hAmigaForeverDLL = nullptr;
 
-    char* strLibName = TEXT("amigaforever.dll");
+    const char* strLibName = TEXT("amigaforever.dll");
 
     char strPath[CFG_FILENAME_LENGTH] = "";
 
@@ -4304,7 +4304,7 @@ BOOLE memoryGetAddress32Bit()
 
 
 
-BOOLE memorySetKickImage(char* kickimage)
+BOOLE memorySetKickImage(const char* kickimage)
 
 {
 
@@ -4320,7 +4320,7 @@ BOOLE memorySetKickImage(char* kickimage)
 
 
 
-BOOLE memorySetKickImageExtended(char* kickimageext)
+BOOLE memorySetKickImageExtended(const char* kickimageext)
 
 {
 
@@ -4350,7 +4350,7 @@ char* memoryGetKickImage()
 
 
 
-void memorySetKey(char* key)
+void memorySetKey(const char* key)
 
 {
 

@@ -156,7 +156,7 @@ extern BOOLE cpuCalculateConditionCode(uint32_t cc);
 // Logging
 #ifdef CPU_INSTRUCTION_LOGGING
 extern void cpuCallInstructionLoggingFunc();
-extern void cpuCallExceptionLoggingFunc(char *description, uint32_t original_pc, uint16_t opcode);
+extern void cpuCallExceptionLoggingFunc(const char* description, uint32_t original_pc, uint16_t opcode);
 extern void cpuCallInterruptLoggingFunc(uint32_t level, uint32_t vector_address);
 #endif
 
@@ -183,15 +183,15 @@ extern void cpuCallResetExceptionFunc();
 extern void cpuFrame1(uint16_t vector_offset, uint32_t pc);
 
 // Private help functions
-static uint32_t cpuSignExtByteToLong(uint8_t v) {return (uint32_t)(int32_t)(int8_t) v;}
-static uint16_t cpuSignExtByteToWord(uint8_t v) {return (uint16_t)(int16_t)(int8_t) v;}
-static uint32_t cpuSignExtWordToLong(uint16_t v) {return (uint32_t)(int32_t)(int16_t) v;}
-static uint32_t cpuJoinWordToLong(uint16_t upper, uint16_t lower) {return (((uint32_t)upper) << 16) | ((uint32_t)lower);}
-static uint32_t cpuJoinByteToLong(uint8_t upper, uint8_t midh, uint8_t midl, uint8_t lower) {return (((uint32_t)upper) << 24) | (((uint32_t)midh) << 16) | (((uint32_t)midl) << 8) | ((uint32_t)lower);}
-static uint16_t cpuJoinByteToWord(uint8_t upper, uint8_t lower) {return (((uint16_t)upper) << 8) | ((uint16_t)lower);}
-static BOOLE cpuMsbB(uint8_t v) {return v>>7;}
-static BOOLE cpuMsbW(uint16_t v) {return v>>15;}
-static BOOLE cpuMsbL(uint32_t v) {return v>>31;}
-static BOOLE cpuIsZeroB(uint8_t v) {return v == 0;}
-static BOOLE cpuIsZeroW(uint16_t v) {return v == 0;}
-static BOOLE cpuIsZeroL(uint32_t v) {return v == 0;}
+static uint32_t cpuSignExtByteToLong(uint8_t v) { return (uint32_t)(int32_t)(int8_t)v; }
+static uint16_t cpuSignExtByteToWord(uint8_t v) { return (uint16_t)(int16_t)(int8_t)v; }
+static uint32_t cpuSignExtWordToLong(uint16_t v) { return (uint32_t)(int32_t)(int16_t)v; }
+static uint32_t cpuJoinWordToLong(uint16_t upper, uint16_t lower) { return (((uint32_t)upper) << 16) | ((uint32_t)lower); }
+static uint32_t cpuJoinByteToLong(uint8_t upper, uint8_t midh, uint8_t midl, uint8_t lower) { return (((uint32_t)upper) << 24) | (((uint32_t)midh) << 16) | (((uint32_t)midl) << 8) | ((uint32_t)lower); }
+static uint16_t cpuJoinByteToWord(uint8_t upper, uint8_t lower) { return (((uint16_t)upper) << 8) | ((uint16_t)lower); }
+static BOOLE cpuMsbB(uint8_t v) { return v >> 7; }
+static BOOLE cpuMsbW(uint16_t v) { return v >> 15; }
+static BOOLE cpuMsbL(uint32_t v) { return v >> 31; }
+static BOOLE cpuIsZeroB(uint8_t v) { return v == 0; }
+static BOOLE cpuIsZeroW(uint16_t v) { return v == 0; }
+static BOOLE cpuIsZeroL(uint32_t v) { return v == 0; }
