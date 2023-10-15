@@ -289,9 +289,11 @@ void iniSetDefaults(ini* initdata) {
 static BOOLE iniLoadIniFile(ini* initdata, FILE* inifile) {
   char line[256];
   while (!feof(inifile)) {
-    fgets(line, 256, inifile);
-    iniStripTrailingNewlines(line);
-    iniSetOption(initdata, line);
+    if (fgets(line, 256, inifile) != nullptr)
+    {
+      iniStripTrailingNewlines(line);
+      iniSetOption(initdata, line);
+    }
   }
   return TRUE;
 }

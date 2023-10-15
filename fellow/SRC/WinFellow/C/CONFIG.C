@@ -2092,9 +2092,12 @@ static bool cfgLoadFromFile(cfg* config, FILE* cfgfile)
   char line[256];
   while (!feof(cfgfile))
   {
-    fgets(line, 256, cfgfile);
-    cfgStripTrailingNewlines(line);
-    cfgSetOption(config, line);
+    const char* result = fgets(line, 256, cfgfile);
+    if (result != nullptr)
+    {
+      cfgStripTrailingNewlines(line);
+      cfgSetOption(config, line);
+    }
   }
   cfgSetConfigAppliedOnce(config, true);
   return true;
