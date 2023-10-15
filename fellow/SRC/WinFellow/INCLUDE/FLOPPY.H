@@ -30,23 +30,23 @@
 /* Status symbols */
 
 typedef enum {
-    FLOPPY_STATUS_NORMAL_OK,
-    FLOPPY_STATUS_EXTENDED_OK,
-    FLOPPY_STATUS_EXTENDED2_OK,
+  FLOPPY_STATUS_NORMAL_OK,
+  FLOPPY_STATUS_EXTENDED_OK,
+  FLOPPY_STATUS_EXTENDED2_OK,
 #ifdef FELLOW_SUPPORT_CAPS
-    FLOPPY_STATUS_IPF_OK,
+  FLOPPY_STATUS_IPF_OK,
 #endif
-    FLOPPY_STATUS_ERROR,
-    FLOPPY_STATUS_NONE
+  FLOPPY_STATUS_ERROR,
+  FLOPPY_STATUS_NONE
 } FLOPPY_STATUS_CODE;
 
 typedef enum {
-    FLOPPY_ERROR_EXISTS_NOT,
-    FLOPPY_ERROR_COMPRESS,
-    FLOPPY_ERROR_COMPRESS_NOTMP,
-    FLOPPY_ERROR_COMPRESS_TMPFILEOPEN,
-    FLOPPY_ERROR_FILE,
-    FLOPPY_ERROR_SIZE
+  FLOPPY_ERROR_EXISTS_NOT,
+  FLOPPY_ERROR_COMPRESS,
+  FLOPPY_ERROR_COMPRESS_NOTMP,
+  FLOPPY_ERROR_COMPRESS_TMPFILEOPEN,
+  FLOPPY_ERROR_FILE,
+  FLOPPY_ERROR_SIZE
 } FLOPPY_ERROR_CODE;
 
 /* Info about a track */
@@ -54,13 +54,13 @@ typedef enum {
 typedef struct {
   uint32_t file_offset;/* Track starts at this offset in image file, used for writing back */
   uint32_t mfm_length; /* Length of mfm data in bytes */
-  uint8_t *mfm_data;  /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
+  uint8_t* mfm_data;  /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
 } floppytrackinfostruct;
 
 /* Info about a drive */
 
 typedef struct {
-  FILE *F;                /* Open file for disk image */
+  FILE* F;                /* Open file for disk image */
   uint32_t tracks;             /* Number of tracks on drive */
   BOOLE zipped;           /* This image is zipped */
   uint32_t compress_serno;     /* Tmp file serial number */
@@ -79,7 +79,7 @@ typedef struct {
   uint32_t motor_ticks;	      /* EOLs since motor was started */
   uint32_t insertedframe;      /* Will not be detected until some time after this */
   uint32_t idcount;            /* Number of times ID has been read */
-  uint8_t *mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
+  uint8_t* mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
   floppytrackinfostruct trackinfo[FLOPPY_TRACKS]; /* Info about each track */
   FLOPPY_STATUS_CODE imagestatus; /* Status of drive (kind of image inserted) */
   uint32_t imageerror;         /* What kind of error if status reports error */
@@ -87,10 +87,10 @@ typedef struct {
   char imagenamereal[CFG_FILENAME_LENGTH]; /* Image name used internally */
 #ifdef FELLOW_SUPPORT_CAPS
   BOOLE flakey;  /* introduced for CAPS support */
-  uint32_t *timebuf;        /* dito */
+  uint32_t* timebuf;        /* dito */
 #endif
 } floppyinfostruct;
-  
+
 /* Info about a started disk transfer */
 
 typedef struct {
@@ -125,12 +125,12 @@ extern void floppyMotorSet(uint32_t drive, BOOLE mtr);
 extern void floppySideSet(BOOLE s);
 extern void floppyDirSet(BOOLE dr);
 extern void floppyStepSet(BOOLE stp);
-extern bool floppyImageADFCreate(char *, char *, bool, bool, bool);
+extern bool floppyImageADFCreate(char*, char*, bool, bool, bool);
 extern void floppyImageRemove(uint32_t drive);
-extern bool floppyValidateAmigaDOSVolumeName(const char *);
+extern bool floppyValidateAmigaDOSVolumeName(const char*);
 /* Configuration */
 
-extern void floppySetDiskImage(uint32_t drive, char *diskname);
+extern void floppySetDiskImage(uint32_t drive, const char* diskname);
 extern void floppySetEnabled(uint32_t drive, BOOLE enabled);
 extern void floppySetReadOnlyConfig(uint32_t drive, BOOLE readonly);
 extern void floppySetFastDMA(BOOLE fastDMA);

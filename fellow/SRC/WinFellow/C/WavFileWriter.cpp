@@ -87,10 +87,10 @@ void WavFileWriter::Stereo16BitsAdd(int16_t* left, int16_t* right, uint32_t samp
 
 void WavFileWriter::HeaderWrite()
 {
-  static char* wav_RIFF = { "RIFF" };
-  static char* wav_WAVEfmt = { "WAVEfmt " };
+  static const char* wav_RIFF = { "RIFF" };
+  static const char* wav_WAVEfmt = { "WAVEfmt " };
   static uint32_t wav_fmtchunklength = 16;
-  static char* wav_data = { "data" };
+  static const char* wav_data = { "data" };
   uint32_t channelCount = _isStereo ? 2 : 1;
   uint32_t is16BitsMultipiler = _is16Bits ? 2 : 1;
   uint32_t bytespersecond = _rateReal * channelCount * is16BitsMultipiler;

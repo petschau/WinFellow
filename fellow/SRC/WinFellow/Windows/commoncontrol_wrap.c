@@ -74,7 +74,7 @@ void ccwButtonEnable(HWND windowHandle, int controlIdentifier)
 
 void ccwSliderSetRange(HWND windowHandle, int controlIdentifier, uint32_t minPos, uint32_t maxPos)
 {
-  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETRANGE, TRUE, (LPARAM) MAKELONG(minPos, maxPos));
+  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETRANGE, TRUE, (LPARAM)MAKELONG(minPos, maxPos));
 }
 
 uint32_t ccwComboBoxGetCurrentSelection(HWND windowHandle, int controlIdentifier)
@@ -87,19 +87,19 @@ void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, ui
   ComboBox_SetCurSel(GetDlgItem(windowHandle, controlIdentifier), index);
 }
 
-void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, char *text)
+void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, const char* text)
 {
   ComboBox_AddString(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
 uint32_t ccwSliderGetPosition(HWND windowHandle, int controlIdentifier)
 {
-  return (uint32_t) SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
+  return (uint32_t)SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
 }
 
 void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position)
 {
-  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETPOS, TRUE, (LPARAM) position);
+  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETPOS, TRUE, (LPARAM)position);
 }
 
 void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable)
@@ -107,17 +107,17 @@ void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable)
   EnableWindow(GetDlgItem(windowHandle, controlIdentifier), enable);
 }
 
-void ccwStaticSetText(HWND windowHandle, int controlIdentifier, char *text)
+void ccwStaticSetText(HWND windowHandle, int controlIdentifier, const char* text)
 {
   Static_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditSetText(HWND windowHandle, int controlIdentifier, char *text)
+void ccwEditSetText(HWND windowHandle, int controlIdentifier, const char* text)
 {
   Edit_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditGetText(HWND windowHandle, int controlIdentifier, char *text, uint32_t n)
+void ccwEditGetText(HWND windowHandle, int controlIdentifier, char* text, uint32_t n)
 {
   Edit_GetText(GetDlgItem(windowHandle, controlIdentifier), text, n);
 }
@@ -134,7 +134,7 @@ void ccwEditEnableConditionalBool(HWND windowHandle, int controlIdentifier, bool
 
 void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bitmapFirst, HBITMAP bitmapSecond, BOOLE setFirst)
 {
-  SendMessage(GetDlgItem(windowHandle, controlIdentifier), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) (setFirst ? bitmapFirst : bitmapSecond));
+  SendMessage(GetDlgItem(windowHandle, controlIdentifier), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)(setFirst ? bitmapFirst : bitmapSecond));
 }
 
 void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE enable)

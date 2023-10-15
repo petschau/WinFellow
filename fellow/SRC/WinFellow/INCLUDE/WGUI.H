@@ -36,7 +36,7 @@ struct wgui_drawmode
     return false;
   }
 
-  wgui_drawmode(draw_mode *dm)
+  wgui_drawmode(draw_mode* dm)
   {
     height = dm->height;
     refresh = dm->refresh;
@@ -70,15 +70,15 @@ typedef struct {
 /* Fellow                                                                    */
 /*===========================================================================*/
 
-extern BOOLE wguiSaveFile(HWND, char *, uint32_t, char *, SelectFileFlags);
-extern char *wguiExtractPath(char *);
+extern BOOLE wguiSaveFile(HWND hwndDlg, const char* filename, uint32_t filenamesize, const char* title, SelectFileFlags selectFileType);
+extern char* wguiExtractPath(char*);
 
 extern void wguiStartup();
 extern void wguiStartupPost();
 extern void wguiShutdown();
 extern BOOLE wguiCheckEmulationNecessities();
 extern BOOLE wguiEnter();
-extern void wguiRequester(char *szMessage, UINT uType);
-extern void wguiShowRequester(char* szMessage, FELLOW_REQUESTER_TYPE requesterType);
-extern void wguiInsertCfgIntoHistory(char *cfgfilenametoinsert);
-extern void wguiSetProcessDPIAwareness(const char *pszAwareness);
+extern void wguiRequester(const char* szMessage, UINT uType);
+extern void wguiShowRequester(const char* szMessage, FELLOW_REQUESTER_TYPE requesterType);
+extern void wguiInsertCfgIntoHistory(const char* cfgfilenametoinsert);
+extern void wguiSetProcessDPIAwareness(const char* pszAwareness);

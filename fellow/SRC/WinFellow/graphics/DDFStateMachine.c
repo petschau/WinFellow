@@ -29,8 +29,8 @@
 
 using namespace CustomChipset;
 
-static char *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH",
-				"WAITING_FOR_NEXT_FETCH"};
+static const char* DDFStateNames[2] = { "WAITING_FOR_FIRST_FETCH",
+                                "WAITING_FOR_NEXT_FETCH" };
 
 void DDFStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
@@ -72,16 +72,16 @@ void DDFStateMachine::SetStateWaitingForFirstFetch(uint32_t rasterY, uint32_t cy
 
   if (start == currentCycle)
   {
-    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, MakeArriveTime(rasterY, cylinder + GetFetchSize()*2));
+    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, MakeArriveTime(rasterY, cylinder + GetFetchSize() * 2));
   }
   else if (start > currentCycle)
   {
     // Fetch start will be seen on this line
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY, start*2));
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY, start * 2));
   }
   else
   {
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY + 1, start*2));
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY + 1, start * 2));
   }
 }
 
@@ -92,20 +92,20 @@ void DDFStateMachine::SetStateWaitingForNextFetch(uint32_t rasterY, uint32_t cyl
   uint32_t currentCycle = cylinder / 2;
 
   if ((stop & 7) != (start & 7)) stop += GetFetchSize();
-  
+
   if (stop > currentCycle)
   {
     // More fetches on this line
-    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, MakeArriveTime(rasterY, cylinder + GetFetchSize()*2));
+    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, MakeArriveTime(rasterY, cylinder + GetFetchSize() * 2));
   }
   else if (start > currentCycle)
   {
     // Fetch start will be seen on this line
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY, start*2));
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY, start * 2));
   }
   else
   {
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY + 1, start*2));
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY + 1, start * 2));
   }
 }
 
@@ -121,8 +121,8 @@ void DDFStateMachine::DoStateWaitingForNextFetch(uint32_t rasterY, uint32_t cyli
 
 bool DDFStateMachine::CanRead()
 {
-  return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH) 
-    && _core.RegisterUtility.GetEnabledBitplaneCount() > 0 
+  return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH)
+    && _core.RegisterUtility.GetEnabledBitplaneCount() > 0
     && GraphicsContext.DIWYStateMachine.IsVisible();
 }
 
@@ -131,27 +131,27 @@ void DDFStateMachine::ChangedValue()
   uint32_t rasterY = busGetRasterY();
   if (rasterY < 0x1a)
   {
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition() * 2));
     return;
   }
 
   switch (_state)
   {
-    case DDF_STATE_WAITING_FOR_FIRST_FETCH:
-      SetStateWaitingForFirstFetch(busGetRasterY(), busGetRasterX()*2);
-      break;
-    case DDF_STATE_WAITING_FOR_NEXT_FETCH:
-      SetStateWaitingForNextFetch(busGetRasterY(), busGetRasterX()*2);
-      break;
+  case DDF_STATE_WAITING_FOR_FIRST_FETCH:
+    SetStateWaitingForFirstFetch(busGetRasterY(), busGetRasterX() * 2);
+    break;
+  case DDF_STATE_WAITING_FOR_NEXT_FETCH:
+    SetStateWaitingForNextFetch(busGetRasterY(), busGetRasterX() * 2);
+    break;
   }
 }
 
 /* Bus event handler */
 
-void DDFStateMachine::InitializeEvent(GraphicsEventQueue *queue)
+void DDFStateMachine::InitializeEvent(GraphicsEventQueue* queue)
 {
   _queue = queue;
-  SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
+  SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition() * 2));
 }
 
 void DDFStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
@@ -160,12 +160,12 @@ void DDFStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
   switch (_state)
   {
-    case DDF_STATE_WAITING_FOR_FIRST_FETCH:
-      DoStateWaitingForFirstFetch(rasterY, cylinder);
-      break;
-    case DDF_STATE_WAITING_FOR_NEXT_FETCH:
-      DoStateWaitingForNextFetch(rasterY, cylinder);
-      break;
+  case DDF_STATE_WAITING_FOR_FIRST_FETCH:
+    DoStateWaitingForFirstFetch(rasterY, cylinder);
+    break;
+  case DDF_STATE_WAITING_FOR_NEXT_FETCH:
+    DoStateWaitingForNextFetch(rasterY, cylinder);
+    break;
   }
   if (CanRead())
   {
@@ -181,7 +181,7 @@ void DDFStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
 void DDFStateMachine::EndOfFrame()
 {
-  SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
+  SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition() * 2));
 }
 
 void DDFStateMachine::SoftReset()

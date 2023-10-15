@@ -22,12 +22,12 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-/* ---------------- KNOWN BUGS/FIXLIST ----------------- 
+/* ---------------- KNOWN BUGS/FIXLIST -----------------
 - translation from keynames to DX keys should be perfectioned
 - conflicts in the keys choosen by the user
 */
 
-/* ---------------- CHANGE LOG ----------------- 
+/* ---------------- CHANGE LOG -----------------
 Friday, January 05, 2001: nova
 - fixed problem if the last line is not an empty line
 - fixed handling of joystick key replacement
@@ -59,7 +59,7 @@ extern uint8_t kbd_drv_pc_symbol_to_amiga_scancode[106];
 
 #define MAX_PC_NAMES	106
 
-extern char* kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
+extern const char* kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
 #define pc_keys kbd_drv_pc_symbol_to_string
 
 extern int symbol_to_DIK_kbddrv[PCK_LAST_KEY];
@@ -71,7 +71,7 @@ extern int symbol_to_DIK_kbddrv[PCK_LAST_KEY];
 
 #define MAX_AMIGA_NAMES		96
 
-char *amiga_keys[MAX_AMIGA_NAMES] = 
+const char* amiga_keys[MAX_AMIGA_NAMES] =
 {
   "ESCAPE",
   "GRAVE",
@@ -175,7 +175,7 @@ char *amiga_keys[MAX_AMIGA_NAMES] =
 /* map for the amiga key names						     */
 /*===========================================================================*/
 
-uint8_t amiga_scancode[MAX_AMIGA_NAMES] = 
+uint8_t amiga_scancode[MAX_AMIGA_NAMES] =
 {
   A_ESCAPE,
   A_GRAVE,
@@ -282,7 +282,7 @@ uint8_t amiga_scancode[MAX_AMIGA_NAMES] =
 
 // the order of the replacement_keys array must coincide with the enum kbd_drv_joykey_directions in kbddrv.c
 
-char *replacement_keys[MAX_KEY_REPLACEMENT] =
+const char* replacement_keys[MAX_KEY_REPLACEMENT] =
 {
   "JOYKEY1_LEFT",
   "JOYKEY1_RIGHT",
@@ -307,12 +307,12 @@ char *replacement_keys[MAX_KEY_REPLACEMENT] =
 /* Get index of the key							     */
 /*===========================================================================*/
 
-int prsGetKeyIndex( char *szKey, char *Keys[], int MaxKeys )
+int prsGetKeyIndex(const char* szKey, const char** Keys, int MaxKeys)
 {
   int i = 0;
-  for( i = 0; i < MaxKeys; i++ )
+  for (i = 0; i < MaxKeys; i++)
   {
-    if( stricmp( szKey, Keys[i] ) == 0 )
+    if (stricmp(szKey, Keys[i]) == 0)
     {
       return i;
     }
@@ -324,39 +324,39 @@ int prsGetKeyIndex( char *szKey, char *Keys[], int MaxKeys )
 /* trim the left and right spaces and tab chars				     */
 /*===========================================================================*/
 
-char *prsTrim( char *line )
+char* prsTrim(char* line)
 {
-  size_t i = 0, j = strlen( line ) - 1;
-  char *p = line;
+  size_t i = 0, j = strlen(line) - 1;
+  char* p = line;
 
   // trim starting space and tab
-  while(( i < j ) && ((line[i] == '\t') || (line[i] == ' ')))
+  while ((i < j) && ((line[i] == '\t') || (line[i] == ' ')))
   {
     i++;
   }
-  if( i > j )
+  if (i > j)
   {
     return line;
   }
 
-  if( i )
+  if (i)
   {
     p = &line[i];
   }
 
   // trim ending space and tab and new line
-  while( (j > i) && (
-	  (line[j] == ' ') || 
-	  (line[j] == '\t') ||
-	  (line[j] == '\r') ||
-	  (line[j] == '\n')
-	  ))
+  while ((j > i) && (
+    (line[j] == ' ') ||
+    (line[j] == '\t') ||
+    (line[j] == '\r') ||
+    (line[j] == '\n')
+    ))
   {
     j--;
   }
-  if( j >= i )
+  if (j >= i)
   {
-    line[j+1] = '\0';
+    line[j + 1] = '\0';
   }
 
   return p;
@@ -366,24 +366,24 @@ char *prsTrim( char *line )
 /* read the line and get Amiga key name and Pc key name			     */
 /*===========================================================================*/
 
-BOOLE prsGetAmigaName( char *line, char **pAm, char **pWin )
+BOOLE prsGetAmigaName(char* line, const char** pAm, const char** pWin)
 {
   int i = 0;
   *pAm = line;
 
-  while( line[i] && (line[i] != '='))
+  while (line[i] && (line[i] != '='))
   {
     i++;
   }
-  if( !line[i] )
+  if (!line[i])
   {
     return TRUE;
   }
 
   line[i] = '\0';
-  *pAm = prsTrim( line );
+  *pAm = prsTrim(line);
 
-  *pWin = prsTrim( &line[i+1] );
+  *pWin = prsTrim(&line[i + 1]);
 
   return !pAm || !pWin;
 }
@@ -392,142 +392,144 @@ BOOLE prsGetAmigaName( char *line, char **pAm, char **pWin )
 /* read the mapping file and set the map array				     */
 /*===========================================================================*/
 
-BOOLE prsReadFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
+BOOLE prsReadFile(char* szFilename, uint8_t* pc_to_am, kbd_drv_pc_symbol key_repl[2][8])
 {
-  FILE *f = nullptr;
-  char line[256], *pAmigaName = nullptr, *pWinName = nullptr;
+  FILE* f = nullptr;
+  char line[256];
+  const char* pAmigaName = nullptr;
+  const char* pWinName = nullptr;
   int PcIndex;
 
-  f = fopen( szFilename, "r" );
-  if( !f )
+  f = fopen(szFilename, "r");
+  if (!f)
   {
-    _core.Log->AddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
+    _core.Log->AddLog("cannot open filename %s: %s\n", szFilename, strerror(errno));
     return TRUE;
   }
 
   // clear array
 
-  for( PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++ )
+  for (PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++)
   {
     pc_to_am[PcIndex] = A_NONE;
   }
 
-  while( !feof( f ))
+  while (!feof(f))
   {
-    if( !fgets( line, 256, f ))
+    if (!fgets(line, 256, f))
     {
       break;
     }
 
     // test if it's a comment line
-    if( line[0] == ';' )
+    if (line[0] == ';')
     {
       continue;
     }
 
-    if( prsGetAmigaName( line, &pAmigaName, &pWinName ))
+    if (prsGetAmigaName(line, &pAmigaName, &pWinName))
     {
       continue;
     }
 
     int ReplIndex = -1;
     int AmigaIndex = prsGetKeyIndex(pAmigaName, amiga_keys, MAX_AMIGA_NAMES);
-    PcIndex = prsGetKeyIndex( pWinName, pc_keys, MAX_PC_NAMES );
+    PcIndex = prsGetKeyIndex(pWinName, pc_keys, MAX_PC_NAMES);
 
-    if( AmigaIndex < 0 )
+    if (AmigaIndex < 0)
     {
-      ReplIndex = prsGetKeyIndex( pAmigaName, replacement_keys, MAX_KEY_REPLACEMENT );
+      ReplIndex = prsGetKeyIndex(pAmigaName, replacement_keys, MAX_KEY_REPLACEMENT);
     }
 
-    if(( AmigaIndex < 0 ) && ( ReplIndex < 0 ))
+    if ((AmigaIndex < 0) && (ReplIndex < 0))
     {
-      _core.Log->AddLog( "Amiga key: %s unrecognized\n", pAmigaName );
+      _core.Log->AddLog("Amiga key: %s unrecognized\n", pAmigaName);
       continue;
     }
 
-    if( PcIndex < 0 )
+    if (PcIndex < 0)
     {
-      _core.Log->AddLog( "Pc    key: %s unrecognized\n", pWinName );
+      _core.Log->AddLog("Pc    key: %s unrecognized\n", pWinName);
       continue;
     }
 
-    if( AmigaIndex >= 0 )
+    if (AmigaIndex >= 0)
     {
       pc_to_am[PcIndex] = amiga_scancode[AmigaIndex];
     }
     else
     {
-      if( ReplIndex < FIRST_KEY2_REPLACEMENT )
+      if (ReplIndex < FIRST_KEY2_REPLACEMENT)
       {
-	key_repl[0][ReplIndex] = (kbd_drv_pc_symbol)PcIndex;
+        key_repl[0][ReplIndex] = (kbd_drv_pc_symbol)PcIndex;
       }
       else
       {
-	key_repl[1][ReplIndex - FIRST_KEY2_REPLACEMENT] = (kbd_drv_pc_symbol)PcIndex;
+        key_repl[1][ReplIndex - FIRST_KEY2_REPLACEMENT] = (kbd_drv_pc_symbol)PcIndex;
       }
     }
   }
-  fclose( f );
+  fclose(f);
 
   return FALSE;
 }
 
-BOOLE prsWriteFile( char *szFilename, uint8_t *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
+BOOLE prsWriteFile(char* szFilename, uint8_t* pc_to_am, kbd_drv_pc_symbol key_repl[2][8])
 {
-  FILE *f = nullptr;
+  FILE* f = nullptr;
   char line[256];
   int AmigaIndex;
 
-  f = fopen( szFilename, "w" );
-  if( !f )
+  f = fopen(szFilename, "w");
+  if (!f)
   {
-    _core.Log->AddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
+    _core.Log->AddLog("cannot open filename %s: %s\n", szFilename, strerror(errno));
     return TRUE;
   }
 
 #ifdef _DEBUG
-  _core.Log->AddLog( "rewriting mapping file %s\n", szFilename );
+  _core.Log->AddLog("rewriting mapping file %s\n", szFilename);
 #endif
 
-  for( AmigaIndex = 0; AmigaIndex < MAX_AMIGA_NAMES; AmigaIndex++ )
+  for (AmigaIndex = 0; AmigaIndex < MAX_AMIGA_NAMES; AmigaIndex++)
   {
     line[0] = '\0';
-    for( int PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++ )
+    for (int PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++)
     {
-      if( pc_to_am[PcIndex] == amiga_scancode[ AmigaIndex ] )
+      if (pc_to_am[PcIndex] == amiga_scancode[AmigaIndex])
       {
-        if( line[0] )
-	{
-          fputs( line, f );
-	}
-        sprintf( line, "%s = %s\n", amiga_keys[ AmigaIndex ], pc_keys[PcIndex] );
+        if (line[0])
+        {
+          fputs(line, f);
+        }
+        sprintf(line, "%s = %s\n", amiga_keys[AmigaIndex], pc_keys[PcIndex]);
       }
     }
-    if( line[0] )
+    if (line[0])
     {
-      fputs( line, f );
+      fputs(line, f);
     }
     else
     {
-      sprintf( line, ";%s = NONE\n", amiga_keys[ AmigaIndex ] );
-      fputs( line, f );
+      sprintf(line, ";%s = NONE\n", amiga_keys[AmigaIndex]);
+      fputs(line, f);
     }
   }
-  for( AmigaIndex = 0; AmigaIndex < MAX_KEY_REPLACEMENT; AmigaIndex++ )
+  for (AmigaIndex = 0; AmigaIndex < MAX_KEY_REPLACEMENT; AmigaIndex++)
   {
-    if( AmigaIndex < FIRST_KEY2_REPLACEMENT )
+    if (AmigaIndex < FIRST_KEY2_REPLACEMENT)
     {
-      sprintf( line, "%s = %s\n", replacement_keys[ AmigaIndex ], pc_keys[ key_repl[0][AmigaIndex] ] );
+      sprintf(line, "%s = %s\n", replacement_keys[AmigaIndex], pc_keys[key_repl[0][AmigaIndex]]);
     }
     else
     {
-      sprintf( line, "%s = %s\n", replacement_keys[ AmigaIndex ], pc_keys[ key_repl[1][AmigaIndex-FIRST_KEY2_REPLACEMENT] ] );
+      sprintf(line, "%s = %s\n", replacement_keys[AmigaIndex], pc_keys[key_repl[1][AmigaIndex - FIRST_KEY2_REPLACEMENT]]);
     }
 
-    fputs( line, f );
+    fputs(line, f);
   }
 
-  fclose( f );
+  fclose(f);
 
   return FALSE;
 }

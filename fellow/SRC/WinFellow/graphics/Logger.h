@@ -6,11 +6,11 @@ class Logger
 {
 private:
   bool _enableLog;
-  FILE *_logfile;
+  FILE* _logfile;
 
 public:
-  void Log(uint32_t line, uint32_t cylinder, char *message);
-  bool IsLogEnabled() {return _enableLog;}
+  void Log(uint32_t line, uint32_t cylinder, const char* message);
+  bool IsLogEnabled() { return _enableLog; }
 
   void Shutdown();
 

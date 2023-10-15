@@ -1,6 +1,6 @@
 #include <memory>
-#include "hardfile/hunks/HeaderHunk.h"
 #include "TestBootstrap.h"
+#include "hardfile/hunks/HeaderHunk.h"
 #include "catch/catch_amalgamated.hpp"
 
 using namespace std;
@@ -128,7 +128,7 @@ namespace test::fellow::hardfile::hunks
       _instance->Parse(*rawDataReader);
 
       REQUIRE(_instance->GetResidentLibraryCount() == 2);
-      REQUIRE(_instance-> GetResidentLibrary(0) == "ABC");
+      REQUIRE(_instance->GetResidentLibrary(0) == "ABC");
       REQUIRE(_instance->GetResidentLibrary(1) == "ABCDABC");
     }
 

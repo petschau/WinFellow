@@ -5,7 +5,7 @@
 
 #include "VirtualHost/Core.h"
 
-void Logger::Log(uint32_t line, uint32_t cylinder, char *message)
+void Logger::Log(uint32_t line, uint32_t cylinder, const char* message)
 {
   if (_enableLog)
   {
@@ -15,14 +15,14 @@ void Logger::Log(uint32_t line, uint32_t cylinder, char *message)
       _core.Fileops->GetGenericFileName(filename, "WinFellow", "Graphics.log");
       _logfile = fopen(filename, "w");
     }
-    fprintf(_logfile, 
-            "Frame %.16I64X Line %.3X Cylinder %.3X (%.3X,%.3X): %s",
-            busGetRasterFrameCount(),
-            line,
-            cylinder,
-            busGetRasterY(),
-            busGetRasterX(),
-            message);
+    fprintf(_logfile,
+      "Frame %.16I64X Line %.3X Cylinder %.3X (%.3X,%.3X): %s",
+      busGetRasterFrameCount(),
+      line,
+      cylinder,
+      busGetRasterY(),
+      busGetRasterX(),
+      message);
   }
 }
 

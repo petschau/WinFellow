@@ -207,9 +207,9 @@ UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
     IDD_DEBUG_SPRITES,
     IDD_DEBUG_SCREEN,
     IDD_DEBUG_EVENTS,
-    IDD_DEBUG_SOUND};
+    IDD_DEBUG_SOUND };
 
-typedef INT_PTR(CALLBACK *wdbgDlgProc)(HWND, UINT, WPARAM, LPARAM);
+typedef INT_PTR(CALLBACK* wdbgDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
 wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
     wdbgCPUDialogProc,
@@ -221,7 +221,7 @@ wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
     wdbgSpriteDialogProc,
     wdbgScreenDialogProc,
     wdbgEventDialogProc,
-    wdbgSoundDialogProc};
+    wdbgSoundDialogProc };
 
 /*===============================*/
 /* calculate DIP scaling factors */
@@ -278,45 +278,45 @@ INT_PTR wdbgSessionMainDialog()
 /* helper functions                                                           */
 /*============================================================================*/
 
-char *wdbgGetDataRegistersStr(char *s)
+char* wdbgGetDataRegistersStr(char* s)
 {
   sprintf(
-      s,
-      "D0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :D7",
-      cpuGetDReg(0),
-      cpuGetDReg(1),
-      cpuGetDReg(2),
-      cpuGetDReg(3),
-      cpuGetDReg(4),
-      cpuGetDReg(5),
-      cpuGetDReg(6),
-      cpuGetDReg(7));
+    s,
+    "D0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :D7",
+    cpuGetDReg(0),
+    cpuGetDReg(1),
+    cpuGetDReg(2),
+    cpuGetDReg(3),
+    cpuGetDReg(4),
+    cpuGetDReg(5),
+    cpuGetDReg(6),
+    cpuGetDReg(7));
   return s;
 }
 
-char *wdbgGetAddressRegistersStr(char *s)
+char* wdbgGetAddressRegistersStr(char* s)
 {
   sprintf(
-      s,
-      "A0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :A7",
-      cpuGetAReg(0),
-      cpuGetAReg(1),
-      cpuGetAReg(2),
-      cpuGetAReg(3),
-      cpuGetAReg(4),
-      cpuGetAReg(5),
-      cpuGetAReg(6),
-      cpuGetAReg(7));
+    s,
+    "A0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :A7",
+    cpuGetAReg(0),
+    cpuGetAReg(1),
+    cpuGetAReg(2),
+    cpuGetAReg(3),
+    cpuGetAReg(4),
+    cpuGetAReg(5),
+    cpuGetAReg(6),
+    cpuGetAReg(7));
   return s;
 }
 
-char *wdbgGetSpecialRegistersStr(char *s)
+char* wdbgGetSpecialRegistersStr(char* s)
 {
   sprintf(s, "USP:%.8X SSP:%.8X SR:%.4X FRAME: %u y: %u x: %u", cpuGetUspAutoMap(), cpuGetSspAutoMap(), cpuGetSR(), draw_frame_count, busGetRasterY(), busGetRasterX());
   return s;
 }
 
-void wdbgExtendStringTo80Columns(char *s)
+void wdbgExtendStringTo80Columns(char* s)
 {
   uint32_t i;
   BOOLE zero_found = FALSE;
@@ -329,7 +329,7 @@ void wdbgExtendStringTo80Columns(char *s)
   s[80] = '\0';
 }
 
-uint32_t wdbgLineOut(HDC hDC, char *s, uint32_t x, uint32_t y)
+uint32_t wdbgLineOut(HDC hDC, char* s, uint32_t x, uint32_t y)
 {
   struct tagSIZE text_size;
   SetBkMode(hDC, OPAQUE);
@@ -339,7 +339,7 @@ uint32_t wdbgLineOut(HDC hDC, char *s, uint32_t x, uint32_t y)
   return y + text_size.cy;
 }
 
-char *wdbgGetDisassemblyLineStr(char *s, uint32_t *disasm_pc)
+char* wdbgGetDisassemblyLineStr(char* s, uint32_t* disasm_pc)
 {
   char inst_address[256] = "";
   char inst_data[256] = "";
@@ -369,20 +369,20 @@ void wdbgUpdateCPUState(HWND hwndDlg)
     uint32_t disasm_pc;
     uint32_t i;
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
     SelectObject(hDC_image, myarrow);
@@ -426,20 +426,20 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     uint32_t i, j;
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -460,13 +460,13 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
       if (memory_ascii)
       {
         sprintf(
-            st,
-            "%.6X %.8X%.8X %.8X%.8X ",
-            (memory_adress + i * 16) & 0xffffff,
-            memoryReadLong(memory_adress + i * 16 + 0),
-            memoryReadLong(memory_adress + i * 16 + 4),
-            memoryReadLong(memory_adress + i * 16 + 8),
-            memoryReadLong(memory_adress + i * 16 + 12));
+          st,
+          "%.6X %.8X%.8X %.8X%.8X ",
+          (memory_adress + i * 16) & 0xffffff,
+          memoryReadLong(memory_adress + i * 16 + 0),
+          memoryReadLong(memory_adress + i * 16 + 4),
+          memoryReadLong(memory_adress + i * 16 + 8),
+          memoryReadLong(memory_adress + i * 16 + 12));
 
         for (j = 0; j < 16; j++)
         {
@@ -482,17 +482,17 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
       else
       {
         sprintf(
-            st,
-            "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
-            (memory_adress + i * 32) & 0xffffff,
-            memoryReadLong(memory_adress + i * 32),
-            memoryReadLong(memory_adress + i * 32 + 4),
-            memoryReadLong(memory_adress + i * 32 + 8),
-            memoryReadLong(memory_adress + i * 32 + 12),
-            memoryReadLong(memory_adress + i * 32 + 16),
-            memoryReadLong(memory_adress + i * 32 + 20),
-            memoryReadLong(memory_adress + i * 32 + 24),
-            memoryReadLong(memory_adress + i * 32 + 28));
+          st,
+          "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
+          (memory_adress + i * 32) & 0xffffff,
+          memoryReadLong(memory_adress + i * 32),
+          memoryReadLong(memory_adress + i * 32 + 4),
+          memoryReadLong(memory_adress + i * 32 + 8),
+          memoryReadLong(memory_adress + i * 32 + 12),
+          memoryReadLong(memory_adress + i * 32 + 16),
+          memoryReadLong(memory_adress + i * 32 + 20),
+          memoryReadLong(memory_adress + i * 32 + 24),
+          memoryReadLong(memory_adress + i * 32 + 28));
         y = wdbgLineOut(hDC, st, x, y);
       }
     }
@@ -521,20 +521,20 @@ void wdbgUpdateCIAState(HWND hwndDlg)
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     uint32_t i;
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -625,20 +625,20 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     uint32_t i;
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -713,20 +713,20 @@ void wdbgUpdateBlitterState(HWND hwndDlg)
     uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -782,20 +782,20 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     uint32_t i, list1, list2, atpc;
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -820,11 +820,11 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(
-        s,
-        "Next cycle - %u  Y - %u  X - %u",
-        copperEvent.cycle,
-        (copperEvent.cycle != -1) ? (copperEvent.cycle / 228) : 0,
-        (copperEvent.cycle != -1) ? (copperEvent.cycle % 228) : 0);
+      s,
+      "Next cycle - %u  Y - %u  X - %u",
+      copperEvent.cycle,
+      (copperEvent.cycle != -1) ? (copperEvent.cycle / 228) : 0,
+      (copperEvent.cycle != -1) ? (copperEvent.cycle % 228) : 0);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "List 1:        List 2:        At PC:");
@@ -833,14 +833,14 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     for (i = 0; i < 16; i++)
     {
       sprintf(
-          s,
-          "$%.4X, $%.4X   $%.4X, $%.4X   $%.4X, $%.4X",
-          memoryReadWord(list1),
-          memoryReadWord(list1 + 2),
-          memoryReadWord(list2),
-          memoryReadWord(list2 + 2),
-          memoryReadWord(atpc),
-          memoryReadWord(atpc + 2));
+        s,
+        "$%.4X, $%.4X   $%.4X, $%.4X   $%.4X, $%.4X",
+        memoryReadWord(list1),
+        memoryReadWord(list1 + 2),
+        memoryReadWord(list2),
+        memoryReadWord(list2 + 2),
+        memoryReadWord(atpc),
+        memoryReadWord(atpc + 2));
       y = wdbgLineOut(hDC, s, x, y);
       list1 += 4;
       list2 += 4;
@@ -871,20 +871,20 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
     uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -901,11 +901,11 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
     x += (uint32_t)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(
-        s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprite_registers.sprpt[0], sprite_registers.sprpt[1], sprite_registers.sprpt[2], sprite_registers.sprpt[3]);
+      s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprite_registers.sprpt[0], sprite_registers.sprpt[1], sprite_registers.sprpt[2], sprite_registers.sprpt[3]);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(
-        s, "Spr4pt-%.6X Spr5pt-%.6X Spr6pt-%.6X Spr7pt - %.6X", sprite_registers.sprpt[4], sprite_registers.sprpt[5], sprite_registers.sprpt[6], sprite_registers.sprpt[7]);
+      s, "Spr4pt-%.6X Spr5pt-%.6X Spr6pt-%.6X Spr7pt - %.6X", sprite_registers.sprpt[4], sprite_registers.sprpt[5], sprite_registers.sprpt[6], sprite_registers.sprpt[7]);
     y = wdbgLineOut(hDC, s, x, y);
 
     // for (uint32_t i = 0; i < 8; i++) {
@@ -940,20 +940,20 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -982,7 +982,7 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     y = wdbgLineOut(hDC, s, x, y);
     y++;
 
-    const draw_rect &clip = drawGetOutputClip();
+    const draw_rect& clip = drawGetOutputClip();
     sprintf(s, "Host window clip envelope (Hor) (Ver): (%u, %u) (%u, %u)", clip.left, clip.right, clip.top, clip.bottom);
     y = wdbgLineOut(hDC, s, x, y);
 
@@ -1025,20 +1025,20 @@ void wdbgUpdateEventState(HWND hwndDlg)
     uint32_t y = (uint32_t)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -1094,20 +1094,20 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     uint32_t x = (uint32_t)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     uint32_t i;
     HFONT myfont = CreateFont(
-        (uint32_t)(8 * g_DPIScaleY),
-        (uint32_t)(8 * g_DPIScaleX),
-        0,
-        0,
-        FW_NORMAL,
-        FALSE,
-        FALSE,
-        FALSE,
-        DEFAULT_CHARSET,
-        OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY,
-        FF_DONTCARE | FIXED_PITCH,
-        "fixedsys");
+      (uint32_t)(8 * g_DPIScaleY),
+      (uint32_t)(8 * g_DPIScaleX),
+      0,
+      0,
+      FW_NORMAL,
+      FALSE,
+      FALSE,
+      FALSE,
+      DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS,
+      CLIP_DEFAULT_PRECIS,
+      DEFAULT_QUALITY,
+      FF_DONTCARE | FIXED_PITCH,
+      "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -1129,20 +1129,20 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     for (i = 0; i < 4; i++)
     {
       sprintf(
-          s,
-          "Ch%u State: %2d Lenw: %5u Len: %5u per: %5u Pcnt: %5X Vol: %5u",
-          i,
-          (audstate[i] == soundState0)   ? 0
-          : (audstate[i] == soundState1) ? 1
-          : (audstate[i] == soundState2) ? 2
-          : (audstate[i] == soundState3) ? 3
-          : (audstate[i] == soundState5) ? 5
-                                         : -1,
-          audlenw[i],
-          audlen[i],
-          audper[i],
-          audpercounter[i],
-          audvol[i]);
+        s,
+        "Ch%u State: %2d Lenw: %5u Len: %5u per: %5u Pcnt: %5X Vol: %5u",
+        i,
+        (audstate[i] == soundState0) ? 0
+        : (audstate[i] == soundState1) ? 1
+        : (audstate[i] == soundState2) ? 2
+        : (audstate[i] == soundState3) ? 3
+        : (audstate[i] == soundState5) ? 5
+        : -1,
+        audlenw[i],
+        audlen[i],
+        audper[i],
+        audpercounter[i],
+        audvol[i]);
       y = wdbgLineOut(hDC, s, x, y);
     }
 
@@ -1164,40 +1164,40 @@ INT_PTR CALLBACK wdbgCPUDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateCPUState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateCPUState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_CPU_STEP:
+      if (winDrvDebugStart(DBG_STEP, hwndDlg))
       {
-        case IDC_DEBUG_CPU_STEP:
-          if (winDrvDebugStart(DBG_STEP, hwndDlg))
-          {
-            InvalidateRect(hwndDlg, NULL, FALSE);
-            SetFocus(hwndDlg);
-          }
-          break;
-        case IDC_DEBUG_CPU_STEP_OVER:
-          if (winDrvDebugStart(DBG_STEP_OVER, hwndDlg))
-          {
-            InvalidateRect(hwndDlg, NULL, FALSE);
-            SetFocus(hwndDlg);
-          }
-          break;
-        case IDC_DEBUG_CPU_RUN:
-          if (winDrvDebugStart(DBG_RUN, hwndDlg))
-          {
-            InvalidateRect(hwndDlg, NULL, FALSE);
-            SetFocus(hwndDlg);
-          }
-          break;
-        case IDC_DEBUG_CPU_BREAK:
-          fellowRequestEmulationStop();
-          InvalidateRect(hwndDlg, NULL, FALSE);
-          break;
-        default: break;
+        InvalidateRect(hwndDlg, NULL, FALSE);
+        SetFocus(hwndDlg);
       }
       break;
+    case IDC_DEBUG_CPU_STEP_OVER:
+      if (winDrvDebugStart(DBG_STEP_OVER, hwndDlg))
+      {
+        InvalidateRect(hwndDlg, NULL, FALSE);
+        SetFocus(hwndDlg);
+      }
+      break;
+    case IDC_DEBUG_CPU_RUN:
+      if (winDrvDebugStart(DBG_RUN, hwndDlg))
+      {
+        InvalidateRect(hwndDlg, NULL, FALSE);
+        SetFocus(hwndDlg);
+      }
+      break;
+    case IDC_DEBUG_CPU_BREAK:
+      fellowRequestEmulationStop();
+      InvalidateRect(hwndDlg, NULL, FALSE);
+      break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1210,47 +1210,47 @@ INT_PTR CALLBACK wdbgMemoryDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateMemoryState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP:
-          memory_adress = (memory_adress - 32) & 0xffffff;
-          InvalidateRect(hwndDlg, NULL, FALSE);
-          SetFocus(hwndDlg);
-          break;
-        case IDC_DEBUG_MEMORY_DOWN:
-          memory_adress = (memory_adress + 32) & 0xffffff;
-          InvalidateRect(hwndDlg, NULL, FALSE);
-          SetFocus(hwndDlg);
-          break;
-        case IDC_DEBUG_MEMORY_PGUP:
-          memory_adress = (memory_adress - memory_padd) & 0xffffff;
-          InvalidateRect(hwndDlg, NULL, FALSE);
-          SetFocus(hwndDlg);
-          break;
-        case IDC_DEBUG_MEMORY_PGDN:
-          memory_adress = (memory_adress + memory_padd) & 0xffffff;
-          InvalidateRect(hwndDlg, NULL, FALSE);
-          SetFocus(hwndDlg);
-          break;
-        case IDC_DEBUG_MEMORY_ASCII:
-          memory_ascii = TRUE;
-          memory_padd = WDBG_DISASSEMBLY_LINES * 16;
-          InvalidateRect(hwndDlg, NULL, FALSE);
-          SetFocus(hwndDlg);
-          break;
-        case IDC_DEBUG_MEMORY_HEX:
-          memory_ascii = FALSE;
-          memory_padd = WDBG_DISASSEMBLY_LINES * 32;
-          InvalidateRect(hwndDlg, NULL, FALSE);
-          SetFocus(hwndDlg);
-          break;
-        default: break;
-      }
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateMemoryState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP:
+      memory_adress = (memory_adress - 32) & 0xffffff;
+      InvalidateRect(hwndDlg, NULL, FALSE);
+      SetFocus(hwndDlg);
+      break;
+    case IDC_DEBUG_MEMORY_DOWN:
+      memory_adress = (memory_adress + 32) & 0xffffff;
+      InvalidateRect(hwndDlg, NULL, FALSE);
+      SetFocus(hwndDlg);
+      break;
+    case IDC_DEBUG_MEMORY_PGUP:
+      memory_adress = (memory_adress - memory_padd) & 0xffffff;
+      InvalidateRect(hwndDlg, NULL, FALSE);
+      SetFocus(hwndDlg);
+      break;
+    case IDC_DEBUG_MEMORY_PGDN:
+      memory_adress = (memory_adress + memory_padd) & 0xffffff;
+      InvalidateRect(hwndDlg, NULL, FALSE);
+      SetFocus(hwndDlg);
+      break;
+    case IDC_DEBUG_MEMORY_ASCII:
+      memory_ascii = TRUE;
+      memory_padd = WDBG_DISASSEMBLY_LINES * 16;
+      InvalidateRect(hwndDlg, NULL, FALSE);
+      SetFocus(hwndDlg);
+      break;
+    case IDC_DEBUG_MEMORY_HEX:
+      memory_ascii = FALSE;
+      memory_padd = WDBG_DISASSEMBLY_LINES * 32;
+      InvalidateRect(hwndDlg, NULL, FALSE);
+      SetFocus(hwndDlg);
       break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1263,16 +1263,16 @@ INT_PTR CALLBACK wdbgCIADialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateCIAState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP: break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateCIAState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP: break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1285,16 +1285,16 @@ INT_PTR CALLBACK wdbgFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateFloppyState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP: break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateFloppyState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP: break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1307,17 +1307,17 @@ INT_PTR CALLBACK wdbgBlitterDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: Button_SetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT), blitterGetOperationLog()); return TRUE;
-    case WM_PAINT: wdbgUpdateBlitterState(hwndDlg); break;
-    case WM_DESTROY: blitterSetOperationLog(Button_GetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT))); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP: break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: Button_SetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT), blitterGetOperationLog()); return TRUE;
+  case WM_PAINT: wdbgUpdateBlitterState(hwndDlg); break;
+  case WM_DESTROY: blitterSetOperationLog(Button_GetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT))); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP: break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1330,16 +1330,16 @@ INT_PTR CALLBACK wdbgCopperDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateCopperState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP: break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateCopperState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP: break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1352,16 +1352,16 @@ INT_PTR CALLBACK wdbgSpriteDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateSpriteState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP: break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateSpriteState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP: break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1374,16 +1374,16 @@ INT_PTR CALLBACK wdbgScreenDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateScreenState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP: break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateScreenState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP: break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1396,16 +1396,16 @@ INT_PTR CALLBACK wdbgEventDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateEventState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MEMORY_UP: break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateEventState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MEMORY_UP: break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1418,17 +1418,17 @@ INT_PTR CALLBACK wdbgSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: return TRUE;
-    case WM_PAINT: wdbgUpdateSoundState(hwndDlg); break;
-    case WM_COMMAND:
-      switch (LOWORD(wParam))
-      {
-        case IDC_DEBUG_MODRIP: modripRIP(); break;
-        case IDC_DEBUG_DUMPCHIP: modripChipDump(); break;
-        default: break;
-      }
-      break;
+  case WM_INITDIALOG: return TRUE;
+  case WM_PAINT: wdbgUpdateSoundState(hwndDlg); break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_DEBUG_MODRIP: modripRIP(); break;
+    case IDC_DEBUG_DUMPCHIP: modripChipDump(); break;
     default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1479,22 +1479,22 @@ void wdebInitInstructionColumns()
   memset(&lv_col, 0, sizeof(lv_col));
   lv_col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 
-  lv_col.pszText = "Address";
+  lv_col.pszText = (LPSTR)"Address";
   lv_col.cx = 64;
   lv_col.iSubItem = 0;
   ListView_InsertColumn(hList, 0, &lv_col);
 
-  lv_col.pszText = "Opcode data";
+  lv_col.pszText = (LPSTR)"Opcode data";
   lv_col.cx = 128;
   lv_col.iSubItem = 1;
   ListView_InsertColumn(hList, 1, &lv_col);
 
-  lv_col.pszText = "Instruction";
+  lv_col.pszText = (LPSTR)"Instruction";
   lv_col.cx = 64;
   lv_col.iSubItem = 2;
   ListView_InsertColumn(hList, 2, &lv_col);
 
-  lv_col.pszText = "Operands";
+  lv_col.pszText = (LPSTR)"Operands";
   lv_col.cx = 128;
   lv_col.iSubItem = 3;
   ListView_InsertColumn(hList, 3, &lv_col);
@@ -1503,24 +1503,24 @@ void wdebInitInstructionColumns()
   lv_item.mask = LVIF_TEXT;
   for (uint32_t i = 0; i < WDEB_DISASM_LINES; ++i)
   {
-    lv_item.pszText = "x";
+    lv_item.pszText = (LPSTR)"x";
     lv_item.iItem = i;
     lv_item.iSubItem = 0;
     ListView_InsertItem(hList, &lv_item);
 
-    lv_item.pszText = "y";
+    lv_item.pszText = (LPSTR)"y";
     lv_item.iItem = i;
     lv_item.iSubItem = 1;
     ListView_SetItem(hList, &lv_item);
 
-    lv_item.pszText = "z";
+    lv_item.pszText = (LPSTR)"z";
     lv_item.iItem = i;
     lv_item.iSubItem = 2;
     ListView_SetItem(hList, &lv_item);
   }
 }
 
-char *wdbg_registernames[] = {"D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "PC", "USP", "SSP", "MSP", "ISP", "VBR", "SR"};
+const char* wdbg_registernames[] = { "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "PC", "USP", "SSP", "MSP", "ISP", "VBR", "SR" };
 
 void wdebInitRegisterColumns()
 {
@@ -1530,12 +1530,12 @@ void wdebInitRegisterColumns()
   memset(&lv_col, 0, sizeof(lv_col));
   lv_col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 
-  lv_col.pszText = "Register";
+  lv_col.pszText = (LPSTR)"Register";
   lv_col.cx = 64;
   lv_col.iSubItem = 0;
   ListView_InsertColumn(hList, 0, &lv_col);
 
-  lv_col.pszText = "Value";
+  lv_col.pszText = (LPSTR)"Value";
   lv_col.cx = 64;
   lv_col.iSubItem = 1;
   ListView_InsertColumn(hList, 1, &lv_col);
@@ -1544,12 +1544,12 @@ void wdebInitRegisterColumns()
   lv_item.mask = LVIF_TEXT;
   for (uint32_t i = 0; i < 23; ++i)
   {
-    lv_item.pszText = wdbg_registernames[i];
+    lv_item.pszText = (LPSTR)wdbg_registernames[i];
     lv_item.iItem = i;
     lv_item.iSubItem = 0;
     ListView_InsertItem(hList, &lv_item);
 
-    lv_item.pszText = "";
+    lv_item.pszText = (LPSTR)"";
     lv_item.iItem = i;
     lv_item.iSubItem = 1;
     ListView_SetItem(hList, &lv_item);
@@ -1563,12 +1563,12 @@ void wdebInitInfoColumns()
   memset(&lv_col, 0, sizeof(lv_col));
   lv_col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 
-  lv_col.pszText = "Name";
+  lv_col.pszText = (LPSTR)"Name";
   lv_col.cx = 64;
   lv_col.iSubItem = 0;
   ListView_InsertColumn(hList, 0, &lv_col);
 
-  lv_col.pszText = "Value";
+  lv_col.pszText = (LPSTR)"Value";
   lv_col.cx = 64;
   lv_col.iSubItem = 1;
   ListView_InsertColumn(hList, 1, &lv_col);
@@ -1690,56 +1690,56 @@ INT_PTR CALLBACK wdebDebuggerDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG: wdeb_action = WDEB_INIT_DIALOG; return TRUE;
-    case WM_PAINT: wdebUpdateCpuDisplay(); break;
-    case WM_DESTROY: break;
-    case WM_COMMAND:
-      if (HIWORD(wParam) == BN_CLICKED)
+  case WM_INITDIALOG: wdeb_action = WDEB_INIT_DIALOG; return TRUE;
+  case WM_PAINT: wdebUpdateCpuDisplay(); break;
+  case WM_DESTROY: break;
+  case WM_COMMAND:
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+      switch (LOWORD(wParam))
       {
-        switch (LOWORD(wParam))
+      case IDC_BTN_STEP1:
+        if (!wdeb_is_working)
         {
-          case IDC_BTN_STEP1:
-            if (!wdeb_is_working)
-            {
-              wdeb_is_working = TRUE;
-              winDrvDebugStart(DBG_STEP, hwndDlg);
-              wdebUpdateCpuDisplay();
-              wdeb_is_working = FALSE;
-            }
-            break;
-          case IDC_BTN_STEP_OVER:
-            if (!wdeb_is_working)
-            {
-              wdeb_is_working = TRUE;
-              winDrvDebugStart(DBG_STEP_OVER, hwndDlg);
-              wdebUpdateCpuDisplay();
-              wdeb_is_working = FALSE;
-            }
-            break;
-          case IDC_BTN_RUN:
-            if (!wdeb_is_working)
-            {
-              wdeb_is_working = TRUE;
-              winDrvDebugStart(DBG_RUN, hwndDlg);
-              wdebUpdateCpuDisplay();
-              wdeb_is_working = FALSE;
-            }
-            break;
-          case IDC_BTN_MODRIP: modripRIP(); break;
-          case IDC_BTN_DUMPCHIP: modripChipDump(); break;
-          case IDC_BTN_BREAK:
-            if (wdeb_is_working)
-            {
-              fellowRequestEmulationStop();
-            }
-            break;
-          case IDOK:
-          case IDCANCEL: wdeb_action = WDEB_EXIT; break;
-          default: break;
+          wdeb_is_working = TRUE;
+          winDrvDebugStart(DBG_STEP, hwndDlg);
+          wdebUpdateCpuDisplay();
+          wdeb_is_working = FALSE;
         }
+        break;
+      case IDC_BTN_STEP_OVER:
+        if (!wdeb_is_working)
+        {
+          wdeb_is_working = TRUE;
+          winDrvDebugStart(DBG_STEP_OVER, hwndDlg);
+          wdebUpdateCpuDisplay();
+          wdeb_is_working = FALSE;
+        }
+        break;
+      case IDC_BTN_RUN:
+        if (!wdeb_is_working)
+        {
+          wdeb_is_working = TRUE;
+          winDrvDebugStart(DBG_RUN, hwndDlg);
+          wdebUpdateCpuDisplay();
+          wdeb_is_working = FALSE;
+        }
+        break;
+      case IDC_BTN_MODRIP: modripRIP(); break;
+      case IDC_BTN_DUMPCHIP: modripChipDump(); break;
+      case IDC_BTN_BREAK:
+        if (wdeb_is_working)
+        {
+          fellowRequestEmulationStop();
+        }
+        break;
+      case IDOK:
+      case IDCANCEL: wdeb_action = WDEB_EXIT; break;
+      default: break;
       }
-      break;
-    default: break;
+    }
+    break;
+  default: break;
   }
   return FALSE;
 }
@@ -1766,14 +1766,14 @@ void wdebDoMessages()
     }
     switch (wdeb_action)
     {
-      case WDEB_INIT_DIALOG:
-        wdebInitInstructionColumns();
-        wdebInitRegisterColumns();
-        wdebInitInfoColumns();
-        wdebUpdateCpuDisplay();
-        break;
-      case WDEB_EXIT: end_loop = TRUE; break;
-      default: break;
+    case WDEB_INIT_DIALOG:
+      wdebInitInstructionColumns();
+      wdebInitRegisterColumns();
+      wdebInitInfoColumns();
+      wdebUpdateCpuDisplay();
+      break;
+    case WDEB_EXIT: end_loop = TRUE; break;
+    default: break;
     }
     wdeb_action = WDEB_NO_ACTION;
   }

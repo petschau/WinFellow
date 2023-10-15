@@ -94,19 +94,19 @@ extern void m68k_do_rts();
 #define expamem_init_clear memoryEmemClear
 #define allocated_chipmem memory_chipsize
 extern uae_u8 filesysory[65536];
-extern void expamem_init_filesys ();
-extern void expamem_map_filesys (uint32_t mapping);
+extern void expamem_init_filesys();
+extern void expamem_map_filesys(uint32_t mapping);
 
 /*===========================================*/
 /* These access memory with a direct pointer */
 /*===========================================*/
 
-extern uint32_t do_get_mem_byte(uae_u8 *address);
-extern uint32_t do_get_mem_word(uae_u16 *address);
-extern uint32_t do_get_mem_long(uae_u32 *address);
-extern void do_put_mem_long(uae_u32 *address, uae_u32 data);
-extern void do_put_mem_word(uae_u16 *address, uae_u16 data);
-extern void do_put_mem_byte(uae_u8 *address, uae_u8 data);
+extern uint32_t do_get_mem_byte(uae_u8* address);
+extern uint32_t do_get_mem_word(uae_u16* address);
+extern uint32_t do_get_mem_long(uae_u32* address);
+extern void do_put_mem_long(uae_u32* address, uae_u32 data);
+extern void do_put_mem_word(uae_u16* address, uae_u16 data);
+extern void do_put_mem_byte(uae_u8* address, uae_u8 data);
 extern int valid_address(uaecptr adr, uae_u32 size);
 #define get_real_address(ADR) (memoryAddressToPtr(ADR))
 
@@ -152,8 +152,8 @@ extern char warning_buffer[256];
 
 /*#define DONT_HAVE_POSIX*/ /* I want Mathias' posixemu_ functions! */
 
-extern void write_log( const char *, ... );
-extern void gui_message( const char *, ...);
+extern void write_log(const char*, ...);
+extern void gui_message(const char*, ...);
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -178,14 +178,14 @@ extern void gui_message( const char *, ...);
 /*#define utimbuf _utimbuf*/
 #define fdopen _fdopen
 #define DIR struct DIR
-extern DIR* opendir(char *);
+extern DIR* opendir(char*);
 #define dirent direct
 struct direct
 {
-    char d_name[1];
+  char d_name[1];
 };
-struct dirent *readdir (DIR * dir);
-extern void closedir(DIR *);
+struct dirent* readdir(DIR* dir);
+extern void closedir(DIR*);
 #define W_OK 0x2
 #define R_OK 0x4
 
@@ -214,60 +214,60 @@ extern void closedir(DIR *);
 
 #ifdef DONT_HAVE_POSIX
 #define access posixemu_access
-extern int posixemu_access (const char *, int);
+extern int posixemu_access(const char*, int);
 #define open posixemu_open
 #define creat(a,b) posixemu_open(a,O_RDWR|O_CREAT,0)
-extern int posixemu_open (const char *, int, int);
+extern int posixemu_open(const char*, int, int);
 #define close posixemu_close
-extern void posixemu_close (int);
+extern void posixemu_close(int);
 #define read posixemu_read
-extern int posixemu_read (int, char *, int);
+extern int posixemu_read(int, char*, int);
 #define write posixemu_write
-extern int posixemu_write (int, const char *, int);
+extern int posixemu_write(int, const char*, int);
 #undef lseek
 #define lseek posixemu_seek
-extern int posixemu_seek (int, int, int);
+extern int posixemu_seek(int, int, int);
 #define stat(a,b) posixemu_stat ((a), (b))
-extern int posixemu_stat (const char *, struct stat *);
+extern int posixemu_stat(const char*, struct stat*);
 #define mkdir posixemu_mkdir
-extern int posixemu_mkdir (const char *, int);
+extern int posixemu_mkdir(const char*, int);
 #define rmdir posixemu_rmdir
-extern int posixemu_rmdir (const char *);
+extern int posixemu_rmdir(const char*);
 #define unlink posixemu_unlink
-extern int posixemu_unlink (const char *);
+extern int posixemu_unlink(const char*);
 #define truncate posixemu_truncate
-extern int posixemu_truncate (const char *, long int);
+extern int posixemu_truncate(const char*, long int);
 #define rename posixemu_rename
-extern int posixemu_rename (const char *, const char *);
+extern int posixemu_rename(const char*, const char*);
 #define chmod posixemu_chmod
-extern int posixemu_chmod (const char *, int);
+extern int posixemu_chmod(const char*, int);
 #define tmpnam posixemu_tmpnam
-extern void posixemu_tmpnam (char *);
+extern void posixemu_tmpnam(char*);
 #define utime posixemu_utime
 struct utimbuf;
-extern int posixemu_utime (const char *, struct utimbuf *);
+extern int posixemu_utime(const char*, struct utimbuf*);
 #define opendir posixemu_opendir
-extern DIR * posixemu_opendir (const char *);
+extern DIR* posixemu_opendir(const char*);
 #define readdir posixemu_readdir
-extern struct dirent* readdir (DIR *);
+extern struct dirent* readdir(DIR*);
 #define closedir posixemu_closedir
-extern void closedir (DIR *);
+extern void closedir(DIR*);
 
 #if defined( SUPPORT_PENGUINS ) || defined( UAE_FILESYS_THREADS )
 /* We need posixemu prototypes for the semaphore stuff */
 typedef HANDLE  uae_sem_t;
 typedef DWORD   penguin_id;
-void sem_init( uae_sem_t*, int, int );
-void sem_wait( uae_sem_t* );
-void sem_post( uae_sem_t* );
-int sem_trywait( uae_sem_t* );
-int start_penguin( void *(*f)(void *), void *, penguin_id* );
+void sem_init(uae_sem_t*, int, int);
+void sem_wait(uae_sem_t*);
+void sem_post(uae_sem_t*);
+int sem_trywait(uae_sem_t*);
+int start_penguin(void* (*f)(void*), void*, penguin_id*);
 #endif
 
 /* This isn't the best place for this, but it fits reasonably well. The logic
  * is that you probably don't have POSIX errnos if you don't have the above
  * functions. */
-extern long dos_errno ();
+extern long dos_errno();
 
 #include "posixemu.h"
 
@@ -276,8 +276,8 @@ extern long dos_errno ();
 /* fix some compiler warnings */
 
 /* filesys.c exports */
-extern char *add_filesys_unit(struct uaedev_mount_info *,
-			char *, char *, int, int, int, int,	int);
+extern const char* add_filesys_unit(struct uaedev_mount_info*,
+  char*, char*, int, int, int, int, int);
 void filesys_install();
 void filesys_prepare_reset();
 void filesys_reset();
@@ -291,7 +291,7 @@ extern void rtarea_setup();
 void hardfile_install();
 
 /* fsysamnt.c exports (moved from filesys.c) */
-extern BOOLE CheckRM(char *);
-static int get_volume_name(struct uaedev_mount_info *, char *, char *, int, int, int, int);
-extern int valid_volumename(struct uaedev_mount_info *, char *, int);
+extern BOOLE CheckRM(char*);
+static int get_volume_name(struct uaedev_mount_info*, char*, char*, int, int, int, int);
+extern int valid_volumename(struct uaedev_mount_info*, char*, int);
 extern void filesys_init(int);

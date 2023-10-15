@@ -26,20 +26,20 @@
 #include "VirtualHost/Core.h"
 
 /** @file
- *  Chipset side of interrupt control 
+ *  Chipset side of interrupt control
  *
  *
  * The process of servicing interrupts is asynchronous in several steps
  *
  * Case 1: Chipset requests an interrupt, or program sets intreq or intena.
- * 1. interruptRaisePending() is called to evaluate the current requested and enabled 
+ * 1. interruptRaisePending() is called to evaluate the current requested and enabled
  *    interrupts.
  * 2. If one is found, to emulate the chipset latency before actually sending the desired interrupt level
  *    to the CPU, the interrupt event is used (bus.c), scheduled to fire some cycles from now.
  * 3. The interrupt event fires, calls interruptHandleEvent() which will set the new
  *    interrupt level in the cpu using cpuSetIrqLevel(). The rest in the hands of the
  *    cpu module.
- * 4. cpuSetIrqLevel() will set an internal flag, record the new interrupt level, 
+ * 4. cpuSetIrqLevel() will set an internal flag, record the new interrupt level,
  *    and unstop the CPU if needed. CPU state is not changed here.
  * 5. The next time cpuExecuteIntruction runs, it will switch to the new interrupt level
  *    and make the necessary state changes.
@@ -53,29 +53,29 @@ uint16_t intena;
 uint16_t intreq;
 uint32_t interrupt_pending_cpu_level;
 uint32_t interrupt_pending_chip_interrupt_number;
-static unsigned int interrupt_cpu_level[16] = {1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7};
+static unsigned int interrupt_cpu_level[16] = { 1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7 };
 
 
-char *interruptGetInterruptName(uint32_t interrupt_number)
+const char* interruptGetInterruptName(uint32_t interrupt_number)
 {
   switch (interrupt_number)
   {
-    case 0: return "TBE: Output buffer of the serial port is empty.";
-    case 1: return "DSKBLK: Disk DMA transfer ended.";
-    case 2: return "SOFT: Software interrupt.";
-    case 3: return "PORTS: From CIA-A or expansion port.";
-    case 4: return "COPER: Copper interrupt.";
-    case 5: return "VERTB: Start of vertical blank.";
-    case 6: return "BLIT: Blitter done.";
-    case 7: return "AUD0: Audio data on channel 0.";
-    case 8: return "AUD1: Audio data on channel 1.";
-    case 9: return "AUD2: Audio data on channel 2.";
-    case 10: return "AUD3: Audio data on channel 3.";
-    case 11: return "RBF: Input buffer of the serial port full.";
-    case 12: return "DSKSYN: Disk sync value recognized.";
-    case 13: return "EXTER: From CIA-B or expansion port.";
-    case 14: return "INTEN: BUG! Not an interrupt.";
-    case 15: return "NMI: BUG! Not an interrupt.";
+  case 0: return "TBE: Output buffer of the serial port is empty.";
+  case 1: return "DSKBLK: Disk DMA transfer ended.";
+  case 2: return "SOFT: Software interrupt.";
+  case 3: return "PORTS: From CIA-A or expansion port.";
+  case 4: return "COPER: Copper interrupt.";
+  case 5: return "VERTB: Start of vertical blank.";
+  case 6: return "BLIT: Blitter done.";
+  case 7: return "AUD0: Audio data on channel 0.";
+  case 8: return "AUD1: Audio data on channel 1.";
+  case 9: return "AUD2: Audio data on channel 2.";
+  case 10: return "AUD3: Audio data on channel 3.";
+  case 11: return "RBF: Input buffer of the serial port full.";
+  case 12: return "DSKSYN: Disk sync value recognized.";
+  case 13: return "EXTER: From CIA-B or expansion port.";
+  case 14: return "INTEN: BUG! Not an interrupt.";
+  case 15: return "NMI: BUG! Not an interrupt.";
   }
   return "Illegal interrupt source!";
 }
@@ -216,12 +216,12 @@ void interruptRaisePendingInternal(bool delayIRQ)
 
         // This will make the CPU switch to IRQ at the beginning of the next instruction. Also ending possible stop state.        
         cpuIntegrationSetIrqLevel(interrupt_level, interrupt_number);
-	return;
+        return;
       }
       else
       {
-	// When we get here, we are below the current cpu level, skip the rest
-	return;
+        // When we get here, we are below the current cpu level, skip the rest
+        return;
       }
     }
   }

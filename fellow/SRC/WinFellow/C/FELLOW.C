@@ -444,7 +444,7 @@ BOOLE fellowLoadState(char* filename)
 /* Inititalize all modules in the emulator, called on startup                 */
 /*============================================================================*/
 
-static void fellowModulesStartup(int argc, char* argv[])
+static void fellowModulesStartup(int argc, const char** argv)
 {
   CoreFactory::CreateServices();
 
@@ -527,7 +527,7 @@ static void fellowModulesShutdown()
 /* main....                                                                   */
 /*============================================================================*/
 
-int __cdecl main(int argc, char* argv[])
+int __cdecl main(int argc, const char* argv[])
 {
   fellowSetPreStartReset(true);
   fellowModulesStartup(argc, argv);

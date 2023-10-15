@@ -91,7 +91,7 @@ namespace Service
     CloseLogFile(F);
   }
 
-  void Log::AddLog2(char* msg)
+  void Log::AddLog2(const char* msg)
   {
     if (!_enabled)
     {
@@ -118,7 +118,7 @@ namespace Service
     AddLog2(buffer);
   }
 
-  void Log::AddLogInternal(FILE* F, char* msg)
+  void Log::AddLogInternal(FILE* F, const char* msg)
   {
     fprintf(F, "%s", msg);
     _new_line = (msg[strlen(msg) - 1] == '\n');

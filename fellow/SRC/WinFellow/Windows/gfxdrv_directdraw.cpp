@@ -1760,7 +1760,7 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   if (!memDC) goto cleanup;
 
   oldbit = SelectObject(memDC, bitmap);
-  if (oldbit <= nullptr) goto cleanup;
+  if (oldbit == nullptr || oldbit == HGDI_ERROR) goto cleanup;
 
   bSuccess = StretchBlt(memDC, 0, 0, width, height, hDC, x, y, width / lDisplayScale, height / lDisplayScale, SRCCOPY) ? true : false;
   if (!bSuccess) goto cleanup;
@@ -1775,7 +1775,7 @@ bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width,
   bSuccess = TRUE;
 
 cleanup:
-  if (oldbit > nullptr) SelectObject(memDC, oldbit);
+  if (oldbit != nullptr && oldbit != HGDI_ERROR) SelectObject(memDC, oldbit);
   if (memDC) DeleteDC(memDC);
   if (file) fclose(file);
   if (bitmap) DeleteObject(bitmap);

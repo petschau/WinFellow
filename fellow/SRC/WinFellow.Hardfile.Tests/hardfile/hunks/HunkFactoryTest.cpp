@@ -1,3 +1,4 @@
+#include "catch/catch_amalgamated.hpp"
 #include <memory>
 #include "hardfile/hunks/HunkFactory.h"
 #include "hardfile/hunks/HunkID.h"
@@ -7,7 +8,6 @@
 #include "hardfile/hunks/Reloc32Hunk.h"
 #include "hardfile/hunks/EndHunk.h"
 #include "TestBootstrap.h"
-#include "catch/catch_amalgamated.hpp"
 
 using namespace std;
 using namespace fellow::hardfile::hunks;
