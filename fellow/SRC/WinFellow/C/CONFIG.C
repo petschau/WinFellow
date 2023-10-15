@@ -57,6 +57,7 @@
 #include "../automation/Automator.h"
 #include "VirtualHost/Core.h"
 
+using namespace std;
 using namespace fellow::api::module;
 using namespace CustomChipset;
 
@@ -2255,7 +2256,7 @@ static BOOLE cfgParseCommandLine(cfg* config, int argc, const char* argv[])
       {
         _core.Log->AddLog("cfg: ERROR using -f option, please supply a filename\n");
       }
-  }
+    }
     else if (stricmp(argv[i], "-autosnap") == 0)
     {
       i++;
@@ -2298,7 +2299,7 @@ static BOOLE cfgParseCommandLine(cfg* config, int argc, const char* argv[])
       _core.Log->AddLog("cfg: parameter %s not recognized.\n", argv[i]);
       i++;
     }
-}
+  }
   return TRUE;
 }
 

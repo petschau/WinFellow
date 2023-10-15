@@ -14,9 +14,9 @@ private:
   void TakeSnapshot();
 
 public:
-  string ScriptFilename;
+  std::string ScriptFilename;
   bool RecordScript;
-  string SnapshotDirectory;
+  std::string SnapshotDirectory;
   int SnapshotFrequency;
   bool SnapshotEnable;
 

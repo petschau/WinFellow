@@ -27,8 +27,6 @@
 #include "DEFS.H"
 #include "VirtualHost/Core.h"
 
-using namespace CustomChipset;
-
 typedef union ByteLongArrayUnion_
 {
   uint8_t barray[1024];

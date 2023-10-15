@@ -8,8 +8,6 @@
 
 #include <string>
 
-using namespace fellow::api::module;
-
 /*============================================================================*/
 /* struct that holds a complete hardfile configuration                        */
 /*============================================================================*/
@@ -21,7 +19,7 @@ typedef struct {
   uint32_t   sectorspertrack;
   uint32_t   surfaces;
   uint32_t   reservedblocks;
-  rdb_status rdbstatus;
+  fellow::api::module::rdb_status rdbstatus;
 } cfg_hardfile;
 
 /*============================================================================*/
