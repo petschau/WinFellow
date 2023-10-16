@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.10 (2023/10/03)
+v0.5.11 (2023/10/16)
 \end_layout
 
 \begin_layout Author
@@ -322,12 +322,12 @@ Release Notes
 \end_layout
 
 \begin_layout Section*
-What's New in WinFellow 0.5.10?
+What's New in WinFellow 0.5.11?
 \end_layout
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to the earlier version 0.5.9, the following changes are included
+ Compared to the earlier version 0.5.10, the following changes are included
  in this build:
 \end_layout
 
@@ -337,8 +337,7 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-a native ARM64 build of WinFellow is now provided as part of the release
- zip archive
+tbd
 \end_layout
 
 \end_deeper
@@ -348,117 +347,7 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-Thanks to the availability of Toni Wilen's cputester, the following mostly
- CPU related issues from the basic tests could be addressed:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Removed address register as byte source operand in move.
-\end_layout
-
-\begin_layout Itemize
-Various bit-field instruction fixes.
-\end_layout
-
-\begin_layout Itemize
-Incorrect pack/unpk behaviour.
-\end_layout
-
-\begin_layout Itemize
-Trapcc increase pc after condition check to get correct exception stack
- frame.
-\end_layout
-
-\begin_layout Itemize
-Cas2 select the first compare result value when both compare registers are
- the same register.
- Set v flag.
-\end_layout
-
-\begin_layout Itemize
-Link/Unlk incorrect result on stack when link register was a7.
-\end_layout
-
-\begin_layout Itemize
-Split long reads in two word reads for correct values across banks that
- are not stored consecutively.
-\end_layout
-
-\begin_layout Itemize
-VPOS wraparound fix.
-\end_layout
-
-\begin_layout Itemize
-Exception cycle time changes.
-\end_layout
-
-\begin_layout Itemize
-Fixed various instructions that overwrote exception cycle times with regular
- instruction time.
- (when triggering privilege violations etc.)
-\end_layout
-
-\begin_layout Itemize
-Set div cycle times to values closer to the listed cycle times.
- Still not dynamically calculated, but should be closer.
-\end_layout
-
-\begin_layout Itemize
-Don't trace when instruction was aborted by illegal, privilege or address
- error.
-\end_layout
-
-\begin_layout Itemize
-CHK.w N flag fix.
-\end_layout
-
-\begin_layout Itemize
-EOR ea vs.
- data register check for cycle calculation was inverted.
-\end_layout
-
-\begin_layout Itemize
-Changes to cycle calculation for BSET/BCGH.
-\end_layout
-
-\begin_layout Itemize
-Set undefined div flags according to behaviour on 68000.
-\end_layout
-
-\begin_layout Itemize
-Move to SR, check supervisor level before evaluating ea.
-\end_layout
-
-\begin_layout Itemize
-Include exception time in cycle time for chk.
-\end_layout
-
-\begin_layout Itemize
-Handle bkpt differenly from illegal.
-\end_layout
-
-\begin_layout Itemize
-Broken overflow and other special cases for mull.
-\end_layout
-
-\begin_layout Itemize
-Handle supervisor check differently for move from sr to avoid returning
- result when throwing exception.
-\end_layout
-
-\begin_layout Itemize
-Missing address mask in rtarea memory handling (for when upper address byte
- contains data).
-\end_layout
-
-\begin_layout Itemize
-Trapcc had wrong pc in the stack frame.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-fixed mouse capture for older RetroPlatform hosts
+tbd
 \end_layout
 
 \end_deeper
@@ -473,11 +362,15 @@ code refactoring:
 
 \begin_deeper
 \begin_layout Itemize
-solution file reorganisation
+added sound driver interface and classes
 \end_layout
 
 \begin_layout Itemize
-static analysis/replace custom datatypes with standard sized C++ types
+redesign filesystem wrapper and logging
+\end_layout
+
+\begin_layout Itemize
+upgrade to cpp20
 \end_layout
 
 \end_deeper
