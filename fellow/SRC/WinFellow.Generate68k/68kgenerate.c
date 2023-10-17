@@ -254,17 +254,17 @@ void cgMakeFunctionFooter(char* fname, char* templ_name)
 
 void cgMakeInstructionTime(unsigned int time_cpu_data_index)
 {
-  fprintf(codef, "\tcpuSetInstructionTime(opc_data[%d]);\n", time_cpu_data_index);
+  fprintf(codef, "\tcpuSetInstructionTime(opc_data[%u]);\n", time_cpu_data_index);
 }
 
 void cgMakeInstructionTimeAbs(unsigned int cycles)
 {
-  fprintf(codef, "\tcpuSetInstructionTime(%d);\n", cycles);
+  fprintf(codef, "\tcpuSetInstructionTime(%u);\n", cycles);
 }
 
 void cgMakeInstructionTimeAbsExtraAdd(unsigned int cycles, char* extra_add)
 {
-  fprintf(codef, "\tcpuSetInstructionTime(%d%s);\n", cycles, extra_add);
+  fprintf(codef, "\tcpuSetInstructionTime(%u%s);\n", cycles, extra_add);
 }
 
 void cgCopyFunctionName(char* fname, char* name, char* templ_name)
@@ -376,13 +376,13 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   else if (regtype == 'B')
   {
     // The source value is a Quick constant, to be used on an address register. (Always 32-bit)
-    fprintf(codef, "\tuint32_t src = opc_data[%d];\n", reg_cpu_data_index);
+    fprintf(codef, "\tuint32_t src = opc_data[%u];\n", reg_cpu_data_index);
     return;
   }
   else if (regtype == 'Q')
   {
     // The source value is a Quick constant, to be used according to the specified size.
-    fprintf(codef, "\t%s src = %sopc_data[%d];\n", cgSize(size), (size != 4) ? cgCastSize(size) : "", reg_cpu_data_index);
+    fprintf(codef, "\t%s src = %sopc_data[%u];\n", cgSize(size), (size != 4) ? cgCastSize(size) : "", reg_cpu_data_index);
     return;
   }
   else
@@ -404,21 +404,21 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   }
   else if (eano == 1)
   {
-    fprintf(codef, "cpuGetAReg%s(opc_data[%d]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
+    fprintf(codef, "cpuGetAReg%s(opc_data[%u]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
   }
   else if (eano == 0)
   {
-    fprintf(codef, "cpuGetDReg%s(opc_data[%d]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
+    fprintf(codef, "cpuGetDReg%s(opc_data[%u]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
   }
   else if (eano >= 3 && eano <= 4)
   {
     // Read source value from memory, pre or post increment mode.
-    fprintf(codef, "%s(%s(opc_data[%d],%d));\n", cgMemoryFetch(size), cgCalculateEA(eano), eareg_cpu_data_index, size);
+    fprintf(codef, "%s(%s(opc_data[%u],%u));\n", cgMemoryFetch(size), cgCalculateEA(eano), eareg_cpu_data_index, size);
   }
   else if (eano == 2 || eano == 5 || eano == 6)
   {
     // Read source value from memory.
-    fprintf(codef, "%s(%s(opc_data[%d]));\n", cgMemoryFetch(size), cgCalculateEA(eano), eareg_cpu_data_index);
+    fprintf(codef, "%s(%s(opc_data[%u]));\n", cgMemoryFetch(size), cgCalculateEA(eano), eareg_cpu_data_index);
   }
   else if (eano >= 7 && eano < 11)
   {
@@ -439,12 +439,12 @@ void cgFetchDstEa(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned
   if (eano >= 3 && eano <= 4)
   {
     // Save destination ea, pre or post increment mode.
-    fprintf(codef, "\tuint32_t dstea = %s(opc_data[%d], %d);\n", cgCalculateEA(eano), eareg_cpu_data_index, size);
+    fprintf(codef, "\tuint32_t dstea = %s(opc_data[%u], %u);\n", cgCalculateEA(eano), eareg_cpu_data_index, size);
   }
   else if (eano == 2 || eano == 5 || eano == 6)
   {
     // Save destination ea.
-    fprintf(codef, "\tuint32_t dstea = %s(opc_data[%d]);\n", cgCalculateEA(eano), eareg_cpu_data_index);
+    fprintf(codef, "\tuint32_t dstea = %s(opc_data[%u]);\n", cgCalculateEA(eano), eareg_cpu_data_index);
   }
   else if (eano >= 7 && eano < 11)
   {
@@ -467,11 +467,11 @@ void cgFetchDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   }
   else if (eano == 1)
   {
-    fprintf(codef, "cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
+    fprintf(codef, "cpuGetAReg(opc_data[%u]);\n", eareg_cpu_data_index);
   }
   else if (eano == 0)
   {
-    fprintf(codef, "cpuGetDReg%s(opc_data[%d]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
+    fprintf(codef, "cpuGetDReg%s(opc_data[%u]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
   }
   else if (eano >= 2 && eano < 11)
   {
@@ -488,19 +488,19 @@ void cgStoreDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
 {
   if (eano == 0 && size == 1)
   {
-    fprintf(codef, "\tcpuSetDRegByte(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
+    fprintf(codef, "\tcpuSetDRegByte(opc_data[%u], %s);\n", eareg_cpu_data_index, dstname);
   }
   else if (eano == 0 && size == 2)
   {
-    fprintf(codef, "\tcpuSetDRegWord(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
+    fprintf(codef, "\tcpuSetDRegWord(opc_data[%u], %s);\n", eareg_cpu_data_index, dstname);
   }
   else if (eano == 0 && size == 4)
   {
-    fprintf(codef, "\tcpuSetDReg(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
+    fprintf(codef, "\tcpuSetDReg(opc_data[%u], %s);\n", eareg_cpu_data_index, dstname);
   }
   else if (eano == 1)
   {
-    fprintf(codef, "\tcpuSetAReg(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
+    fprintf(codef, "\tcpuSetAReg(opc_data[%u], %s);\n", eareg_cpu_data_index, dstname);
   }
   else if (eano >= 2 && eano < 9)
   {
@@ -800,7 +800,7 @@ unsigned int cgAdd(cpu_data* cpudata, cpu_instruction_info i)
           }
           else
           {
-            if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\uint16_t ext = cpuGetNextWord();\n");
+            if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tuint16_t ext = cpuGetNextWord();\n");
             cgFetchSrc(eano, eareg_cpu_data_index, size, regtype, reg_cpu_data_index);
             if (stricmp(i.instruction_name, "DIVL") != 0) cgFetchDst((regtype == 'A') ? 1 : 0, reg_cpu_data_index, (regtype == 'V') ? 4 : size);
           }
@@ -813,7 +813,7 @@ unsigned int cgAdd(cpu_data* cpudata, cpu_instruction_info i)
 
         if (stricmp(i.instruction_name, "LEA") == 0)
         {
-          fprintf(codef, "\tcpuSetAReg(opc_data[%d], dstea);\n", reg_cpu_data_index);
+          fprintf(codef, "\tcpuSetAReg(opc_data[%u], dstea);\n", reg_cpu_data_index);
         }
         else if (stricmp(i.instruction_name, "CHK") == 0)
         {
@@ -836,7 +836,7 @@ unsigned int cgAdd(cpu_data* cpudata, cpu_instruction_info i)
           else if ((stricmp(i.instruction_name, "MULU") == 0) ||
             (stricmp(i.instruction_name, "MULS") == 0))
           {
-            fprintf(codef, "\tuint32_t res = %s(dst, src, %d);\n", i.function, cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
+            fprintf(codef, "\tuint32_t res = %s(dst, src, %u);\n", i.function, cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
             cgStoreDst(0, reg_cpu_data_index, 4, "res");
           }
           else
@@ -1066,7 +1066,7 @@ unsigned int cgMove(cpu_data* cpudata, cpu_instruction_info i)
           }
           else
           {
-            if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (uint32_t)(int32_t)(int16_t)src);\n", dstreg_cpu_data_index);
+            if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%u], (uint32_t)(int32_t)(int16_t)src);\n", dstreg_cpu_data_index);
             else fprintf(codef, "\tcpuSetAReg(opc_data[%d], src);\n", dstreg_cpu_data_index);
           }
           cgMakeInstructionTimeAbs(cgGetMoveTime(size, srceano, dsteano));
@@ -1138,7 +1138,7 @@ unsigned int cgClr(cpu_data* cpudata, cpu_instruction_info i)
 
       if (stricmp(i.instruction_name, "MOVEM") == 0)
       {
-        fprintf(codef, "\uint16_t regs = cpuGetNextWord();\n");
+        fprintf(codef, "\tuint16_t regs = cpuGetNextWord();\n");
       }
       else if ((stricmp(i.instruction_name, "MULL") == 0)
         || (stricmp(i.instruction_name, "MOVES") == 0)
@@ -1149,7 +1149,7 @@ unsigned int cgClr(cpu_data* cpudata, cpu_instruction_info i)
         || (strnicmp(i.instruction_name, "BF", 2) == 0))
       {
         // Read extension word _before_ ea calculation.
-        fprintf(codef, "\uint16_t ext = cpuGetNextWord();\n");
+        fprintf(codef, "\tuint16_t ext = cpuGetNextWord();\n");
       }
 
       // Generate fetch
@@ -1197,7 +1197,7 @@ unsigned int cgClr(cpu_data* cpudata, cpu_instruction_info i)
         if (stricmp(i.instruction_name, "TST") == 0 && size == 2 && eano == 1)
         {
           // Special case, TST.W Ax
-          fprintf(codef, "\uint16_t dst = (uint16_t)cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
+          fprintf(codef, "\tuint16_t dst = (uint16_t)cpuGetAReg(opc_data[%u]);\n", eareg_cpu_data_index);
         }
         else
         {
@@ -1209,9 +1209,9 @@ unsigned int cgClr(cpu_data* cpudata, cpu_instruction_info i)
       if (stricmp(i.instruction_name, "MOVEM") == 0)
       {
         if (regtype == 'S')
-          fprintf(codef, "\t%s(regs, dstea, opc_data[%d]);\n", i.function, eatime_cpu_data_index);
+          fprintf(codef, "\t%s(regs, dstea, opc_data[%u]);\n", i.function, eatime_cpu_data_index);
         else
-          fprintf(codef, "\t%s(regs, opc_data[%d]);\n", i.function, eareg_cpu_data_index);
+          fprintf(codef, "\t%s(regs, opc_data[%u]);\n", i.function, eareg_cpu_data_index);
       }
       else if ((stricmp(i.instruction_name, "MULL") == 0)
         || (stricmp(i.instruction_name, "MOVES") == 0)
@@ -1231,11 +1231,11 @@ unsigned int cgClr(cpu_data* cpudata, cpu_instruction_info i)
         }
         else if ((strnicmp(i.instruction_name, "BF", 2) == 0) && regtype == 'R')
         {
-          fprintf(codef, "\t%s(opc_data[%d], ext);\n", i.function, eareg_cpu_data_index);
+          fprintf(codef, "\t%s(opc_data[%u], ext);\n", i.function, eareg_cpu_data_index);
         }
         else
         {
-          fprintf(codef, "\t%s(opc_data[%d], ext);\n", i.function, cc_cpu_data_index);
+          fprintf(codef, "\t%s(opc_data[%u], ext);\n", i.function, cc_cpu_data_index);
         }
       }
       else if (regtype == 'G')
@@ -1258,7 +1258,7 @@ unsigned int cgClr(cpu_data* cpudata, cpu_instruction_info i)
       }
       else if (regtype == 'C')
       {
-        fprintf(codef, "\t%s dst = %s(opc_data[%d]);\n", cgSize(size), i.function, cc_cpu_data_index);
+        fprintf(codef, "\t%s dst = %s(opc_data[%u]);\n", cgSize(size), i.function, cc_cpu_data_index);
         // Generate store
         cgStoreDst(eano, eareg_cpu_data_index, size, "dst");
       }
@@ -1388,8 +1388,8 @@ unsigned int cgMoveQ(cpu_data* cpudata, cpu_instruction_info i)
   cgDeclareFunction(fname);
   cgMakeFunctionHeader(fname, templ_name);
 
-  fprintf(codef, "\tcpuSetDReg(opc_data[%d], opc_data[%d]);\n", reg_cpu_data_index, imm_cpu_data_index);
-  fprintf(codef, "\tcpuSetFlagsAbs((uint16_t)opc_data[%d]);\n", flags_cpu_data_index);
+  fprintf(codef, "\tcpuSetDReg(opc_data[%d], opc_data[%u]);\n", reg_cpu_data_index, imm_cpu_data_index);
+  fprintf(codef, "\tcpuSetFlagsAbs((uint16_t)opc_data[%u]);\n", flags_cpu_data_index);
   cgMakeInstructionTimeAbs(4);
   cgMakeFunctionFooter(fname, templ_name);
 
@@ -1479,7 +1479,7 @@ unsigned int cgMovep(cpu_data* cpudata, cpu_instruction_info i)
   cgDeclareFunction(fname);
   cgMakeFunctionHeader(fname, templ_name);
 
-  fprintf(codef, "\t%s(opc_data[%d], opc_data[%d]);\n", i.function, regy_cpu_data_index, regx_cpu_data_index);
+  fprintf(codef, "\t%s(opc_data[%u], opc_data[%u]);\n", i.function, regy_cpu_data_index, regx_cpu_data_index);
   cgMakeFunctionFooter(fname, templ_name);
   icount++;
 
@@ -1539,30 +1539,30 @@ unsigned int cgBCC(cpu_data* cpudata, cpu_instruction_info i)
     || (stricmp(i.instruction_name, "TRAP") == 0)
     || (stricmp(i.instruction_name, "EXT") == 0))
   {
-    fprintf(codef, "\t%s(opc_data[%d]);\n", i.function, vector_cpu_data_index);
+    fprintf(codef, "\t%s(opc_data[%u]);\n", i.function, vector_cpu_data_index);
   }
   else if ((stricmp(i.instruction_name, "EXG") == 0)
     || (stricmp(i.instruction_name, "CMPM") == 0))
   {
-    fprintf(codef, "\t%s(opc_data[%d], opc_data[%d]);\n", i.function, reg1_cpu_data_index, reg2_cpu_data_index);
+    fprintf(codef, "\t%s(opc_data[%u], opc_data[%u]);\n", i.function, reg1_cpu_data_index, reg2_cpu_data_index);
   }
   else if ((stricmp(i.instruction_name, "RTM") == 0)
     || (stricmp(i.instruction_name, "PFLUSH040") == 0)
     || (stricmp(i.instruction_name, "PTEST040") == 0))
   {
-    fprintf(codef, "\t%s(opc_data[%d], opc_data[%d]);\n", i.function, reg1_cpu_data_index, reg2_cpu_data_index);
+    fprintf(codef, "\t%s(opc_data[%u], opc_data[%u]);\n", i.function, reg1_cpu_data_index, reg2_cpu_data_index);
   }
   else if (size == 1 && (stricmp(i.instruction_name, "BCCB") == 0))
   { // BCC.b
-    fprintf(codef, "\t%s(cpuCalculateConditionCode%s(), opc_data[%d]);\n", i.function, i.reg, offset_cpu_data_index);
+    fprintf(codef, "\t%s(cpuCalculateConditionCode%s(), opc_data[%u]);\n", i.function, i.reg, offset_cpu_data_index);
   }
   else if (size == 1 && i.reg[0] != 'C')
   { // BRA, BSR
-    fprintf(codef, "\t%s(opc_data[%d]);\n", i.function, offset_cpu_data_index);
+    fprintf(codef, "\t%s(opc_data[%u]);\n", i.function, offset_cpu_data_index);
   }
   else if (size == 2 && (stricmp(i.instruction_name, "DBCC") == 0))
   { // DBCC
-    fprintf(codef, "\t%s(cpuCalculateConditionCode%s(), opc_data[%d]);\n", i.function, i.reg, reg_cpu_data_index);
+    fprintf(codef, "\t%s(cpuCalculateConditionCode%s(), opc_data[%u]);\n", i.function, i.reg, reg_cpu_data_index);
   }
   else if ((size >= 2 && (strnicmp(i.instruction_name, "BCC", 3) == 0)) || (strnicmp(i.instruction_name, "TRAPCC", 6) == 0))
   { // BCC.wl (offset is in the extension word), TRAPCC
@@ -1571,7 +1571,7 @@ unsigned int cgBCC(cpu_data* cpudata, cpu_instruction_info i)
   }
   else if (stricmp(i.instruction_name, "MOVEUSP") == 0)
   {
-    fprintf(codef, "\t%s(opc_data[%d]);\n", i.function, reg1_cpu_data_index);
+    fprintf(codef, "\t%s(opc_data[%u]);\n", i.function, reg1_cpu_data_index);
   }
   else
   { // BRAWL, BSRWL
@@ -1748,15 +1748,15 @@ unsigned int cgShift(cpu_data* cpudata, cpu_instruction_info i)
       cgFetchDst(eano, eareg_cpu_data_index, size);
       if (regtype == 'I') /* Immediate shift */
       {
-        fprintf(codef, "\tdst = %s(dst, opc_data[%d], opc_data[%d]);\n", i.function, shift_cpu_data_index, time_cpu_data_index);
+        fprintf(codef, "\tdst = %s(dst, opc_data[%u], opc_data[%u]);\n", i.function, shift_cpu_data_index, time_cpu_data_index);
       }
       else if (regtype == 'D') /* Shift count in a register */
       {
-        fprintf(codef, "\tdst = %s(dst, cpuGetDReg(opc_data[%d]), opc_data[%d]);\n", i.function, shift_cpu_data_index, time_cpu_data_index);
+        fprintf(codef, "\tdst = %s(dst, cpuGetDReg(opc_data[%u]), opc_data[%u]);\n", i.function, shift_cpu_data_index, time_cpu_data_index);
       }
       else /* Shift one */
       {
-        fprintf(codef, "\tdst = %s(dst, 1, opc_data[%d]);\n", i.function, time_cpu_data_index);
+        fprintf(codef, "\tdst = %s(dst, 1, opc_data[%u]);\n", i.function, time_cpu_data_index);
       }
       cgStoreDst(eano, eareg_cpu_data_index, size, "dst");
       cgMakeFunctionFooter(fname, templ_name);
@@ -1815,7 +1815,7 @@ unsigned int cgInstructions()
   for (i = 0; i < cpuinfo_count; i++)
   {
     unsigned int count = cgInstruction(cpu_opcode_info[i]);
-    printf("Generated %d opcodes for %s.\n", count, cpu_opcode_info[i].instruction_name);
+    printf("Generated %u opcodes for %s.\n", count, cpu_opcode_info[i].instruction_name);
     icount += count;
   }
   return icount;
@@ -1840,7 +1840,7 @@ void cgData()
   fprintf(dataf, "cpuOpcodeData cpu_opcode_data[65536] = {\n");
   for (i = 0; i < 65536; ++i)
   {
-    fprintf(dataf, "{%s,{%uU,%uU,%uU}}%s\n", cpu_opcode_data[i].name, cpu_opcode_data[i].data[0], cpu_opcode_data[i].data[1], cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
+    fprintf(dataf, "{%s,{%uU,%uU,%uU}}%s\n", cpu_opcode_data[i].name, (unsigned int) cpu_opcode_data[i].data[0], (unsigned int)cpu_opcode_data[i].data[1], (unsigned int)cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
   }
   fprintf(dataf, "};\n");
   fprintf(dataf, "uint8_t cpu_opcode_model_mask[65536] = {\n");
@@ -1913,7 +1913,7 @@ int cgOpenFiles()
   return res;
 }
 
-int cgReadControlFile(char* filename)
+int cgReadControlFile(const char* filename)
 {
   FILE* F = fopen(filename, "r");
   unsigned int res = 0;
