@@ -301,7 +301,12 @@ void gfxDrvDDrawFailure(const char *header, HRESULT err)
 
 void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
 {
-  GetClientRect(gfxDrvCommon->GetHWND(), &ddraw_device->hwnd_clientrect_win);
+  // Coordinates are relative to the top-left corner, so they are always (0,0) - (width, height)
+  BOOL getClientRectResult = GetClientRect(gfxDrvCommon->GetHWND(), &ddraw_device->hwnd_clientrect_win);
+  if (getClientRectResult == FALSE)
+  {
+    _core.Log->AddLog("gfxDrvDDrawFindWindowClientRect(): GetClientRect() failed\n");
+  }
 
 #ifdef _DEBUG
   _core.Log->AddLog("gfxDrvDDrawFindWindowClientRect(): hwnd_clientrect_win left: %u;", ddraw_device->hwnd_clientrect_win.left);
@@ -311,7 +316,20 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
 #endif
 
   memcpy(&ddraw_device->hwnd_clientrect_screen, &ddraw_device->hwnd_clientrect_win, sizeof(RECT));
-  ClientToScreen(gfxDrvCommon->GetHWND(), (LPPOINT)&ddraw_device->hwnd_clientrect_screen);
+
+  // Translate upper-left corner coordinate to a screen coordinate
+  BOOL clientToScreenUpperLeftResult = ClientToScreen(gfxDrvCommon->GetHWND(), (LPPOINT)&ddraw_device->hwnd_clientrect_screen);
+  if (clientToScreenUpperLeftResult == FALSE)
+  {
+    _core.Log->AddLog("gfxDrvDDrawFindWindowClientRect(): ClientToScreen() for upper left corner of the window failed\n");
+  }
+
+  // Translate lower-right corner coordinate to a screen coordinate
+  BOOL clientToRectLowerRightResult = ClientToScreen(gfxDrvCommon->GetHWND(), (LPPOINT)&ddraw_device->hwnd_clientrect_screen + 1);
+  if (clientToRectLowerRightResult == FALSE)
+  {
+    _core.Log->AddLog("gfxDrvDDrawFindWindowClientRect(): ClientToScreen() for lower right corner of the window failed\n");
+  }
 
 #ifdef _DEBUG
   _core.Log->AddLog("gfxDrvDDrawFindWindowClientRect(): hwnd_clientrect_screen left: %u;", ddraw_device->hwnd_clientrect_screen.left);
@@ -319,8 +337,6 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
   _core.Log->AddLog("top: %u;", ddraw_device->hwnd_clientrect_screen.top);
   _core.Log->AddLog("bottom: %u\n", ddraw_device->hwnd_clientrect_screen.bottom);
 #endif
-
-  ClientToScreen(gfxDrvCommon->GetHWND(), (LPPOINT)&ddraw_device->hwnd_clientrect_screen + 1);
 }
 
 /*==========================================================================*/
