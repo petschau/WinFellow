@@ -274,7 +274,12 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
         case VK_RETURN: /* Full screen vs windowed */ break;
       }
       break;
-    case WM_MOVE: gfxDrvPositionChanged(); break;
+    case WM_MOVE:
+#ifdef _DEBUG
+      _core.Log->AddLog("WM_MOVE message with coordinates x: %u; y: %u\n", LOWORD(lParam), HIWORD(lParam));
+#endif
+      gfxDrvPositionChanged();
+      return 0;
     case WM_SIZE: gfxDrvSizeChanged(LOWORD(lParam), HIWORD(lParam)); break;
     case WM_ACTIVATE:
       /* WM_ACTIVATE tells us whether our window is active or not */

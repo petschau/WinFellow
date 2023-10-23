@@ -304,7 +304,7 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
   GetClientRect(gfxDrvCommon->GetHWND(), &ddraw_device->hwnd_clientrect_win);
 
 #ifdef _DEBUG
-  _core.Log->AddLog("hwnd_clientrect_win left: %u;", ddraw_device->hwnd_clientrect_win.left);
+  _core.Log->AddLog("gfxDrvDDrawFindWindowClientRect(): hwnd_clientrect_win left: %u;", ddraw_device->hwnd_clientrect_win.left);
   _core.Log->AddLog("right: %u;", ddraw_device->hwnd_clientrect_win.right);
   _core.Log->AddLog("top: %u;", ddraw_device->hwnd_clientrect_win.top);
   _core.Log->AddLog("bottom: %u\n", ddraw_device->hwnd_clientrect_win.bottom);
@@ -314,7 +314,7 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
   ClientToScreen(gfxDrvCommon->GetHWND(), (LPPOINT)&ddraw_device->hwnd_clientrect_screen);
 
 #ifdef _DEBUG
-  _core.Log->AddLog("hwnd_clientrect_screen left: %u;", ddraw_device->hwnd_clientrect_screen.left);
+  _core.Log->AddLog("gfxDrvDDrawFindWindowClientRect(): hwnd_clientrect_screen left: %u;", ddraw_device->hwnd_clientrect_screen.left);
   _core.Log->AddLog("right: %u;", ddraw_device->hwnd_clientrect_screen.right);
   _core.Log->AddLog("top: %u;", ddraw_device->hwnd_clientrect_screen.top);
   _core.Log->AddLog("bottom: %u\n", ddraw_device->hwnd_clientrect_screen.bottom);
