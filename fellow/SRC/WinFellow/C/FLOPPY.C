@@ -1285,14 +1285,14 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
   if (fileProperties->Type != FileType::File)
   {
     floppyError(drive, FLOPPY_ERROR_FILE);
-    free(fileProperties);
+    delete fileProperties;
     return;
   }
 
   floppyImagePrepare(diskname, drive);
   if (floppy[drive].zipped)
   {
-    free(fileProperties);
+    delete fileProperties;
 
     fileProperties = _core.FileInformation->GetFileProperties(floppy[drive].imagenamereal);
     if (fileProperties == nullptr)
@@ -1308,7 +1308,7 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
   if (floppy[drive].F == nullptr)
   {
     floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
-    free(fileProperties);
+    delete fileProperties;
     return;
   }
 
@@ -1343,7 +1343,7 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
   }
 #endif
 
-  free(fileProperties);
+  delete fileProperties;
 }
 
 /*============================================================================*/

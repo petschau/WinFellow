@@ -1,16 +1,17 @@
 #include "mock/Core/Service/FileInformationMock.h"
 
-using namespace Service;
+using namespace ::Service;
+using namespace std;
 
 namespace mock::Core::Service
 {
-  FileProperties *FileInformationMock::GetFileProperties(const char *filename)
+  FileProperties *FileInformationMock::GetFileProperties(const string &filename)
   {
-    return new FileProperties();
+    return new FileProperties{.Name = filename};
   }
 
-  int FileInformationMock::Stat(const char *szFilename, struct stat *pStatBuffer)
+  FilePropertiesW *FileInformationMock::GetFilePropertiesW(const wstring &filename)
   {
-    return 0;
+    return new FilePropertiesW{.Name = filename};
   }
 }

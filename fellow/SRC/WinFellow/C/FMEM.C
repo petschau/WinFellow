@@ -2857,7 +2857,7 @@ void memoryKickLoad()
         memory_kickimage_size = fileProperties->Size;
     }
 
-    free(fileProperties);
+    delete fileProperties;
   }
 
   /* Either the file is open, or memory_kickimage_none is TRUE */
@@ -3048,7 +3048,7 @@ void memoryKickExtendedLoad()
 
   size = fsnp->Size;
 
-  free(fsnp);
+  delete fsnp;
 
   if (F)
   {
