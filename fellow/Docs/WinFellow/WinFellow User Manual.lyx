@@ -352,7 +352,12 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-tbd
+fixed graphical artefacts when moving the emulator window in DirectDraw
+ graphics mode on Amiga Forever 10.2.2 or newer
+\end_layout
+
+\begin_layout Itemize
+improved logging in case of failure to initialize Direct3d graphics driver
 \end_layout
 
 \end_deeper
@@ -379,6 +384,10 @@ upgrade to cpp20
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+removed a Windows XP specific workaround from the filesystem module
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes, including
