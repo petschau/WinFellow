@@ -119,10 +119,10 @@
 RetroPlatform RP;
 bool rawkeyspressed[MAX_KEYS] = {false};
 
-/** event handler function for events that are sent to WinFellow from Amiga
- * Forever handles multiple incoming events like keyboard or joystick input
- * events that are queued within the event message returns TRUE if successful,
- * FALSE otherwise (for instance if an unrecogized event is encountered)
+/** event handler function for events that are sent to WinFellow from Amiga Forever
+ * handles multiple incoming events like keyboard or joystick input events that are queued within the event message
+ *
+ * returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
  */
 
 BOOL RetroPlatformHandleIncomingGuestEvent(char *strCurrentEvent)
@@ -157,9 +157,11 @@ BOOL RetroPlatformHandleIncomingGuestEvent(char *strCurrentEvent)
   if (rawkeyspressed[A_CTRL] && rawkeyspressed[A_LEFT_AMIGA] && rawkeyspressed[A_RIGHT_AMIGA])
   {
     _core.Log->AddLog("RetroPlatformHandleIncomingGuestEvent(): performing keyboard-initiated reset.");
+
     fellowSetPreStartReset(true);
     gfxDrvCommon->RunEventSet();
     fellowRequestEmulationStop();
+    mouseDrvToggleFocus();
     memset(rawkeyspressed, 0, sizeof(bool) * MAX_KEYS);
   }
 
