@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.11 (2023/10/16)
+v0.5.11 (2023/10/24)
 \end_layout
 
 \begin_layout Author
@@ -254,70 +254,6 @@ WinFellow was created by Petter Schau; it is based on the Fellow Amiga Emulator
 \end_layout
 
 \begin_layout Part
-Contributing to WinFellow
-\end_layout
-
-\begin_layout Standard
-WinFellow is developed by a team of volunteers in their spare time; you
- are very welcome to make contributions of your own.
- Contributions can be improvements to the code, new features, but can also
- include documentation updates or whatever else you feel could be an improvement.
- It is best if you find something you want to work on rather than mailing
- us and ask to be assigned a task.
- Since WinFellow is developed on an idealistic basis, the basic idea is
- that everyone should do something they like.
-\end_layout
-
-\begin_layout Standard
-When you start doing something it is wise to mail some of us in advance
- to make sure no one is doing double work.
- Since WinFellow is developed as open source software hosted on GitHub,
- it is easy to contribute.
- You can fork the source code of WinFellow, create a branch for your topic
- and start commiting changes to it; your changes can be submitted to our
- project in form of a pull request.
- Raising a pull request early on allows us to discuss your request early,
- so that we can see if/how your request may fit into WinFellow before you
- put any effort into it.
-\end_layout
-
-\begin_layout Standard
-There is a how-to guide in MarkDown syntax within the source code archive
- in the directory 
-\begin_inset Quotes eld
-\end_inset
-
-fellow
-\backslash
-doxygen
-\backslash
-Documentation
-\begin_inset Quotes erd
-\end_inset
-
- called 
-\begin_inset Quotes eld
-\end_inset
-
-HOWTO Development environment setup.md
-\begin_inset Quotes erd
-\end_inset
-
-, that can help you get started setting up a development environment for
- WinFellow.
- 
-\end_layout
-
-\begin_layout Standard
-Feel free to mail us (petschau@gmail.com / torsten.enderling@gmail.com) if
- you are interested in helping!
-\begin_inset Newpage pagebreak
-\end_inset
-
-
-\end_layout
-
-\begin_layout Part
 Release Notes
 \end_layout
 
@@ -337,7 +273,12 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-tbd
+the default display driver was changed from DirectDraw to Direct3D 11, where
+ supported
+\end_layout
+
+\begin_layout Itemize
+implemented support for keyboard-initiated reset in Amiga Forever
 \end_layout
 
 \end_deeper
@@ -347,7 +288,12 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-tbd
+fixed graphical artefacts when moving the emulator window in DirectDraw
+ graphics mode on Amiga Forever 10.2.2 or newer
+\end_layout
+
+\begin_layout Itemize
+improved logging in case of failure to initialize Direct3d graphics driver
 \end_layout
 
 \end_deeper
@@ -374,6 +320,10 @@ upgrade to cpp20
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+removed a Windows XP specific workaround from the filesystem module
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes, including
@@ -2000,6 +1950,66 @@ literal "false"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Part
+Contributing to WinFellow
+\end_layout
+
+\begin_layout Standard
+WinFellow is developed by a team of volunteers in their spare time; you
+ are very welcome to make contributions of your own.
+ Contributions can be improvements to the code, new features, but can also
+ include documentation updates or whatever else you feel could be an improvement.
+ It is best if you find something you want to work on rather than mailing
+ us and ask to be assigned a task.
+ Since WinFellow is developed on an idealistic basis, the basic idea is
+ that everyone should do something they like.
+\end_layout
+
+\begin_layout Standard
+When you start doing something it is wise to mail some of us in advance
+ to make sure no one is doing double work.
+ Since WinFellow is developed as open source software hosted on GitHub,
+ it is easy to contribute.
+ You can fork the source code of WinFellow, create a branch for your topic
+ and start commiting changes to it; your changes can be submitted to our
+ project in form of a pull request.
+ Raising a pull request early on allows us to discuss your request early,
+ so that we can see if/how your request may fit into WinFellow before you
+ put any effort into it.
+\end_layout
+
+\begin_layout Standard
+There is a how-to guide in MarkDown syntax within the source code archive
+ in the directory 
+\begin_inset Quotes eld
+\end_inset
+
+fellow
+\backslash
+doxygen
+\backslash
+Documentation
+\begin_inset Quotes erd
+\end_inset
+
+ called 
+\begin_inset Quotes eld
+\end_inset
+
+HOWTO Development environment setup.md
+\begin_inset Quotes erd
+\end_inset
+
+, that can help you get started setting up a development environment for
+ WinFellow.
+ 
+\end_layout
+
+\begin_layout Standard
+Feel free to mail us (petschau@gmail.com / torsten.enderling@gmail.com) if
+ you are interested in helping!
 \end_layout
 
 \begin_layout Part
