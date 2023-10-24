@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.11 (2023/10/16)
+v0.5.11 (2023/10/24)
 \end_layout
 
 \begin_layout Author
@@ -337,7 +337,8 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-tbd
+the default display driver was changed from DirectDraw to Direct3D 11, where
+ supported
 \end_layout
 
 \end_deeper
