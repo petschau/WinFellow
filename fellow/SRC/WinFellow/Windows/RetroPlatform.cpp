@@ -114,8 +114,10 @@
 #include "kbddrv.h"
 #include "mousedrv.h"
 #include "windrv.h"
+#include "keycodes.h"
 
 RetroPlatform RP;
+bool rawkeyspressed[MAX_KEYS] = {false};
 
 /** event handler function for events that are sent to WinFellow from Amiga
  * Forever handles multiple incoming events like keyboard or joystick input
@@ -128,7 +130,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(char *strCurrentEvent)
   if (strCurrentEvent == nullptr)
   {
     _core.Log->AddLog("RetroPlatformHandleIncomingGuestEvent(): WARNING: ignoring "
-                 "NULL event string.\n");
+                      "NULL event string.\n");
     return FALSE;
   }
 
@@ -147,8 +149,18 @@ BOOL RetroPlatformHandleIncomingGuestEvent(char *strCurrentEvent)
     {
       lRawKeyCode = (uint32_t)strtol(strRawKeyCode, nullptr, 0);
       kbdDrvKeypressRaw(lRawKeyCode, TRUE);
+      rawkeyspressed[lRawKeyCode] = true;
     }
     blnMatch = TRUE;
+  }
+
+  if (rawkeyspressed[A_CTRL] && rawkeyspressed[A_LEFT_AMIGA] && rawkeyspressed[A_RIGHT_AMIGA])
+  {
+    _core.Log->AddLog("RetroPlatformHandleIncomingGuestEvent(): performing keyboard-initiated reset.");
+    fellowSetPreStartReset(true);
+    gfxDrvCommon->RunEventSet();
+    fellowRequestEmulationStop();
+    memset(rawkeyspressed, 0, sizeof(bool) * MAX_KEYS);
   }
 
   if (!strnicmp(strCurrentEvent, "key_raw_up ", 11))
@@ -157,6 +169,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(char *strCurrentEvent)
     {
       lRawKeyCode = (uint32_t)strtol(strRawKeyCode, nullptr, 0);
       kbdDrvKeypressRaw(lRawKeyCode, FALSE);
+      rawkeyspressed[lRawKeyCode] = false;
     }
 
     blnMatch = TRUE;
@@ -249,7 +262,7 @@ BOOL RetroPlatformHandleIncomingDeviceActivity(WPARAM wParam, LPARAM lParam)
   if (lDeviceCategory != RP_DEVICECATEGORY_INPUTPORT)
   {
     _core.Log->AddLog(" RetroPlatformHandleIncomingDeviceActivity(): unsupported "
-                 "device category.n");
+                      "device category.n");
     return FALSE;
   }
 
@@ -334,7 +347,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
         if (lParam & RP_TURBO_CPU)
         {
           _core.Log->AddLog("RetroPlatform::HostMessageFunction(): enabling CPU turbo "
-                       "mode...\n");
+                            "mode...\n");
           lOriginalSpeed = RP.GetCPUSpeed();
           cpuIntegrationSetSpeed(0);
           cpuIntegrationCalculateMultiplier();

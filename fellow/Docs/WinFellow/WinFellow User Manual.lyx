@@ -341,6 +341,10 @@ the default display driver was changed from DirectDraw to Direct3D 11, where
  supported
 \end_layout
 
+\begin_layout Itemize
+implemented support for keyboard-initiated reset in Amiga Forever
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Bug fixes:
