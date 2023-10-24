@@ -41,6 +41,7 @@
 #include "interrupt.h"
 #include "IO/Uart.h"
 #include "../automation/Automator.h"
+#include "GfxDrvCommon.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -199,6 +200,13 @@ void busEndOfFrame()
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EndOfFrame();
 
   automator.EndOfFrame();
+
+#ifdef RETRO_PLATFORM
+  // in RetroPlatform mode, update the window position at the end of every frame
+  if (RP.GetHeadlessMode())
+    if (gfxDrvCommon->GetOutputWindowed())
+      if (drawGetDisplayDriver() == DISPLAYDRIVER_DIRECTDRAW) gfxDrvPositionChanged();
+#endif
 
   eofEvent.cycle = busGetCyclesInThisFrame();
   busInsertEvent(&eofEvent);
