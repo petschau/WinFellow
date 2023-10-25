@@ -4,15 +4,15 @@
 
 namespace fellow::api::vm
 {
-  typedef void(*EmemCardInitFunc)();
-  typedef void(*EmemCardMapFunc)(uint32_t);
+  typedef void (*EmemCardInitFunc)();
+  typedef void (*EmemCardMapFunc)(uint32_t);
 
-  typedef uint8_t(*ReadByteFunc)(uint32_t);
-  typedef uint16_t(*ReadWordFunc)(uint32_t);
-  typedef uint32_t(*ReadLongFunc)(uint32_t);
-  typedef void(*WriteByteFunc)(uint8_t, uint32_t);
-  typedef void(*WriteWordFunc)(uint16_t, uint32_t);
-  typedef void(*WriteLongFunc)(uint32_t, uint32_t);
+  typedef uint8_t (*ReadByteFunc)(uint32_t);
+  typedef uint16_t (*ReadWordFunc)(uint32_t);
+  typedef uint32_t (*ReadLongFunc)(uint32_t);
+  typedef void (*WriteByteFunc)(uint8_t, uint32_t);
+  typedef void (*WriteWordFunc)(uint16_t, uint32_t);
+  typedef void (*WriteLongFunc)(uint32_t, uint32_t);
 
   class IMemorySystem
   {
@@ -40,16 +40,16 @@ namespace fellow::api::vm
     virtual void EmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size) = 0;
 
     virtual void BankSet(
-      ReadByteFunc rb,
-      ReadWordFunc rw,
-      ReadLongFunc rl,
-      WriteByteFunc wb,
-      WriteWordFunc ww,
-      WriteLongFunc wl,
-      uint8_t *basep,
-      uint32_t bank,
-      uint32_t basebank,
-      BOOLE pointer_can_write) = 0;
+        ReadByteFunc rb,
+        ReadWordFunc rw,
+        ReadLongFunc rl,
+        WriteByteFunc wb,
+        WriteWordFunc ww,
+        WriteLongFunc wl,
+        uint8_t *basep,
+        uint32_t bank,
+        uint32_t basebank,
+        BOOLE pointer_can_write) = 0;
 
     virtual uint8_t *AddressToPtr(uint32_t address) = 0;
     virtual uint32_t GetKickImageVersion() = 0;

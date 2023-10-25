@@ -24,9 +24,9 @@ private:
 
   void SetState(CopperStates newState, uint32_t cycle);
   void SetStateNone();
-  
+
   bool IsRegisterAllowed(uint32_t regno);
-  
+
   void Move();
   void Wait();
   void Skip();

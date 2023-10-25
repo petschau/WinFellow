@@ -8,11 +8,13 @@ namespace fellow::api
   class VirtualMachine
   {
   public:
-    fellow::api::vm::IM68K& CPU;
-    fellow::api::vm::IMemorySystem& Memory;
+    fellow::api::vm::IM68K &CPU;
+    fellow::api::vm::IMemorySystem &Memory;
 
-    VirtualMachine(fellow::api::vm::IM68K& cpu, fellow::api::vm::IMemorySystem& memory) : CPU(cpu), Memory(memory) {}
+    VirtualMachine(fellow::api::vm::IM68K &cpu, fellow::api::vm::IMemorySystem &memory) : CPU(cpu), Memory(memory)
+    {
+    }
   };
 
-  extern VirtualMachine* VM;
+  extern VirtualMachine *VM;
 }

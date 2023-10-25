@@ -16,13 +16,12 @@
 #include "u_deep.h"
 #include "u_heavy.h"
 
-
-void Init_Decrunchers(void){
-	quick_text_loc = 251;
-	medium_text_loc = 0x3fbe;
-	heavy_text_loc = 0;
-	deep_text_loc = 0x3fc4;
-	init_deep_tabs = 1;
-	memset(text,0,0x3fc8);
+void Init_Decrunchers(void)
+{
+  quick_text_loc = 251;
+  medium_text_loc = 0x3fbe;
+  heavy_text_loc = 0;
+  deep_text_loc = 0x3fc4;
+  init_deep_tabs = 1;
+  memset(text, 0, 0x3fc8);
 }
-

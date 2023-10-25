@@ -6,6 +6,6 @@
 class GfxDrvDXGIAdapterEnumerator
 {
 public:
-  static GfxDrvDXGIAdapterList* EnumerateAdapters(IDXGIFactory *factory);
-  static void DeleteAdapterList(GfxDrvDXGIAdapterList* adapters);
+  static GfxDrvDXGIAdapterList *EnumerateAdapters(IDXGIFactory *factory);
+  static void DeleteAdapterList(GfxDrvDXGIAdapterList *adapters);
 };

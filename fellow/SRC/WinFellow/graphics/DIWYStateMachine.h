@@ -49,7 +49,6 @@ private:
   void DoStateWaitingForStartLine(uint32_t rasterY);
   void DoStateWaitingForStopLine(uint32_t rasterY);
 
-
 public:
   bool IsVisible();
   void ChangedValue();
@@ -65,6 +64,5 @@ public:
   void Startup();
   void Shutdown();
 
-  DIWYStateMachine() : GraphicsEvent() {};
-
+  DIWYStateMachine() : GraphicsEvent(){};
 };

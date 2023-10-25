@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter* adapter)
+void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
 {
   DXGI_ADAPTER_DESC desc;
   HRESULT hr = adapter->GetDesc(&desc);
@@ -39,17 +39,17 @@ void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter* adapter)
   }
 }
 
-void GfxDrvDXGIAdapter::EnumerateOutputs(IDXGIAdapter* adapter)
+void GfxDrvDXGIAdapter::EnumerateOutputs(IDXGIAdapter *adapter)
 {
   GfxDrvDXGIOutputEnumerator::EnumerateOutputs(adapter, _outputs);
 }
 
-const GfxDrvDXGIOutputList& GfxDrvDXGIAdapter::GetOutputs()
+const GfxDrvDXGIOutputList &GfxDrvDXGIAdapter::GetOutputs()
 {
   return _outputs;
 }
 
-GfxDrvDXGIAdapter::GfxDrvDXGIAdapter(IDXGIAdapter* adapter)
+GfxDrvDXGIAdapter::GfxDrvDXGIAdapter(IDXGIAdapter *adapter)
 {
   LogCapabilities(adapter);
   EnumerateOutputs(adapter);

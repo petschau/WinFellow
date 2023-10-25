@@ -30,7 +30,7 @@ bool rtc_enabled = false;
 uint8_t rtcReadByte(uint32_t address)
 {
   uint16_t result = _core.RtcOkiMsm6242rs->read(address);
-  uint8_t byte_result = (uint8_t) ((address & 1) ? result : (result>>8));
+  uint8_t byte_result = (uint8_t)((address & 1) ? result : (result >> 8));
 
 #ifdef RTC_LOG
   _core.Log->AddLog("RTC Byte Read: %.8X, returned %.2X\n", address, byte_result);
@@ -53,7 +53,7 @@ uint16_t rtcReadWord(uint32_t address)
 uint32_t rtcReadLong(uint32_t address)
 {
   uint32_t w1 = (uint32_t)_core.RtcOkiMsm6242rs->read(address);
-  uint32_t w2 = (uint32_t)_core.RtcOkiMsm6242rs->read(address+2);
+  uint32_t w2 = (uint32_t)_core.RtcOkiMsm6242rs->read(address + 2);
   uint32_t result = (w1 << 16) | w2;
 
 #ifdef RTC_LOG
@@ -107,20 +107,10 @@ void rtcMap()
 {
   if (rtcGetEnabled())
   {
-    memoryBankSet(rtcReadByte,
-      rtcReadWord,
-      rtcReadLong,
-      rtcWriteByte, 
-      rtcWriteWord, 
-      rtcWriteLong,
-      nullptr, 
-      0xdc, 
-      0,
-      FALSE);
+    memoryBankSet(rtcReadByte, rtcReadWord, rtcReadLong, rtcWriteByte, rtcWriteWord, rtcWriteLong, nullptr, 0xdc, 0, FALSE);
 
 #ifdef RTC_LOG
     _core.Log->AddLog("Mapped RTC at $DC0000\n");
 #endif
   }
 }
-

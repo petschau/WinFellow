@@ -20,13 +20,13 @@
 #include <tchar.h>
 
 struct RPGuestInfo;
-typedef LRESULT (CALLBACK *PFN_MsgFunction)(UINT uMessage, WPARAM wParam, LPARAM lParam, LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam);
+typedef LRESULT(CALLBACK *PFN_MsgFunction)(UINT uMessage, WPARAM wParam, LPARAM lParam, LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam);
 // RPGuest.dll functions
-typedef HRESULT (APIENTRY *PFN_RPGuestStartup)(struct RPGuestInfo *pInfo, DWORD cbInfo);
-typedef HRESULT (APIENTRY *PFN_RPGuestShutdown)(struct RPGuestInfo *pInfo, DWORD cbInfo);
-typedef BOOL (APIENTRY *PFN_RPProcessMessage)(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam, struct RPGuestInfo *pInfo, LRESULT *plResult);
-typedef BOOL (APIENTRY *PFN_RPSendMessage)(UINT uMessage, WPARAM wParam, LPARAM lParam, LPCVOID pData, DWORD dwDataSize, const struct RPGuestInfo *pInfo, LRESULT *plResult);
-typedef BOOL (APIENTRY *PFN_RPPostMessage)(UINT uMessage, WPARAM wParam, LPARAM lParam, const struct RPGuestInfo *pInfo);
+typedef HRESULT(APIENTRY *PFN_RPGuestStartup)(struct RPGuestInfo *pInfo, DWORD cbInfo);
+typedef HRESULT(APIENTRY *PFN_RPGuestShutdown)(struct RPGuestInfo *pInfo, DWORD cbInfo);
+typedef BOOL(APIENTRY *PFN_RPProcessMessage)(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam, struct RPGuestInfo *pInfo, LRESULT *plResult);
+typedef BOOL(APIENTRY *PFN_RPSendMessage)(UINT uMessage, WPARAM wParam, LPARAM lParam, LPCVOID pData, DWORD dwDataSize, const struct RPGuestInfo *pInfo, LRESULT *plResult);
+typedef BOOL(APIENTRY *PFN_RPPostMessage)(UINT uMessage, WPARAM wParam, LPARAM lParam, const struct RPGuestInfo *pInfo);
 
 // the RPGuestInfo fields should be considered private,
 // since future implementations of RetroPlatform interprocess communication
@@ -37,33 +37,34 @@ typedef BOOL (APIENTRY *PFN_RPPostMessage)(UINT uMessage, WPARAM wParam, LPARAM 
 //
 typedef struct RPGuestInfo
 {
-	HINSTANCE hInstance;
-	HWND hHostMessageWindow;
-	HWND hGuestMessageWindow;
-	BOOL bGuestClassRegistered;
-	PFN_MsgFunction pfnMsgFunction;
-	LPARAM lMsgFunctionParam;
-	HMODULE hRPGuestDLL;
-	LPVOID pRPGuestDLLData;
-	PFN_RPProcessMessage pfnRPProcessMessage;
-	PFN_RPSendMessage pfnRPSendMessage;
-	PFN_RPPostMessage pfnRPPostMessage;
+  HINSTANCE hInstance;
+  HWND hHostMessageWindow;
+  HWND hGuestMessageWindow;
+  BOOL bGuestClassRegistered;
+  PFN_MsgFunction pfnMsgFunction;
+  LPARAM lMsgFunctionParam;
+  HMODULE hRPGuestDLL;
+  LPVOID pRPGuestDLLData;
+  PFN_RPProcessMessage pfnRPProcessMessage;
+  PFN_RPSendMessage pfnRPSendMessage;
+  PFN_RPPostMessage pfnRPPostMessage;
 } RPGUESTINFO;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-// RetroPlatform IPC public functions
-// (see instructions in RetroPlatformGuestIPC.c)
-//
-HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHostInfo, PFN_MsgFunction pfnMsgFunction, LPARAM lMsgFunctionParam);
-void RPUninitializeGuest(RPGUESTINFO *pInfo);
-BOOL RPSendMessage(UINT uMessage, WPARAM wParam, LPARAM lParam, LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pInfo, LRESULT *plResult);
-BOOL RPPostMessage(UINT uMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pInfo);
+  // RetroPlatform IPC public functions
+  // (see instructions in RetroPlatformGuestIPC.c)
+  //
+  HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHostInfo, PFN_MsgFunction pfnMsgFunction, LPARAM lMsgFunctionParam);
+  void RPUninitializeGuest(RPGUESTINFO *pInfo);
+  BOOL RPSendMessage(UINT uMessage, WPARAM wParam, LPARAM lParam, LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pInfo, LRESULT *plResult);
+  BOOL RPPostMessage(UINT uMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pInfo);
 
 #ifdef __cplusplus
-}   // ... extern "C"
+} // ... extern "C"
 #endif
 
 #endif // __CLOANTO_RETROPLATFORMGUESTIPC_H__

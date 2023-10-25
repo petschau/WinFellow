@@ -9,7 +9,7 @@ namespace mock::Core::Service
     return new FileProperties();
   }
 
-  int FileInformationMock::Stat(const char* szFilename, struct stat* pStatBuffer)
+  int FileInformationMock::Stat(const char *szFilename, struct stat *pStatBuffer)
   {
     return 0;
   }

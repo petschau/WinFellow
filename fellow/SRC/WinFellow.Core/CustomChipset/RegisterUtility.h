@@ -29,14 +29,12 @@
 #include "CustomChipset/Registers.h"
 
 // Bitplane data types
-typedef union ByteLongUnion_
-{
+typedef union ByteLongUnion_ {
   uint32_t l;
   uint8_t b[4];
 } ByteLongUnion;
 
-typedef union ByteWordUnion_
-{
+typedef union ByteWordUnion_ {
   uint16_t w;
   uint8_t b[2];
 } ByteWordUnion;
@@ -46,7 +44,7 @@ namespace CustomChipset
   class RegisterUtility
   {
   private:
-    const Registers& _registers;
+    const Registers &_registers;
 
   public:
     bool IsLoresEnabled() const;
@@ -64,6 +62,6 @@ namespace CustomChipset
     bool IsDiskDMAEnabled() const;
     bool IsBlitterPriorityEnabled() const;
 
-    RegisterUtility(const Registers& registers);
+    RegisterUtility(const Registers &registers);
   };
 }

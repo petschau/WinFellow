@@ -4,8 +4,7 @@ using namespace std;
 
 namespace fellow::hardfile::hunks
 {
-  Reloc32OffsetTable::Reloc32OffsetTable(uint32_t relatedHunkIndex)
-    : _relatedHunkIndex(relatedHunkIndex)
+  Reloc32OffsetTable::Reloc32OffsetTable(uint32_t relatedHunkIndex) : _relatedHunkIndex(relatedHunkIndex)
   {
   }
 
@@ -16,7 +15,7 @@ namespace fellow::hardfile::hunks
 
   uint32_t Reloc32OffsetTable::GetOffsetCount()
   {
-    return (uint32_t) _offsets.size();
+    return (uint32_t)_offsets.size();
   }
 
   uint32_t Reloc32OffsetTable::GetOffset(uint32_t index)
@@ -24,7 +23,7 @@ namespace fellow::hardfile::hunks
     return _offsets[index];
   }
 
-  void Reloc32OffsetTable::Parse(RawDataReader& rawDataReader, uint32_t offsetCount)
+  void Reloc32OffsetTable::Parse(RawDataReader &rawDataReader, uint32_t offsetCount)
   {
     for (uint32_t i = 0; i < offsetCount; i++)
     {

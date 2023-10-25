@@ -6,12 +6,12 @@
 
 using namespace std;
 
-ScriptLine::ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const string& command, const string& parameters)
+ScriptLine::ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const string &command, const string &parameters)
   : FrameNumber(frameNumber), LineNumber(lineNumber), Command(command), Parameters(parameters)
 {
 }
 
-void Script::ExecuteMouseCommand(const string& parameters)
+void Script::ExecuteMouseCommand(const string &parameters)
 {
   uint32_t port;
   int32_t x, y;
@@ -22,12 +22,12 @@ void Script::ExecuteMouseCommand(const string& parameters)
   gameportMouseHandler((port == 0) ? GP_MOUSE0 : GP_MOUSE1, x, y, button1, button2, button3);
 }
 
-void Script::ExecuteKeyCommand(const string& parameters)
+void Script::ExecuteKeyCommand(const string &parameters)
 {
   kbdKeyAdd(atoi(parameters.c_str()));
 }
 
-void Script::ExecuteJoystickCommand(const string& parameters)
+void Script::ExecuteJoystickCommand(const string &parameters)
 {
   uint32_t port;
   BOOLE left, up, right, down, button1, button2;
@@ -35,7 +35,7 @@ void Script::ExecuteJoystickCommand(const string& parameters)
   gameportJoystickHandler((port == 0) ? GP_JOYKEY0 : GP_JOYKEY1, left, up, right, down, button1, button2);
 }
 
-void Script::ExecuteEmulatorActionCommand(const string& parameters)
+void Script::ExecuteEmulatorActionCommand(const string &parameters)
 {
   uint8_t eventId = GetIdForAction(parameters);
   if (eventId != 255)
@@ -44,7 +44,7 @@ void Script::ExecuteEmulatorActionCommand(const string& parameters)
   }
 }
 
-void Script::Execute(const ScriptLine& line)
+void Script::Execute(const ScriptLine &line)
 {
   if (line.Command == MouseCommand)
   {
@@ -70,7 +70,8 @@ void Script::ExecuteUntil(uint64_t frameNumber, uint32_t lineNumber)
   {
     return;
   }
-  while (_lines.size() > _nextLine && (_lines[_nextLine].FrameNumber < frameNumber || (_lines[_nextLine].FrameNumber == frameNumber && _lines[_nextLine].LineNumber <= lineNumber)))
+  while (_lines.size() > _nextLine &&
+         (_lines[_nextLine].FrameNumber < frameNumber || (_lines[_nextLine].FrameNumber == frameNumber && _lines[_nextLine].LineNumber <= lineNumber)))
   {
     Execute(_lines[_nextLine]);
     _nextLine++;
@@ -104,19 +105,15 @@ string Script::GetStringForAction(kbd_event action)
 {
   switch (action)
   {
-  case EVENT_EXIT:
-    return "EVENT_EXIT";
-  case EVENT_DF1_INTO_DF0:
-    return "EVENT_DF1_INTO_DF0";
-  case EVENT_DF2_INTO_DF0:
-    return "EVENT_DF2_INTO_DF0";
-  case EVENT_DF3_INTO_DF0:
-    return "EVENT_DF3_INTO_DF0";
+    case EVENT_EXIT: return "EVENT_EXIT";
+    case EVENT_DF1_INTO_DF0: return "EVENT_DF1_INTO_DF0";
+    case EVENT_DF2_INTO_DF0: return "EVENT_DF2_INTO_DF0";
+    case EVENT_DF3_INTO_DF0: return "EVENT_DF3_INTO_DF0";
   }
   return "";
 }
 
-uint8_t Script::GetIdForAction(const string& action)
+uint8_t Script::GetIdForAction(const string &action)
 {
   uint8_t eventId = 255;
   if (action == "EVENT_EXIT")
@@ -149,12 +146,12 @@ void Script::RecordEmulatorAction(kbd_event action)
   _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), EmulatorActionCommand, actionString);
 }
 
-void Script::Load(const string& filename)
+void Script::Load(const string &filename)
 {
   _nextLine = 0;
   _lines.clear();
 
-  FILE* F = fopen(filename.c_str(), "r");
+  FILE *F = fopen(filename.c_str(), "r");
   if (F == nullptr)
   {
     return;
@@ -182,19 +179,18 @@ void Script::Load(const string& filename)
   fclose(F);
 }
 
-void Script::Save(const string& filename)
+void Script::Save(const string &filename)
 {
-  FILE* F = fopen(filename.c_str(), "w");
+  FILE *F = fopen(filename.c_str(), "w");
 
-  for (const ScriptLine& line : _lines)
+  for (const ScriptLine &line : _lines)
   {
     fprintf(F, "%I64d,%d,%s,%s\n", line.FrameNumber, line.LineNumber, line.Command.c_str(), line.Parameters.c_str());
   }
   fclose(F);
 }
 
-Script::Script()
-  : _nextLine(0)
+Script::Script() : _nextLine(0)
 {
 }
 

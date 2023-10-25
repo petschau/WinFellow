@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput* output, GfxDrvDXGIModeList& modes)
+void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIModeList &modes)
 {
   DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
   UINT flags = 0;
@@ -23,7 +23,7 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput* output, GfxDrvDXGIMod
 
   _core.Log->AddLog("Output has %d modes.\n", numModes);
 
-  DXGI_MODE_DESC* descs = new DXGI_MODE_DESC[numModes];
+  DXGI_MODE_DESC *descs = new DXGI_MODE_DESC[numModes];
   hr = output->GetDisplayModeList(format, flags, &numModes, descs);
 
   if (FAILED(hr))
@@ -47,10 +47,10 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput* output, GfxDrvDXGIMod
   delete[] descs;
 }
 
-void GfxDrvDXGIModeEnumerator::DeleteModeList(GfxDrvDXGIModeList& modes)
+void GfxDrvDXGIModeEnumerator::DeleteModeList(GfxDrvDXGIModeList &modes)
 {
   for (GfxDrvDXGIModeList::iterator i = modes.begin(); i != modes.end(); ++i)
   {
-    delete* i;
+    delete *i;
   }
 }

@@ -9,7 +9,7 @@ namespace fellow::hardfile::hunks
   {
   public:
     virtual uint32_t GetID() = 0;
-    virtual void Parse(RawDataReader& rawReader) = 0;
+    virtual void Parse(RawDataReader &rawReader) = 0;
 
     virtual ~HunkBase() = default;
   };

@@ -49,7 +49,7 @@ void Uart::WriteSerdatRegister(uint16_t data)
 
 void Uart::WriteSerperRegister(uint16_t data)
 {
-  _serper = data;  
+  _serper = data;
 }
 
 uint32_t Uart::GetTransmitDoneTime()
@@ -57,7 +57,7 @@ uint32_t Uart::GetTransmitDoneTime()
   int bitsToTransfer = 2 + (Is8BitMode() ? 8 : 9);
   uint32_t cyclesPerBit = GetBitPeriod() + 1;
 
-  return cyclesPerBit * bitsToTransfer;  
+  return cyclesPerBit * bitsToTransfer;
 }
 
 void Uart::CopyTransmitBufferToShiftRegister()
@@ -81,7 +81,7 @@ void Uart::CopyTransmitBufferToShiftRegister()
 void Uart::CopyReceiveShiftRegisterToBuffer()
 {
   _receiveBuffer = _receiveShiftRegister;
-  _receiveBufferFull = true;  
+  _receiveBufferFull = true;
   wintreq_direct(0x8400, 0xdff09c, true); // RBF interrupt
 }
 
@@ -89,7 +89,7 @@ void Uart::NotifyInterruptRequestBitsChanged(uint16_t intreq)
 {
   // Clear only, or is it directly wired?
   // HRM says overrun is also mirrored from intreq? How?
-  _receiveBufferFull = (intreq & 0x0800) == 0x0800;  
+  _receiveBufferFull = (intreq & 0x0800) == 0x0800;
   if (!_receiveBufferFull)
   {
     _receiveBufferOverrun = false;
@@ -174,7 +174,7 @@ void Uart::CloseOutputFile()
   {
     fclose(_outputFile);
     _outputFile = nullptr;
-  }  
+  }
 }
 
 void Uart::EndOfLine()
@@ -216,7 +216,7 @@ void Uart::EndOfFrame()
     {
       _transmitDoneTime = 0;
     }
-  }  
+  }
   if (_receiveDoneTime != BUS_CYCLE_DISABLE)
   {
     _receiveDoneTime -= busGetCyclesInThisFrame();
@@ -237,8 +237,7 @@ void Uart::EmulationStop()
   CloseOutputFile();
 }
 
-Uart::Uart()
-  : _outputFile(nullptr)
+Uart::Uart() : _outputFile(nullptr)
 {
   char tempFileName[256];
   _core.Fileops->GetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");

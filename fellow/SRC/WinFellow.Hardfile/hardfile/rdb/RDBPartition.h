@@ -47,7 +47,7 @@ namespace fellow::hardfile::rdb
     bool IsAutomountable();
     bool IsBootable();
 
-    void ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize);
+    void ReadFromFile(RDBFileReader &reader, uint32_t blockChainStart, uint32_t blockSize);
     void Log();
 
     RDBPartition();

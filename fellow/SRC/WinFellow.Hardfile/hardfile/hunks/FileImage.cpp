@@ -11,43 +11,43 @@ namespace fellow::hardfile::hunks
     _additionalHunks.clear();
   }
 
-  void FileImage::SetHeader(HeaderHunk* header)
+  void FileImage::SetHeader(HeaderHunk *header)
   {
     _header.reset(header);
   }
 
-  HeaderHunk* FileImage::GetHeader()
+  HeaderHunk *FileImage::GetHeader()
   {
     return _header.get();
   }
 
-  InitialHunk* FileImage::GetInitialHunk(uint32_t hunkIndex)
+  InitialHunk *FileImage::GetInitialHunk(uint32_t hunkIndex)
   {
     return _initialHunks[hunkIndex].get();
   }
 
-  void FileImage::AddInitialHunk(InitialHunk* hunk)
+  void FileImage::AddInitialHunk(InitialHunk *hunk)
   {
     _initialHunks.push_back(unique_ptr<InitialHunk>(hunk));
   }
 
   uint32_t FileImage::GetInitialHunkCount()
   {
-    return (uint32_t) _initialHunks.size();
+    return (uint32_t)_initialHunks.size();
   }
 
-  AdditionalHunk* FileImage::GetAdditionalHunk(uint32_t hunkIndex)
+  AdditionalHunk *FileImage::GetAdditionalHunk(uint32_t hunkIndex)
   {
     return _additionalHunks[hunkIndex].get();
   }
 
-  void FileImage::AddAdditionalHunk(AdditionalHunk* hunk)
+  void FileImage::AddAdditionalHunk(AdditionalHunk *hunk)
   {
     _additionalHunks.push_back(unique_ptr<AdditionalHunk>(hunk));
   }
 
   uint32_t FileImage::GetAdditionalHunkCount()
   {
-    return (uint32_t) _additionalHunks.size();
+    return (uint32_t)_additionalHunks.size();
   }
 }

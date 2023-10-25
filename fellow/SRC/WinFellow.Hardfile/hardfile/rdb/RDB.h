@@ -55,7 +55,7 @@ namespace fellow::hardfile::rdb
     bool HasPartitionErrors;
     bool HasFileSystemHandlerErrors;
 
-    void ReadFromFile(RDBFileReader& reader, unsigned int index, bool geometryOnly = false);
+    void ReadFromFile(RDBFileReader &reader, unsigned int index, bool geometryOnly = false);
     void Log();
 
     RDB();

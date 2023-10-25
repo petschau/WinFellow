@@ -6,7 +6,7 @@ using namespace CustomChipset;
 TEST_CASE("CustomChipset::RegisterUtility.GetEnabledBitplaneCount() should return the number of enabled bitplanes")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Zero enabled bitplanes returns 0")
   {
@@ -54,7 +54,7 @@ TEST_CASE("CustomChipset::RegisterUtility.GetEnabledBitplaneCount() should retur
 TEST_CASE("CustomChipset::RegisterUtility.IsLoresEnabled() should return the lores enabled state")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Lores mode on returns true")
   {
@@ -71,7 +71,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsLoresEnabled() should return the lor
 TEST_CASE("CustomChipset::RegisterUtility.IsHiresEnabled() should return the hires enabled state")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Hires mode on returns true")
   {
@@ -89,7 +89,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsHiresEnabled() should return the hir
 TEST_CASE("CustomChipset::RegisterUtility.IsDualPlayfieldEnabled() should return the dual playfield enabled state")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Dual playfield mode on returns true")
   {
@@ -107,7 +107,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsDualPlayfieldEnabled() should return
 TEST_CASE("CustomChipset::RegisterUtility.IsHAMEnabled() should return the HAM enabled state")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("HAM mode on returns true")
   {
@@ -125,7 +125,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsHAMEnabled() should return the HAM e
 TEST_CASE("CustomChipset::RegisterUtility.IsInterlaceEnabled() should return the interlace enabled state")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Interlace mode on returns true")
   {
@@ -143,7 +143,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsInterlaceEnabled() should return the
 TEST_CASE("CustomChipset::RegisterUtility.IsPlayfield1PriorityEnabled() should return the priority state of playfield 1")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Playfield 1 priority on returns true")
   {
@@ -161,7 +161,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsPlayfield1PriorityEnabled() should r
 TEST_CASE("CustomChipset::RegisterUtility.IsPlayfield2PriorityEnabled() should return the priority state of playfield 2")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Playfield 2 priority on returns true")
   {
@@ -179,7 +179,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsPlayfield2PriorityEnabled() should r
 TEST_CASE("CustomChipset::RegisterUtility.IsMasterDMAEnabled() should return the enabled state of master DMA")
 {
   Core _core = Core();
-  const  RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Master DMA on returns true")
   {
@@ -197,7 +197,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsMasterDMAEnabled() should return the
 TEST_CASE("CustomChipset::RegisterUtility.IsDiskDMAEnabled() should return the enabled state of disk DMA")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Disk DMA on returns true")
   {
@@ -215,7 +215,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsDiskDMAEnabled() should return the e
 TEST_CASE("CustomChipset::RegisterUtility.IsMasterDMAAndBitplaneDMAEnabled() should return the combined enabled state of master DMA and bitplane DMA")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Master DMA on and Bitplane DMA on returns true")
   {
@@ -245,7 +245,7 @@ TEST_CASE("CustomChipset::RegisterUtility.IsMasterDMAAndBitplaneDMAEnabled() sho
 TEST_CASE("CustomChipset::RegisterUtility.IsBlitterPriorityEnabled() should return the priority state of the blitter")
 {
   Core _core = Core();
-  const RegisterUtility& _registerUtility = _core.RegisterUtility;
+  const RegisterUtility &_registerUtility = _core.RegisterUtility;
 
   SECTION("Blitter priority on returns true")
   {

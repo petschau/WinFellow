@@ -20,7 +20,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Creates CodeHunk")
     {
-      unique_ptr<CodeHunk> hunk(dynamic_cast<CodeHunk*>(HunkFactory::CreateInitialHunk(CodeHunkID, 100)));
+      unique_ptr<CodeHunk> hunk(dynamic_cast<CodeHunk *>(HunkFactory::CreateInitialHunk(CodeHunkID, 100)));
 
       REQUIRE(hunk->GetID() == CodeHunkID);
       REQUIRE(hunk->GetAllocateSizeInLongwords() == 100);
@@ -28,7 +28,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Creates DataHunk")
     {
-      unique_ptr<DataHunk> hunk(dynamic_cast<DataHunk*>(HunkFactory::CreateInitialHunk(DataHunkID, 100)));
+      unique_ptr<DataHunk> hunk(dynamic_cast<DataHunk *>(HunkFactory::CreateInitialHunk(DataHunkID, 100)));
 
       REQUIRE(hunk->GetID() == DataHunkID);
       REQUIRE(hunk->GetAllocateSizeInLongwords() == 100);
@@ -36,7 +36,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Creates BSSHunk")
     {
-      unique_ptr<BSSHunk> hunk(dynamic_cast<BSSHunk*>(HunkFactory::CreateInitialHunk(BSSHunkID, 100)));
+      unique_ptr<BSSHunk> hunk(dynamic_cast<BSSHunk *>(HunkFactory::CreateInitialHunk(BSSHunkID, 100)));
 
       REQUIRE(hunk->GetID() == BSSHunkID);
       REQUIRE(hunk->GetAllocateSizeInLongwords() == 100);
@@ -58,14 +58,14 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Creates Reloc32Hunk")
     {
-      unique_ptr<Reloc32Hunk> hunk(dynamic_cast<Reloc32Hunk*>(HunkFactory::CreateAdditionalHunk(Reloc32HunkID, 0)));
+      unique_ptr<Reloc32Hunk> hunk(dynamic_cast<Reloc32Hunk *>(HunkFactory::CreateAdditionalHunk(Reloc32HunkID, 0)));
 
       REQUIRE(hunk->GetID() == Reloc32HunkID);
     }
 
     SECTION("Creates EndHunk")
     {
-      unique_ptr<EndHunk> hunk(dynamic_cast<EndHunk*>(HunkFactory::CreateAdditionalHunk(EndHunkID, 0)));
+      unique_ptr<EndHunk> hunk(dynamic_cast<EndHunk *>(HunkFactory::CreateAdditionalHunk(EndHunkID, 0)));
 
       REQUIRE(hunk->GetID() == EndHunkID);
     }

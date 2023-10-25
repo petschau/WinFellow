@@ -42,8 +42,8 @@ extern HWND wdbg_hDialog;
 
 BOOLE modripGuiInitialize()
 {
-	modrip_hWnd = wdbg_hDialog;
-	return TRUE;
+  modrip_hWnd = wdbg_hDialog;
+  return TRUE;
 }
 
 /*==================================================*/
@@ -78,67 +78,81 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info, MemoryAccessFunc func)
 {
   char message[MODRIP_TEMPSTRLEN];
   char tempstr[MODRIP_TEMPSTRLEN];
-  
-  if(!info) return FALSE;
-  
+
+  if (!info) return FALSE;
+
   sprintf(message, "Module found:\n");
-  
-  if(info->start) {
+
+  if (info->start)
+  {
     sprintf(tempstr, "Location: 0x%06X\n", info->start);
-	strcat(message, tempstr);
-	if(info->end) {
-	  sprintf(tempstr, "Size: %u Bytes\n", info->end - info->start);
+    strcat(message, tempstr);
+    if (info->end)
+    {
+      sprintf(tempstr, "Size: %u Bytes\n", info->end - info->start);
       strcat(message, tempstr);
-	}
+    }
   }
-  
-  if(*(info->typedesc)) {
+
+  if (*(info->typedesc))
+  {
     sprintf(tempstr, "Type: %s\n", info->typedesc);
-	strcat(message, tempstr);
+    strcat(message, tempstr);
   }
 
-  if(*(info->typesig)) {
+  if (*(info->typesig))
+  {
     sprintf(tempstr, "Signature: %s\n", info->typesig);
-	strcat(message, tempstr);
+    strcat(message, tempstr);
   }
 
-  if(*(info->modname)) {
+  if (*(info->modname))
+  {
     sprintf(tempstr, "Module name: %s\n", info->modname);
     strcat(message, tempstr);
   }
 
-  if(info->maxpattern) {
+  if (info->maxpattern)
+  {
     sprintf(tempstr, "Patterns used: %u\n", info->maxpattern);
     strcat(message, tempstr);
   }
 
-  if(info->channels) {
+  if (info->channels)
+  {
     sprintf(tempstr, "Channels used: %u\n", info->channels);
     strcat(message, tempstr);
   }
-  
-  if(*(info->filename)) {
+
+  if (*(info->filename))
+  {
     sprintf(tempstr, "\nSave module as %s?", info->filename);
     strcat(message, tempstr);
   }
-  else {
+  else
+  {
     strcat(message, "\nThe detection routine didn't provide a filename.\n");
-	strcat(message, "Please contact the developers.");
+    strcat(message, "Please contact the developers.");
   }
-	
-  if(MessageBox(modrip_hWnd, message, "Module found.", MB_YESNO | MB_ICONQUESTION) == IDYES) {
-    if(wguiSaveFile(modrip_hWnd, info->filename, MODRIP_TEMPSTRLEN, "Save Module As:", FSEL_MOD)) {
-      if(!modripSaveMem(info, func)) {
+
+  if (MessageBox(modrip_hWnd, message, "Module found.", MB_YESNO | MB_ICONQUESTION) == IDYES)
+  {
+    if (wguiSaveFile(modrip_hWnd, info->filename, MODRIP_TEMPSTRLEN, "Save Module As:", FSEL_MOD))
+    {
+      if (!modripSaveMem(info, func))
+      {
         modripGuiErrorSave(info);
-		    return FALSE;
-   	  }
-      else {
-        iniSetLastUsedModDir(wgui_ini, (char*) wguiExtractPath(info->filename));
+        return FALSE;
+      }
+      else
+      {
+        iniSetLastUsedModDir(wgui_ini, (char *)wguiExtractPath(info->filename));
         return TRUE;
-	    }
+      }
     }
-    else return FALSE;
-  } 
+    else
+      return FALSE;
+  }
   return TRUE;
 }
 
@@ -150,7 +164,7 @@ void modripGuiErrorSave(struct ModuleInfo *info)
 {
   char message[MODRIP_TEMPSTRLEN];
 
-  if(!info) return;
+  if (!info) return;
 
   sprintf(message, "The module %s could not be saved.", info->filename);
   MessageBox(modrip_hWnd, message, "Error.", MB_OK | MB_ICONEXCLAMATION);
@@ -166,9 +180,8 @@ BOOLE modripGuiRipMemory()
   char message[MODRIP_TEMPSTRLEN];
 
   sprintf(message, "Do you want to scan the memory for modules?");
-  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
-                          MB_ICONQUESTION);
-  return(result == IDYES);
+  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO | MB_ICONQUESTION);
+  return (result == IDYES);
 }
 
 /*=====================================================*/
@@ -179,15 +192,15 @@ BOOLE modripGuiRipFloppy(int driveNo)
 {
   char message[MODRIP_TEMPSTRLEN];
 
-  if((0 <= driveNo) && (driveNo < 4)) {
+  if ((0 <= driveNo) && (driveNo < 4))
+  {
     sprintf(message, "A floppy is inserted in drive DF%d and ", driveNo);
-	strcat(message, "may be scanned for modules.\n");
-	strcat(message, "Note that scanning a floppy will usually result in a ");
-	strcat(message, "damaged module when scanning AmigaDOS formatted floppies.\n\n");
-	strcat(message, "Do you want to do so?");
-    int result = MessageBox(modrip_hWnd, message, "Drive scan possible.", MB_YESNO |
-                            MB_ICONQUESTION);
-	return(result == IDYES);
+    strcat(message, "may be scanned for modules.\n");
+    strcat(message, "Note that scanning a floppy will usually result in a ");
+    strcat(message, "damaged module when scanning AmigaDOS formatted floppies.\n\n");
+    strcat(message, "Do you want to do so?");
+    int result = MessageBox(modrip_hWnd, message, "Drive scan possible.", MB_YESNO | MB_ICONQUESTION);
+    return (result == IDYES);
   }
   else
     return FALSE;
@@ -200,8 +213,7 @@ BOOLE modripGuiRipFloppy(int driveNo)
 
 void modripGuiUnInitialize()
 {
-  MessageBox(modrip_hWnd, "Module Ripper finished.", "Finished.", 
-    MB_OK | MB_ICONINFORMATION);
+  MessageBox(modrip_hWnd, "Module Ripper finished.", "Finished.", MB_OK | MB_ICONINFORMATION);
 }
 
 /*==========================*/
@@ -210,8 +222,7 @@ void modripGuiUnInitialize()
 
 void modripGuiError(char *message)
 {
-  MessageBox(modrip_hWnd, message, "Mod-Ripper Error.", MB_OK |
-    MB_ICONSTOP);
+  MessageBox(modrip_hWnd, message, "Mod-Ripper Error.", MB_OK | MB_ICONSTOP);
 }
 
 /*==============================================*/
@@ -226,9 +237,8 @@ BOOLE modripGuiDumpChipMem()
   strcat(message, " \"fast.mem\" and \"bogo.mem\".");
   strcat(message, " This feature can be used to run external module rippers over them.");
   strcat(message, " Do you really want to do that?");
-  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
-                          MB_ICONQUESTION);
-  return(result == IDYES);
+  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO | MB_ICONQUESTION);
+  return (result == IDYES);
 }
 
 /*=====================================*/
@@ -240,7 +250,6 @@ BOOLE modripGuiRunProWiz()
 
   sprintf(message, "You have Pro-Wizard installed in WinFellow's directory.");
   strcat(message, " Do you want to run it over the saved chip memory file?");
-  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
-                          MB_ICONQUESTION);
-  return(result == IDYES);
+  int result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO | MB_ICONQUESTION);
+  return (result == IDYES);
 }

@@ -6,7 +6,7 @@
 
 namespace fellow::hardfile::hunks
 {
-  HeaderHunk* HunkParser::ParseHeader()
+  HeaderHunk *HunkParser::ParseHeader()
   {
     uint32_t type = _rawDataReader.GetNextByteswappedLong();
     if (type != HeaderHunkID)
@@ -20,7 +20,7 @@ namespace fellow::hardfile::hunks
     return header;
   }
 
-  InitialHunk* HunkParser::ParseNextInitialHunk(uint32_t allocateSizeInLongwords)
+  InitialHunk *HunkParser::ParseNextInitialHunk(uint32_t allocateSizeInLongwords)
   {
     uint32_t type = _rawDataReader.GetNextByteswappedLong();
     auto hunk = HunkFactory::CreateInitialHunk(type, allocateSizeInLongwords);
@@ -34,7 +34,7 @@ namespace fellow::hardfile::hunks
     return hunk;
   }
 
-  AdditionalHunk* HunkParser::ParseNextAdditionalHunk(uint32_t sourceHunkIndex)
+  AdditionalHunk *HunkParser::ParseNextAdditionalHunk(uint32_t sourceHunkIndex)
   {
     uint32_t type = _rawDataReader.GetNextByteswappedLong();
     auto hunk = HunkFactory::CreateAdditionalHunk(type, sourceHunkIndex);
@@ -86,8 +86,7 @@ namespace fellow::hardfile::hunks
     return true;
   }
 
-  HunkParser::HunkParser(uint8_t* rawData, uint32_t rawDataLength, FileImage& fileImage)
-    : _rawDataReader(rawData, rawDataLength), _fileImage(fileImage)
+  HunkParser::HunkParser(uint8_t *rawData, uint32_t rawDataLength, FileImage &fileImage) : _rawDataReader(rawData, rawDataLength), _fileImage(fileImage)
   {
   }
 }

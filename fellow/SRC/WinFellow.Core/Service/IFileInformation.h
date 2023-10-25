@@ -24,6 +24,6 @@ namespace Service
   public:
     virtual ~IFileInformation() = default;
     virtual FileProperties *GetFileProperties(const char *filename) = 0;
-    virtual int Stat(const char* szFilename, struct stat* pStatBuffer) = 0;
+    virtual int Stat(const char *szFilename, struct stat *pStatBuffer) = 0;
   };
 }

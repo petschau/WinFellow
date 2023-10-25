@@ -26,7 +26,7 @@
 #include "CpuModule_Internal.h"
 
 /* Exception stack frame jmptables */
-typedef void(*cpuStackFrameGenFunc)(uint16_t, uint32_t);
+typedef void (*cpuStackFrameGenFunc)(uint16_t, uint32_t);
 static cpuStackFrameGenFunc cpu_stack_frame_gen_func[64];
 
 static void cpuSetStackFrameGenFunc(uint32_t vector_no, cpuStackFrameGenFunc func)
@@ -53,13 +53,13 @@ static void cpuFrameGroup1(uint16_t vector_offset, uint32_t pcPtr)
 
 /*========================================================================
   Group 2 Frame format
- 
+
   000:	Bus and address error
- 
+
   memory_fault_address contains the violating address
   memory_fault_read is TRUE if the access was a read
  ========================================================================*/
-	
+
 static void cpuFrameGroup2(uint16_t vector_offset, uint32_t pcPtr)
 {
   // save PC
@@ -93,20 +93,19 @@ static void cpuFrame4Words(uint16_t frame_code, uint16_t vector_offset, uint32_t
   memoryWriteWord((uint16_t)cpuGetSR(), cpuGetAReg(7));
 }
 
-
 /*========================================================================
   Frame format $0, four word frame
- 
+
   Stack words:
   ------------
   SR
   PCHI
   PCLO
   0000 Vector offset (4 upper bits are frame no., rest is vector offset)
- 
+
   010:	All, except bus and address errors
   020:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
- 	Priv. violation, copr preinst
+    Priv. violation, copr preinst
   030:	Same as for 020
   ========================================================================*/
 
@@ -117,14 +116,14 @@ static void cpuFrame0(uint16_t vector_offset, uint32_t pc)
 
 /*========================================================================
   Frame format $1, 4 word throwaway frame
- 
+
   Stack words:
   ------------
   SR
   PCHI
   PCLO
   0000 Vector offset (4 upper bits are frame no., rest is Vvctor offset)
- 
+
   020:	Irq, second frame created
   030:	Same as for 020
   040:	Same as for 020
@@ -137,12 +136,12 @@ void cpuFrame1(uint16_t vector_offset, uint32_t pc)
 
 /*========================================================================
   Frame format $2
- 
+
   020:	chk, chk2, cpTrapcc, trapcc, trapv, trace, zero divide, MMU config,
- 	copr postinst 
+    copr postinst
   030:	Same as for 020
   040:	chk, chk2, FTrapcc, trapcc, trapv, trace, zero divide, address error,
- 	Unimplemented FPU inst. 
+    Unimplemented FPU inst.
   060:	Same as for 040
   ========================================================================*/
 
@@ -156,9 +155,9 @@ static void cpuFrame2(uint16_t vector_offset, uint32_t pc)
 
 /*========================================================================
   Frame format $8
- 
+
   010:	Bus and address error
- 
+
   ========================================================================*/
 
 static void cpuFrame8(uint16_t vector_offset, uint32_t pc)
@@ -169,10 +168,10 @@ static void cpuFrame8(uint16_t vector_offset, uint32_t pc)
 
 /*========================================================================
   Frame format $A
- 
+
   020:	Address or bus-error on instruction boundrary
   030:	Same as for 020
- 
+
   Will not set any values beyond the format/offset word
   Fellow will always generate this frame for bus/address errors
   ========================================================================*/
@@ -186,7 +185,7 @@ static void cpuFrameA(uint16_t vector_offset, uint32_t pc)
 
 void cpuStackFrameGenerate(uint16_t vector_offset, uint32_t pc)
 {
-  cpu_stack_frame_gen_func[vector_offset>>2](vector_offset, pc);
+  cpu_stack_frame_gen_func[vector_offset >> 2](vector_offset, pc);
 }
 
 /*==================================*/
@@ -216,40 +215,32 @@ static void cpuStackFrameInit010()
 static void cpuStackFrameInit020()
 {
   cpuStackFrameInitSetDefaultFunc(cpuFrame0);
-  cpuSetStackFrameGenFunc(2, cpuFrameA);  /* 2  - Bus Error */
-  cpuSetStackFrameGenFunc(3, cpuFrameA);  /* 3  - Addrss Error */
-  cpuSetStackFrameGenFunc(5, cpuFrame2);  /* 5  - Zero Divide */
-  cpuSetStackFrameGenFunc(6, cpuFrame2);  /* 6  - CHK, CHK2 */
-  cpuSetStackFrameGenFunc(7, cpuFrame2);  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpuSetStackFrameGenFunc(9, cpuFrame2);  /* 9  - Trace */
+  cpuSetStackFrameGenFunc(2, cpuFrameA); /* 2  - Bus Error */
+  cpuSetStackFrameGenFunc(3, cpuFrameA); /* 3  - Addrss Error */
+  cpuSetStackFrameGenFunc(5, cpuFrame2); /* 5  - Zero Divide */
+  cpuSetStackFrameGenFunc(6, cpuFrame2); /* 6  - CHK, CHK2 */
+  cpuSetStackFrameGenFunc(7, cpuFrame2); /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpuSetStackFrameGenFunc(9, cpuFrame2); /* 9  - Trace */
 }
 
 static void cpuStackFrameInit030()
 {
   cpuStackFrameInitSetDefaultFunc(cpuFrame0);
-  cpuSetStackFrameGenFunc(2, cpuFrameA);  /* 2  - Bus Error */
-  cpuSetStackFrameGenFunc(3, cpuFrameA);  /* 3  - Addrss Error */
-  cpuSetStackFrameGenFunc(5, cpuFrame2);  /* 5  - Zero Divide */
-  cpuSetStackFrameGenFunc(6, cpuFrame2);  /* 6  - CHK, CHK2 */
-  cpuSetStackFrameGenFunc(7, cpuFrame2);  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpuSetStackFrameGenFunc(9, cpuFrame2);  /* 9  - Trace */
+  cpuSetStackFrameGenFunc(2, cpuFrameA); /* 2  - Bus Error */
+  cpuSetStackFrameGenFunc(3, cpuFrameA); /* 3  - Addrss Error */
+  cpuSetStackFrameGenFunc(5, cpuFrame2); /* 5  - Zero Divide */
+  cpuSetStackFrameGenFunc(6, cpuFrame2); /* 6  - CHK, CHK2 */
+  cpuSetStackFrameGenFunc(7, cpuFrame2); /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpuSetStackFrameGenFunc(9, cpuFrame2); /* 9  - Trace */
 }
 
 void cpuStackFrameInit()
 {
   switch (cpuGetModelMajor())
   {
-    case 0:
-      cpuStackFrameInit000();
-      break;
-    case 1:
-      cpuStackFrameInit010();
-      break;
-    case 2:
-      cpuStackFrameInit020();
-      break;
-    case 3:
-      cpuStackFrameInit030();
-      break;
+    case 0: cpuStackFrameInit000(); break;
+    case 1: cpuStackFrameInit010(); break;
+    case 2: cpuStackFrameInit020(); break;
+    case 3: cpuStackFrameInit030(); break;
   }
 }

@@ -4,7 +4,7 @@
 
 namespace fellow::hardfile::rdb
 {
-  void RDBFileSystemHeader::ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize)
+  void RDBFileSystemHeader::ReadFromFile(RDBFileReader &reader, uint32_t blockChainStart, uint32_t blockSize)
   {
     uint32_t index = blockSize * blockChainStart;
 
@@ -75,26 +75,26 @@ namespace fellow::hardfile::rdb
     _core.Log->AddLogDebug("76 - global vec:             %d\n\n", DnGlobalVec);
   }
 
-  RDBFileSystemHeader::RDBFileSystemHeader() :
-    SizeInLongs(0),
-    CheckSum(0),
-    HostID(0),
-    Next(0),
-    Flags(0),
-    DOSType(0),
-    Version(0),
-    PatchFlags(0),
-    DnType(0),
-    DnTask(0),
-    DnLock(0),
-    DnHandler(0),
-    DnStackSize(0),
-    DnPriority(0),
-    DnStartup(0),
-    DnSegListBlock(0),
-    DnGlobalVec(0),
-    HasValidCheckSum(false),
-    HasFileSystemDataErrors(false)
+  RDBFileSystemHeader::RDBFileSystemHeader()
+    : SizeInLongs(0),
+      CheckSum(0),
+      HostID(0),
+      Next(0),
+      Flags(0),
+      DOSType(0),
+      Version(0),
+      PatchFlags(0),
+      DnType(0),
+      DnTask(0),
+      DnLock(0),
+      DnHandler(0),
+      DnStackSize(0),
+      DnPriority(0),
+      DnStartup(0),
+      DnSegListBlock(0),
+      DnGlobalVec(0),
+      HasValidCheckSum(false),
+      HasFileSystemDataErrors(false)
   {
     memset(Reserved2, 0, sizeof Reserved2);
   }

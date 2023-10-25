@@ -62,6 +62,5 @@ public:
 
   void EndOfFrame();
 
-  BitplaneDMA() : GraphicsEvent(), _stopDDF(false), _state(BPL_DMA_STATE_NONE) {};
-
+  BitplaneDMA() : GraphicsEvent(), _stopDDF(false), _state(BPL_DMA_STATE_NONE){};
 };

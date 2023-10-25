@@ -54,8 +54,8 @@
 #if MODRIPDOLOGGING
 
 /* define this to have logfile output */
-#define RIPLOG1(x)       _core.Log->AddLog(x);
-#define RIPLOG2(x, y)    _core.Log->AddLog(x, y);
+#define RIPLOG1(x) _core.Log->AddLog(x);
+#define RIPLOG2(x, y) _core.Log->AddLog(x, y);
 #define RIPLOG3(x, y, z) _core.Log->AddLog(x, y, z);
 #else
 #define RIPLOG1(x)
@@ -69,18 +69,18 @@ static uint32_t modripModsFound;
 /* macros for accessing big endian style values */
 /*==============================================*/
 
-#define BYTE(x)    ((*func)((x)))
-#define BEWORD(x)  ((*func)((x)) << 8 | (*func)((x)+1))
-#define BEDWORD(x) ((*func)((x)) << 24 | (*func)((x)+1) << 16 | (*func)((x)+2) << 8 | (*func)((x)+3))
+#define BYTE(x) ((*func)((x)))
+#define BEWORD(x) ((*func)((x)) << 8 | (*func)((x) + 1))
+#define BEDWORD(x) ((*func)((x)) << 24 | (*func)((x) + 1) << 16 | (*func)((x) + 2) << 8 | (*func)((x) + 3))
 
 /*===============================================================*/
 /* saves mem for a detect module with a filled ModuleInfo struct */
 /* gets the values via memory access function func               */
 /*===============================================================*/
 
-BOOLE modripSaveMem(struct ModuleInfo* info, MemoryAccessFunc func)
+BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 {
-  FILE* modfile;
+  FILE *modfile;
 
   if (info == nullptr) return FALSE;
 
@@ -102,9 +102,9 @@ BOOLE modripSaveMem(struct ModuleInfo* info, MemoryAccessFunc func)
 /* Thanks to Sylvain for the idea :)          */
 /*============================================*/
 
-static BOOLE modripSaveChipMem(char* filename)
+static BOOLE modripSaveChipMem(char *filename)
 {
-  FILE* memfile;
+  FILE *memfile;
   if (!filename || !(*filename)) return FALSE;
   if ((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
   size_t written = fwrite(memory_chip, 1, memoryGetChipSize(), memfile);
@@ -113,9 +113,9 @@ static BOOLE modripSaveChipMem(char* filename)
   return TRUE;
 }
 
-static BOOLE modripSaveSlowMem(char* filename)
+static BOOLE modripSaveSlowMem(char *filename)
 {
-  FILE* memfile;
+  FILE *memfile;
   if (!filename || !(*filename)) return FALSE;
   if ((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
   size_t written = fwrite(memory_slow, 1, memoryGetSlowSize(), memfile);
@@ -124,9 +124,9 @@ static BOOLE modripSaveSlowMem(char* filename)
   return TRUE;
 }
 
-static BOOLE modripSaveFastMem(char* filename)
+static BOOLE modripSaveFastMem(char *filename)
 {
-  FILE* memfile;
+  FILE *memfile;
   if (!filename || !(*filename)) return FALSE;
   if ((memfile = fopen(filename, "wb")) == nullptr) return FALSE;
   size_t written = fwrite(memory_fast, 1, memoryGetFastSize(), memfile);
@@ -139,7 +139,7 @@ static BOOLE modripSaveFastMem(char* filename)
 /* fills a ModuleInfo struct with zeroes */
 /*=======================================*/
 
-static void modripModuleInfoInitialize(ModuleInfo* info)
+static void modripModuleInfoInitialize(ModuleInfo *info)
 {
   if (info) memset(info, 0, sizeof(ModuleInfo));
 }
@@ -152,25 +152,28 @@ static void modripModuleInfoInitialize(ModuleInfo* info)
 static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
 {
   uint32_t i;
-  struct { const char* ID; const char* Desc; int channels; } formats[9] = {
-    {"M.K.", "Noisetracker",  4},
-    {"N.T.", "Noisetracker",  4},
-    {"M!K!", "Protracker",    4},
-    {"4CHN", "4 channel",     4},
-    {"6CHN", "6 channel",     6},
-    {"8CHN", "8 channel",     8},
-    {"FLT4", "Startrekker 4", 4},
-    {"FLT8", "Startrekker 8", 8},
-    {"M&K!", "Noisetracker",  4}
-  };
+  struct
+  {
+    const char *ID;
+    const char *Desc;
+    int channels;
+  } formats[9] = {
+      {"M.K.", "Noisetracker", 4},
+      {"N.T.", "Noisetracker", 4},
+      {"M!K!", "Protracker", 4},
+      {"4CHN", "4 channel", 4},
+      {"6CHN", "6 channel", 6},
+      {"8CHN", "8 channel", 8},
+      {"FLT4", "Startrekker 4", 4},
+      {"FLT8", "Startrekker 8", 8},
+      {"M&K!", "Noisetracker", 4}};
   struct ModuleInfo info;
 
-  for (int type = 0; type < 9; type++) {
-    if (((*func)(address + 0) == formats[type].ID[0])
-      && ((*func)(address + 1) == formats[type].ID[1])
-      && ((*func)(address + 2) == formats[type].ID[2])
-      && ((*func)(address + 3) == formats[type].ID[3])
-      ) {
+  for (int type = 0; type < 9; type++)
+  {
+    if (((*func)(address + 0) == formats[type].ID[0]) && ((*func)(address + 1) == formats[type].ID[1]) && ((*func)(address + 2) == formats[type].ID[2]) &&
+        ((*func)(address + 3) == formats[type].ID[3]))
+    {
 
       RIPLOG2("mod-ripper ProTracker %s match\n", formats[type].ID);
 
@@ -188,7 +191,8 @@ static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
       /* get sample size */
       info.samplesize = 0;
 
-      for (i = 0; i <= 30; i++) {
+      for (i = 0; i <= 30; i++)
+      {
         info.samplesize += BEWORD(info.start + 0x2a + i * 0x1e) * 2;
       }
 
@@ -202,21 +206,22 @@ static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
 
       RIPLOG2("songlength = %u\n", info.songlength);
 
-      if ((info.songlength > MODRIP_MAXMODLEN)
-        || (info.songlength == 0)) return;
+      if ((info.songlength > MODRIP_MAXMODLEN) || (info.songlength == 0)) return;
 
       /* scan for max. amount of patterns */
       info.maxpattern = 0;
 
-      for (i = 0; i <= info.songlength; i++) {
-        if (info.maxpattern < (*func)(info.start + 0x3b8 + i)) {
+      for (i = 0; i <= info.songlength; i++)
+      {
+        if (info.maxpattern < (*func)(info.start + 0x3b8 + i))
+        {
           info.maxpattern = (*func)(info.start + 0x3b8 + i);
         }
       }
 
       RIPLOG2("maxpattern = %u\n", info.maxpattern);
 
-      if (info.maxpattern > 127) return;		/* @@@@@ is this value correct ? */
+      if (info.maxpattern > 127) return; /* @@@@@ is this value correct ? */
 
       info.patternsize = (info.maxpattern + 1) * 64 * 4 * info.channels;
 
@@ -228,27 +233,33 @@ static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
 
       if (info.end < info.start) return;
 
-      if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+      if ((info.end - info.start < MODRIP_MAXMODLEN))
+      {
         /* get module name */
-        for (i = 0; i < 20; i++) {
+        for (i = 0; i < 20; i++)
+        {
           info.modname[i] = (char)((*func)(info.start + i));
         }
         info.modname[20] = 0;
 
         /* set filename for the module file */
-        if (strlen(info.modname) > 2) {
+        if (strlen(info.modname) > 2)
+        {
           BOOLE ScratchyName = FALSE;
-          for (i = 0; (i < 20) && (info.modname[i] != 0); i++) {
+          for (i = 0; (i < 20) && (info.modname[i] != 0); i++)
+          {
             if (!isprint(info.modname[i])) ScratchyName = TRUE;
           }
-          if (!ScratchyName) {
+          if (!ScratchyName)
+          {
             strcpy(info.filename, info.modname);
             strcat(info.filename, ".amod");
           }
           else
             sprintf(info.filename, "mod%u.amod", modripModsFound++);
         }
-        else {
+        else
+        {
           sprintf(info.filename, "mod%u.mod", modripModsFound++);
         }
 
@@ -257,7 +268,6 @@ static void modripDetectProTracker(uint32_t address, MemoryAccessFunc func)
     }
   }
 }
-
 
 /*============================*/
 /* detect SoundFX 1.3 and 2.0 */
@@ -271,9 +281,11 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
   uint32_t i;
   ModuleInfo info;
 
-  if (((*func)(address + 0) == 'S') && ((*func)(address + 1) == 'O')) {
+  if (((*func)(address + 0) == 'S') && ((*func)(address + 1) == 'O'))
+  {
     modripModuleInfoInitialize(&info);
-    if (((*func)(address + 2) == 'N') && ((*func)(address + 3) == 'G')) {
+    if (((*func)(address + 2) == 'N') && ((*func)(address + 3) == 'G'))
+    {
 
       RIPLOG1("mod-ripper SoundFX 1.3 (SONG) match\n");
 
@@ -283,7 +295,8 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
       strcpy(info.typedesc, "SoundFX 1.3");
       strcpy(info.typesig, "SONG");
     }
-    if (((*func)(address + 2) == '3') && ((*func)(address + 3) == '1')) {
+    if (((*func)(address + 2) == '3') && ((*func)(address + 3) == '1'))
+    {
 
       RIPLOG1("mod-ripper SoundFX 2.0 (SO31) match\n");
 
@@ -293,34 +306,38 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
       strcpy(info.typedesc, "SoundFX 2.0");
       strcpy(info.typesig, "SO31");
     }
-    if (match) {
-      uint32_t offset = 0; uint32_t size = 0;
+    if (match)
+    {
+      uint32_t offset = 0;
+      uint32_t size = 0;
 
       /* add instrument lengths to size */
       for (i = 0; i < info.instruments; i++)
         size += BEDWORD(info.start + i * 4);
 
       /* move to instrument table */
-      if (info.instruments == 15) {
+      if (info.instruments == 15)
+      {
         /* SoundFX 1.3 */
         offset += 80;
         size += 80;
       }
-      else {
+      else
+      {
         /* SoundFX 2.0 */
         offset += 144;
         size += 144;
       }
 
       /* walk over instrument table */
-      for (i = 0; i < info.instruments; i++) {
+      for (i = 0; i < info.instruments; i++)
+      {
         offset += 30;
         size += 30;
       }
 
       unsigned patterns = (*func)(info.start + offset);
-      if ((patterns > MODRIP_MAXMODLEN)
-        || (patterns == 0)) return;
+      if ((patterns > MODRIP_MAXMODLEN) || (patterns == 0)) return;
 
       RIPLOG2("patterns = %u\n", patterns);
 
@@ -331,8 +348,7 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
       for (i = 0; i < patterns; i++)
         info.maxpattern = max(info.maxpattern, (*func)(info.start + offset + i));
 
-      if ((info.maxpattern > MODRIP_MAXMODLEN) ||
-        (info.maxpattern == 0)) return;
+      if ((info.maxpattern > MODRIP_MAXMODLEN) || (info.maxpattern == 0)) return;
 
       RIPLOG2("maxpattern = %u\n", info.maxpattern);
 
@@ -341,7 +357,8 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
 
       if (info.end < info.start) return;
 
-      if (size < MODRIP_MAXMODLEN) {
+      if (size < MODRIP_MAXMODLEN)
+      {
         /* set filename for the module file */
         sprintf(info.filename, "SFX.Mod%u.amod", modripModsFound++);
 
@@ -350,7 +367,6 @@ static void modripDetectSoundFX(uint32_t address, MemoryAccessFunc func)
     }
   }
 }
-
 
 /*===========================*/
 /* detect BP-SoundMon        */
@@ -366,27 +382,27 @@ static void modripDetectSoundMon(uint32_t address, MemoryAccessFunc func)
   uint32_t offset = 0, patterns = 0;
   uint32_t temp = 0, i = 0;
 
-  if (((*func)(address + 0) == 'B')
-    && ((*func)(address + 1) == 'P')
-    && ((*func)(address + 2) == 'S')
-    && ((*func)(address + 3) == 'M')) {
+  if (((*func)(address + 0) == 'B') && ((*func)(address + 1) == 'P') && ((*func)(address + 2) == 'S') && ((*func)(address + 3) == 'M'))
+  {
     FoundHeader = TRUE;
     modripModuleInfoInitialize(&info);
     strcpy(info.typedesc, "SoundMon v1.0");
     strcpy(info.typesig, "BPSM");
     version = 1;
   }
-  if (((*func)(address + 0) == 'V')
-    && ((*func)(address + 1) == '.')) {
+  if (((*func)(address + 0) == 'V') && ((*func)(address + 1) == '.'))
+  {
     modripModuleInfoInitialize(&info);
-    if ((*func)(address + 2) == '2') {
+    if ((*func)(address + 2) == '2')
+    {
       FoundHeader = TRUE;
       modripModuleInfoInitialize(&info);
       strcpy(info.typedesc, "SoundMon v2.0");
       strcpy(info.typesig, "V.2");
       version = 2;
     }
-    if ((*func)(address + 2) == '3') {
+    if ((*func)(address + 2) == '3')
+    {
       FoundHeader = TRUE;
       modripModuleInfoInitialize(&info);
       strcpy(info.typedesc, "SoundMon v2.2");
@@ -398,8 +414,7 @@ static void modripDetectSoundMon(uint32_t address, MemoryAccessFunc func)
 
   info.start = address - 26;
 
-  RIPLOG3("mod-ripper found match for SoundMon (%s) at 0x%06x.\n",
-    info.typesig, info.start);
+  RIPLOG3("mod-ripper found match for SoundMon (%s) at 0x%06x.\n", info.typesig, info.start);
 
   info.end = info.start;
 
@@ -411,54 +426,59 @@ static void modripDetectSoundMon(uint32_t address, MemoryAccessFunc func)
 
   RIPLOG2("patterns = %u\n", patterns);
 
-  if ((patterns > MODRIP_MAXMODLEN)
-    || (patterns == 0)) return;
+  if ((patterns > MODRIP_MAXMODLEN) || (patterns == 0)) return;
 
   offset += 32;
-  for (i = 0; i < 15; i++) {
-    if ((*func)(info.start + offset) != 255) {
+  for (i = 0; i < 15; i++)
+  {
+    if ((*func)(info.start + offset) != 255)
+    {
       temp = BEWORD(info.start + offset + 24) * 2;
-      if (temp > 0)
-        info.end += temp;
+      if (temp > 0) info.end += temp;
     }
     offset += 32;
   }
   info.end += 512;
 
-  for (i = 0; i < patterns * 4; i++) {
+  for (i = 0; i < patterns * 4; i++)
+  {
     temp = BEWORD(info.start + offset + i * 4);
     info.maxpattern = max(info.maxpattern, temp);
   }
 
   RIPLOG2("maxpattern = %u\n", info.maxpattern);
 
-  if ((info.maxpattern > MODRIP_MAXMODLEN)
-    || (info.maxpattern == 0)) return;
+  if ((info.maxpattern > MODRIP_MAXMODLEN) || (info.maxpattern == 0)) return;
 
   info.end += (patterns * 16 + info.maxpattern * 48);
   info.end += info.instruments * 64;
 
   if (info.end < info.start) return;
 
-  if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+  if ((info.end - info.start < MODRIP_MAXMODLEN))
+  {
     /* get song name */
-    for (i = 0; i < 26; i++) {
+    for (i = 0; i < 26; i++)
+    {
       info.modname[i] = (char)((*func)(info.start + i));
     }
     info.modname[26] = 0;
 
     /* set filename */
-    if (strlen(info.modname) > 2) {
+    if (strlen(info.modname) > 2)
+    {
       BOOLE ScratchyName = FALSE;
-      for (i = 0; (i < 26) && (info.modname[i] != 0); i++) {
-        if (!isprint(info.modname[i])) {
+      for (i = 0; (i < 26) && (info.modname[i] != 0); i++)
+      {
+        if (!isprint(info.modname[i]))
+        {
           ScratchyName = TRUE;
           break;
         }
-        if (isupper(info.modname[i]))
-          info.modname[i] = tolower(info.modname[i]);
+        if (isupper(info.modname[i])) info.modname[i] = tolower(info.modname[i]);
       }
-      if (!ScratchyName) {
+      if (!ScratchyName)
+      {
         sprintf(info.filename, "BP.");
         strcat(info.filename, info.modname);
         strcat(info.filename, ".amod");
@@ -466,7 +486,8 @@ static void modripDetectSoundMon(uint32_t address, MemoryAccessFunc func)
       else
         sprintf(info.filename, "BP.Mod%u.amod", modripModsFound++);
     }
-    else {
+    else
+    {
       sprintf(info.filename, "BP.Mod%u.amod", modripModsFound++);
     }
 
@@ -495,23 +516,18 @@ static void modripDetectFred(uint32_t address, MemoryAccessFunc func)
   const uint32_t cmp_68k = 0xb0016200;
 
   /* Fred files start with a jump table */
-  if (
-    (BEWORD(address + 0) == jmp_68k)
-    && (BEWORD(address + 4) == jmp_68k)
-    && (BEWORD(address + 8) == jmp_68k)
-    && (BEWORD(address + 12) == jmp_68k)
-    ) {
+  if ((BEWORD(address + 0) == jmp_68k) && (BEWORD(address + 4) == jmp_68k) && (BEWORD(address + 8) == jmp_68k) && (BEWORD(address + 12) == jmp_68k))
+  {
 
     RIPLOG1("mod-ripper possible match for FredEditor.\n");
 
     offset = 2;
 
     /* search for beginning of init block */
-    for (i = 0; i < 64; i++) {
-      if (
-        (BEWORD(address + offset + 0) == mov_68k)
-        && (BEDWORD(address + offset + 4) == cmp_68k)
-        ) {
+    for (i = 0; i < 64; i++)
+    {
+      if ((BEWORD(address + offset + 0) == mov_68k) && (BEDWORD(address + offset + 4) == cmp_68k))
+      {
         match = TRUE;
         break;
       }
@@ -530,11 +546,8 @@ static void modripDetectFred(uint32_t address, MemoryAccessFunc func)
   info.start = address;
   info.end = address;
 
-  for (i = 0;
-    (i < 512)
-    && (BEWORD(address + i + 0) != 0x4bfa)
-    && (BEWORD(address + i + 4) != 0xdbfa);
-    i += 2);
+  for (i = 0; (i < 512) && (BEWORD(address + i + 0) != 0x4bfa) && (BEWORD(address + i + 4) != 0xdbfa); i += 2)
+    ;
 
   RIPLOG2("mod-ripper checkpoint i (%u)\n", i);
 
@@ -545,11 +558,8 @@ static void modripDetectFred(uint32_t address, MemoryAccessFunc func)
   ModuleStart = offset - 0x10000 + BEWORD(address + offset);
   instDataOffset = BEWORD(address + offset + 4) + offset + 4;
 
-  for (j = 0;
-    (j < 254)
-    && (BEWORD(address + i + j + 0) != 0x47fa)
-    && (BEWORD(address + i + j + 4) != 0xd7fa);
-    j += 2);
+  for (j = 0; (j < 254) && (BEWORD(address + i + j + 0) != 0x47fa) && (BEWORD(address + i + j + 4) != 0xd7fa); j += 2)
+    ;
 
   RIPLOG2("mod-ripper checkpoint j (%u)\n", j);
 
@@ -563,30 +573,30 @@ static void modripDetectFred(uint32_t address, MemoryAccessFunc func)
 
   songDataOffset = BEWORD(address + offset + 4) + offset + 4;
 
-  if (ModuleStart < 0) {
+  if (ModuleStart < 0)
+  {
     instData = BEDWORD(address + instDataOffset) + ModuleStart;
     songData = BEDWORD(address + songDataOffset) + ModuleStart;
   }
-  else {
+  else
+  {
     instData = BEDWORD(address + instDataOffset);
     songData = BEDWORD(address + songDataOffset);
   }
 
   songNo = (*func)(address + instDataOffset - 13) + 1;
 
-  for (i = songData; i < (uint32_t)instData; i++) {
-    if ((*func)(address + i) == 0x83)
-      instMax = max((*func)(address + i + 1), (uint32_t)instMax);
+  for (i = songData; i < (uint32_t)instData; i++)
+  {
+    if ((*func)(address + i) == 0x83) instMax = max((*func)(address + i + 1), (uint32_t)instMax);
   }
   instMax++;
 
-  for (i = 0; i < (uint32_t)instMax; i++) {
+  for (i = 0; i < (uint32_t)instMax; i++)
+  {
     sampDataOffset = BEDWORD(address + instData + i * 64);
-    if (
-      (BEWORD(address + instData + i * 64 + 4) == 0)
-      && (sampDataOffset != 0)
-      && (sampDataOffset < 0x2ffff)
-      ) {
+    if ((BEWORD(address + instData + i * 64 + 4) == 0) && (sampDataOffset != 0) && (sampDataOffset < 0x2ffff))
+    {
       sampSize = BEWORD(address + instData + i * 64 + 6);
       sampMax = max(sampMax, (sampSize * 2 + sampDataOffset));
       instNo++;
@@ -598,7 +608,8 @@ static void modripDetectFred(uint32_t address, MemoryAccessFunc func)
   else
     info.end += instData + instMax * 64;
 
-  if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+  if ((info.end - info.start < MODRIP_MAXMODLEN))
+  {
     sprintf(info.filename, "FRED.Mod%u.amod", modripModsFound++);
 
     modripGuiSaveRequest(&info, func);
@@ -616,27 +627,22 @@ static void modripDetectProRunner2(uint32_t address, MemoryAccessFunc func)
   uint32_t sampSize = 0, sampPtr = 0;
   struct ModuleInfo info;
 
-  if (
-    (BYTE(address + 0) != 'S')
-    || (BYTE(address + 1) != 'N')
-    || (BYTE(address + 2) != 'T')
-    || (BYTE(address + 3) != '!')
-    ) return;
+  if ((BYTE(address + 0) != 'S') || (BYTE(address + 1) != 'N') || (BYTE(address + 2) != 'T') || (BYTE(address + 3) != '!')) return;
 
   RIPLOG1("mod-ripper possible ProRunner 2.0 match...\n");
 
   RIPLOG1("checkpoint 1: finetune values...\n");
   /* check finetune values */
-  for (i = 0; i < 31; i++) {
-    if (BYTE(address + 10 + 8 * i) > 0xf)
-      return;
+  for (i = 0; i < 31; i++)
+  {
+    if (BYTE(address + 10 + 8 * i) > 0xf) return;
   }
 
   RIPLOG1("checkpoint 2: volume values...\n");
   /* check volume values */
-  for (i = 0; i < 31; i++) {
-    if (BYTE(address + 11 + 8 * i) > 0x40)
-      return;
+  for (i = 0; i < 31; i++)
+  {
+    if (BYTE(address + 11 + 8 * i) > 0x40) return;
   }
 
   modripModuleInfoInitialize(&info);
@@ -654,7 +660,8 @@ static void modripDetectProRunner2(uint32_t address, MemoryAccessFunc func)
 
   info.end += sampPtr + sampSize;
 
-  if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+  if ((info.end - info.start < MODRIP_MAXMODLEN))
+  {
     sprintf(info.filename, "PR2.Mod%u.amod", modripModsFound++);
 
     modripGuiSaveRequest(&info, func);
@@ -674,25 +681,27 @@ static void modripDetectThePlayer4(uint32_t address, MemoryAccessFunc func)
   uint32_t sampDataPtr = 0, sampDataCurr = 0;
   uint32_t sampSizeCurr, loopSizeCurr;
   uint32_t i;
-  BOOLE match = FALSE;;
+  BOOLE match = FALSE;
+  ;
 
-  if (
-    (BYTE(address + 0) == 'P')
-    && (BYTE(address + 1) == '4')
-    ) {
+  if ((BYTE(address + 0) == 'P') && (BYTE(address + 1) == '4'))
+  {
     RIPLOG1("mod-ripper found possible ThePlayer 4 match...\n");
 
     modripModuleInfoInitialize(&info);
 
-    if ((BYTE(address + 2) == '0') && (BYTE(address + 3) == 'A')) {
+    if ((BYTE(address + 2) == '0') && (BYTE(address + 3) == 'A'))
+    {
       match = TRUE;
       strcpy(info.typesig, "P40A");
     }
-    if ((BYTE(address + 2) == '0') && (BYTE(address + 3) == 'B')) {
+    if ((BYTE(address + 2) == '0') && (BYTE(address + 3) == 'B'))
+    {
       match = TRUE;
       strcpy(info.typesig, "P40B");
     }
-    if ((BYTE(address + 2) == '1') && (BYTE(address + 3) == 'A')) {
+    if ((BYTE(address + 2) == '1') && (BYTE(address + 3) == 'A'))
+    {
       match = TRUE;
       strcpy(info.typesig, "P41A");
     }
@@ -714,7 +723,8 @@ static void modripDetectThePlayer4(uint32_t address, MemoryAccessFunc func)
   RIPLOG2("number of samples %u\n", sampNo);
 
   /* check sample sizes */
-  for (i = 0; i < sampNo; i++) {
+  for (i = 0; i < sampNo; i++)
+  {
     if ((sampSizeCurr = BEWORD(address + 24) << 1) > 0xffff) return;
     if ((loopSizeCurr = BEWORD(address + 30) << 1) > 0xffff) return;
     if (sampSizeCurr + 2 < loopSizeCurr) return;
@@ -732,8 +742,10 @@ static void modripDetectThePlayer4(uint32_t address, MemoryAccessFunc func)
 
   /* determine real sample size */
   sampSize = 0;
-  for (i = 0; i < sampNo; i++) {
-    if ((sampDataCurr = BEDWORD(address + 20)) > sampSize) {
+  for (i = 0; i < sampNo; i++)
+  {
+    if ((sampDataCurr = BEDWORD(address + 20)) > sampSize)
+    {
       sampSize = sampDataCurr;
       loopSizeCurr = BEWORD(address + 24);
     }
@@ -745,7 +757,8 @@ static void modripDetectThePlayer4(uint32_t address, MemoryAccessFunc func)
 
   info.end = info.start + sampDataPtr + sampSize + (loopSizeCurr << 1);
 
-  if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+  if ((info.end - info.start < MODRIP_MAXMODLEN))
+  {
     sprintf(info.filename, "%s.Mod%u.amod", info.typesig, modripModsFound++);
     modripGuiSaveRequest(&info, func);
   }
@@ -762,13 +775,7 @@ static void modripDetectThePlayer4(uint32_t address, MemoryAccessFunc func)
 #define MODRIP_KNOWNFORMATS 6
 
 static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
-  modripDetectProTracker,
-  modripDetectSoundFX,
-  modripDetectSoundMon,
-  modripDetectFred,
-  modripDetectProRunner2,
-  modripDetectThePlayer4
-};
+    modripDetectProTracker, modripDetectSoundFX, modripDetectSoundMon, modripDetectFred, modripDetectProRunner2, modripDetectThePlayer4};
 
 /*==============================================*/
 /* scan the emulated amiga's memory for modules */
@@ -779,16 +786,17 @@ static void modripScanFellowMemory()
   uint32_t i, j;
   uint32_t ChipSize = 0, BogoSize = 0, FastSize = 0;
 
-  if (modripGuiRipMemory()) {
+  if (modripGuiRipMemory())
+  {
     ChipSize = memoryGetChipSize();
     BogoSize = memoryGetSlowSize();
     FastSize = memoryGetFastSize();
 
     RIPLOG1("mod-ripper now scanning memory...\n");
 
-    if (ChipSize) {
-      RIPLOG2("mod-ripper running over chip memory (%u KB allocated)...\n",
-        ChipSize >> 10);
+    if (ChipSize)
+    {
+      RIPLOG2("mod-ripper running over chip memory (%u KB allocated)...\n", ChipSize >> 10);
 
       /* chip memory starts at amiga address $0 */
       for (i = 0; i < ChipSize; i++)
@@ -796,9 +804,9 @@ static void modripScanFellowMemory()
           (*DetectFunctions[j])(i, memoryReadByte);
     }
 
-    if (BogoSize) {
-      RIPLOG2("mod-ripper running over bogo memory (%u KB allocated)...\n",
-        BogoSize >> 10);
+    if (BogoSize)
+    {
+      RIPLOG2("mod-ripper running over bogo memory (%u KB allocated)...\n", BogoSize >> 10);
 
       /* bogo memory starts at amiga address $C00000 */
       for (i = 0xc00000; i < (0xc00000 + BogoSize); i++)
@@ -806,9 +814,9 @@ static void modripScanFellowMemory()
           (*DetectFunctions[j])(i, memoryReadByte);
     }
 
-    if (FastSize) {
-      RIPLOG2("mod-ripper running over fast memory (%u KB allocated)...\n",
-        FastSize >> 10);
+    if (FastSize)
+    {
+      RIPLOG2("mod-ripper running over fast memory (%u KB allocated)...\n", FastSize >> 10);
 
       /* fast memory usually starts at amiga address $200000 */
       for (i = 0x200000; i < (0x200000 + FastSize); i++)
@@ -822,39 +830,41 @@ static void modripScanFellowMemory()
 /* floppy cache memory access wrapper */
 /*====================================*/
 
-#define MODRIP_ADFSIZE   0xDC000
+#define MODRIP_ADFSIZE 0xDC000
 #define MODRIP_FLOPCACHE 0xFFFFF
 
 /* meant to hold the read floppy cache */
-static char* modripCurrentFloppyCache = nullptr;
+static char *modripCurrentFloppyCache = nullptr;
 
 static uint8_t modripFloppyCacheRead(uint32_t address)
 {
-  return(modripCurrentFloppyCache[address & MODRIP_FLOPCACHE]);
+  return (modripCurrentFloppyCache[address & MODRIP_FLOPCACHE]);
 }
 
 /*========================================*/
 /* read a floppy image into a given cache */
 /*========================================*/
 
-static BOOLE modripReadFloppyImage(char* filename, char* cache)
+static BOOLE modripReadFloppyImage(char *filename, char *cache)
 {
-  FILE* f;
+  FILE *f;
   char message[MODRIP_TEMPSTRLEN];
   int readbytes;
 
-  if (f = fopen(filename, "rb")) {
-    if (readbytes = fread(cache, sizeof(char), MODRIP_ADFSIZE, f) != MODRIP_ADFSIZE) {
+  if (f = fopen(filename, "rb"))
+  {
+    if (readbytes = fread(cache, sizeof(char), MODRIP_ADFSIZE, f) != MODRIP_ADFSIZE)
+    {
       fclose(f);
-      sprintf(message, "The disk image %s is of a wrong size (read %d bytes).",
-        filename, readbytes);
+      sprintf(message, "The disk image %s is of a wrong size (read %d bytes).", filename, readbytes);
       modripGuiError(message);
       return FALSE;
     }
     fclose(f);
     return TRUE;
   }
-  else {
+  else
+  {
     sprintf(message, "Couldn't open file %s for reading.", filename);
     modripGuiError(message);
     return FALSE;
@@ -871,22 +881,26 @@ static void modripScanFellowFloppies()
 
   modripCurrentFloppyCache = cache;
 
-  for (int driveNo = 0; driveNo < 4; driveNo++) { /* for each drive */
-    if (floppy[driveNo].inserted) { /* check if a floppy is inserted */
-      if (modripGuiRipFloppy(driveNo)) { /* does the user want to rip? */
+  for (int driveNo = 0; driveNo < 4; driveNo++)
+  { /* for each drive */
+    if (floppy[driveNo].inserted)
+    { /* check if a floppy is inserted */
+      if (modripGuiRipFloppy(driveNo))
+      { /* does the user want to rip? */
         memset(cache, 0, MODRIP_FLOPCACHE);
         BOOLE Read = FALSE;
-        if (*floppy[driveNo].imagenamereal) {
+        if (*floppy[driveNo].imagenamereal)
+        {
           RIPLOG2("mod-ripper %s\n", floppy[driveNo].imagenamereal);
-          if (modripReadFloppyImage(floppy[driveNo].imagenamereal, cache))
-            Read = TRUE;
+          if (modripReadFloppyImage(floppy[driveNo].imagenamereal, cache)) Read = TRUE;
         }
-        else if (*floppy[driveNo].imagename) {
+        else if (*floppy[driveNo].imagename)
+        {
           RIPLOG2("mod-ripper %s\n", floppy[driveNo].imagename);
-          if (modripReadFloppyImage(floppy[driveNo].imagename, cache))
-            Read = TRUE;
+          if (modripReadFloppyImage(floppy[driveNo].imagename, cache)) Read = TRUE;
         }
-        if (Read) {
+        if (Read)
+        {
           /* now really begin the ripping */
           for (uint32_t i = 0; i <= MODRIP_ADFSIZE; i++)
             for (int j = 0; j < MODRIP_KNOWNFORMATS; j++)
@@ -905,7 +919,8 @@ void modripChipDump()
 {
   BOOLE Saved = FALSE;
 
-  if (modripGuiDumpChipMem()) {
+  if (modripGuiDumpChipMem())
+  {
     char filenamechip[MAX_PATH];
 
     _core.Fileops->GetGenericFileName(filenamechip, "WinFellow", "chip.mem");
@@ -922,10 +937,13 @@ void modripChipDump()
       _core.Fileops->GetGenericFileName(filename, "WinFellow", "fast.mem");
       modripSaveFastMem(filename);
     }
-    if (Saved) {
-      if (!access("prowiz.exe", 04)) {
+    if (Saved)
+    {
+      if (!access("prowiz.exe", 04))
+      {
         /* prowiz.exe has been found */
-        if (modripGuiRunProWiz()) {
+        if (modripGuiRunProWiz())
+        {
           char commandline[MAX_PATH];
           sprintf(commandline, "prowiz.exe \"%s\"", filenamechip);
           _core.Log->AddLog("Running Pro-Wizard: %s ...\n", commandline);

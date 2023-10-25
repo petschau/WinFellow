@@ -101,16 +101,16 @@ namespace fellow::vm
   }
 
   void MemorySystem::BankSet(
-    ReadByteFunc rb,
-    ReadWordFunc rw,
-    ReadLongFunc rl,
-    WriteByteFunc wb,
-    WriteWordFunc ww,
-    WriteLongFunc wl,
-    uint8_t *basep,
-    uint32_t bank,
-    uint32_t basebank,
-    BOOLE pointer_can_write)
+      ReadByteFunc rb,
+      ReadWordFunc rw,
+      ReadLongFunc rl,
+      WriteByteFunc wb,
+      WriteWordFunc ww,
+      WriteLongFunc wl,
+      uint8_t *basep,
+      uint32_t bank,
+      uint32_t basebank,
+      BOOLE pointer_can_write)
   {
     memoryBankSet(rb, rw, rl, wb, ww, wl, basep, bank, basebank, pointer_can_write);
   }

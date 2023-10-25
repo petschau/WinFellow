@@ -8,16 +8,16 @@ namespace fellow::hardfile::hunks
     return ID;
   }
 
-  void CodeHunk::Parse(RawDataReader& rawDataReader)
+  void CodeHunk::Parse(RawDataReader &rawDataReader)
   {
     _contentSizeInLongwords = rawDataReader.GetNextByteswappedLong();
     _rawData.reset(rawDataReader.GetNextBytes(GetContentSizeInLongwords()));
 
-    _core.Log->AddLogDebug("fhfile: RDB Filesystem - Code hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, GetContentSizeInBytes(), GetAllocateSizeInBytes());
+    _core.Log->AddLogDebug(
+        "fhfile: RDB Filesystem - Code hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, GetContentSizeInBytes(), GetAllocateSizeInBytes());
   }
 
-  CodeHunk::CodeHunk(uint32_t allocateSizeInLongwords)
-    : InitialHunk(allocateSizeInLongwords)
+  CodeHunk::CodeHunk(uint32_t allocateSizeInLongwords) : InitialHunk(allocateSizeInLongwords)
   {
   }
 }

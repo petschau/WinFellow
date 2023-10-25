@@ -10,7 +10,7 @@ namespace fellow::hardfile::hunks
     return ID;
   }
 
-  void BSSHunk::Parse(RawDataReader& rawDataReader)
+  void BSSHunk::Parse(RawDataReader &rawDataReader)
   {
     _contentSizeInLongwords = rawDataReader.GetNextByteswappedLong();
     uint32_t size = GetContentSizeInBytes();
@@ -20,8 +20,7 @@ namespace fellow::hardfile::hunks
     _core.Log->AddLogDebug("fhfile: RDB filesystem - BSS hunk (%u), content length in bytes %u, allocate length in bytes %u\n", ID, size, GetAllocateSizeInBytes());
   }
 
-  BSSHunk::BSSHunk(uint32_t allocateSizeInLongwords)
-    : InitialHunk(allocateSizeInLongwords)
+  BSSHunk::BSSHunk(uint32_t allocateSizeInLongwords) : InitialHunk(allocateSizeInLongwords)
   {
   }
 }

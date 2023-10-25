@@ -33,23 +33,23 @@
 
 BOOLE gzUnpack(const char *src, const char *dest)
 {
-  gzFile	input;
-  FILE	*output;
-  char	buffer[1<<14];
+  gzFile input;
+  FILE *output;
+  char buffer[1 << 14];
 
-  if((output = fopen(dest, "wb")) == nullptr) return FALSE;
-  if((input  = gzopen(src, "rb")) == nullptr) return FALSE;
+  if ((output = fopen(dest, "wb")) == nullptr) return FALSE;
+  if ((input = gzopen(src, "rb")) == nullptr) return FALSE;
 
-  for(;;)
+  for (;;)
   {
     int length = gzread(input, buffer, sizeof(buffer));
-    if(length < 0) return FALSE;
-    if(length == 0) break;
-    if((int)fwrite(buffer, 1, (unsigned)length, output) != length) return FALSE;
+    if (length < 0) return FALSE;
+    if (length == 0) break;
+    if ((int)fwrite(buffer, 1, (unsigned)length, output) != length) return FALSE;
   }
 
-  if(fclose(output)) return FALSE;
-  if(gzclose(input) != Z_OK) return FALSE;
+  if (fclose(output)) return FALSE;
+  if (gzclose(input) != Z_OK) return FALSE;
   return TRUE;
 }
 
@@ -64,23 +64,24 @@ BOOLE gzPack(const char *src, const char *dest)
   FILE *input;
   gzFile output;
   char outmode[20];
-  char buffer[1<<14];
+  char buffer[1 << 14];
 
   strcpy(outmode, "wb9 ");
 
-  if((input  = fopen(src, "rb"))      == nullptr) return FALSE;
-  if((output = gzopen(dest, outmode)) == nullptr) return FALSE;;
+  if ((input = fopen(src, "rb")) == nullptr) return FALSE;
+  if ((output = gzopen(dest, outmode)) == nullptr) return FALSE;
+  ;
 
-  for(;;) 
+  for (;;)
   {
     size_t length = fread(buffer, 1, sizeof(buffer), input);
-    if(ferror(input)) return FALSE;
-    if(length == 0) break;
-    if(gzwrite(output, buffer, (unsigned)length) != length) return FALSE;
+    if (ferror(input)) return FALSE;
+    if (length == 0) break;
+    if (gzwrite(output, buffer, (unsigned)length) != length) return FALSE;
   }
 
-  if(fclose(input)) return FALSE;
-  if(gzclose(output) != Z_OK) return FALSE;
+  if (fclose(input)) return FALSE;
+  if (gzclose(output) != Z_OK) return FALSE;
 
   return TRUE;
 }

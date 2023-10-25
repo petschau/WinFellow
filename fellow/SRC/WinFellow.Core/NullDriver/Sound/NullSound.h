@@ -5,7 +5,7 @@
 class NullSound : public ISoundDriver
 {
 public:
-  void Play(int16_t* leftBuffer, int16_t* rightBuffer, uint32_t sampleCount) override;
+  void Play(int16_t *leftBuffer, int16_t *rightBuffer, uint32_t sampleCount) override;
   void PollBufferPosition() override;
   bool SetCurrentSoundDeviceVolume(int volume) override;
 

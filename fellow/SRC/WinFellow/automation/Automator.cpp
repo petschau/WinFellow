@@ -88,10 +88,7 @@ void Automator::Shutdown()
   }
 }
 
-Automator::Automator()
-  : RecordScript(false),
-    SnapshotFrequency(100),
-    SnapshotEnable(false)
+Automator::Automator() : RecordScript(false), SnapshotFrequency(100), SnapshotEnable(false)
 {
 }
 

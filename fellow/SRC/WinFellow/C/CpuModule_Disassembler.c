@@ -26,7 +26,7 @@
 #include "CpuModule.h"
 #include "CpuModule_DisassemblerFunc.h"
 
-typedef uint32_t(*cpuDisFunc)(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands);
+typedef uint32_t (*cpuDisFunc)(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands);
 
 static uint32_t cpuDisGetSourceMode(uint16_t opcode)
 {
@@ -68,10 +68,10 @@ static uint32_t cpuDisGetSize(uint16_t opcode)
   uint32_t result = 0;
   switch ((opcode >> 6) & 3)
   {
-  case 0: result = 8; break;
-  case 1: result = 16; break;
-  case 2: result = 32; break;
-  case 3: result = 64; break;
+    case 0: result = 8; break;
+    case 1: result = 16; break;
+    case 2: result = 32; break;
+    case 3: result = 64; break;
   }
   return result;
 }
@@ -81,22 +81,26 @@ static uint32_t cpuDisGetSize2(uint16_t opcode)
   uint32_t result = 0;
   switch ((opcode >> 8) & 1)
   {
-  case 0: result = 16; break;
-  case 1: result = 32; break;
+    case 0: result = 16; break;
+    case 1: result = 32; break;
   }
   return result;
 }
 static uint32_t cpuDisGetSize3(uint16_t opc)
 {
-  if ((opc & 0x3000) == 0x1000) return 8;
-  else if ((opc & 0x3000) == 0x3000) return 16;
+  if ((opc & 0x3000) == 0x1000)
+    return 8;
+  else if ((opc & 0x3000) == 0x3000)
+    return 16;
   return 32;
 }
 
 static uint32_t cpuDisGetSize4(uint16_t opc)
 {
-  if ((opc & 0x600) == 0x200) return 8;
-  else if ((opc & 0x600) == 0x400) return 16;
+  if ((opc & 0x600) == 0x200)
+    return 8;
+  else if ((opc & 0x600) == 0x400)
+    return 16;
   return 32;
 }
 
@@ -105,8 +109,7 @@ static char cpuDisSizeChar(uint32_t size)
   return (char)((size == 8) ? 'B' : ((size == 16) ? 'W' : 'L'));
 }
 
-static const char* cpu_dis_btab[16] = { "RA", "SR", "HI", "LS", "CC", "CS", "NE", "EQ", "VC", "VS",
-"PL", "MI", "GE", "LT", "GT", "LE" };
+static const char *cpu_dis_btab[16] = {"RA", "SR", "HI", "LS", "CC", "CS", "NE", "EQ", "VC", "VS", "PL", "MI", "GE", "LT", "GT", "LE"};
 
 static uint32_t cpuDisGetBranchType(uint16_t opc)
 {
@@ -124,27 +127,27 @@ Returnvalue:
 PC after possible extension words
 ===========================================================================*/
 
-static char* cpuDisEoS(char* s)
+static char *cpuDisEoS(char *s)
 {
   return s + strlen(s);
 }
 
-static void cpuDisCommaAppend(char* s)
+static void cpuDisCommaAppend(char *s)
 {
   strcat(s, ",");
 }
 
-static void cpuDisWordAppend(uint32_t data, char* sdata)
+static void cpuDisWordAppend(uint32_t data, char *sdata)
 {
   sprintf(cpuDisEoS(sdata), " %.4X", data);
 }
 
-static void cpuDisLongAppend(uint32_t data, char* sdata)
+static void cpuDisLongAppend(uint32_t data, char *sdata)
 {
   sprintf(cpuDisEoS(sdata), " %.8X", data);
 }
 
-static uint32_t cpuDis05(uint32_t regno, uint32_t pcp, char* sdata, char* soperands)
+static uint32_t cpuDis05(uint32_t regno, uint32_t pcp, char *sdata, char *soperands)
 {
   uint32_t disp = memoryReadWord(pcp);
 
@@ -153,9 +156,9 @@ static uint32_t cpuDis05(uint32_t regno, uint32_t pcp, char* sdata, char* sopera
   return pcp + 2;
 }
 
-static uint32_t cpuDis06Brief(uint32_t regno, uint32_t pcp, uint32_t ext, BOOLE is_pc_indirect, char* sdata, char* soperands)
+static uint32_t cpuDis06Brief(uint32_t regno, uint32_t pcp, uint32_t ext, BOOLE is_pc_indirect, char *sdata, char *soperands)
 {
-  const char* scale[4] = { "", "*2", "*4", "*8" };
+  const char *scale[4] = {"", "*2", "*4", "*8"};
   char indexregtype = (char)((ext & 0x8000) ? 'A' : 'D');
   char indexsize = (char)((ext & 0x0800) ? 'L' : 'W');
   uint32_t indexregno = (ext >> 12) & 7;
@@ -188,7 +191,7 @@ static uint32_t cpuDis06Brief(uint32_t regno, uint32_t pcp, uint32_t ext, BOOLE 
   return pcp;
 }
 
-static uint32_t cpuDis06Od(uint32_t pcp, BOOLE wordsize, char* sdata, char* soperands)
+static uint32_t cpuDis06Od(uint32_t pcp, BOOLE wordsize, char *sdata, char *soperands)
 {
   uint32_t od;
 
@@ -209,9 +212,9 @@ static uint32_t cpuDis06Od(uint32_t pcp, BOOLE wordsize, char* sdata, char* sope
   return pcp;
 }
 
-static uint32_t cpuDis06Extended(uint32_t regno, uint32_t pcp, uint32_t ext, BOOLE is_pc_indirect, char* sdata, char* soperands)
+static uint32_t cpuDis06Extended(uint32_t regno, uint32_t pcp, uint32_t ext, BOOLE is_pc_indirect, char *sdata, char *soperands)
 {
-  const char* scale[4] = { "", "*2", "*4", "*8" };
+  const char *scale[4] = {"", "*2", "*4", "*8"};
   char indexregtype = (char)((ext & 0x8000) ? 'A' : 'D');
   char indexsize = (char)((ext & 0x0800) ? 'L' : 'W');
   uint32_t indexregno = (ext >> 12) & 7;
@@ -242,7 +245,7 @@ static uint32_t cpuDis06Extended(uint32_t regno, uint32_t pcp, uint32_t ext, BOO
     baseregstr[0] = '\0';
   }
   else
-  {    /* Base register included */
+  { /* Base register included */
     if (is_pc_indirect)
     {
       strcpy(baseregstr, "PC");
@@ -260,7 +263,7 @@ static uint32_t cpuDis06Extended(uint32_t regno, uint32_t pcp, uint32_t ext, BOO
     indexstr[0] = '\0';
   }
   else
-  {    /* Index included */
+  { /* Index included */
     sprintf(indexstr, "%c%u.%c%s", indexregtype, indexregno, indexsize, scale[scalefactor]);
   }
 
@@ -287,61 +290,54 @@ static uint32_t cpuDis06Extended(uint32_t regno, uint32_t pcp, uint32_t ext, BOO
 
   switch (iis)
   { /* Evaluate and add index operand */
-  case 0:           /* No memory indirect action */
-    sprintf(cpuDisEoS(soperands), "(%s,%s,%s)", basedispstr, baseregstr, indexstr);
-    break;
-  case 1:           /* Preindexed with null outer displacement */
-    sprintf(cpuDisEoS(soperands), "([%s,%s,%s])", basedispstr, baseregstr, indexstr);
-    break;
-  case 2:           /* Preindexed with word outer displacement */
-    pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-    sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-    break;
-  case 3:           /* Preindexed with long outer displacement */
-    pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-    sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-    break;
-  case 4:           /* Reserved ie. Illegal */
-    sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-    break;
-  case 5:           /* Postindexed with null outer displacement */
-    if (is)
-    {
-      sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-    }
-    else
-    {
-      sprintf(cpuDisEoS(soperands), "([%s,%s],%s)", basedispstr, baseregstr, indexstr);
-    }
-    break;
-  case 6:           /* Postindexed with word outer displacement */
-    if (is)
-    {
-      sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-    }
-    else
-    {
+    case 0: /* No memory indirect action */ sprintf(cpuDisEoS(soperands), "(%s,%s,%s)", basedispstr, baseregstr, indexstr); break;
+    case 1: /* Preindexed with null outer displacement */ sprintf(cpuDisEoS(soperands), "([%s,%s,%s])", basedispstr, baseregstr, indexstr); break;
+    case 2: /* Preindexed with word outer displacement */
       pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-      sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-    }
-    break;
-  case 7:           /* Postindexed with long outer displacement */
-    if (is)
-    {
-      sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-    }
-    else
-    {
+      sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+      break;
+    case 3: /* Preindexed with long outer displacement */
       pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-      sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-    }
-    break;
+      sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+      break;
+    case 4: /* Reserved ie. Illegal */ sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL"); break;
+    case 5: /* Postindexed with null outer displacement */
+      if (is)
+      {
+        sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
+      }
+      else
+      {
+        sprintf(cpuDisEoS(soperands), "([%s,%s],%s)", basedispstr, baseregstr, indexstr);
+      }
+      break;
+    case 6: /* Postindexed with word outer displacement */
+      if (is)
+      {
+        sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
+      }
+      else
+      {
+        pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
+        sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+      }
+      break;
+    case 7: /* Postindexed with long outer displacement */
+      if (is)
+      {
+        sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
+      }
+      else
+      {
+        pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
+        sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+      }
+      break;
   }
   return pcp;
 }
 
-
-static uint32_t cpuDis06(uint32_t regno, uint32_t pcp, char* sdata, char* soperands)
+static uint32_t cpuDis06(uint32_t regno, uint32_t pcp, char *sdata, char *soperands)
 {
   uint32_t ext = memoryReadWord(pcp);
 
@@ -351,7 +347,7 @@ static uint32_t cpuDis06(uint32_t regno, uint32_t pcp, char* sdata, char* sopera
     return cpuDis06Extended(regno, pcp + 2, ext, FALSE, sdata, soperands);
 }
 
-static uint32_t cpuDis70(uint32_t pcp, char* sdata, char* soperands)
+static uint32_t cpuDis70(uint32_t pcp, char *sdata, char *soperands)
 {
   uint32_t absadr = memoryReadWord(pcp);
 
@@ -360,7 +356,7 @@ static uint32_t cpuDis70(uint32_t pcp, char* sdata, char* soperands)
   return pcp + 2;
 }
 
-static uint32_t cpuDis71(uint32_t pcp, char* sdata, char* soperands)
+static uint32_t cpuDis71(uint32_t pcp, char *sdata, char *soperands)
 {
   uint32_t absadr = memoryReadLong(pcp);
 
@@ -369,7 +365,7 @@ static uint32_t cpuDis71(uint32_t pcp, char* sdata, char* soperands)
   return pcp + 4;
 }
 
-static uint32_t cpuDis72(uint32_t pcp, char* sdata, char* soperands)
+static uint32_t cpuDis72(uint32_t pcp, char *sdata, char *soperands)
 {
   uint32_t disp = memoryReadWord(pcp);
 
@@ -378,7 +374,7 @@ static uint32_t cpuDis72(uint32_t pcp, char* sdata, char* soperands)
   return pcp + 2;
 }
 
-static uint32_t cpuDis73(uint32_t pcp, char* sdata, char* soperands)
+static uint32_t cpuDis73(uint32_t pcp, char *sdata, char *soperands)
 {
   uint32_t ext = memoryReadWord(pcp);
 
@@ -388,7 +384,7 @@ static uint32_t cpuDis73(uint32_t pcp, char* sdata, char* soperands)
     return cpuDis06Extended(0, pcp + 2, ext, TRUE, sdata, soperands);
 }
 
-static uint32_t cpuDis74(uint32_t size, uint32_t pcp, char* sdata, char* soperands)
+static uint32_t cpuDis74(uint32_t size, uint32_t pcp, char *sdata, char *soperands)
 {
   uint32_t imm;
 
@@ -415,7 +411,7 @@ static uint32_t cpuDis74(uint32_t size, uint32_t pcp, char* sdata, char* soperan
   }
 }
 
-static void cpuDisRegCat(BOOLE is_datareg, uint32_t regno, char* soperands)
+static void cpuDisRegCat(BOOLE is_datareg, uint32_t regno, char *soperands)
 {
   size_t i = strlen(soperands);
 
@@ -424,7 +420,7 @@ static void cpuDisRegCat(BOOLE is_datareg, uint32_t regno, char* soperands)
   soperands[i] = '\0';
 }
 
-static void cpuDisIndRegCat(uint32_t mode, uint32_t regno, char* soperands)
+static void cpuDisIndRegCat(uint32_t mode, uint32_t regno, char *soperands)
 {
   size_t i = strlen(soperands);
 
@@ -437,23 +433,23 @@ static void cpuDisIndRegCat(uint32_t mode, uint32_t regno, char* soperands)
   soperands[i] = '\0';
 }
 
-static uint32_t cpuDisAdrMode(uint32_t eamode, uint32_t earegno, uint32_t pcp, uint32_t size, char* sdata, char* soperands)
+static uint32_t cpuDisAdrMode(uint32_t eamode, uint32_t earegno, uint32_t pcp, uint32_t size, char *sdata, char *soperands)
 {
   switch (eamode)
   {
-  case 0:
-  case 1:  cpuDisRegCat(eamode == 0, earegno, soperands); break;
-  case 2:
-  case 3:
-  case 4:  cpuDisIndRegCat(eamode, earegno, soperands); break;
-  case 5:  return cpuDis05(earegno, pcp, sdata, soperands);
-  case 6:  return cpuDis06(earegno, pcp, sdata, soperands);
-  case 7:  return cpuDis70(pcp, sdata, soperands);
-  case 8:  return cpuDis71(pcp, sdata, soperands);
-  case 9:  return cpuDis72(pcp, sdata, soperands);
-  case 10: return cpuDis73(pcp, sdata, soperands);
-  case 11: return cpuDis74(size, pcp, sdata, soperands);
-  default: return pcp;
+    case 0:
+    case 1: cpuDisRegCat(eamode == 0, earegno, soperands); break;
+    case 2:
+    case 3:
+    case 4: cpuDisIndRegCat(eamode, earegno, soperands); break;
+    case 5: return cpuDis05(earegno, pcp, sdata, soperands);
+    case 6: return cpuDis06(earegno, pcp, sdata, soperands);
+    case 7: return cpuDis70(pcp, sdata, soperands);
+    case 8: return cpuDis71(pcp, sdata, soperands);
+    case 9: return cpuDis72(pcp, sdata, soperands);
+    case 10: return cpuDis73(pcp, sdata, soperands);
+    case 11: return cpuDis74(size, pcp, sdata, soperands);
+    default: return pcp;
   }
   return pcp;
 }
@@ -464,10 +460,10 @@ static uint32_t cpuDisAdrMode(uint32_t eamode, uint32_t earegno, uint32_t pcp, u
 
 /* Common disassembly for BCHG, BCLR, BSET, BTST */
 
-static uint32_t cpu_dis_btX_trans[4] = { 3, 0, 1, 2 };
-static const char* cpu_dis_bnr[4] = { "CHG","CLR","SET","TST" };
+static uint32_t cpu_dis_btX_trans[4] = {3, 0, 1, 2};
+static const char *cpu_dis_bnr[4] = {"CHG", "CLR", "SET", "TST"};
 
-static uint32_t cpuDisBtX(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisBtX(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   BOOLE is_reg = cpuDisGetBit(opc, 8);
   uint32_t eareg = cpuDisGetSourceRegister(opc);
@@ -492,9 +488,9 @@ static uint32_t cpuDisBtX(uint32_t prc, uint16_t opc, char* sdata, char* sinstru
 
 /* Common disassembly for ADD, SUB, CMP, AND, EOR, OR */
 
-static const char* cpu_dis_anr[6] = { "ADD","SUB","CMP","AND","EOR","OR" };
+static const char *cpu_dis_anr[6] = {"ADD", "SUB", "CMP", "AND", "EOR", "OR"};
 
-static uint32_t cpuDisArith1(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisArith1(uint32_t prc, uint16_t opc, uint32_t nr, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t dreg = cpuDisGetDestinationRegister(opc);
@@ -511,7 +507,7 @@ static uint32_t cpuDisArith1(uint32_t prc, uint16_t opc, uint32_t nr, char* sdat
 
 /* Common disassembly for ADDA, SUBA, CMPA */
 
-static uint32_t cpuDisArith2(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisArith2(uint32_t prc, uint16_t opc, uint32_t nr, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t dreg = cpuDisGetDestinationRegister(opc);
@@ -527,7 +523,7 @@ static uint32_t cpuDisArith2(uint32_t prc, uint16_t opc, uint32_t nr, char* sdat
 
 /* Common disassembly for ADDI, SUBI, CMPI, ANDI, EORI, ORI */
 
-static uint32_t cpuDisArith3(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisArith3(uint32_t prc, uint16_t opc, uint32_t nr, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -549,7 +545,7 @@ static uint32_t cpuDisArith3(uint32_t prc, uint16_t opc, uint32_t nr, char* sdat
 
 /* Common disassembly for ADDQ, SUBQ */
 
-static uint32_t cpuDisArith4(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisArith4(uint32_t prc, uint16_t opc, uint32_t nr, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -566,33 +562,24 @@ static uint32_t cpuDisArith4(uint32_t prc, uint16_t opc, uint32_t nr, char* sdat
 
 /* Common disassembly for ADDX, SUBX, ABCD, SBCD, CMPM */
 
-static const char* cpu_dis_a5nr[5] = { "ADDX","SUBX","ABCD","SBCD","CMPM" };
+static const char *cpu_dis_a5nr[5] = {"ADDX", "SUBX", "ABCD", "SBCD", "CMPM"};
 
-static uint32_t cpuDisArith5(uint32_t prc, uint16_t opc, uint32_t nr, char* sinstruction, char* soperands)
+static uint32_t cpuDisArith5(uint32_t prc, uint16_t opc, uint32_t nr, char *sinstruction, char *soperands)
 {
   uint32_t bit3 = cpuDisGetBit(opc, 3);
-  const char* minus = ((nr == 4) || !bit3) ? "" : "-";
-  const char* plus = ((nr == 4) && !bit3) ? "+" : "";
+  const char *minus = ((nr == 4) || !bit3) ? "" : "-";
+  const char *plus = ((nr == 4) && !bit3) ? "+" : "";
 
   sprintf(sinstruction, "%s.%c", cpu_dis_a5nr[nr], cpuDisSizeChar(cpuDisGetSize(opc)));
-  sprintf(soperands,
-    ((!bit3) ?
-      "%sD%d%s,%sD%d%s" :
-      "%s(A%d)%s,%s(A%d)%s"),
-    minus,
-    cpuDisGetSourceRegister(opc),
-    plus,
-    minus,
-    cpuDisGetDestinationRegister(opc),
-    plus);
+  sprintf(soperands, ((!bit3) ? "%sD%d%s,%sD%d%s" : "%s(A%d)%s,%s(A%d)%s"), minus, cpuDisGetSourceRegister(opc), plus, minus, cpuDisGetDestinationRegister(opc), plus);
   return prc + 2;
 }
 
 /* Common disassembly for ASX, LSX, ROX, ROXX */
 
-static const char* cpu_dis_shnr[4] = { "AS", "LS", "RO", "ROX" };
+static const char *cpu_dis_shnr[4] = {"AS", "LS", "RO", "ROX"};
 
-static uint32_t cpuDisShift(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisShift(uint32_t prc, uint16_t opc, uint32_t nr, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -630,9 +617,9 @@ static uint32_t cpuDisShift(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata
 
 /* Common disassembly for CLR, NEG, NOT, TST, JMP, JSR, PEA, NBCD, NEGX */
 
-static const char* cpu_dis_unanr[10] = { "CLR","NEG","NOT","TST","JMP","JSR","PEA","TAS","NCBD","NEGX" };
+static const char *cpu_dis_unanr[10] = {"CLR", "NEG", "NOT", "TST", "JMP", "JSR", "PEA", "TAS", "NCBD", "NEGX"};
 
-static uint32_t cpuDisUnary(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisUnary(uint32_t prc, uint16_t opc, uint32_t nr, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -650,9 +637,9 @@ static uint32_t cpuDisUnary(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata
 
 /* Common disassembly for NOP, RESET, RTE, RTR, RTS, TRAPV */
 
-static const char* cpu_dis_singnr[6] = { "NOP","RESET","RTE","RTR","RTS","TRAPV" };
+static const char *cpu_dis_singnr[6] = {"NOP", "RESET", "RTE", "RTR", "RTS", "TRAPV"};
 
-static uint32_t cpuDisSingle(uint32_t prc, uint32_t nr, char* sinstruction)
+static uint32_t cpuDisSingle(uint32_t prc, uint32_t nr, char *sinstruction)
 {
   sprintf(sinstruction, "%s", cpu_dis_singnr[nr]);
   return prc + 2;
@@ -660,9 +647,9 @@ static uint32_t cpuDisSingle(uint32_t prc, uint32_t nr, char* sinstruction)
 
 /* Common disassembly for CHK, DIVS, DIVU, LEA, MULS, MULU */
 
-static const char* cpu_dis_var1nr[6] = { "CHK","DIVS","DIVU","LEA","MULS","MULU" };
+static const char *cpu_dis_var1nr[6] = {"CHK", "DIVS", "DIVU", "LEA", "MULS", "MULU"};
 
-static uint32_t cpuDisVarious1(uint32_t prc, uint16_t opc, uint32_t nr, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisVarious1(uint32_t prc, uint16_t opc, uint32_t nr, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -676,9 +663,9 @@ static uint32_t cpuDisVarious1(uint32_t prc, uint16_t opc, uint32_t nr, char* sd
 
 /* Common disassembly for SWAP, UNLK */
 
-static const char* cpu_dis_var2nr[2] = { "SWAP","UNLK" };
+static const char *cpu_dis_var2nr[2] = {"SWAP", "UNLK"};
 
-static uint32_t cpuDisVarious2(uint32_t prc, uint16_t opc, uint32_t nr, char* sinstruction, char* soperands)
+static uint32_t cpuDisVarious2(uint32_t prc, uint16_t opc, uint32_t nr, char *sinstruction, char *soperands)
 {
   char regtype = (char)((nr == 0) ? 'D' : 'A');
   sprintf(sinstruction, "%s", cpu_dis_var2nr[nr]);
@@ -686,58 +673,58 @@ static uint32_t cpuDisVarious2(uint32_t prc, uint16_t opc, uint32_t nr, char* si
   return prc + 2;
 }
 
-static uint32_t cpuDisIllegal(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisIllegal(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "ILLEGAL");
   return prc + 2;
 }
 
-static uint32_t cpuDisAbcd(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAbcd(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith5(prc, opc, 2, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAdd(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAdd(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith1(prc, opc, 0, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAdda(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAdda(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith2(prc, opc, 0, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAddi(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAddi(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith3(prc, opc, 0, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAddq(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAddq(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith4(prc, opc, 0, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAddx(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAddx(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith5(prc, opc, 0, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAnd(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAnd(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith1(prc, opc, 3, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAndi(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAndi(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith3(prc, opc, 3, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisAsx(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisAsx(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisShift(prc, opc, 0, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisBcc(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisBcc(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t disp2;
   uint32_t adr;
@@ -767,42 +754,42 @@ static uint32_t cpuDisBcc(uint32_t prc, uint16_t opc, char* sdata, char* sinstru
   return prc + 2;
 }
 
-static uint32_t cpuDisBt(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisBt(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisBtX(prc, opc, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisChk(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisChk(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious1(prc, opc, 0, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisClr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisClr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 0, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisCmp(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisCmp(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith1(prc, opc, 2, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisCmpa(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisCmpa(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith2(prc, opc, 2, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisCmpi(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisCmpi(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith3(prc, opc, 2, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisCmpm(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisCmpm(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith5(prc, opc, 4, sinstruction, soperands);
 }
 
-static uint32_t cpuDisDBcc(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisDBcc(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t bratype = cpuDisGetBranchType(opc);
 
@@ -815,27 +802,27 @@ static uint32_t cpuDisDBcc(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return prc + 2;
 }
 
-static uint32_t cpuDisDivs(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisDivs(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious1(prc, opc, 1, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisDivu(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisDivu(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious1(prc, opc, 2, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisEor(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisEor(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith1(prc, opc, 4, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisEori(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisEori(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith3(prc, opc, 4, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisExg(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisExg(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t o = (opc & 0x00f8) >> 3;
 
@@ -844,29 +831,29 @@ static uint32_t cpuDisExg(uint32_t prc, uint16_t opc, char* sdata, char* sinstru
   return prc + 2;
 }
 
-static uint32_t cpuDisExt(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisExt(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "EXT.%c", (cpuDisGetBit(opc, 6) == 0) ? 'W' : 'L');
   sprintf(soperands, "D%u", cpuDisGetSourceRegister(opc));
   return prc + 2;
 }
 
-static uint32_t cpuDisJmp(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisJmp(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 4, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisJsr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisJsr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 5, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisLea(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisLea(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious1(prc, opc, 3, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisLink(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisLink(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t imm = memoryReadWord(prc + 2);
 
@@ -876,12 +863,12 @@ static uint32_t cpuDisLink(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return prc + 4;
 }
 
-static uint32_t cpuDisLsx(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisLsx(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisShift(prc, opc, 1, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisMove(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMove(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t srcreg = cpuDisGetSourceRegister(opc);
   uint32_t srcmode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), srcreg);
@@ -895,7 +882,7 @@ static uint32_t cpuDisMove(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return cpuDisAdrMode(dstmode, dstreg, prc, size, sdata, soperands);
 }
 
-static uint32_t cpuDisMoveToCcr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMoveToCcr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
 
@@ -905,7 +892,7 @@ static uint32_t cpuDisMoveToCcr(uint32_t prc, uint16_t opc, char* sdata, char* s
   return prc;
 }
 
-static uint32_t cpuDisMoveToSr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMoveToSr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
 
@@ -915,7 +902,7 @@ static uint32_t cpuDisMoveToSr(uint32_t prc, uint16_t opc, char* sdata, char* si
   return prc;
 }
 
-static uint32_t cpuDisMoveFromSr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMoveFromSr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
 
@@ -925,14 +912,14 @@ static uint32_t cpuDisMoveFromSr(uint32_t prc, uint16_t opc, char* sdata, char* 
   return prc;
 }
 
-static uint32_t cpuDisMoveUsp(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMoveUsp(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "MOVE.L");
   sprintf(soperands, (cpuDisGetBit(opc, 3)) ? "USP,A%1d" : "A%1d,USP", cpuDisGetSourceRegister(opc));
   return prc + 2;
 }
 
-static uint32_t cpuDisMovea(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMovea(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t dreg = cpuDisGetDestinationRegister(opc);
@@ -945,13 +932,13 @@ static uint32_t cpuDisMovea(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   return cpuDisAdrMode(1, dreg, prc, size, sdata, soperands);
 }
 
-static void cpuDisMovemRegmaskStrCat(uint32_t regmask, char* s, BOOLE predec)
+static void cpuDisMovemRegmaskStrCat(uint32_t regmask, char *s, BOOLE predec)
 {
   char tmp[2][16];
 
   for (uint32_t j = 0; j < 2; j++)
   {
-    char* tmpp = tmp[j];
+    char *tmpp = tmp[j];
     for (uint32_t i = (8 * j); i < (8 + (8 * j)); i++)
     {
       if (regmask & (1 << i))
@@ -973,7 +960,7 @@ static void cpuDisMovemRegmaskStrCat(uint32_t regmask, char* s, BOOLE predec)
   }
 }
 
-static uint32_t cpuDisMovem(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMovem(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -984,7 +971,7 @@ static uint32_t cpuDisMovem(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   cpuDisWordAppend(regmask, sdata);
   sprintf(sinstruction, "MOVEM.%c", (size == 16) ? 'W' : 'L');
   if (dir == 0 && eamode == 4)
-  {  /* Register to memory, predecrement */
+  { /* Register to memory, predecrement */
     cpuDisMovemRegmaskStrCat(regmask, soperands, TRUE);
     cpuDisCommaAppend(soperands);
     prc = cpuDisAdrMode(eamode, eareg, prc + 4, size, sdata, soperands);
@@ -996,7 +983,7 @@ static uint32_t cpuDisMovem(uint32_t prc, uint16_t opc, char* sdata, char* sinst
     cpuDisMovemRegmaskStrCat(regmask, soperands, FALSE);
   }
   else
-  {  /* Register to memory, the rest of the adr.modes */
+  { /* Register to memory, the rest of the adr.modes */
     cpuDisMovemRegmaskStrCat(regmask, soperands, FALSE);
     cpuDisCommaAppend(soperands);
     prc = cpuDisAdrMode(eamode, eareg, prc + 4, size, sdata, soperands);
@@ -1004,7 +991,7 @@ static uint32_t cpuDisMovem(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   return prc;
 }
 
-static uint32_t cpuDisMovep(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMovep(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t adrregno = cpuDisGetSourceRegister(opc);
   uint32_t dataregno = cpuDisGetDestinationRegister(opc);
@@ -1026,99 +1013,99 @@ static uint32_t cpuDisMovep(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   return prc + 4;
 }
 
-static uint32_t cpuDisMoveq(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMoveq(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "MOVEQ.L");
   sprintf(soperands, "#$%8.8X,D%u", cpuDisGetLowByteSignExtend(opc), cpuDisGetDestinationRegister(opc));
   return prc + 2;
 }
 
-static uint32_t cpuDisMuls(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMuls(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious1(prc, opc, 4, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisMulu(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMulu(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious1(prc, opc, 5, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisNbcd(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisNbcd(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 8, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisNeg(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisNeg(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 1, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisNegx(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisNegx(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 9, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisNop(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisNop(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisSingle(prc, 0, sinstruction);
 }
 
-static uint32_t cpuDisNot(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisNot(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 2, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisOr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisOr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith1(prc, opc, 5, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisOri(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisOri(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith3(prc, opc, 5, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisPea(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisPea(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 6, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisReset(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisReset(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisSingle(prc, 1, sinstruction);
 }
 
-static uint32_t cpuDisRox(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisRox(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisShift(prc, opc, 2, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisRoxx(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisRoxx(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisShift(prc, opc, 3, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisRte(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisRte(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisSingle(prc, 2, sinstruction);
 }
 
-static uint32_t cpuDisRtr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisRtr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisSingle(prc, 3, sinstruction);
 }
 
-static uint32_t cpuDisRts(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisRts(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisSingle(prc, 4, sinstruction);
 }
 
-static uint32_t cpuDisSbcd(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisSbcd(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith5(prc, opc, 3, sinstruction, soperands);
 }
 
-static uint32_t cpuDisScc(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisScc(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t bratype = cpuDisGetBranchType(opc);
@@ -1127,7 +1114,7 @@ static uint32_t cpuDisScc(uint32_t prc, uint16_t opc, char* sdata, char* sinstru
   return cpuDisAdrMode(cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg), eareg, prc + 2, 8, sdata, soperands);
 }
 
-static uint32_t cpuDisStop(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisStop(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t imm = memoryReadWord(prc + 2);
   cpuDisWordAppend(imm, sdata);
@@ -1136,73 +1123,73 @@ static uint32_t cpuDisStop(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return prc + 4;
 }
 
-static uint32_t cpuDisSub(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisSub(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith1(prc, opc, 1, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisSuba(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisSuba(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith2(prc, opc, 1, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisSubi(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisSubi(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith3(prc, opc, 1, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisSubq(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisSubq(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith4(prc, opc, 1, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisSubx(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisSubx(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisArith5(prc, opc, 1, sinstruction, soperands);
 }
 
-static uint32_t cpuDisSwap(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisSwap(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious2(prc, opc, 0, sinstruction, soperands);
 }
 
-static uint32_t cpuDisTas(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisTas(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 7, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisTrap(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisTrap(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "TRAP");
   sprintf(soperands, "#$%1X", opc & 0xf);
   return prc + 2;
 }
 
-static uint32_t cpuDisTrapv(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisTrapv(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisSingle(prc, 5, sinstruction);
 }
 
-static uint32_t cpuDisTst(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisTst(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisUnary(prc, opc, 3, sdata, sinstruction, soperands);
 }
 
-static uint32_t cpuDisUnlk(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisUnlk(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   return cpuDisVarious2(prc, opc, 1, sinstruction, soperands);
 }
 
-static uint32_t cpuDisBkpt(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisBkpt(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "BKPT");
   sprintf(soperands, "#$%1X", cpuDisGetSourceRegister(opc));
   return prc + 2;
 }
 
-static const char* cpu_dis_bftxt[8] = { "TST ","EXTU","CHG ","EXTS","CLR ","FFO ","SET ","INS " };
+static const char *cpu_dis_bftxt[8] = {"TST ", "EXTU", "CHG ", "EXTS", "CLR ", "FFO ", "SET ", "INS "};
 
-static uint32_t cpuDisBf(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisBf(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -1246,7 +1233,7 @@ static uint32_t cpuDisBf(uint32_t prc, uint16_t opc, char* sdata, char* sinstruc
   return prc;
 }
 
-static uint32_t cpuDisCas(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisCas(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
@@ -1259,16 +1246,17 @@ static uint32_t cpuDisCas(uint32_t prc, uint16_t opc, char* sdata, char* sinstru
     cpuDisWordAppend(ext2, sdata);
     sprintf(sinstruction, "CAS2.%c", cpuDisSizeChar(size));
 
-    sprintf(soperands,
-      "D%u:D%u,D%u:D%u,(%s%u):(%s%u)",
-      ext & 7,
-      ext2 & 7,
-      (ext >> 6) & 7,
-      (ext2 >> 6) & 7,
-      (ext & 0x8000) ? "A" : "D",
-      (ext >> 12) & 7,
-      (ext2 & 0x8000) ? "A" : "D",
-      (ext2 >> 12) & 7);
+    sprintf(
+        soperands,
+        "D%u:D%u,D%u:D%u,(%s%u):(%s%u)",
+        ext & 7,
+        ext2 & 7,
+        (ext >> 6) & 7,
+        (ext2 >> 6) & 7,
+        (ext & 0x8000) ? "A" : "D",
+        (ext >> 12) & 7,
+        (ext2 & 0x8000) ? "A" : "D",
+        (ext2 >> 12) & 7);
     prc += 6;
   }
   else
@@ -1280,7 +1268,7 @@ static uint32_t cpuDisCas(uint32_t prc, uint16_t opc, char* sdata, char* sinstru
   return prc;
 }
 
-static uint32_t cpuDisChkl(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisChkl(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
 
@@ -1290,7 +1278,7 @@ static uint32_t cpuDisChkl(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return cpuDisAdrMode(0, cpuDisGetDestinationRegister(opc), prc + 2, 32, sdata, soperands);
 }
 
-static uint32_t cpuDisChk2(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisChk2(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
@@ -1305,7 +1293,7 @@ static uint32_t cpuDisChk2(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return prc;
 }
 
-static uint32_t cpuDisDivl(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisDivl(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
@@ -1328,14 +1316,14 @@ static uint32_t cpuDisDivl(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return prc;
 }
 
-static uint32_t cpuDisExtb(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisExtb(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "EXTB.L");
   sprintf(soperands, "D%u", cpuDisGetSourceRegister(opc));
   return prc + 2;
 }
 
-static uint32_t cpuDisLinkl(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisLinkl(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t disp = memoryReadLong(prc + 2);
   cpuDisLongAppend(disp, sdata);
@@ -1344,7 +1332,7 @@ static uint32_t cpuDisLinkl(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   return prc + 6;
 }
 
-static uint32_t cpuDisMoveFromCcr(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMoveFromCcr(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   sprintf(sinstruction, "MOVE.W");
@@ -1352,7 +1340,7 @@ static uint32_t cpuDisMoveFromCcr(uint32_t prc, uint16_t opc, char* sdata, char*
   return cpuDisAdrMode(cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg), eareg, prc + 2, 16, sdata, soperands);
 }
 
-static uint32_t cpuDisMovec(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMovec(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t extw = memoryReadWord(prc + 2);
   char stmp[16];
@@ -1365,37 +1353,18 @@ static uint32_t cpuDisMovec(uint32_t prc, uint16_t opc, char* sdata, char* sinst
     strcat(soperands, stmp);
   }
   uint32_t creg = extw & 0xfff;
-  if (cpuGetModelMajor() == 1 && ((creg != 0) && (creg != 1) && (creg != 0x800) &&
-    (creg != 0x801))) creg = 0xfff;
+  if (cpuGetModelMajor() == 1 && ((creg != 0) && (creg != 1) && (creg != 0x800) && (creg != 0x801))) creg = 0xfff;
   switch (creg)
   {
-  case 0x000:    /* SFC, Source function code X12346*/
-    strcat(soperands, "SFC");
-    break;
-  case 0x001:    /* DFC, Destination function code X12346 */
-    strcat(soperands, "DFC");
-    break;
-  case 0x800:    /* USP, User stack pointer X12346 */
-    strcat(soperands, "USP");
-    break;
-  case 0x801:    /* VBR, Vector base register X12346 */
-    strcat(soperands, "VBR");
-    break;
-  case 0x002:    /* CACR, Cache control register XX2346 */
-    strcat(soperands, "CACR");
-    break;
-  case 0x802:    /* CAAR, Cache adress register XX2346 */
-    strcat(soperands, "CAAR");
-    break;
-  case 0x803:    /* MSP, Master stack pointer XX234X */
-    strcat(soperands, "MSP");
-    break;
-  case 0x804:    /* ISP, Interrupt stack pointer XX234X */
-    strcat(soperands, "ISP");
-    break;
-  default:
-    strcat(soperands, "ILLEGAL");
-    break;
+    case 0x000: /* SFC, Source function code X12346*/ strcat(soperands, "SFC"); break;
+    case 0x001: /* DFC, Destination function code X12346 */ strcat(soperands, "DFC"); break;
+    case 0x800: /* USP, User stack pointer X12346 */ strcat(soperands, "USP"); break;
+    case 0x801: /* VBR, Vector base register X12346 */ strcat(soperands, "VBR"); break;
+    case 0x002: /* CACR, Cache control register XX2346 */ strcat(soperands, "CACR"); break;
+    case 0x802: /* CAAR, Cache adress register XX2346 */ strcat(soperands, "CAAR"); break;
+    case 0x803: /* MSP, Master stack pointer XX234X */ strcat(soperands, "MSP"); break;
+    case 0x804: /* ISP, Interrupt stack pointer XX234X */ strcat(soperands, "ISP"); break;
+    default: strcat(soperands, "ILLEGAL"); break;
   }
   if (!(opc & 1))
   { /* From control register */
@@ -1405,7 +1374,7 @@ static uint32_t cpuDisMovec(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   return prc + 4;
 }
 
-static uint32_t cpuDisMoves(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMoves(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
@@ -1428,7 +1397,7 @@ static uint32_t cpuDisMoves(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   return prc;
 }
 
-static uint32_t cpuDisMull(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisMull(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
@@ -1451,7 +1420,7 @@ static uint32_t cpuDisMull(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return prc;
 }
 
-static uint32_t cpuDisPack(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisPack(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t sreg = cpuDisGetSourceRegister(opc);
   uint32_t dreg = cpuDisGetDestinationRegister(opc);
@@ -1471,11 +1440,13 @@ static uint32_t cpuDisPack(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
 
 /* Disassemble for 030 */
 
-static void cpuDisPflush030PrintFc(char* soperands, uint32_t fcode)
+static void cpuDisPflush030PrintFc(char *soperands, uint32_t fcode)
 {
   char stmp[16];
-  if (fcode == 0) strcat(soperands, "SFC,");
-  else if (fcode == 1) strcat(soperands, "DFC,");
+  if (fcode == 0)
+    strcat(soperands, "SFC,");
+  else if (fcode == 1)
+    strcat(soperands, "DFC,");
   else if ((fcode & 0x18) == 8)
   {
     sprintf(stmp, "D%u,", fcode & 7);
@@ -1488,7 +1459,7 @@ static void cpuDisPflush030PrintFc(char* soperands, uint32_t fcode)
   }
 }
 
-static uint32_t cpuDisPflush030(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisPflush030(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t eamode = cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg);
@@ -1503,7 +1474,7 @@ static uint32_t cpuDisPflush030(uint32_t prc, uint16_t opc, char* sdata, char* s
   if (op == 0x1)
   {
     if (mode != 0)
-    {  /* PFLUSH */
+    { /* PFLUSH */
       sprintf(sinstruction, "PFLUSH%s", (mode == 1) ? "A" : "");
       prc += 4;
       if (mode != 1)
@@ -1544,34 +1515,30 @@ static uint32_t cpuDisPflush030(uint32_t prc, uint16_t opc, char* sdata, char* s
 
 /* PFLUSH disassemble for 68040 */
 
-static uint32_t cpuDisPflush040(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisPflush040(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t reg = cpuDisGetSourceRegister(opc);
   uint32_t opmode = (opc & 0x18) >> 3;
 
   switch (opmode)
   {
-  case 0:
-    sprintf(sinstruction, "PFLUSHN");
-    sprintf(soperands, "(A%u)", reg);
-    break;
-  case 1:
-    sprintf(sinstruction, "PFLUSH");
-    sprintf(soperands, "(A%u)", reg);
-    break;
-  case 2:
-    sprintf(sinstruction, "PFLUSHAN");
-    break;
-  case 3:
-    sprintf(sinstruction, "PFLUSHA");
-    break;
+    case 0:
+      sprintf(sinstruction, "PFLUSHN");
+      sprintf(soperands, "(A%u)", reg);
+      break;
+    case 1:
+      sprintf(sinstruction, "PFLUSH");
+      sprintf(soperands, "(A%u)", reg);
+      break;
+    case 2: sprintf(sinstruction, "PFLUSHAN"); break;
+    case 3: sprintf(sinstruction, "PFLUSHA"); break;
   }
   return prc + 2;
 }
 
 /* PTEST disassemble on 68040 */
 
-static uint32_t cpuDisPtest040(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisPtest040(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t reg = cpuDisGetSourceRegister(opc);
   uint32_t rw = cpuDisGetBit(opc, 5);
@@ -1581,7 +1548,7 @@ static uint32_t cpuDisPtest040(uint32_t prc, uint16_t opc, char* sdata, char* si
   return prc + 2;
 }
 
-static uint32_t cpuDisRtd(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisRtd(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t extw = memoryReadWord(prc + 2);
   cpuDisWordAppend(extw, sdata);
@@ -1590,7 +1557,7 @@ static uint32_t cpuDisRtd(uint32_t prc, uint16_t opc, char* sdata, char* sinstru
   return prc + 4;
 }
 
-static uint32_t cpuDisTrapcc(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisTrapcc(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t bratype = cpuDisGetBranchType(opc);
   uint32_t ext = 0;
@@ -1616,7 +1583,7 @@ static uint32_t cpuDisTrapcc(uint32_t prc, uint16_t opc, char* sdata, char* sins
   return prc + 2;
 }
 
-static uint32_t cpuDisUnpk(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisUnpk(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t sreg = cpuDisGetSourceRegister(opc);
   uint32_t dreg = cpuDisGetDestinationRegister(opc);
@@ -1634,7 +1601,7 @@ static uint32_t cpuDisUnpk(uint32_t prc, uint16_t opc, char* sdata, char* sinstr
   return prc;
 }
 
-static uint32_t cpuDisCallm(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisCallm(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   uint32_t eareg = cpuDisGetSourceRegister(opc);
   uint32_t ext = memoryReadWord(prc + 2);
@@ -1643,108 +1610,54 @@ static uint32_t cpuDisCallm(uint32_t prc, uint16_t opc, char* sdata, char* sinst
   return cpuDisAdrMode(cpuDisGetEaNo(cpuDisGetSourceMode(opc), eareg), eareg, prc + 4, 16, sdata, soperands);
 }
 
-static uint32_t cpuDisRtm(uint32_t prc, uint16_t opc, char* sdata, char* sinstruction, char* soperands)
+static uint32_t cpuDisRtm(uint32_t prc, uint16_t opc, char *sdata, char *sinstruction, char *soperands)
 {
   sprintf(sinstruction, "RTM");
   sprintf(soperands, "%c%u", (opc & 8) ? 'A' : 'D', cpuDisGetSourceRegister(opc));
   return prc + 2;
 }
 
-static cpuDisFunc cpu_dis_index[100] =
-{
-  cpuDisIllegal,  // 0
-  cpuDisAbcd,
-  cpuDisAdd,
-  cpuDisAdda,
-  cpuDisAddi,
-  cpuDisAddq,	  // 5
-  cpuDisAddx,
-  cpuDisAnd,
-  cpuDisAndi,
-  cpuDisAsx,
-  cpuDisBcc,	  // 10
-  cpuDisBt,
-  cpuDisBkpt,
-  cpuDisBf,
-  cpuDisCallm,
-  cpuDisCas,	  // 15
-  cpuDisChk,
-  cpuDisChk2,
-  cpuDisChkl,
-  cpuDisClr,
-  cpuDisCmp,	  // 20
-  cpuDisCmpa,
-  cpuDisCmpi,
-  cpuDisCmpm,
-  cpuDisDBcc,
-  cpuDisDivl,	  // 25
-  cpuDisDivs,
-  cpuDisDivu,
-  cpuDisEor,
-  cpuDisEori,
-  cpuDisExg,	  // 30
-  cpuDisExt,
-  cpuDisExtb,
-  cpuDisJmp,
-  cpuDisJsr,
-  cpuDisLea,	  // 35
-  cpuDisLink,
-  cpuDisLinkl,
-  cpuDisLsx,
-  cpuDisMove,
-  cpuDisMovea,	  // 40
-  cpuDisMovec,
-  cpuDisMoveFromCcr,
-  cpuDisMoveFromSr,
-  cpuDisMovem,
-  cpuDisMovep,	  // 45
-  cpuDisMoveq,
-  cpuDisMoves,
-  cpuDisMoveToCcr,
-  cpuDisMoveToSr,
-  cpuDisMoveUsp,  // 50
-  cpuDisMull,
-  cpuDisMuls,
-  cpuDisMulu,
-  cpuDisNbcd,
-  cpuDisNeg,	  // 55
-  cpuDisNegx,
-  cpuDisNop,
-  cpuDisNot,
-  cpuDisOr,
-  cpuDisOri,	  // 60
-  cpuDisPack,
-  cpuDisPea,
-  cpuDisPflush030,
-  cpuDisPflush040,
-  cpuDisPtest040, // 65
-  cpuDisReset,
-  cpuDisRox,
-  cpuDisRoxx,
-  cpuDisRtd,
-  cpuDisRte,	  // 70
-  cpuDisRtm,
-  cpuDisRtr,
-  cpuDisRts,
-  cpuDisSbcd,
-  cpuDisScc,	  // 75
-  cpuDisStop,
-  cpuDisSub,
-  cpuDisSuba,
-  cpuDisSubi,
-  cpuDisSubq,	  // 80
-  cpuDisSubx,
-  cpuDisSwap,
-  cpuDisTas,
-  cpuDisTrap,
-  cpuDisTrapcc,	  // 85
-  cpuDisTrapv,
-  cpuDisTst,
-  cpuDisUnlk,
-  cpuDisUnpk	  // 89
+static cpuDisFunc cpu_dis_index[100] = {
+    cpuDisIllegal, // 0
+    cpuDisAbcd,     cpuDisAdd,         cpuDisAdda,       cpuDisAddi,
+    cpuDisAddq, // 5
+    cpuDisAddx,     cpuDisAnd,         cpuDisAndi,       cpuDisAsx,
+    cpuDisBcc, // 10
+    cpuDisBt,       cpuDisBkpt,        cpuDisBf,         cpuDisCallm,
+    cpuDisCas, // 15
+    cpuDisChk,      cpuDisChk2,        cpuDisChkl,       cpuDisClr,
+    cpuDisCmp, // 20
+    cpuDisCmpa,     cpuDisCmpi,        cpuDisCmpm,       cpuDisDBcc,
+    cpuDisDivl, // 25
+    cpuDisDivs,     cpuDisDivu,        cpuDisEor,        cpuDisEori,
+    cpuDisExg, // 30
+    cpuDisExt,      cpuDisExtb,        cpuDisJmp,        cpuDisJsr,
+    cpuDisLea, // 35
+    cpuDisLink,     cpuDisLinkl,       cpuDisLsx,        cpuDisMove,
+    cpuDisMovea, // 40
+    cpuDisMovec,    cpuDisMoveFromCcr, cpuDisMoveFromSr, cpuDisMovem,
+    cpuDisMovep, // 45
+    cpuDisMoveq,    cpuDisMoves,       cpuDisMoveToCcr,  cpuDisMoveToSr,
+    cpuDisMoveUsp, // 50
+    cpuDisMull,     cpuDisMuls,        cpuDisMulu,       cpuDisNbcd,
+    cpuDisNeg, // 55
+    cpuDisNegx,     cpuDisNop,         cpuDisNot,        cpuDisOr,
+    cpuDisOri, // 60
+    cpuDisPack,     cpuDisPea,         cpuDisPflush030,  cpuDisPflush040,
+    cpuDisPtest040, // 65
+    cpuDisReset,    cpuDisRox,         cpuDisRoxx,       cpuDisRtd,
+    cpuDisRte, // 70
+    cpuDisRtm,      cpuDisRtr,         cpuDisRts,        cpuDisSbcd,
+    cpuDisScc, // 75
+    cpuDisStop,     cpuDisSub,         cpuDisSuba,       cpuDisSubi,
+    cpuDisSubq, // 80
+    cpuDisSubx,     cpuDisSwap,        cpuDisTas,        cpuDisTrap,
+    cpuDisTrapcc, // 85
+    cpuDisTrapv,    cpuDisTst,         cpuDisUnlk,
+    cpuDisUnpk // 89
 };
 
-uint32_t cpuDisOpcode(uint32_t disasm_pc, char* saddress, char* sdata, char* sinstruction, char* soperands)
+uint32_t cpuDisOpcode(uint32_t disasm_pc, char *saddress, char *sdata, char *sinstruction, char *soperands)
 {
   uint16_t opcode = (uint16_t)memoryReadWord(disasm_pc);
   sprintf(saddress, "$%.8X", disasm_pc);

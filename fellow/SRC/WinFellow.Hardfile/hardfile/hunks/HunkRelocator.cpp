@@ -31,7 +31,7 @@ namespace fellow::hardfile::hunks
 
   void HunkRelocator::RelocateHunk(uint32_t hunkIndex)
   {
-    InitialHunk* hunk = _fileImage.GetInitialHunk(hunkIndex);
+    InitialHunk *hunk = _fileImage.GetInitialHunk(hunkIndex);
     uint32_t hunkBaseAddress = hunk->GetVMAddress();
     uint32_t additionalHunkCount = _fileImage.GetAdditionalHunkCount();
     for (uint32_t i = 0; i < additionalHunkCount; i++)
@@ -39,7 +39,7 @@ namespace fellow::hardfile::hunks
       AdditionalHunk *additionalHunk = _fileImage.GetAdditionalHunk(i);
       if (additionalHunk->GetSourceHunkIndex() == hunkIndex && additionalHunk->GetID() == Reloc32HunkID)
       {
-        ProcessReloc32Hunk((Reloc32Hunk*)additionalHunk, hunkBaseAddress);
+        ProcessReloc32Hunk((Reloc32Hunk *)additionalHunk, hunkBaseAddress);
       }
     }
   }
@@ -53,8 +53,7 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  HunkRelocator::HunkRelocator(FileImage& fileImage)
-    : _fileImage(fileImage)
+  HunkRelocator::HunkRelocator(FileImage &fileImage) : _fileImage(fileImage)
   {
   }
 }

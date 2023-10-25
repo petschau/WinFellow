@@ -19,13 +19,13 @@ namespace fellow::hardfile::hunks
   public:
     uint32_t GetID() override;
     uint32_t GetHunkSizeCount();
-    const HunkSize& GetHunkSize(uint32_t index);
+    const HunkSize &GetHunkSize(uint32_t index);
     uint32_t GetResidentLibraryCount();
-    const std::string& GetResidentLibrary(uint32_t index);
+    const std::string &GetResidentLibrary(uint32_t index);
     uint32_t GetFirstLoadHunk();
     uint32_t GetLastLoadHunk();
 
-    void Parse(RawDataReader& rawDataReader) override;
+    void Parse(RawDataReader &rawDataReader) override;
 
     HeaderHunk();
   };

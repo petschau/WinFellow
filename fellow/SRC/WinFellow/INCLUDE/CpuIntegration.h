@@ -1,10 +1,11 @@
 #pragma once
 
-typedef enum {
-  M68000  = 0,
-  M68010  = 1,
-  M68020  = 2,
-  M68030  = 3,
+typedef enum
+{
+  M68000 = 0,
+  M68010 = 1,
+  M68020 = 2,
+  M68030 = 3,
   M68EC30 = 4,
   M68EC20 = 9
 } cpu_integration_models;

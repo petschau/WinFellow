@@ -45,7 +45,7 @@ void BitplaneDraw::TempLores(uint32_t rasterY, uint32_t pixel_index, uint32_t pi
 
   for (uint32_t i = 0; i < pixel_count; i++)
   {
-    uint32_t pixel_color = graph_color_shadow[playfield[i]>>2];
+    uint32_t pixel_color = graph_color_shadow[playfield[i] >> 2];
 
     tmpline[0] = pixel_color;
     tmpline[1] = pixel_color;
@@ -55,7 +55,7 @@ void BitplaneDraw::TempLores(uint32_t rasterY, uint32_t pixel_index, uint32_t pi
 
 void BitplaneDraw::TempLoresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t *draw_dual_translate_ptr = (uint8_t *) draw_dual_translate;
+  uint8_t *draw_dual_translate_ptr = (uint8_t *)draw_dual_translate;
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
 
   if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
@@ -67,7 +67,7 @@ void BitplaneDraw::TempLoresDual(uint32_t rasterY, uint32_t pixel_index, uint32_
   uint8_t *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
   for (uint32_t i = 0; i < pixel_count; i++)
   {
-    uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];
+    uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i] * 256 + playfield_even[i])) >> 2];
     tmpline[0] = pixel_color;
     tmpline[1] = pixel_color;
     tmpline += 2;
@@ -80,19 +80,19 @@ void BitplaneDraw::TempLoresHam(uint32_t rasterY, uint32_t pixel_index, uint32_t
   uint8_t *holdmask;
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
   static uint32_t pixel_color;
-  uint8_t* playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
+  uint8_t *playfield = GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield();
 
   for (uint32_t i = 0; i < pixel_count; i++)
   {
     if ((GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[i] & 0xc0) == 0)
     {
-      pixel_color = graph_color_shadow[playfield[i]>>2];
+      pixel_color = graph_color_shadow[playfield[i] >> 2];
     }
     else
     {
-      holdmask = ((uint8_t *) draw_HAM_modify_table + ((playfield[i] & 0xc0) >> 3));
-      bitindex = *((uint32_t *) (holdmask + draw_HAM_modify_table_bitindex));
-      pixel_color &= *((uint32_t *) (holdmask + draw_HAM_modify_table_holdmask));
+      holdmask = ((uint8_t *)draw_HAM_modify_table + ((playfield[i] & 0xc0) >> 3));
+      bitindex = *((uint32_t *)(holdmask + draw_HAM_modify_table_bitindex));
+      pixel_color &= *((uint32_t *)(holdmask + draw_HAM_modify_table_holdmask));
       pixel_color |= (((playfield[i] & 0x3c) >> 2) << (bitindex & 0xff));
     }
     tmpline[0] = pixel_color;
@@ -108,14 +108,14 @@ void BitplaneDraw::TempHires(uint32_t rasterY, uint32_t pixel_index, uint32_t pi
 
   for (uint32_t i = 0; i < pixel_count; i++)
   {
-    uint32_t pixel_color = graph_color_shadow[playfield[i]>>2];
+    uint32_t pixel_color = graph_color_shadow[playfield[i] >> 2];
     tmpline[i] = pixel_color;
   }
 }
 
 void BitplaneDraw::TempHiresDual(uint32_t rasterY, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t *draw_dual_translate_ptr = (uint8_t *) draw_dual_translate;
+  uint8_t *draw_dual_translate_ptr = (uint8_t *)draw_dual_translate;
   uint32_t *tmpline = _tmpframe[rasterY] + pixel_index;
 
   if (_core.RegisterUtility.IsPlayfield1PriorityEnabled())
@@ -127,7 +127,7 @@ void BitplaneDraw::TempHiresDual(uint32_t rasterY, uint32_t pixel_index, uint32_
   uint8_t *playfield_even = GraphicsContext.Planar2ChunkyDecoder.GetEvenPlayfield();
   for (uint32_t i = 0; i < pixel_count; i++)
   {
-    uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i]*256 + playfield_even[i]))>>2];
+    uint32_t pixel_color = graph_color_shadow[(*(draw_dual_translate_ptr + playfield_odd[i] * 256 + playfield_even[i])) >> 2];
     tmpline[i] = pixel_color;
   }
 }
@@ -147,7 +147,7 @@ void BitplaneDraw::TempNothing(uint32_t rasterY, uint32_t pixel_index, uint32_t 
 
 void BitplaneDraw::DrawBatch(uint32_t rasterY, uint32_t start_cylinder)
 {
-  uint32_t pixel_index = start_cylinder*2;
+  uint32_t pixel_index = start_cylinder * 2;
   uint32_t pixel_count = GraphicsContext.Planar2ChunkyDecoder.GetBatchSize();
 
   if (!GraphicsContext.DIWXStateMachine.IsVisible())
@@ -177,11 +177,11 @@ void BitplaneDraw::DrawBatch(uint32_t rasterY, uint32_t start_cylinder)
     {
       if (_core.RegisterUtility.IsHAMEnabled())
       {
-	TempLoresHam(rasterY, pixel_index, pixel_count);
+        TempLoresHam(rasterY, pixel_index, pixel_count);
       }
       else
       {
-	TempLores(rasterY, pixel_index, pixel_count);
+        TempLores(rasterY, pixel_index, pixel_count);
       }
     }
   }
@@ -189,26 +189,26 @@ void BitplaneDraw::DrawBatch(uint32_t rasterY, uint32_t start_cylinder)
 
 void BitplaneDraw::TmpFrame(uint32_t next_line_offset)
 {
-  uint32_t real_pitch_in_bytes = next_line_offset/2;
+  uint32_t real_pitch_in_bytes = next_line_offset / 2;
 
-  uint32_t *draw_buffer_first_ptr_local = (uint32_t *) draw_buffer_info.current_ptr;
-  uint32_t *draw_buffer_second_ptr_local = (uint32_t *) (draw_buffer_info.current_ptr + real_pitch_in_bytes);
+  uint32_t *draw_buffer_first_ptr_local = (uint32_t *)draw_buffer_info.current_ptr;
+  uint32_t *draw_buffer_second_ptr_local = (uint32_t *)(draw_buffer_info.current_ptr + real_pitch_in_bytes);
 
-  uint32_t startx = drawGetInternalClip().left*2;
-  uint32_t stopx = drawGetInternalClip().right*2;
+  uint32_t startx = drawGetInternalClip().left * 2;
+  uint32_t stopx = drawGetInternalClip().right * 2;
 
   for (uint32_t y = drawGetInternalClip().top; y < drawGetInternalClip().bottom; y++)
   {
     uint32_t *tmpline = _tmpframe[y];
     for (uint32_t x = startx; x < stopx; x++)
     {
-      uint32_t index = (x-startx);
+      uint32_t index = (x - startx);
       uint32_t pixel_color = tmpline[x];
       draw_buffer_first_ptr_local[index] = pixel_color;
       draw_buffer_second_ptr_local[index] = pixel_color;
     }
-    draw_buffer_first_ptr_local += (real_pitch_in_bytes/2);
-    draw_buffer_second_ptr_local += (real_pitch_in_bytes/2);
+    draw_buffer_first_ptr_local += (real_pitch_in_bytes / 2);
+    draw_buffer_second_ptr_local += (real_pitch_in_bytes / 2);
   }
 }
 

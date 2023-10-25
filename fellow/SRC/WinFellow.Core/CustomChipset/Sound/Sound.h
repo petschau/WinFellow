@@ -104,8 +104,8 @@ private:
 
   uint32_t _periodTable[65536];
   int16_t _volumes[256][64];
-  uint32_t _audioIrqMask[4] = { 0x0080, 0x0100, 0x0200, 0x0400 };
-  uint32_t _audioDmaconMask[4] = { 0x1, 0x2, 0x4, 0x8 };
+  uint32_t _audioIrqMask[4] = {0x0080, 0x0100, 0x0200, 0x0400};
+  uint32_t _audioDmaconMask[4] = {0x1, 0x2, 0x4, 0x8};
 
   uint32_t GetChannelNumber(uint32_t address);
 
@@ -118,8 +118,8 @@ private:
   void State5(uint32_t channel);
   void State6(uint32_t channel);
 
-  void LowPass(uint32_t count, int16_t* bufferLeft, int16_t* bufferRight);
-  uint32_t ChannelUpdate(uint32_t channel, int16_t* bufferLeft, int16_t* bufferRight, uint32_t count, bool halfscale, bool odd);
+  void LowPass(uint32_t count, int16_t *bufferLeft, int16_t *bufferRight);
+  uint32_t ChannelUpdate(uint32_t channel, int16_t *bufferLeft, int16_t *bufferRight, uint32_t count, bool halfscale, bool odd);
   void FrequencyHandler();
 
   CustomChipset::sound_rates GetRate();

@@ -9,8 +9,7 @@ namespace fellow::service
   bool RetroPlatformWrapper::SendHardDriveContent(const uint32_t lHardDriveNo, const char *szImageName, const bool bWriteProtected)
   {
 #ifdef RETRO_PLATFORM
-    if (RP.GetHeadlessMode())
-      return RP.SendHardDriveContent(lHardDriveNo, szImageName, bWriteProtected);
+    if (RP.GetHeadlessMode()) return RP.SendHardDriveContent(lHardDriveNo, szImageName, bWriteProtected);
 #endif
     return true;
   }
@@ -19,8 +18,7 @@ namespace fellow::service
   {
 
 #ifdef RETRO_PLATFORM
-    if (RP.GetHeadlessMode())
-      return RP.PostHardDriveLED(lHardDriveNo, bActive, bWriteActivity);
+    if (RP.GetHeadlessMode()) return RP.PostHardDriveLED(lHardDriveNo, bActive, bWriteActivity);
 #endif
     return true;
   }

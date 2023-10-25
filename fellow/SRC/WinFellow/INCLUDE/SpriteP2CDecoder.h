@@ -1,7 +1,6 @@
 #pragma once
 
-typedef union sprite_deco_
-{
+typedef union sprite_deco_ {
   uint8_t i8[8];
   uint32_t i32[2];
 } sprite_deco;

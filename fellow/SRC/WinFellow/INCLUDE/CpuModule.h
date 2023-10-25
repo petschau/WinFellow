@@ -18,7 +18,7 @@ extern void cpuInitializeFromNewPC(uint32_t new_pc);
 
 typedef void (*cpuInstructionLoggingFunc)();
 extern void cpuSetInstructionLoggingFunc(cpuInstructionLoggingFunc func);
-typedef void (*cpuExceptionLoggingFunc)(const char* description, uint32_t original_pc, uint16_t opcode);
+typedef void (*cpuExceptionLoggingFunc)(const char *description, uint32_t original_pc, uint16_t opcode);
 extern void cpuSetExceptionLoggingFunc(cpuExceptionLoggingFunc func);
 typedef void (*cpuInterruptLoggingFunc)(uint32_t level, uint32_t vector_address);
 extern void cpuSetInterruptLoggingFunc(cpuInterruptLoggingFunc func);
@@ -69,10 +69,10 @@ extern BOOLE cpuSetIrqLevel(uint32_t irq_level);
 extern uint32_t cpuGetIrqLevel();
 
 extern uint32_t cpuExecuteInstruction();
-extern uint32_t cpuDisOpcode(uint32_t disasm_pc, char* saddress, char* sdata, char* sinstruction, char* soperands);
+extern uint32_t cpuDisOpcode(uint32_t disasm_pc, char *saddress, char *sdata, char *sinstruction, char *soperands);
 
-extern void cpuSaveState(FILE* F);
-extern void cpuLoadState(FILE* F);
+extern void cpuSaveState(FILE *F);
+extern void cpuLoadState(FILE *F);
 extern void cpuHardReset();
 extern void cpuStartup();
 

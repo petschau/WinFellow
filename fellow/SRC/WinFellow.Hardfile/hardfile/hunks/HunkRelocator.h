@@ -8,7 +8,7 @@ namespace fellow::hardfile::hunks
   class HunkRelocator
   {
   private:
-    FileImage& _fileImage;
+    FileImage &_fileImage;
 
     void ProcessReloc32OffsetTable(Reloc32OffsetTable *offsetTable, uint32_t hunkBaseAddress);
     void ProcessReloc32Hunk(Reloc32Hunk *reloc32Hunk, uint32_t hunkBaseAddress);
@@ -17,6 +17,6 @@ namespace fellow::hardfile::hunks
   public:
     void RelocateHunks();
 
-    HunkRelocator(FileImage& fileImage);
+    HunkRelocator(FileImage &fileImage);
   };
 }

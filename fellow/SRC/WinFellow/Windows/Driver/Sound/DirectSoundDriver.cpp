@@ -38,25 +38,25 @@
 using namespace fellow::api;
 using namespace CustomChipset;
 
-const char* DirectSoundDriver::DSoundErrorString(HRESULT hResult)
+const char *DirectSoundDriver::DSoundErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
-  case DSERR_ALLOCATED: return "DSERR_ALLOCATED";
-  case DSERR_CONTROLUNAVAIL: return "DSERR_CONTROLUNAVAIL";
-  case DSERR_INVALIDPARAM: return "DSERR_INVALIDPARAM";
-  case DSERR_INVALIDCALL: return "DSERR_INVALIDCALL";
-  case DSERR_GENERIC: return "DSERR_GENERIC";
-  case DSERR_PRIOLEVELNEEDED: return "DSERR_PRIOLEVELNEEDED";
-  case DSERR_OUTOFMEMORY: return "DSERR_OUTOFMEMORY";
-  case DSERR_BADFORMAT: return "DSERR_BADFORMAT";
-  case DSERR_UNSUPPORTED: return "DSERR_UNSUPPORTED";
-  case DSERR_NODRIVER: return "DSERR_NODRIVER";
-  case DSERR_ALREADYINITIALIZED: return "DSERR_ALREADYINITIALIZED";
-  case DSERR_NOAGGREGATION: return "DSERR_NOAGGREGATION";
-  case DSERR_BUFFERLOST: return "DSERR_BUFFERLOST";
-  case DSERR_OTHERAPPHASPRIO: return "DSERR_OTHERAPPHASPRIO";
-  case DSERR_UNINITIALIZED: return "DSERR_UNINITIALIZED";
+    case DSERR_ALLOCATED: return "DSERR_ALLOCATED";
+    case DSERR_CONTROLUNAVAIL: return "DSERR_CONTROLUNAVAIL";
+    case DSERR_INVALIDPARAM: return "DSERR_INVALIDPARAM";
+    case DSERR_INVALIDCALL: return "DSERR_INVALIDCALL";
+    case DSERR_GENERIC: return "DSERR_GENERIC";
+    case DSERR_PRIOLEVELNEEDED: return "DSERR_PRIOLEVELNEEDED";
+    case DSERR_OUTOFMEMORY: return "DSERR_OUTOFMEMORY";
+    case DSERR_BADFORMAT: return "DSERR_BADFORMAT";
+    case DSERR_UNSUPPORTED: return "DSERR_UNSUPPORTED";
+    case DSERR_NODRIVER: return "DSERR_NODRIVER";
+    case DSERR_ALREADYINITIALIZED: return "DSERR_ALREADYINITIALIZED";
+    case DSERR_NOAGGREGATION: return "DSERR_NOAGGREGATION";
+    case DSERR_BUFFERLOST: return "DSERR_BUFFERLOST";
+    case DSERR_OTHERAPPHASPRIO: return "DSERR_OTHERAPPHASPRIO";
+    case DSERR_UNINITIALIZED: return "DSERR_UNINITIALIZED";
   }
 
   return "Unknown DirectSound Error";
@@ -68,7 +68,7 @@ const char* DirectSoundDriver::DSoundErrorString(HRESULT hResult)
 
 void CALLBACK DirectSoundDriver::timercb(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
-  ((DirectSoundDriver*)dwUser)->HandleTimerCallback();
+  ((DirectSoundDriver *)dwUser)->HandleTimerCallback();
 }
 
 void DirectSoundDriver::HandleTimerCallback()
@@ -76,7 +76,7 @@ void DirectSoundDriver::HandleTimerCallback()
   PollBufferPosition();
 }
 
-void DirectSoundDriver::DSoundFailure(const char* header, HRESULT errorCode)
+void DirectSoundDriver::DSoundFailure(const char *header, HRESULT errorCode)
 {
   _core.Log->AddLog(header);
   _core.Log->AddLog(DSoundErrorString(errorCode));
@@ -158,9 +158,9 @@ void DirectSoundDriver::AddMode(bool isStereo, bool is16Bits, uint32_t rate)
   _modes.emplace_back(mode);
 }
 
-const DirectSoundMode* DirectSoundDriver::FindMode(bool isStereo, bool is16Bits, uint32_t rate) const
+const DirectSoundMode *DirectSoundDriver::FindMode(bool isStereo, bool is16Bits, uint32_t rate) const
 {
-  for (const auto* mode : _modes)
+  for (const auto *mode : _modes)
   {
     if (mode->Rate == rate && mode->Is16Bits == is16Bits && mode->IsStereo == isStereo)
     {
@@ -173,14 +173,14 @@ const DirectSoundMode* DirectSoundDriver::FindMode(bool isStereo, bool is16Bits,
 
 void DirectSoundDriver::DSoundModeInformationRelease()
 {
-  for (const auto* mode : _modes)
+  for (const auto *mode : _modes)
   {
     delete mode;
   }
   _modes.clear();
 }
 
-void DirectSoundDriver::YesNoLog(const char* description, bool predicate)
+void DirectSoundDriver::YesNoLog(const char *description, bool predicate)
 {
   _core.Log->AddLog(description);
   _core.Log->AddLog(predicate ? " - Yes\n" : " - No\n");
@@ -281,7 +281,7 @@ bool DirectSoundDriver::DSoundSetVolume(const int volume)
   LONG vol;
 
   if (volume <= 100 && volume > 0)
-    vol = (LONG)-((50 - (volume / 2)) * (50 - (volume / 2)));
+    vol = (LONG) - ((50 - (volume / 2)) * (50 - (volume / 2)));
   else if (volume == 0)
     vol = DSBVOLUME_MIN;
   else
@@ -420,18 +420,18 @@ bool DirectSoundDriver::CreateSecondaryBuffer()
 
 bool DirectSoundDriver::ClearSecondaryBuffer()
 {
-  char* lpAudio;
+  char *lpAudio;
   DWORD dwBytes;
 
   HRESULT lock1Result = IDirectSoundBuffer_Lock(
-    _lpDSBS,
-    0,
-    0, // Ignored because we pass DSBLOCK_ENTIREBUFFER
-    (LPVOID*)&lpAudio,
-    &dwBytes,
-    NULL,
-    NULL,
-    DSBLOCK_ENTIREBUFFER);
+      _lpDSBS,
+      0,
+      0, // Ignored because we pass DSBLOCK_ENTIREBUFFER
+      (LPVOID *)&lpAudio,
+      &dwBytes,
+      NULL,
+      NULL,
+      DSBLOCK_ENTIREBUFFER);
 
   if (lock1Result != DS_OK)
   {
@@ -448,14 +448,14 @@ bool DirectSoundDriver::ClearSecondaryBuffer()
       }
 
       HRESULT lock2Result = IDirectSoundBuffer_Lock(
-        _lpDSBS,
-        0,
-        0, // Ignored because we pass DSBLOCK_ENTIREBUFFER
-        (LPVOID*)&lpAudio,
-        &dwBytes,
-        NULL,
-        NULL,
-        DSBLOCK_ENTIREBUFFER);
+          _lpDSBS,
+          0,
+          0, // Ignored because we pass DSBLOCK_ENTIREBUFFER
+          (LPVOID *)&lpAudio,
+          &dwBytes,
+          NULL,
+          NULL,
+          DSBLOCK_ENTIREBUFFER);
       if (lock2Result != DS_OK)
       {
         // Here we give up
@@ -623,7 +623,7 @@ bool DirectSoundDriver::DSoundPlaybackInitialize()
   return result;
 }
 
-void DirectSoundDriver::Copy16BitsStereo(uint16_t* audioBuffer, uint16_t* left, uint16_t* right, uint32_t sampleCount)
+void DirectSoundDriver::Copy16BitsStereo(uint16_t *audioBuffer, uint16_t *left, uint16_t *right, uint32_t sampleCount)
 {
   for (unsigned int i = 0; i < sampleCount; i++)
   {
@@ -632,7 +632,7 @@ void DirectSoundDriver::Copy16BitsStereo(uint16_t* audioBuffer, uint16_t* left, 
   }
 }
 
-void DirectSoundDriver::Copy16BitsMono(uint16_t* audioBuffer, uint16_t* left, uint16_t* right, uint32_t sampleCount)
+void DirectSoundDriver::Copy16BitsMono(uint16_t *audioBuffer, uint16_t *left, uint16_t *right, uint32_t sampleCount)
 {
   for (unsigned int i = 0; i < sampleCount; i++)
   {
@@ -640,7 +640,7 @@ void DirectSoundDriver::Copy16BitsMono(uint16_t* audioBuffer, uint16_t* left, ui
   }
 }
 
-void DirectSoundDriver::Copy8BitsStereo(uint8_t* audioBuffer, uint16_t* left, uint16_t* right, uint32_t sampleCount)
+void DirectSoundDriver::Copy8BitsStereo(uint8_t *audioBuffer, uint16_t *left, uint16_t *right, uint32_t sampleCount)
 {
   for (unsigned int i = 0; i < sampleCount; i++)
   {
@@ -649,7 +649,7 @@ void DirectSoundDriver::Copy8BitsStereo(uint8_t* audioBuffer, uint16_t* left, ui
   }
 }
 
-void DirectSoundDriver::Copy8BitsMono(uint8_t* audioBuffer, uint16_t* left, uint16_t* right, uint32_t sampleCount)
+void DirectSoundDriver::Copy8BitsMono(uint8_t *audioBuffer, uint16_t *left, uint16_t *right, uint32_t sampleCount)
 {
   for (unsigned int i = 0; i < sampleCount; i++)
   {
@@ -657,7 +657,7 @@ void DirectSoundDriver::Copy8BitsMono(uint8_t* audioBuffer, uint16_t* left, uint
   }
 }
 
-bool DirectSoundDriver::DSoundCopyToBuffer(uint16_t* left, uint16_t* right, uint32_t sampleCount, uint32_t bufferHalf)
+bool DirectSoundDriver::DSoundCopyToBuffer(uint16_t *left, uint16_t *right, uint32_t sampleCount, uint32_t bufferHalf)
 {
   LPVOID lpvAudio;
   DWORD dwBytes;
@@ -693,22 +693,22 @@ bool DirectSoundDriver::DSoundCopyToBuffer(uint16_t* left, uint16_t* right, uint
   {
     if (_runtimeConfiguration.Is16Bits)
     {
-      Copy16BitsStereo((uint16_t*)lpvAudio, left, right, sampleCount);
+      Copy16BitsStereo((uint16_t *)lpvAudio, left, right, sampleCount);
     }
     else
     {
-      Copy8BitsStereo((uint8_t*)lpvAudio, left, right, sampleCount);
+      Copy8BitsStereo((uint8_t *)lpvAudio, left, right, sampleCount);
     }
   }
   else
   {
     if (_runtimeConfiguration.Is16Bits)
     {
-      Copy16BitsMono((uint16_t*)lpvAudio, left, right, sampleCount);
+      Copy16BitsMono((uint16_t *)lpvAudio, left, right, sampleCount);
     }
     else
     {
-      Copy8BitsMono((uint8_t*)lpvAudio, left, right, sampleCount);
+      Copy8BitsMono((uint8_t *)lpvAudio, left, right, sampleCount);
     }
   }
 
@@ -722,11 +722,11 @@ bool DirectSoundDriver::DSoundCopyToBuffer(uint16_t* left, uint16_t* right, uint
   return true;
 }
 
-void DirectSoundDriver::Play(int16_t* left, int16_t* right, uint32_t sampleCount)
+void DirectSoundDriver::Play(int16_t *left, int16_t *right, uint32_t sampleCount)
 {
   WaitForSingleObject(_canAddData, INFINITE);
-  _pendingDataLeft = (uint16_t*)left;
-  _pendingDataRight = (uint16_t*)right;
+  _pendingDataLeft = (uint16_t *)left;
+  _pendingDataRight = (uint16_t *)right;
   _pendingDataSampleCount = sampleCount;
   ResetEvent(_canAddData);
   SetEvent(_dataAvailable);
@@ -742,7 +742,7 @@ void DirectSoundDriver::ReleaseSoundMutex()
   ReleaseMutex(_mutex);
 }
 
-bool DirectSoundDriver::WaitForData(uint32_t nextBufferNo, bool& needToRestartPlayback)
+bool DirectSoundDriver::WaitForData(uint32_t nextBufferNo, bool &needToRestartPlayback)
 {
   HANDLE multiEvents[3];
   bool terminateWait = false;
@@ -776,29 +776,29 @@ bool DirectSoundDriver::WaitForData(uint32_t nextBufferNo, bool& needToRestartPl
     {
       multiEvents[2] = _notifications[nextBufferNo];
     }
-    DWORD evt = WaitForMultipleObjects(numberOfEventsInWait, (void* const*)multiEvents, FALSE, INFINITE);
+    DWORD evt = WaitForMultipleObjects(numberOfEventsInWait, (void *const *)multiEvents, FALSE, INFINITE);
     switch (evt)
     {
-    case WAIT_OBJECT_0:
-      // Data is now available
-      // Restart playing if we have stopped it
-      needToRestartPlayback = (numberOfEventsInWait == 2);
-      terminateWait = true;
-      break;
-    case WAIT_OBJECT_0 + 1:
-      // End of thread requested, return FALSE
-      terminateWait = true;
-      terminateThread = true;
-      break;
-    case WAIT_OBJECT_0 + 2:
-      // End of next buffer reached, stop playback, wait more
-      HRESULT playResult = IDirectSoundBuffer_Play(_lpDSBS, 0, 0, 0);
-      if (playResult != DS_OK)
-      {
-        DSoundFailure("DirectSoundDriver::WaitForData(): Play(), ", playResult);
-      }
-      numberOfEventsInWait = 2;
-      break;
+      case WAIT_OBJECT_0:
+        // Data is now available
+        // Restart playing if we have stopped it
+        needToRestartPlayback = (numberOfEventsInWait == 2);
+        terminateWait = true;
+        break;
+      case WAIT_OBJECT_0 + 1:
+        // End of thread requested, return FALSE
+        terminateWait = true;
+        terminateThread = true;
+        break;
+      case WAIT_OBJECT_0 + 2:
+        // End of next buffer reached, stop playback, wait more
+        HRESULT playResult = IDirectSoundBuffer_Play(_lpDSBS, 0, 0, 0);
+        if (playResult != DS_OK)
+        {
+          DSoundFailure("DirectSoundDriver::WaitForData(): Play(), ", playResult);
+        }
+        numberOfEventsInWait = 2;
+        break;
     }
   }
   return !terminateThread;
@@ -885,9 +885,9 @@ bool DirectSoundDriver::ProcessEndOfBuffer(uint32_t currentBufferNo, uint32_t ne
   return terminateThread;
 }
 
-DWORD WINAPI DirectSoundDriver::ThreadProc(void* in)
+DWORD WINAPI DirectSoundDriver::ThreadProc(void *in)
 {
-  return ((DirectSoundDriver*)in)->HandleThreadProc();
+  return ((DirectSoundDriver *)in)->HandleThreadProc();
 }
 
 DWORD DirectSoundDriver::HandleThreadProc()
@@ -902,22 +902,22 @@ DWORD DirectSoundDriver::HandleThreadProc()
     // 0 - Play position is at end of buffer 0
     // 1 - Play position is at end of buffer 1
     // 2 - Thread must terminate (triggered in EmulationStop())
-    DWORD dwEvt = WaitForMultipleObjects(3, (void* const*)(_notifications), FALSE, INFINITE);
+    DWORD dwEvt = WaitForMultipleObjects(3, (void *const *)(_notifications), FALSE, INFINITE);
 
     switch (dwEvt)
     {
-    case WAIT_OBJECT_0 + 0: /* End of first buffer */
-      // Wait for data_available event to become signaled
-      // or FALSE is returned if (2) becomes signaled (end thread)
-      terminateThread = ProcessEndOfBuffer(0, 1);
-      break;
-    case WAIT_OBJECT_0 + 1: /* End of first buffer */
-      // Wait for data_available event to become signaled
-      // or FALSE is returned if (2) becomes signaled (end thread)
-      terminateThread = ProcessEndOfBuffer(1, 0);
-      break;
-    case WAIT_OBJECT_0 + 2: /* Emulation is ending */
-    default: terminateThread = true; break;
+      case WAIT_OBJECT_0 + 0: /* End of first buffer */
+        // Wait for data_available event to become signaled
+        // or FALSE is returned if (2) becomes signaled (end thread)
+        terminateThread = ProcessEndOfBuffer(0, 1);
+        break;
+      case WAIT_OBJECT_0 + 1: /* End of first buffer */
+        // Wait for data_available event to become signaled
+        // or FALSE is returned if (2) becomes signaled (end thread)
+        terminateThread = ProcessEndOfBuffer(1, 0);
+        break;
+      case WAIT_OBJECT_0 + 2: /* Emulation is ending */
+      default: terminateThread = true; break;
     }
   }
 
@@ -973,12 +973,12 @@ bool DirectSoundDriver::EmulationStart(SoundDriverRuntimeConfiguration runtimeCo
   if (result)
   {
     _thread = CreateThread(
-      nullptr,     // Security attr
-      0,           // Stack Size
-      ThreadProc,  // Thread procedure
-      this,        // Thread parameter
-      0,           // Creation flags
-      &_threadId); // ThreadId
+        nullptr,     // Security attr
+        0,           // Stack Size
+        ThreadProc,  // Thread procedure
+        this,        // Thread parameter
+        0,           // Creation flags
+        &_threadId); // ThreadId
 
     result = _thread != nullptr;
   }

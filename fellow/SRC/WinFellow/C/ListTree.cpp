@@ -26,13 +26,11 @@
 /* Generic list */
 /*==============*/
 
-felist::felist(void* nodeptr)
-  : next(nullptr), prev(nullptr), node(nodeptr)
+felist::felist(void *nodeptr) : next(nullptr), prev(nullptr), node(nodeptr)
 {
 }
 
-felist::felist(felist* prevptr, void* nodeptr)
-  : next(nullptr), prev(prevptr), node(nodeptr)
+felist::felist(felist *prevptr, void *nodeptr) : next(nullptr), prev(prevptr), node(nodeptr)
 {
 }
 
@@ -56,14 +54,14 @@ felist *listPrev(felist *l)
 
 felist *listLast(felist *l)
 {
-  felist* o;
-  felist* t = l;
+  felist *o;
+  felist *t = l;
   while ((o = listNext(t)) != nullptr)
   {
     t = o;
   }
   return t;
-}  
+}
 
 void *listNode(felist *l)
 {
@@ -80,8 +78,8 @@ felist *listAddFirst(felist *root, felist *l)
     {
       if (root->prev != nullptr)
       {
-	l->prev = root->prev;
-	root->prev->next = l;
+        l->prev = root->prev;
+        root->prev->next = l;
       }
       root->prev = l;
     }
@@ -109,7 +107,7 @@ felist *listAddLast(felist *root, felist *l)
 /*==============================================================================*/
 felist *listAddSorted(felist *root, felist *l, int (*comp)(void *, void *))
 {
-  felist* tmp = root;
+  felist *tmp = root;
   if (l == nullptr)
   {
     return tmp;
@@ -144,7 +142,7 @@ felist *listCat(felist *l1, felist *l2)
     return l1;
   }
 
-  felist* t = listLast(l1);
+  felist *t = listLast(l1);
   t->next = l2;
   l2->prev = t;
   return l1;
@@ -161,11 +159,11 @@ felist *listCopy(felist *srcfirstnode, size_t nodesize)
   felist *currnode = srcfirstnode;
   felist *result = nullptr;
 
-  while(currnode != nullptr)
+  while (currnode != nullptr)
   {
-    felist* newnode = new felist(prevnode, (void*)malloc(nodesize));
-    if(prevnode == nullptr)
-    { 
+    felist *newnode = new felist(prevnode, (void *)malloc(nodesize));
+    if (prevnode == nullptr)
+    {
       result = newnode;
     }
     else
@@ -173,7 +171,7 @@ felist *listCopy(felist *srcfirstnode, size_t nodesize)
       prevnode->next = newnode;
     }
     memcpy(newnode->node, currnode->node, nodesize);
-  
+
     prevnode = newnode;
     currnode = listNext(currnode);
   }
@@ -182,7 +180,7 @@ felist *listCopy(felist *srcfirstnode, size_t nodesize)
 
 unsigned int listCount(felist *l)
 {
-  felist* t = l;
+  felist *t = l;
   unsigned int i = 0;
   while (t != nullptr)
   {
@@ -242,14 +240,14 @@ felist *listIndex(felist *l, unsigned int index)
 
 void listFreeAll(felist *l, bool freenodes)
 {
-  felist* tmp = l;
+  felist *tmp = l;
   while (tmp != nullptr)
   {
     if (freenodes && listNode(tmp) != nullptr)
     {
       free(listNode(tmp));
     }
-    felist* tmp2 = listNext(tmp);    
+    felist *tmp2 = listNext(tmp);
     listFree(tmp);
     tmp = tmp2;
   }

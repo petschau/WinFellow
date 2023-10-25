@@ -48,7 +48,7 @@ private:
 
   uint32_t GetOutputLine(uint32_t rasterY, uint32_t cylinder);
   uint32_t GetOutputCylinder(uint32_t cylinder);
-  
+
   void SerializePixels(uint32_t pixelCount);
   void SerializeBatch(uint32_t cylinderCount);
 
@@ -68,5 +68,5 @@ public:
   void Startup();
   void Shutdown();
 
-  PixelSerializer() : GraphicsEvent(), _lastCylinderOutput(FIRST_CYLINDER - 1), _newLine(true), _activated(false) {};
+  PixelSerializer() : GraphicsEvent(), _lastCylinderOutput(FIRST_CYLINDER - 1), _newLine(true), _activated(false){};
 };

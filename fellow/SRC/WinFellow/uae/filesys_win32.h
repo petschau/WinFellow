@@ -29,10 +29,10 @@
 
 /* replace the os-independant calls with calls for according win32 routines */
 
-#define opendir  win32_opendir 
-#define readdir  win32_readdir
+#define opendir win32_opendir
+#define readdir win32_readdir
 #define closedir win32_closedir
-#define mkdir    win32_mkdir
+#define mkdir win32_mkdir
 
 #define access _access
 #define unlink _unlink
@@ -48,7 +48,7 @@
 
 /* interfaces of the according win32 routines */
 
-extern DIR *win32_opendir (const char *);
+extern DIR *win32_opendir(const char *);
 extern struct dirent *win32_readdir(DIR *);
 extern void win32_closedir(DIR *);
 extern int win32_mkdir(const char *, int);

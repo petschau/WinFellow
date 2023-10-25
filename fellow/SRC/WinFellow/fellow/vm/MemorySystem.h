@@ -30,16 +30,16 @@ namespace fellow::vm
     void EmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size) override;
 
     void BankSet(
-      fellow::api::vm::ReadByteFunc rb,
-      fellow::api::vm::ReadWordFunc rw,
-      fellow::api::vm::ReadLongFunc rl,
-      fellow::api::vm::WriteByteFunc wb,
-      fellow::api::vm::WriteWordFunc ww,
-      fellow::api::vm::WriteLongFunc wl,
-      uint8_t *basep,
-      uint32_t bank,
-      uint32_t basebank,
-      BOOLE pointer_can_write) override;
+        fellow::api::vm::ReadByteFunc rb,
+        fellow::api::vm::ReadWordFunc rw,
+        fellow::api::vm::ReadLongFunc rl,
+        fellow::api::vm::WriteByteFunc wb,
+        fellow::api::vm::WriteWordFunc ww,
+        fellow::api::vm::WriteLongFunc wl,
+        uint8_t *basep,
+        uint32_t bank,
+        uint32_t basebank,
+        BOOLE pointer_can_write) override;
 
     uint8_t *AddressToPtr(uint32_t address) override;
     uint32_t GetKickImageVersion() override;

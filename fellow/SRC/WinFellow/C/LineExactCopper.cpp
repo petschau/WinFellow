@@ -7,7 +7,7 @@
 #include "BLIT.H"
 #include "VirtualHost/Core.h"
 
-uint32_t LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
+uint32_t LineExactCopper::cycletable[16] = {4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4};
 
 void LineExactCopper::YTableInit()
 {
@@ -15,7 +15,7 @@ void LineExactCopper::YTableInit()
 
   for (int i = 0; i < 512; i++)
   {
-    ytable[i] = i*busGetCyclesInThisLine() + ex;
+    ytable[i] = i * busGetCyclesInThisLine() + ex;
   }
 }
 
@@ -190,10 +190,10 @@ void LineExactCopper::EventHandler()
         // (not really!)
         if ((bswapRegD & 0x1) == 0x0)
         {
-          // WAIT instruction 
+          // WAIT instruction
 
           // calculate our line, masked with vmask
-          // bl - masked graph_raster_y 
+          // bl - masked graph_raster_y
 
           // use mask on graph_raster_y
           bswapRegD |= 0x8000;
@@ -201,11 +201,11 @@ void LineExactCopper::EventHandler()
           correctLine = false;
 
           // compare masked y with wait line
-          //maskedY = graph_raster_y;
+          // maskedY = graph_raster_y;
           maskedY = currentY;
 
-          *((uint8_t*)&maskedY) &= (uint8_t)(bswapRegD >> 8);
-          if (*((uint8_t*)&maskedY) > ((uint8_t)(bswapRegC >> 8)))
+          *((uint8_t *)&maskedY) &= (uint8_t)(bswapRegD >> 8);
+          if (*((uint8_t *)&maskedY) > ((uint8_t)(bswapRegC >> 8)))
           {
             // we have passed the line, set up next instruction immediately
             // cexit
@@ -220,7 +220,7 @@ void LineExactCopper::EventHandler()
             if (currentY != 255)
             {
               // ctrueexit
-              //Here we must do a new copper access immediately (in 4 cycles)
+              // Here we must do a new copper access immediately (in 4 cycles)
               InsertEvent(bus.cycle + 4);
             }
             else
@@ -230,7 +230,7 @@ void LineExactCopper::EventHandler()
               {
                 // line is 256-313, wrong to not wait
                 // ctrueexit
-                //Here we must do a new copper access immediately (in 4 cycles)
+                // Here we must do a new copper access immediately (in 4 cycles)
                 InsertEvent(bus.cycle + 4);
               }
               else
@@ -243,9 +243,9 @@ void LineExactCopper::EventHandler()
 
                 // get missing bits
                 maskedY = (currentY | 0x100);
-                *((uint8_t*)&maskedY) &= (bswapRegD >> 8);
+                *((uint8_t *)&maskedY) &= (bswapRegD >> 8);
                 // mask them into vertical position
-                *((uint8_t*)&maskedY) |= (bswapRegC >> 8);
+                *((uint8_t *)&maskedY) |= (bswapRegC >> 8);
                 maskedY *= busGetCyclesInThisLine();
                 bswapRegC &= 0xfe;
                 bswapRegD &= 0xfe;
@@ -263,7 +263,7 @@ void LineExactCopper::EventHandler()
               }
             }
           }
-          else if (*((uint8_t*)&maskedY) < (uint8_t)(bswapRegC >> 8))
+          else if (*((uint8_t *)&maskedY) < (uint8_t)(bswapRegC >> 8))
           {
             // we are above the line, calculate the cycle when wait is true
             // notnever
@@ -273,9 +273,9 @@ void LineExactCopper::EventHandler()
 
             // get bits that is not masked out
             maskedY = currentY;
-            *((uint8_t*)&maskedY) &= (bswapRegD >> 8);
+            *((uint8_t *)&maskedY) &= (bswapRegD >> 8);
             // mask in bits from waitgraph_raster_y
-            *((uint8_t*)&maskedY) |= (bswapRegC >> 8);
+            *((uint8_t *)&maskedY) |= (bswapRegC >> 8);
             waitY = ytable[maskedY];
 
             // when wait is on same line, use masking stuff on graph_raster_x
@@ -311,9 +311,9 @@ void LineExactCopper::EventHandler()
             correctLine = true;
             // use mask on graph_raster_x
             maskedX = currentX;
-            *((uint8_t*)&maskedX) &= (bswapRegD & 0xff);
+            *((uint8_t *)&maskedX) &= (bswapRegD & 0xff);
             // compare masked x with wait x
-            if (*((uint8_t*)&maskedX) < (uint8_t)(bswapRegC & 0xff))
+            if (*((uint8_t *)&maskedX) < (uint8_t)(bswapRegC & 0xff))
             {
               // here the wait position is not reached yet, calculate cycle when wait is true
               // previous position checks should assure that a calculated position is not less than the current cycle
@@ -321,13 +321,13 @@ void LineExactCopper::EventHandler()
 
               // invert masks
               bswapRegD = ~bswapRegD;
-              //bswapRegD &= 0xffff;
+              // bswapRegD &= 0xffff;
 
               // get bits that is not masked out
               maskedY = currentY;
-              *((uint8_t*)&maskedY) &= (uint8_t)(bswapRegD >> 8);
+              *((uint8_t *)&maskedY) &= (uint8_t)(bswapRegD >> 8);
               // mask in bits from waitgraph_raster_y
-              *((uint8_t*)&maskedY) |= (uint8_t)(bswapRegC >> 8);
+              *((uint8_t *)&maskedY) |= (uint8_t)(bswapRegC >> 8);
               waitY = ytable[maskedY];
 
               // when wait is on same line, use masking stuff on graph_raster_x
@@ -371,7 +371,7 @@ void LineExactCopper::EventHandler()
               if (currentY != 255)
               {
                 // ctrueexit
-                //Here we must do a new copper access immediately (in 4 cycles)
+                // Here we must do a new copper access immediately (in 4 cycles)
                 InsertEvent(bus.cycle + 4);
               }
               else
@@ -381,7 +381,7 @@ void LineExactCopper::EventHandler()
                 {
                   // line is 256-313, wrong to not wait
                   // ctrueexit
-                  //Here we must do a new copper access immediately (in 4 cycles)
+                  // Here we must do a new copper access immediately (in 4 cycles)
                   InsertEvent(bus.cycle + 4);
                 }
                 else
@@ -394,9 +394,9 @@ void LineExactCopper::EventHandler()
 
                   // get missing bits
                   maskedY = (currentY | 0x100);
-                  *((uint8_t*)&maskedY) &= (bswapRegD >> 8);
+                  *((uint8_t *)&maskedY) &= (bswapRegD >> 8);
                   // mask them into vertical position
-                  *((uint8_t*)&maskedY) |= (bswapRegC >> 8);
+                  *((uint8_t *)&maskedY) |= (bswapRegC >> 8);
                   maskedY *= busGetCyclesInThisLine();
                   bswapRegC &= 0xfe;
                   bswapRegD &= 0xfe;
@@ -424,15 +424,15 @@ void LineExactCopper::EventHandler()
           // cskip
 
           // calculate our line, masked with vmask
-          // bl - masked graph_raster_y 
+          // bl - masked graph_raster_y
 
           // use mask on graph_raster_y
           bswapRegD |= 0x8000;
           // used to indicate correct line or not
           correctLine = false;
           maskedY = currentY;
-          *((uint8_t*)&maskedY) &= ((bswapRegD >> 8));
-          if (*((uint8_t*)&maskedY) > (uint8_t)(bswapRegC >> 8))
+          *((uint8_t *)&maskedY) &= ((bswapRegD >> 8));
+          if (*((uint8_t *)&maskedY) > (uint8_t)(bswapRegC >> 8))
           {
             // do skip
             // we have passed the line, set up next instruction immediately
@@ -455,8 +455,8 @@ void LineExactCopper::EventHandler()
             // use mask on graph_raster_x
             // Compare masked x with wait x
             maskedX = currentX;
-            *((uint8_t*)&maskedX) &= bswapRegD;
-            if (*((uint8_t*)&maskedX) >= (uint8_t)(bswapRegC & 0xff))
+            *((uint8_t *)&maskedX) &= bswapRegD;
+            if (*((uint8_t *)&maskedX) >= (uint8_t)(bswapRegC & 0xff))
             {
               // position reached, set up next instruction immediately
               copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
@@ -492,8 +492,7 @@ void LineExactCopper::EmulationStop()
 {
 }
 
-LineExactCopper::LineExactCopper()
-  : Copper()
+LineExactCopper::LineExactCopper() : Copper()
 {
   YTableInit();
 }

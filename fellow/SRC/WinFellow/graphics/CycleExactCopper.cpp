@@ -60,7 +60,7 @@ bool CycleExactCopper::IsRegisterAllowed(uint32_t regno)
 
 void CycleExactCopper::Move()
 {
-  uint32_t regno = (uint32_t) (_first & 0x1fe);
+  uint32_t regno = (uint32_t)(_first & 0x1fe);
   uint16_t value = _second;
 
   if (IsRegisterAllowed(regno))
@@ -68,7 +68,7 @@ void CycleExactCopper::Move()
     SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
     if (!_skip_next)
     {
-      memory_iobank_write[regno>>1](value, regno);
+      memory_iobank_write[regno >> 1](value, regno);
     }
     _skip_next = false;
   }
@@ -81,11 +81,11 @@ void CycleExactCopper::Move()
 void CycleExactCopper::Wait()
 {
   bool blitter_finish_disable = (_second & 0x8000) == 0x8000;
-  uint32_t ve = (((uint32_t) _second >> 8) & 0x7f) | 0x80;
-  uint32_t he = (uint32_t) _second & 0xfe;
+  uint32_t ve = (((uint32_t)_second >> 8) & 0x7f) | 0x80;
+  uint32_t he = (uint32_t)_second & 0xfe;
 
-  uint32_t vp = (uint32_t) (_first >> 8);
-  uint32_t hp = (uint32_t) (_first & 0xfe);
+  uint32_t vp = (uint32_t)(_first >> 8);
+  uint32_t hp = (uint32_t)(_first & 0xfe);
 
   uint32_t test_cycle = busGetCycle() + 2;
   uint32_t rasterY = test_cycle / busGetCyclesInThisLine();
@@ -98,7 +98,7 @@ void CycleExactCopper::Wait()
 
   _skip_next = false;
 
-  // Is the vertical position already larger? 
+  // Is the vertical position already larger?
   if ((rasterY & ve) > (vp & ve))
   {
     _skip_next = false;
@@ -110,11 +110,12 @@ void CycleExactCopper::Wait()
   if ((rasterY & ve) == (vp & ve))
   {
     uint32_t initial_wait_rasterX = rasterX;
-    while ((rasterX <= 0xe2) && ((rasterX & he) < (hp & he))) rasterX += 2;
+    while ((rasterX <= 0xe2) && ((rasterX & he) < (hp & he)))
+      rasterX += 2;
     if (rasterX < 0xe4)
     {
       if (initial_wait_rasterX == rasterX) rasterX += 2;
-      SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX);
+      SetState(COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX);
       return;
     }
   }
@@ -123,18 +124,21 @@ void CycleExactCopper::Wait()
   rasterY++;
 
   // Find the first horisontal position on a line that match when comparing from the start of a line
-  for (rasterX = 0; (rasterX <= 0xe2) && ((rasterX & he) < (hp & he)); rasterX += 2);
+  for (rasterX = 0; (rasterX <= 0xe2) && ((rasterX & he) < (hp & he)); rasterX += 2)
+    ;
 
   // Find the first vertical position that match
   if (rasterX == 0xe4)
   {
     // There is no match on the horisontal position. The vertical position must be larger than vp to match
-    while ((rasterY < busGetLinesInThisFrame()) && ((rasterY & ve) <= (vp & ve))) rasterY++;
+    while ((rasterY < busGetLinesInThisFrame()) && ((rasterY & ve) <= (vp & ve)))
+      rasterY++;
   }
   else
   {
     // A match can either be exact on vp and hp, or the vertical position must be larger than vp.
-    while ((rasterY < busGetLinesInThisFrame()) && ((rasterY & ve) < (vp & ve))) rasterY++;
+    while ((rasterY < busGetLinesInThisFrame()) && ((rasterY & ve) < (vp & ve)))
+      rasterY++;
   }
 
   if (rasterY >= busGetLinesInThisFrame())
@@ -145,22 +149,22 @@ void CycleExactCopper::Wait()
   else if ((rasterY & ve) == (vp & ve))
   {
     // An exact match on both vp and hp was found
-    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX); // +2);
+    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX); // +2);
   }
   else
   {
     // A match on vp being larger (not equal) was found
-    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX); // +2);
+    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX); // +2);
   }
 }
 
 void CycleExactCopper::Skip()
 {
-  uint32_t ve = (((uint32_t) _second >> 8) & 0x7f) | 0x80;
-  uint32_t he = (uint32_t) _second & 0xfe;
+  uint32_t ve = (((uint32_t)_second >> 8) & 0x7f) | 0x80;
+  uint32_t he = (uint32_t)_second & 0xfe;
 
-  uint32_t vp = (uint32_t) (_first >> 8);
-  uint32_t hp = (uint32_t) (_first & 0xfe);
+  uint32_t vp = (uint32_t)(_first >> 8);
+  uint32_t hp = (uint32_t)(_first & 0xfe);
 
   uint32_t test_cycle = busGetCycle();
   uint32_t rasterY = test_cycle / busGetCyclesInThisLine();
@@ -228,15 +232,9 @@ void CycleExactCopper::EventHandler()
   }
   switch (_state)
   {
-    case COPPER_STATE_READ_FIRST_WORD:
-      ReadFirstWord();
-      break;
-    case COPPER_STATE_READ_SECOND_WORD:
-      ReadSecondWord();
-      break;
-    case COPPER_STATE_TRANSFER_SECOND_WORD:
-      TransferSecondWord();
-      break;
+    case COPPER_STATE_READ_FIRST_WORD: ReadFirstWord(); break;
+    case COPPER_STATE_READ_SECOND_WORD: ReadSecondWord(); break;
+    case COPPER_STATE_TRANSFER_SECOND_WORD: TransferSecondWord(); break;
   }
 }
 
@@ -297,8 +295,7 @@ void CycleExactCopper::EmulationStop()
 {
 }
 
-CycleExactCopper::CycleExactCopper()
-  : _skip_next(false)
+CycleExactCopper::CycleExactCopper() : _skip_next(false)
 {
 }
 

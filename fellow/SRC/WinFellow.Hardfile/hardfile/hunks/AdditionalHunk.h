@@ -11,7 +11,7 @@ namespace fellow::hardfile::hunks
 
   public:
     uint32_t GetSourceHunkIndex();
-    void Parse(RawDataReader& rawReader) override = 0;
+    void Parse(RawDataReader &rawReader) override = 0;
 
     AdditionalHunk(uint32_t sourceHunkIndex);
   };

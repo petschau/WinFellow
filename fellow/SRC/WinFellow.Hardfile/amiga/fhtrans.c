@@ -2,7 +2,7 @@
 //
 //#include <stdio.h>
 //
-//int main()
+// int main()
 //{
 //  int d, count = 0;
 //  FILE *I = fopen("out.bin", "rb");

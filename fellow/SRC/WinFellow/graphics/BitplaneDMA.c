@@ -32,9 +32,7 @@
 
 using namespace CustomChipset;
 
-static const char* BPLDMA_StateNames[3] = { "NONE",
-                                    "FETCH_LORES",
-                                    "FETCH_HIRES" };
+static const char *BPLDMA_StateNames[3] = {"NONE", "FETCH_LORES", "FETCH_HIRES"};
 
 void BitplaneDMA::Log(uint32_t line, uint32_t cylinder)
 {
@@ -51,12 +49,12 @@ uint16_t BitplaneDMA::ReadWord(uint32_t address)
   return chipmemReadWord(address);
 }
 
-void BitplaneDMA::IncreaseBplPt(uint32_t* bplpt, uint32_t size)
+void BitplaneDMA::IncreaseBplPt(uint32_t *bplpt, uint32_t size)
 {
   *bplpt = chipsetMaskPtr((*bplpt) + size);
 }
 
-uint16_t BitplaneDMA::GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t* bplpt)
+uint16_t BitplaneDMA::GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt)
 {
   if (bplNo <= bplsEnabled)
   {
@@ -71,12 +69,12 @@ void BitplaneDMA::AddModulo()
 {
   switch (_core.RegisterUtility.GetEnabledBitplaneCount())
   {
-  case 6: IncreaseBplPt(&bpl6pt, bpl2mod);
-  case 5: IncreaseBplPt(&bpl5pt, bpl1mod);
-  case 4: IncreaseBplPt(&bpl4pt, bpl2mod);
-  case 3: IncreaseBplPt(&bpl3pt, bpl1mod);
-  case 2: IncreaseBplPt(&bpl2pt, bpl2mod);
-  case 1: IncreaseBplPt(&bpl1pt, bpl1mod);
+    case 6: IncreaseBplPt(&bpl6pt, bpl2mod);
+    case 5: IncreaseBplPt(&bpl5pt, bpl1mod);
+    case 4: IncreaseBplPt(&bpl4pt, bpl2mod);
+    case 3: IncreaseBplPt(&bpl3pt, bpl1mod);
+    case 2: IncreaseBplPt(&bpl2pt, bpl2mod);
+    case 1: IncreaseBplPt(&bpl1pt, bpl1mod);
   }
 }
 
@@ -138,27 +136,24 @@ void BitplaneDMA::FetchLores()
 {
   uint32_t bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
 
-  GraphicsContext.PixelSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
-    GetHold(2, bplsEnabled, &bpl2pt),
-    GetHold(3, bplsEnabled, &bpl3pt),
-    GetHold(4, bplsEnabled, &bpl4pt),
-    GetHold(5, bplsEnabled, &bpl5pt),
-    GetHold(6, bplsEnabled, &bpl6pt));
+  GraphicsContext.PixelSerializer.Commit(
+      GetHold(1, bplsEnabled, &bpl1pt),
+      GetHold(2, bplsEnabled, &bpl2pt),
+      GetHold(3, bplsEnabled, &bpl3pt),
+      GetHold(4, bplsEnabled, &bpl4pt),
+      GetHold(5, bplsEnabled, &bpl5pt),
+      GetHold(6, bplsEnabled, &bpl6pt));
 }
 
 void BitplaneDMA::FetchHires()
 {
   uint32_t bplsEnabled = _core.RegisterUtility.GetEnabledBitplaneCount();
 
-  GraphicsContext.PixelSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
-    GetHold(2, bplsEnabled, &bpl2pt),
-    GetHold(3, bplsEnabled, &bpl3pt),
-    GetHold(4, bplsEnabled, &bpl4pt),
-    0,
-    0);
+  GraphicsContext.PixelSerializer.Commit(
+      GetHold(1, bplsEnabled, &bpl1pt), GetHold(2, bplsEnabled, &bpl2pt), GetHold(3, bplsEnabled, &bpl3pt), GetHold(4, bplsEnabled, &bpl4pt), 0, 0);
 }
 
-void BitplaneDMA::InitializeEvent(GraphicsEventQueue* queue)
+void BitplaneDMA::InitializeEvent(GraphicsEventQueue *queue)
 {
   _queue = queue;
   SetStateNone();
@@ -174,12 +169,8 @@ void BitplaneDMA::Handler(uint32_t rasterY, uint32_t cylinder)
   {
     switch (_state)
     {
-    case BPL_DMA_STATE_FETCH_LORES:
-      FetchLores();
-      break;
-    case BPL_DMA_STATE_FETCH_HIRES:
-      FetchHires();
-      break;
+      case BPL_DMA_STATE_FETCH_LORES: FetchLores(); break;
+      case BPL_DMA_STATE_FETCH_HIRES: FetchHires(); break;
     }
     Restart(GraphicsContext.DDFStateMachine.CanRead());
   }
@@ -195,4 +186,3 @@ void BitplaneDMA::EndOfFrame()
 {
   SetStateNone();
 }
-

@@ -15,11 +15,11 @@ namespace fellow::hardfile::hunks
 
   public:
     uint32_t GetID() override;
-    
-    uint32_t GetOffsetTableCount();
-    Reloc32OffsetTable* GetOffsetTable(uint32_t index);
 
-    void Parse(RawDataReader& rawDataReader) override;
+    uint32_t GetOffsetTableCount();
+    Reloc32OffsetTable *GetOffsetTable(uint32_t index);
+
+    void Parse(RawDataReader &rawDataReader) override;
 
     Reloc32Hunk(uint32_t sourceHunkIndex);
   };

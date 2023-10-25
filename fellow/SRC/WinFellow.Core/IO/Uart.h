@@ -26,7 +26,7 @@ private:
 
   void ClearState();
   void LoadState(FILE *F);
-  void SaveState(FILE *F);  
+  void SaveState(FILE *F);
 
   void OpenOutputFile();
   void CloseOutputFile();

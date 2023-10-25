@@ -34,7 +34,7 @@ namespace fellow::hardfile::rdb
 
     RDBFileSystemHandler FileSystemHandler;
 
-    void ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize);
+    void ReadFromFile(RDBFileReader &reader, uint32_t blockChainStart, uint32_t blockSize);
     void Log();
 
     RDBFileSystemHeader();

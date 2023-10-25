@@ -8,6 +8,6 @@ namespace mock::Core::Service
   {
   public:
     ::Service::FileProperties *GetFileProperties(const char *filename) override;
-    int Stat(const char* szFilename, struct stat* pStatBuffer) override;
+    int Stat(const char *szFilename, struct stat *pStatBuffer) override;
   };
 }
