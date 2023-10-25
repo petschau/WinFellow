@@ -317,3 +317,7 @@ This test case summarizes a number of commits surrounding interrupt handling (a8
 ### Git 1192d51: Direct3D fullscreen mode
 
 Create a configuration that uses fullscreen mode. Verify that an emulation session can be started both for DirectDraw, as well as for Direct3D graphics modes.
+
+### Git bc944c4: DirectDraw window position calculations in RetroPlatform mode
+
+Configure a RetroPlatform host, version 10.2.2 or newer to use the DirectDraw graphics driver in WinFellow. Start any emulation session from a RetroPlatform host and move the window over the screen. Ensure that the position of the emulation window is moving and no graphical artifacts occur.

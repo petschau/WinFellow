@@ -324,6 +324,10 @@ upgrade to cpp20
 removed a Windows XP specific workaround from the filesystem module
 \end_layout
 
+\begin_layout Itemize
+reformatted the project using a uniform clang-format configuration
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes, including
