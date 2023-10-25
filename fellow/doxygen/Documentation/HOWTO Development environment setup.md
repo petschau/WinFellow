@@ -19,6 +19,8 @@ installed and added to the search path:
 
 - Visual Studio 2022 with C++ desktop development components must be installed, including the following additions:
     - the extension "Format document on save" should be installed, to ensure that the solution's .clang-format file is applied on each save
+    - reformatting of the whole solution can also be done by executing the following command in the solution directory via WSL:
+      `find . -regex '.*\.\(c\|cpp\|hpp\|cc\|cxx\|h\)' -exec clang-format -style=file -i {} \;`
 
 - PowerShell execution policy must be set to unrestricted (both for the 32 as well as the 64 bit PowerShell)
 - Git for Windows 64 Bit must be installed and added to the search path; usually Notepad++ is used as default editor
