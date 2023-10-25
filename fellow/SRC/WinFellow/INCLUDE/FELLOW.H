@@ -32,7 +32,7 @@ extern BOOLE fellowSaveState(char *filename);
 extern BOOLE fellowLoadState(char *filename);
 extern void fellowSoftReset();
 extern void fellowHardReset();
-extern BOOLE fellowEmulationStart();
+extern bool fellowEmulationStart();
 extern void fellowEmulationStop();
 extern void fellowRequestEmulationStop();
 

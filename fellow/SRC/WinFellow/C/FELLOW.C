@@ -228,7 +228,7 @@ void fellowRequestEmulationStopClear()
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
 
-BOOLE fellowEmulationStart()
+bool fellowEmulationStart()
 {
   fellowRequestEmulationStopClear();
   iniEmulationStart();
@@ -239,10 +239,20 @@ BOOLE fellowEmulationStart()
   spriteEmulationStart();
   blitterEmulationStart();
   copperEmulationStart();
-  drawEmulationStart();
+
+  if (!drawEmulationStart())
+  {
+    return false;
+  }
+
   kbdEmulationStart();
   gameportEmulationStart();
-  BOOLE result = drawEmulationStartPost();
+
+  if (!drawEmulationStartPost())
+  {
+    return false;
+  }
+
   graphEmulationStart();
   _core.Sound->EmulationStart();
   busEmulationStart();
@@ -257,7 +267,7 @@ BOOLE fellowEmulationStart()
   _core.Uart->EmulationStart();
   HardfileHandler->EmulationStart();
 
-  return result && memoryGetKickImageOK();
+  return memoryGetKickImageOK();
 }
 
 /*============================================================================*/
