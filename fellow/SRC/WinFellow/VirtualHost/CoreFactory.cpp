@@ -33,6 +33,9 @@ void CoreFactory::DestroyServices()
 
   delete _core.Log;
   _core.Log = nullptr;
+
+  delete _core.FileInformation;
+  _core.FileInformation = nullptr;
 }
 
 void CoreFactory::CreateModules()
@@ -49,4 +52,7 @@ void CoreFactory::DestroyModules()
 
   delete _core.Sound;
   _core.Sound = nullptr;
+
+  delete _core.RtcOkiMsm6242rs;
+  _core.RtcOkiMsm6242rs = nullptr;
 }
