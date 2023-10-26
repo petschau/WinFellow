@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.11 (2023/10/24)
+v0.5.11 (2023/10/26)
 \end_layout
 
 \begin_layout Author
@@ -287,11 +287,6 @@ Bug fixes:
 \end_layout
 
 \begin_deeper
-\begin_layout Itemize
-fixed graphical artefacts when moving the emulator window in DirectDraw
- graphics mode on Amiga Forever 10.2.2 or newer
-\end_layout
-
 \begin_layout Itemize
 improved logging in case of failure to initialize Direct3d graphics driver
 \end_layout
