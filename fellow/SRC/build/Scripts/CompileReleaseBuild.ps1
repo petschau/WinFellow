@@ -1,4 +1,4 @@
-#############################################################################
+﻿#############################################################################
 ## Fellow Amiga Emulator                                                   ##
 ##                                                                         ##
 ## CompileReleaseBuild.ps1 - compile a WinFellow release for distribution  ##
@@ -47,15 +47,15 @@ Param(
     [switch]$TestBuild
 )
 
-Function CheckForExeInSearchPath([string] $exe) {
-    If((Get-Command $exe -ErrorAction SilentlyContinue) -eq $null) {
+function CheckForExeInSearchPath([string] $exe) {
+    If ($null -eq (Get-Command $exe -ErrorAction SilentlyContinue)) {
         Write-Error "ERROR: Unable to find $exe in your search PATH!"
         return $false
     }
     return $true
 }
 
-Function ShowProgressIndicator($step, $CurrentOperation) {
+function ShowProgressIndicator($step, $CurrentOperation) {
     $steps = 11
 
     Write-Verbose $CurrentOperation
@@ -67,23 +67,22 @@ Function ShowProgressIndicator($step, $CurrentOperation) {
 }
 
 Set-StrictMode -Version 2.0
-$ErrorActionPreference='Stop'
+$ErrorActionPreference = 'Stop'
 
 [string[]] $BuildPlatforms = @('win32', 'x64', 'ARM64')
 
-$FELLOWBUILDPROFILE='Release'
+$FELLOWBUILDPROFILE = 'Release'
 
-If($DebugBuild) {
-    $FELLOWBUILDPROFILE='Debug'
+if ($DebugBuild) {
+    $FELLOWBUILDPROFILE = 'Debug'
 }
-If($TestBuild) {
-    $FELLOWBUILDPROFILE='Debug'
-    $DebugPreference   = 'Continue'
+if ($TestBuild) {
+    $FELLOWBUILDPROFILE = 'Debug'
+    $DebugPreference = 'Continue'
     $VerbosePreference = 'Continue'
 }
 
-Function Main()
-{
+function Main() {
     ShowProgressIndicator 1 "Checking prerequisites..."
 
     $result = CheckForExeInSearchPath "git.exe"
@@ -98,26 +97,26 @@ Function Main()
     Write-Debug "Source Code Base Dir: $SourceCodeBaseDir"
     $temp = $env:temp
     Write-Debug "Temporary Dir       : $temp"
-    $TargetOutputDir   = Resolve-Path ("$SourceCodeBaseDir\..")
+    $TargetOutputDir = Resolve-Path ("$SourceCodeBaseDir\..")
     Write-Debug "Target Output Dir   : $TargetOutputDir"
 
     $MSBuildLog = "$temp\WinFellow-MSBuild.log"
 
     Push-Location
 
-    cd $SourceCodeBaseDir
+    Set-Location $SourceCodeBaseDir
 
-    If($FELLOWBUILDPROFILE -eq "Release") {
+    if ($FELLOWBUILDPROFILE -eq "Release") {
         ShowProgressIndicator 2 "Release build, checking Git working copy for local modifications..."
 
         $result = (git status --porcelain)
-        If($result -ne $null) {
+        if ($null -ne $result) {
             Write-Error "Local working copy contains modifications, aborting - a release build must always be produced from a clean and current working copy."
             exit $result
         }
         $GitBranch = (git rev-parse --abbrev-ref HEAD)
         $result = (git log origin/$GitBranch..HEAD)
-        If($result -ne $null) {
+        if ($null -ne $result) {
             Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
             exit $result
         }
@@ -129,28 +128,30 @@ Function Main()
 
     ShowProgressIndicator 4 "Performing clean build of WinFellow..."
 
-    If((Get-Command "vswhere.exe" -ErrorAction SilentlyContinue) -eq $null) {
+    if ($null -eq (Get-Command "vswhere.exe" -ErrorAction SilentlyContinue)) {
         Write-Error "Unable to find Visual Studio Locator (vswhere.exe) in your PATH; you can obtain it from http://github.com/Microsoft/vswhere"
     }
 
     $MSBuildPath = vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-    If($MSBuildPath) {
+    if ($MSBuildPath) {
         $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\Current\Bin\MSBuild.exe'
-        If(Test-Path $MSBuildPath) {
-            ForEach($CurrentPlatform In $BuildPlatforms) {
+        if (Test-Path $MSBuildPath) {
+            foreach ($CurrentPlatform In $BuildPlatforms) {
                 Write-Verbose "Executing $CurrentPlatform platform build..."
                 $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WinFellow\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$CurrentPlatform /fl /flp:logfile=$MSBuildLog)
 
-                If($LastExitCode -ne 0) {
-                    ii $MSBuildLog
+                if ($LastExitCode -ne 0) {
+                    Invoke-Item $MSBuildLog
                     Pop-Location
                     Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
                 }
             }
-        } Else {
+        }
+        else {
             Write-Error "ERROR locating MSBuild.exe."
         }
-    } Else {
+    }
+    else {
         Write-Error "ERROR locating MSBuild.exe."
     }
 
@@ -161,12 +162,12 @@ Function Main()
     ShowProgressIndicator 5 "Generating GPL terms..."
 
     Copy-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\gpl-2.0.tex" "$temp"
-    cd $temp
+    Set-Location $temp
     $result = (pdflatex gpl-2.0.tex)
 
     ShowProgressIndicator 6 "Generating ChangeLog..."
 
-    cd $SourceCodeBaseDir
+    Set-Location $SourceCodeBaseDir
     $result = (git log --date=short --pretty=format:"%h - %<(17)%an, %ad : %w(80,0,42)%s%n%w(80,42,42)%b" --invert-grep --grep="" --no-merges > $temp\ChangeLog.txt)
 
     ShowProgressIndicator 7 "Generating User Manual..."
@@ -188,7 +189,7 @@ Function Main()
         'x64'   = "$SourceCodeBaseDir\fellow\SRC\WinFellow\x64\$FELLOWBUILDPROFILE"
         'ARM64' = "$SourceCodeBaseDir\fellow\SRC\WinFellow\ARM64\$FELLOWBUILDPROFILE"
     }
-    ForEach($CurrentPlatform In $PlatformBuildOutputDirs.Keys.GetEnumerator()) {
+    foreach ($CurrentPlatform In $PlatformBuildOutputDirs.Keys.GetEnumerator()) {
         $PlatformBuildOutputDir = $PlatformBuildOutputDirs[$CurrentPlatform]
         Write-Debug "PlatformBuildOutputDir = $PlatformBuildOutputDir"
         Move-Item -Force "$PlatformBuildOutputDir\WinFellow.exe" "$OUTPUTDIR\WinFellow-$CurrentPlatform.exe"
@@ -200,10 +201,11 @@ Function Main()
     Copy-Item -Force "$temp\gpl-2.0.pdf"                   "$OUTPUTDIR\gpl-2.0.pdf"
 
     Write-Verbose "Compressing release binary distribution archive..."
-    CD $OUTPUTDIR
-    If($FELLOWBUILDPROFILE -eq 'Release') {
+    Set-Location $OUTPUTDIR
+    if ($FELLOWBUILDPROFILE -eq 'Release') {
         $BinaryArchiveFullName = "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
-    } Else {
+    }
+    else {
         $BinaryArchiveFullName = "$TargetOutputDir\WinFellow_v$FELLOWVERSION-Debug.zip"
     }
     Write-Debug "Release binary archive name: $BinaryArchiveFullName"
@@ -215,57 +217,59 @@ Function Main()
 
     $NSISDIR = Resolve-Path ("$SourceCodeBaseDir\fellow\SRC\build\NSIS")
     Write-Debug "NSIS dir: $NSISDIR"
-    cd $temp
+    Set-Location $temp
 
     # build combined 32/64 bit installer
-    If($FELLOWBUILDPROFILE -eq 'Release') {
+    if ($FELLOWBUILDPROFILE -eq 'Release') {
         $NSISInstallerFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
-    } Else {
+    }
+    else {
         $NSISInstallerFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}-Debug.exe"
     }
     $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow_NSIS.log")
     Write-Debug "NSIS installer output name: $NSISInstallerFullName"
     Move-Item -Force "WinFellow_v${FELLOWVERSION}.exe" $NSISInstallerFullName
 
-    cd $SourceCodeBaseDir
+    Set-Location $SourceCodeBaseDir
 
-    If(($FELLOWBUILDPROFILE -eq 'Release') -Or ($DebugBuild -eq $true)) {
+    if (($FELLOWBUILDPROFILE -eq 'Release') -Or ($DebugBuild -eq $true)) {
         ShowProgressIndicator 10 "Cleaning up unwanted parts within Git working copy..."
 
         $result = (git status --porcelain --ignored |
-            Select-String '^??' |
-            ForEach-Object {
-                [Regex]::Match($_.Line, '^[^\s]*\s+(.*)$').Groups[1].Value
-            } |
-            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue)
+                Select-String '^??' |
+                ForEach-Object {
+                    [Regex]::Match($_.Line, '^[^\s]*\s+(.*)$').Groups[1].Value
+                } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue)
     }
 
     ShowProgressIndicator 11 "Compressing release source code archive..."
-    If($FELLOWBUILDPROFILE -eq 'Release') {
+    if ($FELLOWBUILDPROFILE -eq 'Release') {
         $SourceArchiveFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
-    } Else {
+    }
+    else {
         $SourceArchiveFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src-Debug.zip"
     }
     Write-Debug "Release source code archive output name: $SourceArchiveFullName"
 
     $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "fellow")
     $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" ".git")
-    cd $OUTPUTDIR
+    Set-Location $OUTPUTDIR
     $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "gpl-2.0.pdf")
     Move-Item -Force "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "$SourceArchiveFullName"
 
-    cd $SourceCodeBaseDir
+    Set-Location $SourceCodeBaseDir
     Remove-Item "$OUTPUTDIR" -Recurse -Force
 
-    cd $TargetOutputDir
+    Set-Location $TargetOutputDir
     Invoke-Item .
 
     Pop-Location
 }
 
-Try {
+try {
     Main
-} Catch {
+}
+catch {
     $ErrorMessage = $_.Exception | Format-List -Force | Out-String
     Write-Host "[ERROR] A terminating error was encountered. See error details below." -ForegroundColor Red
     Write-Host "$($_.InvocationInfo.PositionMessage)"                                  -ForegroundColor Red
