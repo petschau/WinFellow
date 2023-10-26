@@ -35,7 +35,7 @@ void CoreFactory::DestroyServices()
   _core.Log = nullptr;
 
   delete _core.FileInformation;
-  _core.Log = nullptr;
+  _core.FileInformation = nullptr;
 }
 
 void CoreFactory::CreateModules()
