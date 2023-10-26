@@ -7,7 +7,7 @@
 typedef int BOOLE;
 
 #define FALSE 0
-#define TRUE  1
+#define TRUE 1
 
 #ifndef X64
 #define PTR_TO_INT(i) ((uint32_t)i)
@@ -31,13 +31,13 @@ typedef void (*decoderoutinetype)(uint32_t, uint32_t);
 extern uint8_t configromname[];
 
 typedef union {
-          uint32_t *lptr;
-          uint16_t *wptr;
-          uint8_t *bptr;
-          uint32_t lval;
-          uint16_t wval[2];
-          uint8_t bval[4];
-          } ptunion;
+  uint32_t *lptr;
+  uint16_t *wptr;
+  uint8_t *bptr;
+  uint32_t lval;
+  uint16_t wval[2];
+  uint8_t bval[4];
+} ptunion;
 
 typedef void (*planar2chunkyroutine)();
 

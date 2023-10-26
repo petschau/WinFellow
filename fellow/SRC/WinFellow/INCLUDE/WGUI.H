@@ -4,7 +4,8 @@
 #include "FELLOW.H"
 #include "DRAW.H"
 
-typedef enum {
+typedef enum
+{
   FSEL_ROM = 0,
   FSEL_ADF = 1,
   FSEL_KEY = 2,
@@ -23,7 +24,7 @@ struct wgui_drawmode
   uint32_t colorbits;
   char name[32];
 
-  bool operator<(const wgui_drawmode& dm)
+  bool operator<(const wgui_drawmode &dm)
   {
     if (width < dm.width)
     {
@@ -36,19 +37,19 @@ struct wgui_drawmode
     return false;
   }
 
-  wgui_drawmode(draw_mode* dm)
+  wgui_drawmode(draw_mode *dm)
   {
     height = dm->height;
     refresh = dm->refresh;
     width = dm->width;
     colorbits = dm->bits;
   }
-
 };
 
 typedef std::list<wgui_drawmode> wgui_drawmode_list;
 
-typedef struct {
+typedef struct
+{
   uint32_t numberof16bit;
   uint32_t numberof24bit;
   uint32_t numberof32bit;
@@ -60,7 +61,8 @@ typedef struct {
   wgui_drawmode_list res32bit;
 } wgui_drawmodes;
 
-typedef struct {
+typedef struct
+{
   char strPresetFilename[CFG_FILENAME_LENGTH];
   char strPresetDescription[CFG_FILENAME_LENGTH];
 } wgui_preset;
@@ -70,15 +72,15 @@ typedef struct {
 /* Fellow                                                                    */
 /*===========================================================================*/
 
-extern BOOLE wguiSaveFile(HWND hwndDlg, const char* filename, uint32_t filenamesize, const char* title, SelectFileFlags selectFileType);
-extern char* wguiExtractPath(char*);
+extern BOOLE wguiSaveFile(HWND hwndDlg, const char *filename, uint32_t filenamesize, const char *title, SelectFileFlags selectFileType);
+extern char *wguiExtractPath(char *);
 
 extern void wguiStartup();
 extern void wguiStartupPost();
 extern void wguiShutdown();
 extern BOOLE wguiCheckEmulationNecessities();
 extern BOOLE wguiEnter();
-extern void wguiRequester(const char* szMessage, UINT uType);
-extern void wguiShowRequester(const char* szMessage, FELLOW_REQUESTER_TYPE requesterType);
-extern void wguiInsertCfgIntoHistory(const char* cfgfilenametoinsert);
-extern void wguiSetProcessDPIAwareness(const char* pszAwareness);
+extern void wguiRequester(const char *szMessage, UINT uType);
+extern void wguiShowRequester(const char *szMessage, FELLOW_REQUESTER_TYPE requesterType);
+extern void wguiInsertCfgIntoHistory(const char *cfgfilenametoinsert);
+extern void wguiSetProcessDPIAwareness(const char *pszAwareness);

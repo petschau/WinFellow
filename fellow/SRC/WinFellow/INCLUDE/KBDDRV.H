@@ -3,17 +3,17 @@
 #include "KEYCODES.H"
 #include "KBD.H"
 
-#define MAX_KEYS	256
-#define MAX_JOYKEY_VALUE	8
+#define MAX_KEYS 256
+#define MAX_JOYKEY_VALUE 8
 
 extern kbd_drv_pc_symbol kbddrv_DIK_to_symbol[MAX_KEYS];
 
-extern const char* symbol_pretty_name[106];
+extern const char *symbol_pretty_name[106];
 
-extern const char* kbdDrvKeyString(uint32_t symbolickey);
-extern const char* kbdDrvKeyPrettyString(uint32_t symbolickey);
+extern const char *kbdDrvKeyString(uint32_t symbolickey);
+extern const char *kbdDrvKeyPrettyString(uint32_t symbolickey);
 extern void kbdDrvJoystickReplacementSet(kbd_event event, uint32_t symbolickey);
-extern uint32_t  kbdDrvJoystickReplacementGet(kbd_event event);
+extern uint32_t kbdDrvJoystickReplacementGet(kbd_event event);
 extern void kbdDrvHardReset();
 extern void kbdDrvEmulationStart();
 extern void kbdDrvEmulationStop();

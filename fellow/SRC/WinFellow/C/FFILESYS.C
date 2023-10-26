@@ -54,7 +54,6 @@ bool ffilesys_enabled;
 BOOLE ffilesys_automount_drives;
 string ffilesys_device_name_prefix;
 
-
 /*============================================================================*/
 /* Filesys device configuration                                               */
 /*============================================================================*/
@@ -65,8 +64,7 @@ BOOLE ffilesysRemoveFilesys(uint32_t index)
 {
   BOOLE result = FALSE;
 
-  if (index >= FFILESYS_MAX_DEVICES)
-    return result;
+  if (index >= FFILESYS_MAX_DEVICES) return result;
   result = (ffilesys_devs[index].status == FFILESYS_INSERTED);
   memset(&(ffilesys_devs[index]), 0, sizeof(ffilesys_dev));
   ffilesys_devs[index].status = FFILESYS_NONE;
@@ -85,28 +83,20 @@ bool ffilesysGetEnabled()
 
 void ffilesysSetFilesys(ffilesys_dev filesys, uint32_t index)
 {
-  if (index >= FFILESYS_MAX_DEVICES)
-    return;
+  if (index >= FFILESYS_MAX_DEVICES) return;
   ffilesysRemoveFilesys(index);
   ffilesys_devs[index] = filesys;
 }
 
 BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, uint32_t index)
 {
-  if (index >= FFILESYS_MAX_DEVICES)
-    return FALSE;
+  if (index >= FFILESYS_MAX_DEVICES) return FALSE;
 
   size_t len = strlen(filesys.rootpath) - 1;
-  if (filesys.rootpath[len] == '\\')
-    filesys.rootpath[len] = '\0';
+  if (filesys.rootpath[len] == '\\') filesys.rootpath[len] = '\0';
 
-  return (ffilesys_devs[index].readonly == filesys.readonly) &&
-    (strncmp
-    (ffilesys_devs[index].volumename, filesys.volumename,
-      FFILESYS_MAX_VOLUMENAME) == 0) &&
-    (strncmp
-    (ffilesys_devs[index].rootpath, filesys.rootpath,
-      CFG_FILENAME_LENGTH) == 0);
+  return (ffilesys_devs[index].readonly == filesys.readonly) && (strncmp(ffilesys_devs[index].volumename, filesys.volumename, FFILESYS_MAX_VOLUMENAME) == 0) &&
+         (strncmp(ffilesys_devs[index].rootpath, filesys.rootpath, CFG_FILENAME_LENGTH) == 0);
 }
 
 void ffilesysSetAutomountDrives(BOOLE automount_drives)
@@ -119,12 +109,12 @@ BOOLE ffilesysGetAutomountDrives()
   return ffilesys_automount_drives;
 }
 
-void ffilesysSetDeviceNamePrefix(const string& prefix)
+void ffilesysSetDeviceNamePrefix(const string &prefix)
 {
   ffilesys_device_name_prefix = prefix;
 }
 
-const string& ffilesysGetDeviceNamePrefix()
+const string &ffilesysGetDeviceNamePrefix()
 {
   return ffilesys_device_name_prefix;
 }
@@ -134,8 +124,7 @@ static BOOLE ffilesysHasZeroDevices()
   uint32_t dev_count = 0;
 
   for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
-    if (ffilesys_devs[i].status == FFILESYS_INSERTED)
-      dev_count++;
+    if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
   return (dev_count == 0) && !ffilesysGetAutomountDrives();
 }
 
@@ -154,14 +143,11 @@ void ffilesysDumpConfig()
   char filename[MAX_PATH];
 
   _core.Fileops->GetGenericFileName(filename, "WinFellow", "fsysdump.txt");
-  FILE* F = fopen(filename, "w");
-  for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++) {
+  FILE *F = fopen(filename, "w");
+  for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
-      fprintf(F, "Slot: %u, %s, %s, %s\n",
-        i,
-        ffilesys_devs[i].volumename,
-        ffilesys_devs[i].rootpath,
-        (ffilesys_devs[i].readonly) ? "R" : "RW");
+      fprintf(F, "Slot: %u, %s, %s, %s\n", i, ffilesys_devs[i].volumename, ffilesys_devs[i].rootpath, (ffilesys_devs[i].readonly) ? "R" : "RW");
     else
       fprintf(F, "Slot: %u, No filesystem defined.\n", i);
   }
@@ -175,15 +161,14 @@ void ffilesysDumpConfig()
 void ffilesysInstall()
 {
   for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
-    if (ffilesys_devs[i].status == FFILESYS_INSERTED) {
+    if (ffilesys_devs[i].status == FFILESYS_INSERTED)
+    {
       size_t len = strlen(ffilesys_devs[i].rootpath) - 1;
-      if (ffilesys_devs[i].rootpath[len] == '\\') {
+      if (ffilesys_devs[i].rootpath[len] == '\\')
+      {
         ffilesys_devs[i].rootpath[len] = '\0';
       }
-      add_filesys_unit(&mountinfo,
-        ffilesys_devs[i].volumename,
-        ffilesys_devs[i].rootpath,
-        ffilesys_devs[i].readonly, 0, 0, 0, 0);
+      add_filesys_unit(&mountinfo, ffilesys_devs[i].volumename, ffilesys_devs[i].rootpath, ffilesys_devs[i].readonly, 0, 0, 0, 0);
     }
 }
 
@@ -193,17 +178,17 @@ void ffilesysInstall()
 
 void ffilesysHardReset()
 {
-  if ((!ffilesysHasZeroDevices()) &&
-    ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36)) {
-    rtarea_setup();		/* Maps the trap memory area into memory */
-    rtarea_init();		/* Sets up a lot of traps */
+  if ((!ffilesysHasZeroDevices()) && ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36))
+  {
+    rtarea_setup(); /* Maps the trap memory area into memory */
+    rtarea_init();  /* Sets up a lot of traps */
     hardfile_install();
-    filesys_install();	/* Sets some traps and information in the trap memory area */
-    filesys_init(ffilesysGetAutomountDrives());	/* Mounts all Windows drives as filesystems */
-    filesys_prepare_reset();	/* Cleans up mounted filesystems(?) */
-    filesys_reset();		/* More cleaning up(?) */
-    ffilesysInstall();	/* Install user defined filesystems */
-    filesys_start_threads();	/* Installs registered filesystem mounts, this also names the device "<prefix>x" */
+    filesys_install();                          /* Sets some traps and information in the trap memory area */
+    filesys_init(ffilesysGetAutomountDrives()); /* Mounts all Windows drives as filesystems */
+    filesys_prepare_reset();                    /* Cleans up mounted filesystems(?) */
+    filesys_reset();                            /* More cleaning up(?) */
+    ffilesysInstall();                          /* Install user defined filesystems */
+    filesys_start_threads();                    /* Installs registered filesystem mounts, this also names the device "<prefix>x" */
     memoryEmemCardAdd(expamem_init_filesys, expamem_map_filesys);
   }
 }

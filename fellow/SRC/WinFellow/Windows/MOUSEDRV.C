@@ -57,66 +57,65 @@ Sunday, February 03, 2008: carfesh
 #include "RetroPlatform.h"
 #endif
 
-#define DINPUT_BUFFERSIZE           16
+#define DINPUT_BUFFERSIZE 16
 
+/*===========================================================================*/
+/* Mouse specific data                                                       */
+/*===========================================================================*/
 
- /*===========================================================================*/
- /* Mouse specific data                                                       */
- /*===========================================================================*/
-
-LPDIRECTINPUT		mouse_drv_lpDI = nullptr;
-LPDIRECTINPUTDEVICE	mouse_drv_lpDID = nullptr;
-HANDLE			mouse_drv_DIevent = nullptr;
-BOOLE			mouse_drv_focus;
-BOOLE			mouse_drv_active;
-BOOLE			mouse_drv_in_use;
-BOOLE			mouse_drv_initialization_failed;
-bool                    mouse_drv_unacquired;
-static BOOLE		bLeftButton;
-static BOOLE		bRightButton;
+LPDIRECTINPUT mouse_drv_lpDI = nullptr;
+LPDIRECTINPUTDEVICE mouse_drv_lpDID = nullptr;
+HANDLE mouse_drv_DIevent = nullptr;
+BOOLE mouse_drv_focus;
+BOOLE mouse_drv_active;
+BOOLE mouse_drv_in_use;
+BOOLE mouse_drv_initialization_failed;
+bool mouse_drv_unacquired;
+static BOOLE bLeftButton;
+static BOOLE bRightButton;
 
 int num_mouse_attached = 0;
-
 
 /*==========================================================================*/
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-const char* mouseDrvDInputErrorString(HRESULT hResult)
+const char *mouseDrvDInputErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
-  case DI_OK:				return "The operation completed successfully.";
-  case DI_BUFFEROVERFLOW:		return "The device buffer overflowed and some input was lost.";
-  case DI_POLLEDDEVICE:		return "The device is a polled device.";
-  case DIERR_ACQUIRED:		return "The operation cannot be performed while the device is acquired.";
-  case DIERR_ALREADYINITIALIZED:	return "This object is already initialized.";
-  case DIERR_BADDRIVERVER:		return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
-  case DIERR_BETADIRECTINPUTVERSION:	return "The application was written for an unsupported prerelease version of DirectInput.";
-  case DIERR_DEVICENOTREG:		return "The device or device instance is not registered with DirectInput.";
-  case DIERR_GENERIC:			return "An undetermined error occurred inside the DirectInput subsystem.";
-  case DIERR_HANDLEEXISTS:		return "The device already has an event notification associated with it, or another app has a higher priority level, preventing this call from succeeding.";
-  case DIERR_INPUTLOST:		return "Access to the input device has been lost. It must be re-acquired.";
-  case DIERR_INVALIDPARAM:		return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
-  case DIERR_NOAGGREGATION:		return "This object does not support aggregation.";
-  case DIERR_NOINTERFACE:		return "The specified interface is not supported by the object.";
-  case DIERR_NOTACQUIRED:		return "The operation cannot be performed unless the device is acquired.";
-  case DIERR_NOTINITIALIZED:		return "This object has not been initialized.";
-  case DIERR_OBJECTNOTFOUND:		return "The requested object does not exist.";
-  case DIERR_OLDDIRECTINPUTVERSION:	return "The application requires a newer version of DirectInput.";
-  case DIERR_OUTOFMEMORY:		return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
-  case DIERR_UNSUPPORTED:		return "The function called is not supported at this time.";
-  case E_PENDING:			return "Data is not yet available.";
+    case DI_OK: return "The operation completed successfully.";
+    case DI_BUFFEROVERFLOW: return "The device buffer overflowed and some input was lost.";
+    case DI_POLLEDDEVICE: return "The device is a polled device.";
+    case DIERR_ACQUIRED: return "The operation cannot be performed while the device is acquired.";
+    case DIERR_ALREADYINITIALIZED: return "This object is already initialized.";
+    case DIERR_BADDRIVERVER: return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
+    case DIERR_BETADIRECTINPUTVERSION: return "The application was written for an unsupported prerelease version of DirectInput.";
+    case DIERR_DEVICENOTREG: return "The device or device instance is not registered with DirectInput.";
+    case DIERR_GENERIC: return "An undetermined error occurred inside the DirectInput subsystem.";
+    case DIERR_HANDLEEXISTS:
+      return "The device already has an event notification associated with it, or another app has a higher priority level, preventing this call from succeeding.";
+    case DIERR_INPUTLOST: return "Access to the input device has been lost. It must be re-acquired.";
+    case DIERR_INVALIDPARAM: return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
+    case DIERR_NOAGGREGATION: return "This object does not support aggregation.";
+    case DIERR_NOINTERFACE: return "The specified interface is not supported by the object.";
+    case DIERR_NOTACQUIRED: return "The operation cannot be performed unless the device is acquired.";
+    case DIERR_NOTINITIALIZED: return "This object has not been initialized.";
+    case DIERR_OBJECTNOTFOUND: return "The requested object does not exist.";
+    case DIERR_OLDDIRECTINPUTVERSION: return "The application requires a newer version of DirectInput.";
+    case DIERR_OUTOFMEMORY: return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
+    case DIERR_UNSUPPORTED: return "The function called is not supported at this time.";
+    case E_PENDING: return "Data is not yet available.";
   }
   return "Not a DirectInput Error";
 }
 
-const char* mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
+const char *mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
-  case DI_OK:	    return "The operation completed successfully.";
-  case DI_NOEFFECT: return "The device was not in an acquired state.";
+    case DI_OK: return "The operation completed successfully.";
+    case DI_NOEFFECT: return "The device was not in an acquired state.";
   }
   return "Not a known Unacquire() DirectInput return value.";
 }
@@ -125,17 +124,17 @@ const char* mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void mouseDrvDInputFailure(const char* header, HRESULT err)
+void mouseDrvDInputFailure(const char *header, HRESULT err)
 {
   _core.Log->AddLog("%s %s\n", header, mouseDrvDInputErrorString(err));
 }
 
-void mouseDrvDInputUnacquireFailure(const char* header, HRESULT err)
+void mouseDrvDInputUnacquireFailure(const char *header, HRESULT err)
 {
   _core.Log->AddLog("%s %s\n", header, mouseDrvDInputUnaquireReturnValueString(err));
 }
 
-void mouseDrvDInputAcquireFailure(const char* header, HRESULT err)
+void mouseDrvDInputAcquireFailure(const char *header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -156,8 +155,7 @@ void mouseDrvDInputAcquire()
   HRESULT res;
 
 #ifdef _DEBUG
-  _core.Log->AddLog("mouseDrvDInputAcquire(mouse_drv_in_use=%d, mouse_drv_lpDID=%d, mouse_drv_unacquired=%d)\n",
-    mouse_drv_in_use, mouse_drv_lpDID, mouse_drv_unacquired);
+  _core.Log->AddLog("mouseDrvDInputAcquire(mouse_drv_in_use=%d, mouse_drv_lpDID=%d, mouse_drv_unacquired=%d)\n", mouse_drv_in_use, mouse_drv_lpDID, mouse_drv_unacquired);
 #endif
 
   if (mouse_drv_in_use)
@@ -166,7 +164,8 @@ void mouseDrvDInputAcquire()
     {
 #ifdef RETRO_PLATFORM
       // call moved here to ensure future compatibility with fullscreen/windowed RP modes
-      if (RP.GetHeadlessMode()) {
+      if (RP.GetHeadlessMode())
+      {
         if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND)) != DI_OK)
           mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire() - set cooperative level:", res);
       }
@@ -231,21 +230,22 @@ BOOL FAR PASCAL GetMouseInfo(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
 BOOLE mouseDrvDInputInitialize()
 {
-#define INITDIPROP( diprp, obj, how ) \
-	{ diprp.diph.dwSize = sizeof( diprp ); \
-	diprp.diph.dwHeaderSize = sizeof( diprp.diph ); \
-	diprp.diph.dwObj        = obj; \
-	diprp.diph.dwHow        = how; }
+#define INITDIPROP(diprp, obj, how)                                                                                                                                           \
+  {                                                                                                                                                                           \
+    diprp.diph.dwSize = sizeof(diprp);                                                                                                                                        \
+    diprp.diph.dwHeaderSize = sizeof(diprp.diph);                                                                                                                             \
+    diprp.diph.dwObj = obj;                                                                                                                                                   \
+    diprp.diph.dwHow = how;                                                                                                                                                   \
+  }
 
-  DIPROPDWORD dipdw =
-  {
-    {
-      sizeof(DIPROPDWORD),        /* diph.dwSize */
-      sizeof(DIPROPHEADER),       /* diph.dwHeaderSize */
-      0,                          /* diph.dwObj */
-      DIPH_DEVICE,                /* diph.dwHow */
-    },
-    DINPUT_BUFFERSIZE            /* dwData */
+  DIPROPDWORD dipdw = {
+      {
+          sizeof(DIPROPDWORD),  /* diph.dwSize */
+          sizeof(DIPROPHEADER), /* diph.dwHeaderSize */
+          0,                    /* diph.dwObj */
+          DIPH_DEVICE,          /* diph.dwHow */
+      },
+      DINPUT_BUFFERSIZE /* dwData */
   };
 
   _core.Log->AddLog("mouseDrvDInputInitialize()\n");
@@ -258,8 +258,7 @@ BOOLE mouseDrvDInputInitialize()
   mouse_drv_initialization_failed = FALSE;
   mouse_drv_unacquired = true;
 
-  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI,
-    nullptr);
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&mouse_drv_lpDI, nullptr);
   if (res != DI_OK)
   {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create()", res);
@@ -299,10 +298,12 @@ BOOLE mouseDrvDInputInitialize()
 
   /* Set cooperative level */
 #ifdef RETRO_PLATFORM
-  if (!RP.GetHeadlessMode()) {
+  if (!RP.GetHeadlessMode())
+  {
     res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   }
-  else {
+  else
+  {
     res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, RP.GetTopWindowHandle(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   }
 #endif
@@ -348,7 +349,6 @@ BOOLE mouseDrvDInputInitialize()
 #undef INITDIPROP
 }
 
-
 /*===========================================================================*/
 /* Mouse grab status has changed                                             */
 /*===========================================================================*/
@@ -366,7 +366,6 @@ void mouseDrvStateHasChanged(BOOLE active)
   }
   mouseDrvDInputAcquire();
 }
-
 
 /*===========================================================================*/
 /* Mouse toggle focus                                                        */
@@ -397,9 +396,7 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
 {
   if (bNewFocus != mouse_drv_focus)
   {
-    _core.Log->AddLog("mouseDrvSetFocus(bNewFocus=%s, bRequestedByRPHost=%s)\n",
-      bNewFocus ? "true" : "false",
-      bRequestedByRPHost ? "true" : "false");
+    _core.Log->AddLog("mouseDrvSetFocus(bNewFocus=%s, bRequestedByRPHost=%s)\n", bNewFocus ? "true" : "false", bRequestedByRPHost ? "true" : "false");
 
     mouse_drv_focus = bNewFocus;
     mouseDrvStateHasChanged(mouse_drv_active);
@@ -408,8 +405,7 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
     if (RP.GetHeadlessMode())
       if (!bRequestedByRPHost)
       {
-        _core.Log->AddLog("mouseDrvSetFocus(%s): notifiying, as not requested by host.\n",
-          bNewFocus ? "true" : "false");
+        _core.Log->AddLog("mouseDrvSetFocus(%s): notifiying, as not requested by host.\n", bNewFocus ? "true" : "false");
         RP.SendMouseCapture(mouse_drv_focus ? true : false);
       }
 #endif
@@ -457,7 +453,7 @@ void mouseDrvMovementHandler()
       ** Events are always placed in the buffer in chronological order.
       */
 
-      if (itemcount == 0)	// exit if there are no objects to examine
+      if (itemcount == 0) // exit if there are no objects to examine
       {
         return;
       }
@@ -467,13 +463,13 @@ void mouseDrvMovementHandler()
       {
         if (i != 0)
         {
-          if ((i == itemcount) ||					// if there are no other objects
-            (rgod[i].dwSequence != oldSequence))	// or the current objects is a different event
+          if ((i == itemcount) ||                  // if there are no other objects
+              (rgod[i].dwSequence != oldSequence)) // or the current objects is a different event
           {
             gameportMouseHandler(GP_MOUSE0, lx, ly, bLeftButton, FALSE, bRightButton);
             lx = ly = 0;
           }
-          if (i == itemcount)	// no other objects to examine, exit
+          if (i == itemcount) // no other objects to examine, exit
           {
             break;
           }
@@ -482,21 +478,13 @@ void mouseDrvMovementHandler()
 
         switch (rgod[i].dwOfs)
         {
-        case DIMOFS_BUTTON0:
-          bLeftButton = (rgod[i].dwData & 0x80);
-          break;
+          case DIMOFS_BUTTON0: bLeftButton = (rgod[i].dwData & 0x80); break;
 
-        case DIMOFS_BUTTON1:
-          bRightButton = (rgod[i].dwData & 0x80);
-          break;
+          case DIMOFS_BUTTON1: bRightButton = (rgod[i].dwData & 0x80); break;
 
-        case DIMOFS_X:
-          lx += rgod[i].dwData;
-          break;
+          case DIMOFS_X: lx += rgod[i].dwData; break;
 
-        case DIMOFS_Y:
-          ly += rgod[i].dwData;
-          break;
+          case DIMOFS_Y: ly += rgod[i].dwData; break;
         }
       }
     }
@@ -517,7 +505,6 @@ void mouseDrvHardReset()
   _core.Log->AddLog("mouseDrvHardReset\n");
 }
 
-
 /*===========================================================================*/
 /* Emulation Starting                                                        */
 /*===========================================================================*/
@@ -528,7 +515,6 @@ BOOLE mouseDrvEmulationStart()
   return mouseDrvDInputInitialize();
 }
 
-
 /*===========================================================================*/
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
@@ -538,7 +524,6 @@ void mouseDrvEmulationStop()
   _core.Log->AddLog("mouseDrvEmulationStop\n");
   mouseDrvDInputRelease();
 }
-
 
 /*===========================================================================*/
 /* Emulation Startup                                                         */
@@ -559,7 +544,6 @@ void mouseDrvStartup()
   bRightButton = FALSE;
 }
 
-
 /*===========================================================================*/
 /* Emulation Shutdown                                                        */
 /*===========================================================================*/
@@ -568,4 +552,3 @@ void mouseDrvShutdown()
 {
   _core.Log->AddLog("mouseDrvShutdown\n");
 }
-

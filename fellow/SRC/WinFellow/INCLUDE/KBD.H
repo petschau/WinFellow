@@ -1,6 +1,7 @@
 #pragma once
 
-typedef enum {
+typedef enum
+{
   EVENT_INSERT_DF0,
   EVENT_INSERT_DF1,
   EVENT_INSERT_DF2,
@@ -56,15 +57,17 @@ typedef enum {
 } kbd_event;
 
 #define KBDBUFFERLENGTH 512
-#define KBDBUFFERMASK   511
+#define KBDBUFFERMASK 511
 
-typedef struct {
+typedef struct
+{
   uint8_t buffer[KBDBUFFERLENGTH];
   uint32_t inpos;
   uint32_t outpos;
 } kbd_buffer_type;
 
-typedef struct {
+typedef struct
+{
   kbd_buffer_type scancodes;
   kbd_buffer_type eventsEOL;
   kbd_buffer_type eventsEOF;

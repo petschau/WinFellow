@@ -27,4 +27,4 @@ public:
   virtual ~Copper() = default;
 };
 
-extern Copper* copper;
+extern Copper *copper;

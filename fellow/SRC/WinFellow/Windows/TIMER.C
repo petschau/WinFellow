@@ -27,7 +27,6 @@
 #include "TIMER.H"
 #include "VirtualHost/Core.h"
 
-
 bool timer_running;
 uint32_t timer_mmresolution;
 uint32_t timer_mmtimer;
