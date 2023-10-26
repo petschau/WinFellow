@@ -12,19 +12,21 @@ using namespace std;
 
 namespace Service
 {
-  Log::Log() :
-    _new_line(true), _first_time(true), _enabled(true),
+  Log::Log()
+    : _new_line(true),
+      _first_time(true),
+      _enabled(true),
 #ifdef _DEBUG
-    _level(LogLevelDebug)
+      _level(LogLevelDebug)
 #else
-    _level(LogLevelInformation)
+      _level(LogLevelInformation)
 #endif
   {
   }
 
   Log::~Log() = default;
 
-  void Log::AddLogDebug(const char* format, ...)
+  void Log::AddLogDebug(const char *format, ...)
   {
     if (!_enabled)
     {
@@ -35,11 +37,11 @@ namespace Service
     {
       va_list parms;
       char buffer[WRITE_LOG_BUF_SIZE];
-      char* buffer2 = LogTime(buffer);
+      char *buffer2 = LogTime(buffer);
 
       va_start(parms, format);
       vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-      FILE* F = OpenLogFile();
+      FILE *F = OpenLogFile();
       if (F != nullptr)
       {
         AddLogInternal(F, buffer);
@@ -49,7 +51,7 @@ namespace Service
     }
   }
 
-  void Log::AddLog(const char* format, ...)
+  void Log::AddLog(const char *format, ...)
   {
     if (!_enabled)
     {
@@ -58,11 +60,11 @@ namespace Service
 
     va_list parms;
     char buffer[WRITE_LOG_BUF_SIZE];
-    char* buffer2 = LogTime(buffer);
+    char *buffer2 = LogTime(buffer);
 
     va_start(parms, format);
     vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-    FILE* F = OpenLogFile();
+    FILE *F = OpenLogFile();
     if (F != nullptr)
     {
       AddLogInternal(F, buffer);
@@ -71,7 +73,7 @@ namespace Service
     va_end(parms);
   }
 
-  void Log::AddLogList(const list<string>& messages)
+  void Log::AddLogList(const list<string> &messages)
   {
     if (!_enabled)
     {
@@ -79,11 +81,11 @@ namespace Service
     }
 
     char buffer[WRITE_LOG_BUF_SIZE];
-    FILE* F = OpenLogFile();
+    FILE *F = OpenLogFile();
 
-    for (const string& msg : messages)
+    for (const string &msg : messages)
     {
-      char* buffer2 = LogTime(buffer);
+      char *buffer2 = LogTime(buffer);
       _snprintf(buffer2, WRITE_LOG_BUF_SIZE - 1, "%s\n", msg.c_str());
       AddLogInternal(F, buffer);
     }
@@ -91,14 +93,14 @@ namespace Service
     CloseLogFile(F);
   }
 
-  void Log::AddLog2(const char* msg)
+  void Log::AddLog2(const char *msg)
   {
     if (!_enabled)
     {
       return;
     }
 
-    FILE* F = OpenLogFile();
+    FILE *F = OpenLogFile();
     if (F != nullptr)
     {
       AddLogInternal(F, msg);
@@ -106,7 +108,7 @@ namespace Service
     }
   }
 
-  void Log::AddTimelessLog(const char* format, ...)
+  void Log::AddTimelessLog(const char *format, ...)
   {
     char buffer[WRITE_LOG_BUF_SIZE];
     va_list parms;
@@ -118,13 +120,13 @@ namespace Service
     AddLog2(buffer);
   }
 
-  void Log::AddLogInternal(FILE* F, const char* msg)
+  void Log::AddLogInternal(FILE *F, const char *msg)
   {
     fprintf(F, "%s", msg);
     _new_line = (msg[strlen(msg) - 1] == '\n');
   }
 
-  char* Log::LogTime(char* buffer)
+  char *Log::LogTime(char *buffer)
   {
     if (_new_line)
     {
@@ -142,9 +144,9 @@ namespace Service
     return buffer;
   }
 
-  FILE* Log::OpenLogFile()
+  FILE *Log::OpenLogFile()
   {
-    FILE* F = nullptr;
+    FILE *F = nullptr;
 
     if (_first_time)
     {
@@ -161,7 +163,7 @@ namespace Service
     return F;
   }
 
-  void Log::CloseLogFile(FILE* F)
+  void Log::CloseLogFile(FILE *F)
   {
     fflush(F);
     fclose(F);

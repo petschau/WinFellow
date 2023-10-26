@@ -9,20 +9,20 @@
 class GfxDrvCommon
 {
 private:
-  HANDLE _run_event;      /* Event indicating running or paused status */
-  HWND _hwnd;             /* The emulation output window */
+  HANDLE _run_event; /* Event indicating running or paused status */
+  HWND _hwnd;        /* The emulation output window */
   volatile bool _syskey_down;
   volatile bool _win_active;
   volatile bool _win_active_original;
   volatile bool _win_minimized_original;
-  bool          _pause_emulation_when_window_loses_focus;
+  bool _pause_emulation_when_window_loses_focus;
   draw_mode *_current_draw_mode;
-  ini* _ini;
+  ini *_ini;
   unsigned int _output_width;
   unsigned int _output_height;
   bool _output_windowed;
 
-  int _frametime_target ;
+  int _frametime_target;
   int _previous_flip_time;
   volatile int _time;
   volatile int _wait_for_time;
@@ -67,7 +67,7 @@ public:
   LRESULT EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   HWND GetHWND();
-  void SetDrawMode(draw_mode* dm, bool windowed);
+  void SetDrawMode(draw_mode *dm, bool windowed);
   draw_mode *GetDrawMode();
 
   void SetPauseEmulationWhenWindowLosesFocus(bool pause);
@@ -83,4 +83,4 @@ public:
   virtual ~GfxDrvCommon();
 };
 
-extern GfxDrvCommon* gfxDrvCommon;
+extern GfxDrvCommon *gfxDrvCommon;

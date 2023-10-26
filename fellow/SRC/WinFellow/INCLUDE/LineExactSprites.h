@@ -7,9 +7,10 @@
 
 class LineExactSprites;
 
-typedef void(LineExactSprites::*spr_register_func)(uint16_t data, uint32_t address);
+typedef void (LineExactSprites::*spr_register_func)(uint16_t data, uint32_t address);
 
-typedef struct {
+typedef struct
+{
   uint32_t raster_y;
   uint32_t raster_x;
   spr_register_func called_function;
@@ -17,18 +18,20 @@ typedef struct {
   uint32_t address;
 } spr_action_list_item;
 
-typedef struct {
+typedef struct
+{
   uint32_t count;
   spr_action_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
 } spr_action_list_master;
 
-
-typedef struct {
+typedef struct
+{
   uint8_t sprite_data[16];
   uint32_t sprx;
 } spr_merge_list_item;
 
-typedef struct {
+typedef struct
+{
   uint32_t count;
   spr_merge_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
 } spr_merge_list_master;
@@ -96,7 +99,8 @@ private:
 
   uint8_t sprite[8][16];
 
-  typedef struct {
+  typedef struct
+  {
     spr_merge_list_master merge_list_master[8];
   } sprite_ham_slot;
 
@@ -107,18 +111,18 @@ private:
   uint32_t sprite_write_next;
   uint32_t sprite_write_real;
 
-  spr_action_list_item* ActionListAddLast(spr_action_list_master* l);
-  uint32_t ActionListCount(spr_action_list_master* l);
-  spr_action_list_item* ActionListGet(spr_action_list_master* l, uint32_t i);
-  void ActionListClear(spr_action_list_master* l);
-  spr_action_list_item* ActionListAddSorted(spr_action_list_master* l, uint32_t raster_x, uint32_t raster_y);
-  spr_merge_list_item* MergeListAddLast(spr_merge_list_master* l);
-  uint32_t MergeListCount(spr_merge_list_master* l);
-  spr_merge_list_item* MergeListGet(spr_merge_list_master* l, uint32_t i);
-  void MergeListClear(spr_merge_list_master* l);
+  spr_action_list_item *ActionListAddLast(spr_action_list_master *l);
+  uint32_t ActionListCount(spr_action_list_master *l);
+  spr_action_list_item *ActionListGet(spr_action_list_master *l, uint32_t i);
+  void ActionListClear(spr_action_list_master *l);
+  spr_action_list_item *ActionListAddSorted(spr_action_list_master *l, uint32_t raster_x, uint32_t raster_y);
+  spr_merge_list_item *MergeListAddLast(spr_merge_list_master *l);
+  uint32_t MergeListCount(spr_merge_list_master *l);
+  spr_merge_list_item *MergeListGet(spr_merge_list_master *l, uint32_t i);
+  void MergeListClear(spr_merge_list_master *l);
 
   void MergeHAM(graph_line *linedescription);
-  void BuildItem(spr_action_list_item ** item);
+  void BuildItem(spr_action_list_item **item);
 
   void Log();
   void ClearState();
@@ -128,28 +132,29 @@ private:
   void Decode16Sprite(uint32_t sprite_number);
   void SetDebugging();
 
-  void MergeDualLoresPF2loopinfront2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualLoresPF1loopinfront2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualLoresPF1loopbehind2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualLoresPF2loopbehind2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualLoresPlayfield(graph_line* current_graph_line);
-  void MergeDualHiresPF2loopinfront2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualHiresPF1loopinfront2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualHiresPF1loopbehind2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualHiresPF2loopbehind2(graph_line* current_graph_line, uint32_t sprnr);
-  void MergeDualHiresPlayfield(graph_line* current_graph_line);
-  void MergeHires(graph_line* current_graph_line);
-  void MergeLores(graph_line* current_graph_line);
+  void MergeDualLoresPF2loopinfront2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualLoresPF1loopinfront2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualLoresPF1loopbehind2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualLoresPF2loopbehind2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualLoresPlayfield(graph_line *current_graph_line);
+  void MergeDualHiresPF2loopinfront2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualHiresPF1loopinfront2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualHiresPF1loopbehind2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualHiresPF2loopbehind2(graph_line *current_graph_line, uint32_t sprnr);
+  void MergeDualHiresPlayfield(graph_line *current_graph_line);
+  void MergeHires(graph_line *current_graph_line);
+  void MergeLores(graph_line *current_graph_line);
 
   void ProcessActionListNOP();
   void ProcessDMAActionListNOP();
+
 public:
   bool HasSpritesOnLine();
 
   void DMASpriteHandler();
   void ProcessActionList();
 
-  void Merge(graph_line* current_graph_line);
+  void Merge(graph_line *current_graph_line);
 
   void MergeHAM2x1x16(uint32_t *frameptr, graph_line *linedescription);
   void MergeHAM2x2x16(uint32_t *frameptr, graph_line *linedescription, uint32_t nextlineoffset);
@@ -181,5 +186,4 @@ public:
 
   LineExactSprites();
   virtual ~LineExactSprites();
-
 };

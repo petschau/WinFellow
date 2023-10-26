@@ -52,8 +52,7 @@ void GraphicsEventQueue::Insert(GraphicsEvent *graphics_event)
     GraphicsEvent *tmp_prev = nullptr;
     for (tmp = _events; tmp != nullptr; tmp = tmp->_next)
     {
-      if (graphics_event->_arriveTime < tmp->_arriveTime 
-        || ((graphics_event->_arriveTime == tmp->_arriveTime) && (graphics_event->_priority > tmp->_priority)))
+      if (graphics_event->_arriveTime < tmp->_arriveTime || ((graphics_event->_arriveTime == tmp->_arriveTime) && (graphics_event->_priority > tmp->_priority)))
       {
         graphics_event->_next = tmp;
         graphics_event->_prev = tmp_prev;

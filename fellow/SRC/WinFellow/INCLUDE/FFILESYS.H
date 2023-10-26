@@ -5,18 +5,19 @@
 #define FFILESYS_MAX_DEVICES 20
 #define FFILESYS_MAX_VOLUMENAME 64
 
-typedef enum {
+typedef enum
+{
   FFILESYS_NONE = 0,
   FFILESYS_INSERTED = 1
 } ffilesys_status;
 
-typedef struct {
-  char		  volumename[FFILESYS_MAX_VOLUMENAME];
-  char		  rootpath[CFG_FILENAME_LENGTH];
-  BOOLE		  readonly;
+typedef struct
+{
+  char volumename[FFILESYS_MAX_VOLUMENAME];
+  char rootpath[CFG_FILENAME_LENGTH];
+  BOOLE readonly;
   ffilesys_status status;
 } ffilesys_dev;
-
 
 /* Configuring the filesys */
 
@@ -28,8 +29,8 @@ extern BOOLE ffilesysRemoveFilesys(uint32_t index);
 extern void ffilesysClear();
 extern void ffilesysSetAutomountDrives(BOOLE automount_drives);
 extern BOOLE ffilesysGetAutomountDrives();
-extern void ffilesysSetDeviceNamePrefix(const std::string& prefix);
-extern const std::string& ffilesysGetDeviceNamePrefix();
+extern void ffilesysSetDeviceNamePrefix(const std::string &prefix);
+extern const std::string &ffilesysGetDeviceNamePrefix();
 
 /* Starting and stopping the filesys */
 

@@ -17,13 +17,34 @@ private:
 public:
   std::string GetModeDescriptionString();
 
-  unsigned int GetId() { return _id; }
-  unsigned int GetWidth() { return _dxgi_mode_description.Width; }
-  unsigned int GetHeight() { return _dxgi_mode_description.Height; }
-  unsigned int GetRefreshRate() { return _dxgi_mode_description.RefreshRate.Numerator / _dxgi_mode_description.RefreshRate.Denominator; }
-  DXGI_MODE_SCALING GetScaling() { return _dxgi_mode_description.Scaling; }
-  DXGI_MODE_SCANLINE_ORDER GetScanlineOrder() { return _dxgi_mode_description.ScanlineOrdering; }
-  DXGI_MODE_DESC *GetDXGIModeDescription() { return &_dxgi_mode_description; }
+  unsigned int GetId()
+  {
+    return _id;
+  }
+  unsigned int GetWidth()
+  {
+    return _dxgi_mode_description.Width;
+  }
+  unsigned int GetHeight()
+  {
+    return _dxgi_mode_description.Height;
+  }
+  unsigned int GetRefreshRate()
+  {
+    return _dxgi_mode_description.RefreshRate.Numerator / _dxgi_mode_description.RefreshRate.Denominator;
+  }
+  DXGI_MODE_SCALING GetScaling()
+  {
+    return _dxgi_mode_description.Scaling;
+  }
+  DXGI_MODE_SCANLINE_ORDER GetScanlineOrder()
+  {
+    return _dxgi_mode_description.ScanlineOrdering;
+  }
+  DXGI_MODE_DESC *GetDXGIModeDescription()
+  {
+    return &_dxgi_mode_description;
+  }
 
   static unsigned int GetNewId();
   bool CanUseMode();
@@ -32,4 +53,4 @@ public:
   ~GfxDrvDXGIMode() = default;
 };
 
-typedef std::list<GfxDrvDXGIMode*> GfxDrvDXGIModeList;
+typedef std::list<GfxDrvDXGIMode *> GfxDrvDXGIModeList;

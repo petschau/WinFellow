@@ -6,33 +6,28 @@
 using namespace Service;
 
 // this function is a very limited stat() workaround implementation to address
-// the stat() bug on Windows XP using later platform toolsets; the problem was 
+// the stat() bug on Windows XP using later platform toolsets; the problem was
 // addressed by Micosoft, but still persists for statically linked projects
 // https://connect.microsoft.com/VisualStudio/feedback/details/1600505/stat-not-working-on-windows-xp-using-v14-xp-platform-toolset-vs2015
 // https://stackoverflow.com/questions/32452777/visual-c-2015-express-stat-not-working-on-windows-xp
 // limitations: only sets a limited set of mode flags and calculates size information
-int FileInformationWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
+int FileInformationWin32::Stat(const char *szFilename, struct stat *pStatBuffer)
 {
   int result;
 
 #ifdef _DEBUG
-  _core.Log->AddLog("FileInformationWin32::Stat(szFilename=%s, pStatBuffer=0x%08x)\n",
-    szFilename, pStatBuffer);
+  _core.Log->AddLog("FileInformationWin32::Stat(szFilename=%s, pStatBuffer=0x%08x)\n", szFilename, pStatBuffer);
 #endif
 
   result = stat(szFilename, pStatBuffer);
 
 #ifdef _DEBUG
-  _core.Log->AddLog(" native result=%d mode=0x%04x nlink=%d size=%lu\n",
-    result,
-    pStatBuffer->st_mode,
-    pStatBuffer->st_nlink,
-    pStatBuffer->st_size);
+  _core.Log->AddLog(" native result=%d mode=0x%04x nlink=%d size=%lu\n", result, pStatBuffer->st_mode, pStatBuffer->st_nlink, pStatBuffer->st_size);
 #endif
 
 #if (_MSC_VER >= 1900) // compiler version is Visual Studio 2015 or higher?
   // check OS version, only execute replacement code on Windows XP/OS versions before Vista
-  OSVERSIONINFO osvi;// Windows 2000, XP, 2003
+  OSVERSIONINFO osvi; // Windows 2000, XP, 2003
 
   ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -57,11 +52,16 @@ int FileInformationWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
       LPTSTR szErrorMessage = nullptr;
       DWORD hResult = GetLastError();
 
-      _core.Log->AddLog("  FileInformationWin32::Stat(): GetFileAttributesEx() failed, return code=%d",
-        hResult);
+      _core.Log->AddLog("  FileInformationWin32::Stat(): GetFileAttributesEx() failed, return code=%d", hResult);
 
-      FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
-        nullptr, hResult, MAKELANGID(0, SUBLANG_ENGLISH_US), (LPTSTR)&szErrorMessage, 0, nullptr);
+      FormatMessage(
+          FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
+          nullptr,
+          hResult,
+          MAKELANGID(0, SUBLANG_ENGLISH_US),
+          (LPTSTR)&szErrorMessage,
+          0,
+          nullptr);
       if (szErrorMessage != nullptr)
       {
         _core.Log->AddTimelessLog(" (%s)\n", szErrorMessage);
@@ -72,7 +72,7 @@ int FileInformationWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
         _core.Log->AddTimelessLog("\n");
 #endif
 
-      * _errno() = ENOENT;
+      *_errno() = ENOENT;
       result = -1;
     }
     else
@@ -101,11 +101,7 @@ int FileInformationWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
     } // GetFileAttributesEx() successful
 
 #ifdef _DEBUG
-    _core.Log->AddLog(" FileInformationWin32::Stat() result=%d mode=0x%04x nlink=%d size=%lu\n",
-      result,
-      pStatBuffer->st_mode,
-      pStatBuffer->st_nlink,
-      pStatBuffer->st_size);
+    _core.Log->AddLog(" FileInformationWin32::Stat() result=%d mode=0x%04x nlink=%d size=%lu\n", result, pStatBuffer->st_mode, pStatBuffer->st_nlink, pStatBuffer->st_size);
 #endif
   } // legacy OS
 
@@ -114,13 +110,14 @@ int FileInformationWin32::Stat(const char* szFilename, struct stat* pStatBuffer)
   return result;
 }
 
-FileProperties* FileInformationWin32::GetFileProperties(const char* filename)
+FileProperties *FileInformationWin32::GetFileProperties(const char *filename)
 {
   struct stat mystat;
-  FileProperties* fileProperties = nullptr;
+  FileProperties *fileProperties = nullptr;
 
   // check file permissions
-  if (Stat(filename, &mystat) == 0) {
+  if (Stat(filename, &mystat) == 0)
+  {
     fileProperties = new FileProperties();
     fileProperties->Name = filename;
     if (mystat.st_mode & _S_IFREG)
@@ -132,7 +129,7 @@ FileProperties* FileInformationWin32::GetFileProperties(const char* filename)
     fileProperties->IsWritable = !!(mystat.st_mode & _S_IWRITE);
     if (fileProperties->IsWritable)
     {
-      FILE* file_ptr = fopen(filename, "a");
+      FILE *file_ptr = fopen(filename, "a");
       if (file_ptr == nullptr)
       {
         fileProperties->IsWritable = false;
@@ -146,8 +143,9 @@ FileProperties* FileInformationWin32::GetFileProperties(const char* filename)
   }
   else
   {
-    char* strError = strerror(errno);
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "FileInformationWin32::GetFileProperties(): ERROR getting file information for %s: error code %i (%s)\n", filename, errno, strError);
+    char *strError = strerror(errno);
+    fellowShowRequester(
+        FELLOW_REQUESTER_TYPE_ERROR, "FileInformationWin32::GetFileProperties(): ERROR getting file information for %s: error code %i (%s)\n", filename, errno, strError);
   }
   return fileProperties;
 }

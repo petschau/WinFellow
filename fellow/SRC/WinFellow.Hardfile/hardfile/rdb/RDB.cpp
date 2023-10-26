@@ -7,7 +7,7 @@ using namespace std;
 
 namespace fellow::hardfile::rdb
 {
-  void RDB::ReadFromFile(RDBFileReader& reader, unsigned int index, bool geometryOnly)
+  void RDB::ReadFromFile(RDBFileReader &reader, unsigned int index, bool geometryOnly)
   {
     ID = reader.ReadString(index + 0, 4);
     SizeInLongs = reader.ReadUint32(index + 4);
@@ -58,7 +58,7 @@ namespace fellow::hardfile::rdb
     uint32_t nextPartition = PartitionList;
     while (nextPartition != 0xffffffff)
     {
-      RDBPartition* partition = new RDBPartition();
+      RDBPartition *partition = new RDBPartition();
       partition->ReadFromFile(reader, nextPartition, BlockSize);
       partition->Log();
 
@@ -87,7 +87,7 @@ namespace fellow::hardfile::rdb
       uint32_t nextFilesystemHeader = FilesystemHeaderList;
       while (nextFilesystemHeader != 0xffffffff)
       {
-        RDBFileSystemHeader* fileSystemHeader = new RDBFileSystemHeader();
+        RDBFileSystemHeader *fileSystemHeader = new RDBFileSystemHeader();
         fileSystemHeader->ReadFromFile(reader, nextFilesystemHeader, BlockSize);
         fileSystemHeader->Log();
 
@@ -162,34 +162,34 @@ namespace fellow::hardfile::rdb
     _core.Log->AddLogDebug("-----------------------------------------\n\n");
   }
 
-  RDB::RDB() :
-    SizeInLongs(0),
-    CheckSum(0),
-    HostID(0),
-    BlockSize(0),
-    Flags(0),
-    BadBlockList(0),
-    PartitionList(0),
-    FilesystemHeaderList(0),
-    DriveInitCode(0),
-    Cylinders(0),
-    SectorsPerTrack(0),
-    Heads(0),
-    Interleave(0),
-    ParkingZone(0),
-    WritePreComp(0),
-    ReducedWrite(0),
-    StepRate(0),
-    RDBBlockLow(0),
-    RDBBlockHigh(0),
-    LowCylinder(0),
-    HighCylinder(0),
-    CylinderBlocks(0),
-    AutoParkSeconds(0),
-    HighRDSKBlock(0),
-    HasValidCheckSum(false),
-    HasPartitionErrors(false),
-    HasFileSystemHandlerErrors(false)
+  RDB::RDB()
+    : SizeInLongs(0),
+      CheckSum(0),
+      HostID(0),
+      BlockSize(0),
+      Flags(0),
+      BadBlockList(0),
+      PartitionList(0),
+      FilesystemHeaderList(0),
+      DriveInitCode(0),
+      Cylinders(0),
+      SectorsPerTrack(0),
+      Heads(0),
+      Interleave(0),
+      ParkingZone(0),
+      WritePreComp(0),
+      ReducedWrite(0),
+      StepRate(0),
+      RDBBlockLow(0),
+      RDBBlockHigh(0),
+      LowCylinder(0),
+      HighCylinder(0),
+      CylinderBlocks(0),
+      AutoParkSeconds(0),
+      HighRDSKBlock(0),
+      HasValidCheckSum(false),
+      HasPartitionErrors(false),
+      HasFileSystemHandlerErrors(false)
   {
   }
 }

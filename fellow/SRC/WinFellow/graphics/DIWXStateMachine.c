@@ -26,8 +26,7 @@
 
 #include "Graphics.h"
 
-static const char* DIWXStateNames[2] = { "WAITING_FOR_START_POS",
-                                 "WAITING_FOR_STOP_POS" };
+static const char *DIWXStateNames[2] = {"WAITING_FOR_START_POS", "WAITING_FOR_STOP_POS"};
 
 void DIWXStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
@@ -68,13 +67,14 @@ void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(uint32_t rasterY, ui
   }
   else
   {
-    if (rasterY == 0) outputLine = busGetLinesInThisFrame() - 1;
-    else outputLine = rasterY - 1;
+    if (rasterY == 0)
+      outputLine = busGetLinesInThisFrame() - 1;
+    else
+      outputLine = rasterY - 1;
   }
 
   GraphicsContext.PixelSerializer.OutputCylindersUntil(outputLine, previousCylinder);
 }
-
 
 void DIWXStateMachine::SetStateWaitingForStartPos(uint32_t rasterY, uint32_t cylinder)
 {
@@ -128,18 +128,14 @@ void DIWXStateMachine::ChangedValue()
 {
   switch (_state)
   {
-  case DIWX_STATE_WAITING_FOR_START_POS:
-    SetStateWaitingForStartPos(busGetRasterY(), busGetRasterX() * 2);
-    break;
-  case DIWX_STATE_WAITING_FOR_STOP_POS:
-    SetStateWaitingForStopPos(busGetRasterY(), busGetRasterX() * 2);
-    break;
+    case DIWX_STATE_WAITING_FOR_START_POS: SetStateWaitingForStartPos(busGetRasterY(), busGetRasterX() * 2); break;
+    case DIWX_STATE_WAITING_FOR_STOP_POS: SetStateWaitingForStopPos(busGetRasterY(), busGetRasterX() * 2); break;
   }
 }
 
 /* Bus event handler */
 
-void DIWXStateMachine::InitializeEvent(GraphicsEventQueue* queue)
+void DIWXStateMachine::InitializeEvent(GraphicsEventQueue *queue)
 {
   _queue = queue;
   SetStateWaitingForStartPos(0, 0);
@@ -151,12 +147,8 @@ void DIWXStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
   switch (_state)
   {
-  case DIWX_STATE_WAITING_FOR_START_POS:
-    DoStateWaitingForStartPos(rasterY, cylinder);
-    break;
-  case DIWX_STATE_WAITING_FOR_STOP_POS:
-    DoStateWaitingForStopPos(rasterY, cylinder);
-    break;
+    case DIWX_STATE_WAITING_FOR_START_POS: DoStateWaitingForStartPos(rasterY, cylinder); break;
+    case DIWX_STATE_WAITING_FOR_STOP_POS: DoStateWaitingForStopPos(rasterY, cylinder); break;
   }
 }
 

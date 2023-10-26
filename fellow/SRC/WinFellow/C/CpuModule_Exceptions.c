@@ -54,9 +54,9 @@ void cpuSetResetExceptionFunc(cpuResetExceptionFunc func)
   cpu_reset_exception_func = func;
 }
 
-static const char* cpuGetExceptionName(uint32_t vector_offset)
+static const char *cpuGetExceptionName(uint32_t vector_offset)
 {
-  const char* name;
+  const char *name;
 
   if (vector_offset == 0x8)
     name = "Exception: 2 - Bus error";
@@ -156,33 +156,33 @@ void cpuThrowException(uint32_t vector_offset, uint32_t pc, BOOLE executejmp)
 
     switch (vector_offset)
     {
-    case 0x08: exceptionCycles = 50; break; // Bus
-    case 0x0c: exceptionCycles = 50; break; // Address
-    case 0x10: exceptionCycles = 34; break; // Illegal
-    case 0x14: exceptionCycles = 42; break; // Division by zero
-    case 0x18: exceptionCycles = 28; break; // Chk
-    case 0x1c: exceptionCycles = 34; break; // Trapcc/trapv
-    case 0x20: exceptionCycles = 34; break; // Privilege
-    case 0x24: exceptionCycles = 34; break; // Trace
-    case 0x28: exceptionCycles = 34; break; // Line A
-    case 0x2c: exceptionCycles = 34; break; // Line F
-    case 0x80:
-    case 0x84:
-    case 0x88:
-    case 0x8c:
-    case 0x90:
-    case 0x94:
-    case 0x98:
-    case 0x9c:
-    case 0xa0:
-    case 0xa4:
-    case 0xa8:
-    case 0xac:
-    case 0xb0:
-    case 0xb4:
-    case 0xb8:
-    case 0xbc: exceptionCycles = 34; break; // TRAP
-    default: exceptionCycles = 4; break; // Should not come here
+      case 0x08: exceptionCycles = 50; break; // Bus
+      case 0x0c: exceptionCycles = 50; break; // Address
+      case 0x10: exceptionCycles = 34; break; // Illegal
+      case 0x14: exceptionCycles = 42; break; // Division by zero
+      case 0x18: exceptionCycles = 28; break; // Chk
+      case 0x1c: exceptionCycles = 34; break; // Trapcc/trapv
+      case 0x20: exceptionCycles = 34; break; // Privilege
+      case 0x24: exceptionCycles = 34; break; // Trace
+      case 0x28: exceptionCycles = 34; break; // Line A
+      case 0x2c: exceptionCycles = 34; break; // Line F
+      case 0x80:
+      case 0x84:
+      case 0x88:
+      case 0x8c:
+      case 0x90:
+      case 0x94:
+      case 0x98:
+      case 0x9c:
+      case 0xa0:
+      case 0xa4:
+      case 0xa8:
+      case 0xac:
+      case 0xb0:
+      case 0xb4:
+      case 0xb8:
+      case 0xbc: exceptionCycles = 34; break; // TRAP
+      default: exceptionCycles = 4; break;    // Should not come here
     }
     cpuSetInstructionTime(exceptionCycles);
   }
@@ -293,7 +293,7 @@ static void cpuThrowResetException020()
   cpuSetSR(cpuGetSR() & 0x271f); /* T1T0 = 0, M = 0 */
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
   cpuSetVbr(0);
-  cpuSetCacr(0);             /* E = 0, F = 0 */
+  cpuSetCacr(0); /* E = 0, F = 0 */
   cpuSetCaar(0);
   /* Invalidate cache, we don't have one */
   cpuSetSspDirect(cpuGetInitialSP());        /* ssp = fake vector 0 */
@@ -305,7 +305,7 @@ static void cpuThrowResetException030()
   cpuSetSR(cpuGetSR() & 0x271f); /* T1T0 = 0, M = 0 */
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
   cpuSetVbr(0);
-  cpuSetCacr(0);             /* E = 0, F = 0 */
+  cpuSetCacr(0); /* E = 0, F = 0 */
   cpuSetCaar(0);
   /* Invalidate cache, we don't have one */
   cpuSetSspDirect(cpuGetInitialSP());        /* ssp = fake vector 0 */
@@ -321,17 +321,9 @@ void cpuThrowResetException()
   cpuSetStop(FALSE);
   switch (cpuGetModelMajor())
   {
-  case 0:
-    cpuThrowResetException000();
-    break;
-  case 1:
-    cpuThrowResetException010();
-    break;
-  case 2:
-    cpuThrowResetException020();
-    break;
-  case 3:
-    cpuThrowResetException030();
-    break;
+    case 0: cpuThrowResetException000(); break;
+    case 1: cpuThrowResetException010(); break;
+    case 2: cpuThrowResetException020(); break;
+    case 3: cpuThrowResetException030(); break;
   }
 }

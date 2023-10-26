@@ -37,27 +37,33 @@ extern uint32_t graph_deco6[256][2];
 
 //----------------------------------------------------------------------------
 // Planar to chunky conversion
-// 
+//
 // One byte of bitplane data is converted to 8 chunky bytes in two steps
 // via. lookup tables.
 //
 //----------------------------------------------------------------------------
 
-uint32_t *Planar2ChunkyDecoder::GetEvenPlayfieldUint32Ptr() {return (uint32_t*) (_playfield_even.barray + _batch_size);}
-uint32_t *Planar2ChunkyDecoder::GetOddPlayfieldUint32Ptr() {return (uint32_t*) (_playfield_odd.barray + _batch_size);}
+uint32_t *Planar2ChunkyDecoder::GetEvenPlayfieldUint32Ptr()
+{
+  return (uint32_t *)(_playfield_even.barray + _batch_size);
+}
+uint32_t *Planar2ChunkyDecoder::GetOddPlayfieldUint32Ptr()
+{
+  return (uint32_t *)(_playfield_odd.barray + _batch_size);
+}
 
 // Decode the odd part of the first 4 pixels.
 // Normal lores/hires output
 uint32_t Planar2ChunkyDecoder::P2COdd1(uint32_t dat1, uint32_t dat3, uint32_t dat5)
 {
-  return graph_deco1[dat1][0] | graph_deco3[dat3][0] | graph_deco5[dat5][0]; 
+  return graph_deco1[dat1][0] | graph_deco3[dat3][0] | graph_deco5[dat5][0];
 }
 
 // Decode the odd part of the last 4 pixels
 // Normal lores/hires output
 uint32_t Planar2ChunkyDecoder::P2COdd2(uint32_t dat1, uint32_t dat3, uint32_t dat5)
 {
-  return graph_deco1[dat1][1] | graph_deco3[dat3][1] | graph_deco5[dat5][1]; 
+  return graph_deco1[dat1][1] | graph_deco3[dat3][1] | graph_deco5[dat5][1];
 }
 
 // Decode the even part of the first 4 pixels
@@ -71,21 +77,21 @@ uint32_t Planar2ChunkyDecoder::P2CEven1(uint32_t dat2, uint32_t dat4, uint32_t d
 // Normal lores/hires output
 uint32_t Planar2ChunkyDecoder::P2CEven2(uint32_t dat2, uint32_t dat4, uint32_t dat6)
 {
-  return graph_deco2[dat2][1] | graph_deco4[dat4][1] | graph_deco6[dat6][1]; 
+  return graph_deco2[dat2][1] | graph_deco4[dat4][1] | graph_deco6[dat6][1];
 }
 
 // Decode the first 4 pixels
 // Dual playfield output.
 uint32_t Planar2ChunkyDecoder::P2CDual1(uint32_t dat1, uint32_t dat2, uint32_t dat3)
 {
-  return graph_deco1[dat1][0] | graph_deco2[dat2][0] | graph_deco3[dat3][0]; 
+  return graph_deco1[dat1][0] | graph_deco2[dat2][0] | graph_deco3[dat3][0];
 }
 
 // Decode the last 4 pixels
 // Dual playfield output.
 uint32_t Planar2ChunkyDecoder::P2CDual2(uint32_t dat1, uint32_t dat2, uint32_t dat3)
 {
-  return graph_deco1[dat1][1] | graph_deco2[dat2][1] | graph_deco3[dat3][1]; 
+  return graph_deco1[dat1][1] | graph_deco2[dat2][1] | graph_deco3[dat3][1];
 }
 
 //----------------------------------------------------------------------------
@@ -96,7 +102,7 @@ void Planar2ChunkyDecoder::P2CNextPixelsNormal(uint32_t pixelCount, uint32_t dat
 {
   uint32_t pixels = P2COdd1(dat1, dat3, dat5) | P2CEven1(dat2, dat4, dat6);
   uint32_t *playfield = GetOddPlayfieldUint32Ptr();
-  playfield[0] = pixels; 
+  playfield[0] = pixels;
   _batch_size += pixelCount;
 }
 
@@ -114,7 +120,7 @@ void Planar2ChunkyDecoder::P2CNextPixelsDual(uint32_t pixelCount, uint32_t dat1,
 void Planar2ChunkyDecoder::P2CNext4PixelsNormal(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6)
 {
   uint32_t *playfield = GetOddPlayfieldUint32Ptr();
-  playfield[0] = P2COdd1(dat1, dat3, dat5) | P2CEven1(dat2, dat4, dat6); 
+  playfield[0] = P2COdd1(dat1, dat3, dat5) | P2CEven1(dat2, dat4, dat6);
 
   _batch_size += 4;
 }
@@ -122,7 +128,7 @@ void Planar2ChunkyDecoder::P2CNext4PixelsNormal(uint32_t dat1, uint32_t dat2, ui
 void Planar2ChunkyDecoder::P2CNext4PixelsDual(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6)
 {
   uint32_t *playfield_odd = GetOddPlayfieldUint32Ptr();
-  playfield_odd[0] = P2CDual1(dat1, dat3, dat5); 
+  playfield_odd[0] = P2CDual1(dat1, dat3, dat5);
 
   uint32_t *playfield_even = GetEvenPlayfieldUint32Ptr();
   playfield_even[0] = P2CDual1(dat2, dat4, dat6);
@@ -142,11 +148,11 @@ void Planar2ChunkyDecoder::P2CNext8PixelsNormal(uint32_t dat1, uint32_t dat2, ui
 void Planar2ChunkyDecoder::P2CNext8PixelsDual(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6)
 {
   uint32_t *playfield_odd = GetOddPlayfieldUint32Ptr();
-  playfield_odd[0] = P2CDual1(dat1, dat3, dat5); 
-  playfield_odd[1] = P2CDual2(dat1, dat3, dat5); 
+  playfield_odd[0] = P2CDual1(dat1, dat3, dat5);
+  playfield_odd[1] = P2CDual2(dat1, dat3, dat5);
 
   uint32_t *playfield_even = GetEvenPlayfieldUint32Ptr();
-  playfield_even[0] = P2CDual1(dat2, dat4, dat6); 
+  playfield_even[0] = P2CDual1(dat2, dat4, dat6);
   playfield_even[1] = P2CDual2(dat2, dat4, dat6);
 
   _batch_size += 8;

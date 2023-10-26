@@ -13,6 +13,6 @@ namespace fellow::hardfile::rdb
 
     RDBFileSystemHandler();
 
-    bool ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize);
+    bool ReadFromFile(RDBFileReader &reader, uint32_t blockChainStart, uint32_t blockSize);
   };
 }

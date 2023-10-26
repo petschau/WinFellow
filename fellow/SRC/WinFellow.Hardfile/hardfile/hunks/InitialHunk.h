@@ -14,7 +14,7 @@ namespace fellow::hardfile::hunks
     std::unique_ptr<uint8_t> _rawData;
 
   public:
-    void Parse(RawDataReader& rawReader) override = 0;
+    void Parse(RawDataReader &rawReader) override = 0;
     uint32_t GetAllocateSizeInLongwords();
     uint32_t GetAllocateSizeInBytes();
     uint32_t GetContentSizeInLongwords();

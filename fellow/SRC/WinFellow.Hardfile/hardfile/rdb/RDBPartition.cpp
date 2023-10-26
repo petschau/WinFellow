@@ -4,7 +4,7 @@
 
 namespace fellow::hardfile::rdb
 {
-  void RDBPartition::ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize)
+  void RDBPartition::ReadFromFile(RDBFileReader &reader, uint32_t blockChainStart, uint32_t blockSize)
   {
     uint32_t index = blockSize * blockChainStart;
 
@@ -62,7 +62,8 @@ namespace fellow::hardfile::rdb
     _core.Log->AddLogDebug("8   - checksum:                 %.8X (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
     _core.Log->AddLogDebug("12  - host id:                  %u\n", HostID);
     _core.Log->AddLogDebug("16  - next block:               %d\n", Next);
-    _core.Log->AddLogDebug("20  - flags:                    %X (%s, %s)\n", Flags, IsBootable() ? "Bootable" : "Not bootable", IsAutomountable() ? "Automount" : "No automount");
+    _core.Log->AddLogDebug(
+        "20  - flags:                    %X (%s, %s)\n", Flags, IsBootable() ? "Bootable" : "Not bootable", IsAutomountable() ? "Automount" : "No automount");
     _core.Log->AddLogDebug("32  - DevFlags:                 %X\n", DevFlags);
     _core.Log->AddLogDebug("36  - DriveNameLength:          %d\n", DriveNameLength);
     _core.Log->AddLogDebug("37  - DriveName:                %s\n", DriveName.c_str());
@@ -89,36 +90,36 @@ namespace fellow::hardfile::rdb
     _core.Log->AddLogDebug("204 - Bootblocks:               %u\n", Bootblocks);
   }
 
-  RDBPartition::RDBPartition() :
-    SizeInLongs(0),
-    CheckSum(0),
-    HostID(0),
-    Next(0),
-    Flags(0),
-    BadBlockList(0),
-    DevFlags(0),
-    DriveNameLength(0),
-    SizeOfVector(0),
-    SizeBlock(0),
-    SecOrg(0),
-    Surfaces(0),
-    SectorsPerBlock(0),
-    BlocksPerTrack(0),
-    Reserved(0),
-    PreAlloc(0),
-    Interleave(0),
-    LowCylinder(0),
-    HighCylinder(0),
-    NumBuffer(0),
-    BufMemType(0),
-    MaxTransfer(0),
-    Mask(0),
-    BootPri(0),
-    DOSType(0),
-    Baud(0),
-    Control(0),
-    Bootblocks(0),
-    HasValidCheckSum(false)
+  RDBPartition::RDBPartition()
+    : SizeInLongs(0),
+      CheckSum(0),
+      HostID(0),
+      Next(0),
+      Flags(0),
+      BadBlockList(0),
+      DevFlags(0),
+      DriveNameLength(0),
+      SizeOfVector(0),
+      SizeBlock(0),
+      SecOrg(0),
+      Surfaces(0),
+      SectorsPerBlock(0),
+      BlocksPerTrack(0),
+      Reserved(0),
+      PreAlloc(0),
+      Interleave(0),
+      LowCylinder(0),
+      HighCylinder(0),
+      NumBuffer(0),
+      BufMemType(0),
+      MaxTransfer(0),
+      Mask(0),
+      BootPri(0),
+      DOSType(0),
+      Baud(0),
+      Control(0),
+      Bootblocks(0),
+      HasValidCheckSum(false)
   {
   }
 }

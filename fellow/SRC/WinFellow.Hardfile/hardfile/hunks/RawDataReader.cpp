@@ -79,8 +79,7 @@ namespace fellow::hardfile::hunks
     return _index;
   }
 
-  RawDataReader::RawDataReader(uint8_t *rawData, uint32_t rawDataLength)
-    : _rawData(rawData), _rawDataLength(rawDataLength), _index(0)
+  RawDataReader::RawDataReader(uint8_t *rawData, uint32_t rawDataLength) : _rawData(rawData), _rawDataLength(rawDataLength), _index(0)
   {
   }
 }

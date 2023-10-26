@@ -11,13 +11,13 @@ typedef void (RtcOkiMsm6242rs::*RtcOkiMsm6242rsRegisterSetter)(uint16_t data);
 class RtcOkiMsm6242rs
 {
 private:
-  Service::ILog* _log;
+  Service::ILog *_log;
 
   RtcOkiMsm6242rsRegisterGetter _registerGetters[16];
   RtcOkiMsm6242rsRegisterSetter _registerSetters[16];
-  time_t _rtcLastActualTime;  // Timestamp for when _rtcTime was set. Used to calculate time passed since then.
-  time_t _rtcTime;	      // The RTC value as set by programs.
-  int _rtcWeekdayModifier;    // The weekday difference set by a program.
+  time_t _rtcLastActualTime; // Timestamp for when _rtcTime was set. Used to calculate time passed since then.
+  time_t _rtcTime;           // The RTC value as set by programs.
+  int _rtcWeekdayModifier;   // The weekday difference set by a program.
 
   uint16_t _irqFlag;
   uint16_t _holdFlag;
@@ -32,19 +32,19 @@ private:
   uint16_t _twentyFourTwelveFlag;
   uint16_t _testFlag;
 
-  struct tm* GetCurrentOrHeldTime();
+  struct tm *GetCurrentOrHeldTime();
   void SetCurrentTime(struct tm *datetime);
 
   int GetRegisterNumberFromAddress(uint32_t address);
 
   uint16_t GetFirstDigit(int value);
-  void SetFirstDigit(struct tm& datetime, int& value, uint16_t data);
-  void ReplaceFirstDigit(int& value, int new_digit);
+  void SetFirstDigit(struct tm &datetime, int &value, uint16_t data);
+  void ReplaceFirstDigit(int &value, int new_digit);
 
   uint16_t GetSecondDigit(int value);
-  void SetSecondDigit(struct tm& datetime, int& value, uint16_t data);
-  void ReplaceSecondDigit(int& value, int new_digit);
-  void ReplaceSecondDigitAllowBCDOverflow(int& value, int new_digit);
+  void SetSecondDigit(struct tm &datetime, int &value, uint16_t data);
+  void ReplaceSecondDigit(int &value, int new_digit);
+  void ReplaceSecondDigitAllowBCDOverflow(int &value, int new_digit);
 
   uint16_t GetSecondRegister();
   void SetSecondRegister(uint16_t data);
@@ -86,5 +86,5 @@ public:
   uint16_t read(uint32_t address);
   void write(uint16_t data, uint32_t address);
   void logRtcTime(char *msg);
-  RtcOkiMsm6242rs(Service::ILog* log);
+  RtcOkiMsm6242rs(Service::ILog *log);
 };

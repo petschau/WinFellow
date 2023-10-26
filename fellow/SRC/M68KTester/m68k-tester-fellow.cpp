@@ -24,15 +24,11 @@
 #define DEBUG 0
 #include "debug.h"
 
-
 #include "DEFS.H"
 #include "CpuModule.h"
 
-
-
-
 unsigned char *memory;
-BOOLE memory_fault_read;                       /* TRUE - read / FALSE - write */
+BOOLE memory_fault_read; /* TRUE - read / FALSE - write */
 ULO memory_fault_address;
 
 #define memoryReadByteFromPointer(address) (address[0])
@@ -89,13 +85,11 @@ void memoryWriteLong(ULO data, ULO address)
   memoryWriteLongToPointer(data, p);
 }
 
-
-
 extern void cpuSetRaiseInterrupt(BOOLE f);
 
 m68k_cpu::m68k_cpu()
 {
-  memory = (unsigned char*) malloc(0x1000000);
+  memory = (unsigned char *)malloc(0x1000000);
   cpuStartup();
   cpuSetModel(CPUType, 0);
   cpuSetRaiseInterrupt(FALSE);
@@ -176,7 +170,7 @@ uint32 vm_get_byte(uint32 addr)
 {
   return memoryReadByte(addr);
 }
-  
+
 void vm_put_byte(uint32 addr, uint8 v)
 {
   memoryWriteByte(v, addr);

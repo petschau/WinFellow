@@ -49,7 +49,7 @@ void cpuClearEverything()
   cpuSetOriginalPC(0);
   cpuSetInitialPC(0);
   cpuSetInitialSP(0);
-  cpuSetModel(0, 0);  // Also sets model-mask
+  cpuSetModel(0, 0); // Also sets model-mask
   cpuSetCheckPendingInterruptsFunc(nullptr);
 
 #ifdef CPU_INSTRUCTION_LOGGING

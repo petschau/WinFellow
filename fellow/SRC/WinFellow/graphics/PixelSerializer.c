@@ -92,12 +92,12 @@ void PixelSerializer::Commit(uint16_t dat1, uint16_t dat2, uint16_t dat3, uint16
   invoddmask = ~oddmask;
   invevenmask = ~evenmask;
 
-  _active[0].l = (_active[0].l & invoddmask)  | ( ( ((uint32_t) dat1) << scrollodd)  & oddmask);
-  _active[1].l = (_active[1].l & invevenmask) | ( ( ((uint32_t) dat2) << scrolleven) & evenmask);
-  _active[2].l = (_active[2].l & invoddmask)  | ( ( ((uint32_t) dat3) << scrollodd)  & oddmask);
-  _active[3].l = (_active[3].l & invevenmask) | ( ( ((uint32_t) dat4) << scrolleven) & evenmask);
-  _active[4].l = (_active[4].l & invoddmask)  | ( ( ((uint32_t) dat5) << scrollodd)  & oddmask);
-  _active[5].l = (_active[5].l & invevenmask) | ( ( ((uint32_t) dat6) << scrolleven) & evenmask);
+  _active[0].l = (_active[0].l & invoddmask) | ((((uint32_t)dat1) << scrollodd) & oddmask);
+  _active[1].l = (_active[1].l & invevenmask) | ((((uint32_t)dat2) << scrolleven) & evenmask);
+  _active[2].l = (_active[2].l & invoddmask) | ((((uint32_t)dat3) << scrollodd) & oddmask);
+  _active[3].l = (_active[3].l & invevenmask) | ((((uint32_t)dat4) << scrolleven) & evenmask);
+  _active[4].l = (_active[4].l & invoddmask) | ((((uint32_t)dat5) << scrollodd) & oddmask);
+  _active[5].l = (_active[5].l & invevenmask) | ((((uint32_t)dat6) << scrolleven) & evenmask);
 }
 
 void PixelSerializer::SerializePixels(uint32_t pixelCount)
@@ -105,35 +105,19 @@ void PixelSerializer::SerializePixels(uint32_t pixelCount)
   uint32_t pixelIterations8 = pixelCount >> 3;
   for (uint32_t i = 0; i < pixelIterations8; ++i)
   {
-    GraphicsContext.Planar2ChunkyDecoder.P2CNext8Pixels(_active[0].b[3],
-			                                _active[1].b[3],
-			                                _active[2].b[3],
-			                                _active[3].b[3],
-			                                _active[4].b[3],
-			                                _active[5].b[3]);
+    GraphicsContext.Planar2ChunkyDecoder.P2CNext8Pixels(_active[0].b[3], _active[1].b[3], _active[2].b[3], _active[3].b[3], _active[4].b[3], _active[5].b[3]);
     ShiftActive(8);
   }
   if (pixelCount & 4)
   {
-    GraphicsContext.Planar2ChunkyDecoder.P2CNext4Pixels(_active[0].b[3],
-			                                _active[1].b[3],
-			                                _active[2].b[3],
-			                                _active[3].b[3],
-			                                _active[4].b[3],
-			                                _active[5].b[3]);
+    GraphicsContext.Planar2ChunkyDecoder.P2CNext4Pixels(_active[0].b[3], _active[1].b[3], _active[2].b[3], _active[3].b[3], _active[4].b[3], _active[5].b[3]);
     ShiftActive(4);
   }
-  
+
   uint32_t remainingPixels = pixelCount & 3;
   if (remainingPixels > 0)
   {
-    GraphicsContext.Planar2ChunkyDecoder.P2CNextPixels(remainingPixels,
-                                                       _active[0].b[3],
-			                               _active[1].b[3],
-			                               _active[2].b[3],
-			                               _active[3].b[3],
-			                               _active[4].b[3],
-			                               _active[5].b[3]);
+    GraphicsContext.Planar2ChunkyDecoder.P2CNextPixels(remainingPixels, _active[0].b[3], _active[1].b[3], _active[2].b[3], _active[3].b[3], _active[4].b[3], _active[5].b[3]);
     ShiftActive(remainingPixels);
   }
 }
@@ -146,7 +130,7 @@ void PixelSerializer::SerializeBatch(uint32_t cylinderCount)
   }
   else
   {
-    SerializePixels(cylinderCount*2);
+    SerializePixels(cylinderCount * 2);
   }
 }
 
@@ -219,7 +203,7 @@ void PixelSerializer::Handler(uint32_t rasterY, uint32_t cylinder)
   uint32_t line = GetOutputLine(rasterY, cylinder);
   if (line < 0x1a)
   {
-//    sprites->EndOfLine(rasterY);
+    //    sprites->EndOfLine(rasterY);
     EventSetup(MakeArriveTime(rasterY + 1, LAST_CYLINDER));
     return;
   }
@@ -242,7 +226,7 @@ void PixelSerializer::Handler(uint32_t rasterY, uint32_t cylinder)
   }
   else
   {
-//    sprites->EndOfLine(rasterY);
+    //    sprites->EndOfLine(rasterY);
   }
   EventSetup(MakeArriveTime(rasterY + 1, LAST_CYLINDER));
 }

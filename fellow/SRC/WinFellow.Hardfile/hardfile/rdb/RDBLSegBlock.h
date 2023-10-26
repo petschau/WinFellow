@@ -20,8 +20,8 @@ namespace fellow::hardfile::rdb
     bool HasValidCheckSum;
 
     int32_t GetDataSize() const;
-    const uint8_t* GetData() const;
-    void ReadFromFile(RDBFileReader& reader, uint32_t index);
+    const uint8_t *GetData() const;
+    void ReadFromFile(RDBFileReader &reader, uint32_t index);
     void Log();
 
     RDBLSegBlock();

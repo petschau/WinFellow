@@ -3,15 +3,17 @@
 #include <string>
 #include <list>
 
-typedef enum {
+typedef enum
+{
   FELLOW_RUNTIME_ERROR_NO_ERROR = 0,
   FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK = 1
 } fellow_runtime_error_codes;
 
-typedef enum {
-  FELLOW_REQUESTER_TYPE_NONE  = 0,
-  FELLOW_REQUESTER_TYPE_INFO  = 1,
-  FELLOW_REQUESTER_TYPE_WARN  = 2,
+typedef enum
+{
+  FELLOW_REQUESTER_TYPE_NONE = 0,
+  FELLOW_REQUESTER_TYPE_INFO = 1,
+  FELLOW_REQUESTER_TYPE_WARN = 2,
   FELLOW_REQUESTER_TYPE_ERROR = 3
 } FELLOW_REQUESTER_TYPE;
 

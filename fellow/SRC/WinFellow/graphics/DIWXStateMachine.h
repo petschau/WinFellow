@@ -51,7 +51,7 @@ private:
   void OutputCylindersUntilPreviousCylinder(uint32_t rasterY, uint32_t cylinder);
 
 public:
-  //uint8_t GetOutputMask(uint32_t rasterX);
+  // uint8_t GetOutputMask(uint32_t rasterX);
   bool IsVisible();
   void ChangedValue();
 
@@ -66,6 +66,5 @@ public:
   void Startup();
   void Shutdown();
 
-  DIWXStateMachine() : GraphicsEvent() {};
-
+  DIWXStateMachine() : GraphicsEvent(){};
 };

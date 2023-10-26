@@ -36,8 +36,7 @@ typedef enum SpriteDMAStates_
   SPRITE_DMA_STATE_DISABLED = 4
 } SpriteDMAStates;
 
-typedef union SpriteDecodedUnion_
-{
+typedef union SpriteDecodedUnion_ {
   uint8_t barray[16];
   ByteLongUnion blu[4];
 } SpriteDecodedUnion;
@@ -55,8 +54,8 @@ typedef struct Sprite_
   bool armed;
   bool attached;
   uint32_t x;
-  ByteWordUnion dat_hold[4];		// Sprite image "armed" for output at x.
-  SpriteDecodedUnion dat_decoded;	// The armed image, decoded
+  ByteWordUnion dat_hold[4];      // Sprite image "armed" for output at x.
+  SpriteDecodedUnion dat_decoded; // The armed image, decoded
   bool serializing;
   uint32_t pixels_output;
 } Sprite;

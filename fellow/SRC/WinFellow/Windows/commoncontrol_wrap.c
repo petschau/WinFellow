@@ -43,8 +43,10 @@ void ccwButtonUncheck(HWND windowHandle, int controlIdentifier)
 
 void ccwButtonCheckConditional(HWND windowHandle, int controlIdentifier, BOOLE check)
 {
-  if (check) ccwButtonSetCheck(windowHandle, controlIdentifier);
-  else ccwButtonUncheck(windowHandle, controlIdentifier);
+  if (check)
+    ccwButtonSetCheck(windowHandle, controlIdentifier);
+  else
+    ccwButtonUncheck(windowHandle, controlIdentifier);
 }
 
 BOOLE ccwButtonGetCheck(HWND windowHandle, int controlIdentifier)
@@ -87,7 +89,7 @@ void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, ui
   ComboBox_SetCurSel(GetDlgItem(windowHandle, controlIdentifier), index);
 }
 
-void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, const char* text)
+void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, const char *text)
 {
   ComboBox_AddString(GetDlgItem(windowHandle, controlIdentifier), text);
 }
@@ -107,17 +109,17 @@ void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable)
   EnableWindow(GetDlgItem(windowHandle, controlIdentifier), enable);
 }
 
-void ccwStaticSetText(HWND windowHandle, int controlIdentifier, const char* text)
+void ccwStaticSetText(HWND windowHandle, int controlIdentifier, const char *text)
 {
   Static_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditSetText(HWND windowHandle, int controlIdentifier, const char* text)
+void ccwEditSetText(HWND windowHandle, int controlIdentifier, const char *text)
 {
   Edit_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditGetText(HWND windowHandle, int controlIdentifier, char* text, uint32_t n)
+void ccwEditGetText(HWND windowHandle, int controlIdentifier, char *text, uint32_t n)
 {
   Edit_GetText(GetDlgItem(windowHandle, controlIdentifier), text, n);
 }
@@ -141,7 +143,7 @@ void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE e
 {
   HMENU hMenu = GetMenu(windowHandle);
 
-  MENUITEMINFO mii = { 0 };
+  MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(MENUITEMINFO);
   mii.fMask = MIIM_STATE;
 
@@ -155,7 +157,7 @@ BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier)
 {
   HMENU hMenu = GetMenu(windowHandle);
 
-  MENUITEMINFO mii = { 0 };
+  MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(MENUITEMINFO);
   mii.fMask = MIIM_STATE;
 

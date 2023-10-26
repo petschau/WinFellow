@@ -88,7 +88,6 @@ COPJMP2
 $dff08A
 */
 
-
 void wcopjmp2(uint16_t data, uint32_t address)
 {
   copper->Load(copper_registers.cop2lc);

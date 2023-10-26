@@ -8,7 +8,7 @@ namespace fellow::hardfile::rdb
   class RDBFileReader
   {
   private:
-    FILE * _F;
+    FILE *_F;
 
   public:
     std::string ReadString(off_t offset, size_t maxCount);

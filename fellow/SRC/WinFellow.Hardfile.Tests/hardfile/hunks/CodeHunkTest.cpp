@@ -100,7 +100,7 @@ namespace test::fellow::hardfile::hunks
       unique_ptr<RawDataReader> rawDataReader(new RawDataReader(hunkData.get(), 12));
 
       _instance->Parse(*rawDataReader);
-      uint8_t* content = _instance->GetContent();
+      uint8_t *content = _instance->GetContent();
 
       REQUIRE(content[3] == 1);
       REQUIRE(content[7] == 2);

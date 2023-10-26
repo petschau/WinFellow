@@ -9,12 +9,11 @@ using namespace fellow::hardfile::hunks;
 
 namespace fellow::hardfile::rdb
 {
-  RDBFileSystemHandler::RDBFileSystemHandler()
-    : Size(0)
+  RDBFileSystemHandler::RDBFileSystemHandler() : Size(0)
   {
   }
 
-  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader& reader, uint32_t blockChainStart, uint32_t blockSize)
+  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader &reader, uint32_t blockChainStart, uint32_t blockSize)
   {
     vector<RDBLSegBlock> blocks;
     int32_t nextBlock = blockChainStart;
@@ -26,7 +25,7 @@ namespace fellow::hardfile::rdb
     {
       int32_t index = nextBlock * blockSize;
       blocks.emplace_back();
-      RDBLSegBlock& block = blocks.back();
+      RDBLSegBlock &block = blocks.back();
       block.ReadFromFile(reader, index);
       block.Log();
 
@@ -51,7 +50,7 @@ namespace fellow::hardfile::rdb
 
     RawData.reset(new uint8_t[Size]);
     uint32_t nextCopyPosition = 0;
-    for (const RDBLSegBlock& block : blocks)
+    for (const RDBLSegBlock &block : blocks)
     {
       int32_t size = block.GetDataSize();
       memcpy(RawData.get() + nextCopyPosition, block.GetData(), size);

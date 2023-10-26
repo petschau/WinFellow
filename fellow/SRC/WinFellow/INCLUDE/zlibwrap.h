@@ -28,4 +28,4 @@
 #include "defs.h"
 
 BOOLE gzUnpack(const char *src, const char *dest);
-BOOLE gzPack  (const char *src, const char *dest);
+BOOLE gzPack(const char *src, const char *dest);

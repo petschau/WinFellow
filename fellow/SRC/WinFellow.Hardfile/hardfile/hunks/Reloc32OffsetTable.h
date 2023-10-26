@@ -17,7 +17,7 @@ namespace fellow::hardfile::hunks
     uint32_t GetOffsetCount();
     uint32_t GetOffset(uint32_t index);
 
-    void Parse(RawDataReader& rawDataReader, uint32_t offsetCount);
+    void Parse(RawDataReader &rawDataReader, uint32_t offsetCount);
 
     Reloc32OffsetTable(uint32_t relatedHunkIndex);
   };

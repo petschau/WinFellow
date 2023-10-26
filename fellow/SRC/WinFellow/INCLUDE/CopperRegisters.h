@@ -9,9 +9,9 @@ public:
   uint32_t cop1lc;
   uint32_t cop2lc;
   uint32_t copper_pc;
-  bool copper_dma;                                    /* Mirrors DMACON */
-  uint32_t copper_suspended_wait;/* Position the copper should have been waiting for */
-                            /* if copper DMA had been turned on */
+  bool copper_dma;                /* Mirrors DMACON */
+  uint32_t copper_suspended_wait; /* Position the copper should have been waiting for */
+                                  /* if copper DMA had been turned on */
 
   void InstallIOHandlers();
 

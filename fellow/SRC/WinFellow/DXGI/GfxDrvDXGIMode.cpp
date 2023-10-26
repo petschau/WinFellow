@@ -35,8 +35,8 @@ const char *GfxDrvDXGIMode::GetScanlineOrderDescription()
 string GfxDrvDXGIMode::GetModeDescriptionString()
 {
   std::ostringstream ss;
-  ss << "DXGI mode (" << GetId() << "): " << GetWidth() << "x" << GetHeight() << "x" << GetRefreshRate()
-    << " - Scaling: " << GetScalingDescription() << " Scanline order: " << GetScanlineOrderDescription();
+  ss << "DXGI mode (" << GetId() << "): " << GetWidth() << "x" << GetHeight() << "x" << GetRefreshRate() << " - Scaling: " << GetScalingDescription()
+     << " Scanline order: " << GetScanlineOrderDescription();
   return ss.str();
 }
 
@@ -49,8 +49,6 @@ bool GfxDrvDXGIMode::CanUseMode()
   return scanlineOrderOk && refreshRateOk && sizeOk;
 }
 
-GfxDrvDXGIMode::GfxDrvDXGIMode(DXGI_MODE_DESC *desc)
-  : _id(GetNewId()),
-    _dxgi_mode_description(*desc)    
+GfxDrvDXGIMode::GfxDrvDXGIMode(DXGI_MODE_DESC *desc) : _id(GetNewId()), _dxgi_mode_description(*desc)
 {
 }

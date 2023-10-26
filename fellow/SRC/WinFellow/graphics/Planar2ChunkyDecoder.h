@@ -27,8 +27,7 @@
 #include "DEFS.H"
 #include "VirtualHost/Core.h"
 
-typedef union ByteLongArrayUnion_
-{
+typedef union ByteLongArrayUnion_ {
   uint8_t barray[1024];
   ByteWordUnion bwu[512];
   ByteLongUnion blu[256];
@@ -42,8 +41,8 @@ private:
   ByteLongArrayUnion _playfield_even;
   ByteLongArrayUnion _playfield_ham_sprites;
 
-  uint32_t* GetEvenPlayfieldUint32Ptr();
-  uint32_t* GetOddPlayfieldUint32Ptr();
+  uint32_t *GetEvenPlayfieldUint32Ptr();
+  uint32_t *GetOddPlayfieldUint32Ptr();
 
   uint32_t P2COdd1(uint32_t dat1, uint32_t dat3, uint32_t dat5);
   uint32_t P2COdd2(uint32_t dat1, uint32_t dat3, uint32_t dat5);
@@ -60,9 +59,9 @@ private:
   void P2CNext8PixelsDual(uint32_t dat1, uint32_t dat2, uint32_t dat3, uint32_t dat4, uint32_t dat5, uint32_t dat6);
 
 public:
-  uint8_t* GetOddPlayfield();
-  uint8_t* GetEvenPlayfield();
-  uint8_t* GetHamSpritesPlayfield();
+  uint8_t *GetOddPlayfield();
+  uint8_t *GetEvenPlayfield();
+  uint8_t *GetHamSpritesPlayfield();
   uint32_t GetBatchSize();
 
   void NewBatch();

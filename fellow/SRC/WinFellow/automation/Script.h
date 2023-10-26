@@ -14,30 +14,30 @@ struct ScriptLine
   std::string Command;
   std::string Parameters;
 
-  ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const std::string& command, const std::string& parameters);
+  ScriptLine(uint64_t frameNumber, uint32_t lineNumber, const std::string &command, const std::string &parameters);
 };
 
 class Script
 {
 private:
-  const char* KeyCommand = "Key";
-  const char* MouseCommand = "Mouse";
-  const char* JoystickCommand = "Joystick";
-  const char* EmulatorActionCommand = "EmulatorAction";
+  const char *KeyCommand = "Key";
+  const char *MouseCommand = "Mouse";
+  const char *JoystickCommand = "Joystick";
+  const char *EmulatorActionCommand = "EmulatorAction";
 
   unsigned int _nextLine;
   std::vector<ScriptLine> _lines;
   bool _record;
 
   std::string GetStringForAction(kbd_event action);
-  uint8_t GetIdForAction(const std::string& action);
+  uint8_t GetIdForAction(const std::string &action);
 
-  void ExecuteMouseCommand(const std::string& parameters);
-  void ExecuteKeyCommand(const std::string& parameters);
-  void ExecuteJoystickCommand(const std::string& parameters);
-  void ExecuteEmulatorActionCommand(const std::string& parameters);
+  void ExecuteMouseCommand(const std::string &parameters);
+  void ExecuteKeyCommand(const std::string &parameters);
+  void ExecuteJoystickCommand(const std::string &parameters);
+  void ExecuteEmulatorActionCommand(const std::string &parameters);
 
-  void Execute(const ScriptLine& line);
+  void Execute(const ScriptLine &line);
 
 public:
   void RecordKey(uint8_t keyCode);
@@ -46,8 +46,8 @@ public:
   void RecordEmulatorAction(kbd_event action);
 
   void ExecuteUntil(uint64_t frameNumber, uint32_t lineNumber);
-  void Load(const std::string& filename);
-  void Save(const std::string& filename);
+  void Load(const std::string &filename);
+  void Save(const std::string &filename);
 
   Script();
   ~Script();

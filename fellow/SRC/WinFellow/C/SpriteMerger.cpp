@@ -4,7 +4,7 @@
 
 uint8_t SpriteMerger::sprite_translate[2][256][256];
 
-void SpriteMerger::MergeLores(uint32_t sprite_number, uint8_t* playfield, uint8_t* sprite, uint32_t pixel_count)
+void SpriteMerger::MergeLores(uint32_t sprite_number, uint8_t *playfield, uint8_t *sprite, uint32_t pixel_count)
 {
   uint32_t in_front = ((_core.Registers.BplCon2 & 0x38) > (4 * sprite_number)) ? 1 : 0;
 
@@ -14,8 +14,7 @@ void SpriteMerger::MergeLores(uint32_t sprite_number, uint8_t* playfield, uint8_
   }
 }
 
-
-void SpriteMerger::MergeHires(uint32_t sprite_number, uint8_t* playfield, uint8_t* sprite, uint32_t pixel_count)
+void SpriteMerger::MergeHires(uint32_t sprite_number, uint8_t *playfield, uint8_t *sprite, uint32_t pixel_count)
 {
   uint32_t in_front = ((_core.Registers.BplCon2 & 0x38) > (4 * sprite_number)) ? 1 : 0;
 
@@ -26,7 +25,7 @@ void SpriteMerger::MergeHires(uint32_t sprite_number, uint8_t* playfield, uint8_
   }
 }
 
-void SpriteMerger::MergeHam(uint32_t sprite_number, uint8_t* playfield, uint8_t* ham_sprites_playfield, uint8_t* sprite, uint32_t pixel_count)
+void SpriteMerger::MergeHam(uint32_t sprite_number, uint8_t *playfield, uint8_t *ham_sprites_playfield, uint8_t *sprite, uint32_t pixel_count)
 {
   uint32_t in_front = ((_core.Registers.BplCon2 & 0x38) > (4 * sprite_number)) ? 1 : 0;
 
@@ -45,8 +44,10 @@ void SpriteMerger::Initialize()
       for (uint32_t j = 0; j < 256; j++)
       {
         uint32_t l;
-        if (k == 0) l = (i == 0) ? j : i;
-        else l = (j == 0) ? i : j;
+        if (k == 0)
+          l = (i == 0) ? j : i;
+        else
+          l = (j == 0) ? i : j;
         sprite_translate[k][i][j] = (uint8_t)l;
       }
     }

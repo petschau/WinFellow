@@ -27,34 +27,37 @@ extern int CPUType;
 // FPU type (0 = no FPU, 1 = 68881, 2 = 68882, 4 = 68040)
 extern int FPUType;
 
-class m68k_cpu {
-	void *opaque;
- public:
-	m68k_cpu();
-	~m68k_cpu();
+class m68k_cpu
+{
+  void *opaque;
 
-	uint32 get_pc() const;
-	void set_pc(uint32 pc);
-	uint32 get_ccr() const;
-	void set_ccr(uint32 ccr);
+public:
+  m68k_cpu();
+  ~m68k_cpu();
 
-	uint32 get_dreg(int r) const;
-	void set_dreg(int r, uint32 v);
-	uint32 get_areg(int r) const;
-	void set_areg(int r, uint32 v);
+  uint32 get_pc() const;
+  void set_pc(uint32 pc);
+  uint32 get_ccr() const;
+  void set_ccr(uint32 ccr);
 
-	void reset(void);
-	void reset_jit(void);
-	void execute(uint32 pc);
+  uint32 get_dreg(int r) const;
+  void set_dreg(int r, uint32 v);
+  uint32 get_areg(int r) const;
+  void set_areg(int r, uint32 v);
+
+  void reset(void);
+  void reset_jit(void);
+  void execute(uint32 pc);
 };
 
-enum {
-  M68K_CCR_X	= 1 << 4,
-  M68K_CCR_N	= 1 << 3,
-  M68K_CCR_Z	= 1 << 2,
-  M68K_CCR_V	= 1 << 1,
-  M68K_CCR_C	= 1 << 0,
-  M68K_CCR_BITS	= M68K_CCR_X | M68K_CCR_N | M68K_CCR_Z | M68K_CCR_V | M68K_CCR_C
+enum
+{
+  M68K_CCR_X = 1 << 4,
+  M68K_CCR_N = 1 << 3,
+  M68K_CCR_Z = 1 << 2,
+  M68K_CCR_V = 1 << 1,
+  M68K_CCR_C = 1 << 0,
+  M68K_CCR_BITS = M68K_CCR_X | M68K_CCR_N | M68K_CCR_Z | M68K_CCR_V | M68K_CCR_C
 };
 
 const uint16 M68K_NOP = 0x4e71;

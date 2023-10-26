@@ -62,10 +62,11 @@ void filesys_init(int automount_drives)
   UINT errormode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX);
   char volumename[MAX_PATH] = "";
   char volumepath[6];
-  const char* result = nullptr;
+  const char *result = nullptr;
 
   mountinfo.num_units = 0;
-  if (automount_drives) {
+  if (automount_drives)
+  {
     if (memoryGetKickImageVersion() >= 36)
     {
       DWORD dwDriveMask = GetLogicalDrives();
@@ -85,8 +86,7 @@ void filesys_init(int automount_drives)
           if (get_volume_name(&mountinfo, volumepath, volumename, MAX_PATH, drive, drivetype, 1))
           {
             result = add_filesys_unit(&mountinfo, volumename, volumepath, readonly, 0, 0, 0, 0);
-            if (result)
-              write_log(result);
+            if (result) write_log(result);
           }
         } /* if drivemask */
         dwDriveMask >>= 1;
@@ -96,7 +96,7 @@ void filesys_init(int automount_drives)
   SetErrorMode(errormode);
 }
 
-static int get_volume_name(struct uaedev_mount_info* mtinf, char* volumepath, char* volumename, int size, int drive, int drivetype, int fullcheck)
+static int get_volume_name(struct uaedev_mount_info *mtinf, char *volumepath, char *volumename, int size, int drive, int drivetype, int fullcheck)
 {
   int result = -1;
 
@@ -109,49 +109,36 @@ static int get_volume_name(struct uaedev_mount_info* mtinf, char* volumepath, ch
     result = 2;
     switch (drivetype)
     {
-    case DRIVE_FIXED:
-      sprintf(volumename, "WinDH_%c", drive);
-      break;
-    case DRIVE_CDROM:
-      sprintf(volumename, "WinCD_%c", volumepath[0]);
-      break;
-    case DRIVE_REMOVABLE:
-      sprintf(volumename, "WinRMV_%c", volumepath[0]);
-      break;
-    case DRIVE_REMOTE:
-      sprintf(volumename, "WinNET_%c", volumepath[0]);
-      break;
-    case DRIVE_RAMDISK:
-      sprintf(volumename, "WinRAM_%c", volumepath[0]);
-      break;
-    case DRIVE_UNKNOWN:
-    case DRIVE_NO_ROOT_DIR:
-    default:
-      result = 0;
-      break;
+      case DRIVE_FIXED: sprintf(volumename, "WinDH_%c", drive); break;
+      case DRIVE_CDROM: sprintf(volumename, "WinCD_%c", volumepath[0]); break;
+      case DRIVE_REMOVABLE: sprintf(volumename, "WinRMV_%c", volumepath[0]); break;
+      case DRIVE_REMOTE: sprintf(volumename, "WinNET_%c", volumepath[0]); break;
+      case DRIVE_RAMDISK: sprintf(volumename, "WinRAM_%c", volumepath[0]); break;
+      case DRIVE_UNKNOWN:
+      case DRIVE_NO_ROOT_DIR:
+      default: result = 0; break;
     }
   }
   return result;
 }
 
-BOOLE CheckRM(char* DriveName)
+BOOLE CheckRM(char *DriveName)
 {
   char filename[MAX_PATH];
   BOOL result = FALSE;
 
   sprintf(filename, "%s.", DriveName);
   DWORD dwHold = GetFileAttributes(filename);
-  if (dwHold != 0xFFFFFFFF)
-    result = TRUE;
+  if (dwHold != 0xFFFFFFFF) result = TRUE;
   return result;
 }
 
 /* This function makes sure the volume-name being requested is not already in use, or any of the following
 illegal values: */
 
-int valid_volumename(struct uaedev_mount_info* mountinfo, char* volumename, int fullcheck)
+int valid_volumename(struct uaedev_mount_info *mountinfo, char *volumename, int fullcheck)
 {
-  const char* illegal_volumenames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
+  const char *illegal_volumenames[7] = {"SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S"};
 
   int i, result = 1;
   for (i = 0; i < 7; i++)

@@ -16,15 +16,15 @@ namespace fellow::hardfile::hunks
     std::vector<std::unique_ptr<AdditionalHunk>> _additionalHunks;
 
   public:
-    void SetHeader(HeaderHunk* header);
-    HeaderHunk* GetHeader();
+    void SetHeader(HeaderHunk *header);
+    HeaderHunk *GetHeader();
 
-    InitialHunk* GetInitialHunk(uint32_t hunkIndex);
-    void AddInitialHunk(InitialHunk* hunk);
+    InitialHunk *GetInitialHunk(uint32_t hunkIndex);
+    void AddInitialHunk(InitialHunk *hunk);
     uint32_t GetInitialHunkCount();
 
-    AdditionalHunk* GetAdditionalHunk(uint32_t hunkIndex);
-    void AddAdditionalHunk(AdditionalHunk* hunk);
+    AdditionalHunk *GetAdditionalHunk(uint32_t hunkIndex);
+    void AddAdditionalHunk(AdditionalHunk *hunk);
     uint32_t GetAdditionalHunkCount();
 
     void Clear();

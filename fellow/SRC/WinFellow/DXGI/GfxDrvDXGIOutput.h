@@ -11,15 +11,15 @@ private:
   char _name[255];
   GfxDrvDXGIModeList _modes;
 
-  const char* GetRotationDescription(DXGI_MODE_ROTATION rotation);
-  void EnumerateModes(IDXGIOutput* output);
-  void LogCapabilities(IDXGIOutput* output);
+  const char *GetRotationDescription(DXGI_MODE_ROTATION rotation);
+  void EnumerateModes(IDXGIOutput *output);
+  void LogCapabilities(IDXGIOutput *output);
 
 public:
-  const GfxDrvDXGIModeList& GetModes();
+  const GfxDrvDXGIModeList &GetModes();
 
-  GfxDrvDXGIOutput(IDXGIOutput* output);
+  GfxDrvDXGIOutput(IDXGIOutput *output);
   virtual ~GfxDrvDXGIOutput();
 };
 
-typedef std::list<GfxDrvDXGIOutput*> GfxDrvDXGIOutputList;
+typedef std::list<GfxDrvDXGIOutput *> GfxDrvDXGIOutputList;

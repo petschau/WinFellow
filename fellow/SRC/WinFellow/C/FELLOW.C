@@ -104,7 +104,7 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode()
 
 #define WRITE_LOG_BUF_SIZE 512
 
-void fellowShowRequester(FELLOW_REQUESTER_TYPE type, const char* format, ...)
+void fellowShowRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
@@ -121,9 +121,9 @@ void fellowShowRequester(FELLOW_REQUESTER_TYPE type, const char* format, ...)
     wguiShowRequester(buffer, type);
 }
 
-char* fellowGetVersionString()
+char *fellowGetVersionString()
 {
-  char* result = (char*)malloc(strlen(FELLOWVERSION) + 12);
+  char *result = (char *)malloc(strlen(FELLOWVERSION) + 12);
 
   if (!result)
   {
@@ -147,11 +147,11 @@ static void fellowRuntimeErrorCheck()
 {
   switch (fellowGetRuntimeErrorCode())
   {
-  case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
-    fellowShowRequester(
-      FELLOW_REQUESTER_TYPE_ERROR,
-      "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
-    break;
+    case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
+      fellowShowRequester(
+          FELLOW_REQUESTER_TYPE_ERROR,
+          "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
+      break;
   }
   fellowSetRuntimeErrorCode(FELLOW_RUNTIME_ERROR_NO_ERROR);
 }
@@ -402,9 +402,9 @@ static void fellowDrawFailed()
 /* Save statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowSaveState(char* filename)
+BOOLE fellowSaveState(char *filename)
 {
-  FILE* F = fopen(filename, "wb");
+  FILE *F = fopen(filename, "wb");
 
   if (F == nullptr) return FALSE;
 
@@ -423,9 +423,9 @@ BOOLE fellowSaveState(char* filename)
 /* Load statefile                                                             */
 /*============================================================================*/
 
-BOOLE fellowLoadState(char* filename)
+BOOLE fellowLoadState(char *filename)
 {
-  FILE* F = fopen(filename, "rb");
+  FILE *F = fopen(filename, "rb");
 
   if (F == nullptr) return FALSE;
 
@@ -444,7 +444,7 @@ BOOLE fellowLoadState(char* filename)
 /* Inititalize all modules in the emulator, called on startup                 */
 /*============================================================================*/
 
-static void fellowModulesStartup(int argc, const char** argv)
+static void fellowModulesStartup(int argc, const char **argv)
 {
   CoreFactory::CreateServices();
 
@@ -527,7 +527,7 @@ static void fellowModulesShutdown()
 /* main....                                                                   */
 /*============================================================================*/
 
-int __cdecl main(int argc, const char* argv[])
+int __cdecl main(int argc, const char *argv[])
 {
   fellowSetPreStartReset(true);
   fellowModulesStartup(argc, argv);

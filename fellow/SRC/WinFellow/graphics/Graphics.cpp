@@ -8,9 +8,9 @@ void Graphics::Commit(uint32_t untilRasterY, uint32_t untilRasterX)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
   {
-    GraphicsContext.Logger.Log(untilRasterY, untilRasterX*2+1, "Commit:\n-------------------------\n"); 
+    GraphicsContext.Logger.Log(untilRasterY, untilRasterX * 2 + 1, "Commit:\n-------------------------\n");
   }
-  _queue.Run(untilRasterY*GraphicsEventQueue::GetCylindersPerLine() + untilRasterX*2 + 1);
+  _queue.Run(untilRasterY * GraphicsEventQueue::GetCylindersPerLine() + untilRasterX * 2 + 1);
 }
 
 void Graphics::InitializeEventQueue()
@@ -83,4 +83,3 @@ void Graphics::Shutdown()
   PixelSerializer.Shutdown();
   Logger.Shutdown();
 }
-

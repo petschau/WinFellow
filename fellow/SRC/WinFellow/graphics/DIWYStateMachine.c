@@ -29,8 +29,7 @@
 
 #include "Graphics.h"
 
-static const char* DIWYStateNames[2] = { "WAITING_FOR_START_LINE",
-                                 "WAITING_FOR_STOP_LINE" };
+static const char *DIWYStateNames[2] = {"WAITING_FOR_START_LINE", "WAITING_FOR_STOP_LINE"};
 
 void DIWYStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
@@ -106,18 +105,14 @@ void DIWYStateMachine::ChangedValue()
 {
   switch (_state)
   {
-  case DIWY_STATE_WAITING_FOR_START_LINE:
-    SetStateWaitingForStartLine(busGetRasterY());
-    break;
-  case DIWY_STATE_WAITING_FOR_STOP_LINE:
-    SetStateWaitingForStopLine(busGetRasterY());
-    break;
+    case DIWY_STATE_WAITING_FOR_START_LINE: SetStateWaitingForStartLine(busGetRasterY()); break;
+    case DIWY_STATE_WAITING_FOR_STOP_LINE: SetStateWaitingForStopLine(busGetRasterY()); break;
   }
 }
 
 /* Bus event handler */
 
-void DIWYStateMachine::InitializeEvent(GraphicsEventQueue* queue)
+void DIWYStateMachine::InitializeEvent(GraphicsEventQueue *queue)
 {
   _queue = queue;
   SetStateWaitingForStartLine(0);
@@ -129,12 +124,8 @@ void DIWYStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
   switch (_state)
   {
-  case DIWY_STATE_WAITING_FOR_START_LINE:
-    DoStateWaitingForStartLine(rasterY);
-    break;
-  case DIWY_STATE_WAITING_FOR_STOP_LINE:
-    DoStateWaitingForStopLine(rasterY);
-    break;
+    case DIWY_STATE_WAITING_FOR_START_LINE: DoStateWaitingForStartLine(rasterY); break;
+    case DIWY_STATE_WAITING_FOR_STOP_LINE: DoStateWaitingForStopLine(rasterY); break;
   }
 }
 

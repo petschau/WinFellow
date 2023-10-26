@@ -10,9 +10,9 @@ using namespace fellow::hardfile::hunks;
 namespace test::fellow::hardfile::hunks
 {
 
-  long GetFilesystemFilesize(const char* filename)
+  long GetFilesystemFilesize(const char *filename)
   {
-    FILE* F = fopen(filename, "rb");
+    FILE *F = fopen(filename, "rb");
     if (F == nullptr)
     {
       throw std::exception();
@@ -25,9 +25,9 @@ namespace test::fellow::hardfile::hunks
     return size;
   }
 
-  unique_ptr<uint8_t[]> LoadFilesystemFile(const char* filename, long filesize)
+  unique_ptr<uint8_t[]> LoadFilesystemFile(const char *filename, long filesize)
   {
-    FILE* F = fopen(filename, "rb");
+    FILE *F = fopen(filename, "rb");
     if (F == nullptr)
     {
       throw std::exception();
@@ -41,7 +41,7 @@ namespace test::fellow::hardfile::hunks
     return rawData;
   }
 
-  unique_ptr<HunkParser> CreateInstanceWithFile(long filesize, uint8_t* rawData, FileImage& fileImage)
+  unique_ptr<HunkParser> CreateInstanceWithFile(long filesize, uint8_t *rawData, FileImage &fileImage)
   {
     return std::make_unique<HunkParser>(rawData, filesize, fileImage);
   }
@@ -52,7 +52,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Parses SmartFilesystem")
     {
-      const char* SmartFilesystemFilename = R"(testdata\hardfile\hunks\SmartFilesystem)";
+      const char *SmartFilesystemFilename = R"(testdata\hardfile\hunks\SmartFilesystem)";
       long filesize = GetFilesystemFilesize(SmartFilesystemFilename);
       unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(SmartFilesystemFilename, filesize);
       FileImage fileImage;
@@ -83,7 +83,7 @@ namespace test::fellow::hardfile::hunks
       REQUIRE(lastByte == 0);
 
       REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
-      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(fileImage.GetAdditionalHunk(0));
 
       REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
       REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 0);
@@ -100,7 +100,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Parses ProfFileSystem 195")
     {
-      const char* ProfFileSystem195Filename = R"(testdata\hardfile\hunks\ProfFileSystem_195)";
+      const char *ProfFileSystem195Filename = R"(testdata\hardfile\hunks\ProfFileSystem_195)";
       long filesize = GetFilesystemFilesize(ProfFileSystem195Filename);
       unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(ProfFileSystem195Filename, filesize);
       FileImage fileImage;
@@ -147,7 +147,7 @@ namespace test::fellow::hardfile::hunks
 
       // First reloc 32 hunk
       REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
-      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(fileImage.GetAdditionalHunk(0));
 
       REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
       REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
@@ -161,7 +161,7 @@ namespace test::fellow::hardfile::hunks
 
       // Second reloc 32 hunk
       REQUIRE(fileImage.GetAdditionalHunk(1)->GetID() == Reloc32HunkID);
-      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(1));
+      reloc32Hunk = dynamic_cast<Reloc32Hunk *>(fileImage.GetAdditionalHunk(1));
 
       REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
       REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
@@ -176,7 +176,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Parses ProfFileSystem 195 68020")
     {
-      const char* ProfFileSystem195_68020Filename = R"(testdata\hardfile\hunks\ProfFileSystem_195_68020+)";
+      const char *ProfFileSystem195_68020Filename = R"(testdata\hardfile\hunks\ProfFileSystem_195_68020+)";
       long filesize = GetFilesystemFilesize(ProfFileSystem195_68020Filename);
       unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(ProfFileSystem195_68020Filename, filesize);
       FileImage fileImage;
@@ -223,7 +223,7 @@ namespace test::fellow::hardfile::hunks
 
       // First reloc 32 hunk
       REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
-      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(fileImage.GetAdditionalHunk(0));
 
       REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
       REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
@@ -237,7 +237,7 @@ namespace test::fellow::hardfile::hunks
 
       // Second reloc 32 hunk
       REQUIRE(fileImage.GetAdditionalHunk(1)->GetID() == Reloc32HunkID);
-      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(1));
+      reloc32Hunk = dynamic_cast<Reloc32Hunk *>(fileImage.GetAdditionalHunk(1));
 
       REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
       REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 1);
@@ -252,7 +252,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Parses Fast file system 13")
     {
-      const char* FastFileSystem13Filename = R"(testdata\hardfile\hunks\FastFileSystem13)";
+      const char *FastFileSystem13Filename = R"(testdata\hardfile\hunks\FastFileSystem13)";
       long filesize = GetFilesystemFilesize(FastFileSystem13Filename);
       unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(FastFileSystem13Filename, filesize);
       FileImage fileImage;
@@ -286,7 +286,7 @@ namespace test::fellow::hardfile::hunks
 
     SECTION("Parses Fast filesystem 31")
     {
-      const char* FastFileSystem31Filename = R"(testdata\hardfile\hunks\FastFileSystem31)";
+      const char *FastFileSystem31Filename = R"(testdata\hardfile\hunks\FastFileSystem31)";
       long filesize = GetFilesystemFilesize(FastFileSystem31Filename);
       unique_ptr<uint8_t[]> rawData = LoadFilesystemFile(FastFileSystem31Filename, filesize);
       FileImage fileImage;
@@ -326,7 +326,7 @@ namespace test::fellow::hardfile::hunks
 
       // First reloc 32 hunk
       REQUIRE(fileImage.GetAdditionalHunk(0)->GetID() == Reloc32HunkID);
-      Reloc32Hunk* reloc32Hunk = dynamic_cast<Reloc32Hunk*>(fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(fileImage.GetAdditionalHunk(0));
 
       REQUIRE(reloc32Hunk->GetOffsetTableCount() == 1);
       REQUIRE(reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex() == 0);

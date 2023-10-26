@@ -15,10 +15,10 @@ private:
   void LogCapabilities(IDXGIAdapter *adapter);
 
 public:
-  const GfxDrvDXGIOutputList& GetOutputs();
+  const GfxDrvDXGIOutputList &GetOutputs();
 
   GfxDrvDXGIAdapter(IDXGIAdapter *adapter);
   virtual ~GfxDrvDXGIAdapter();
 };
 
-typedef std::list<GfxDrvDXGIAdapter*> GfxDrvDXGIAdapterList;
+typedef std::list<GfxDrvDXGIAdapter *> GfxDrvDXGIAdapterList;

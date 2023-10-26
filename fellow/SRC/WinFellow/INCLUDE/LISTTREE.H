@@ -9,8 +9,8 @@ public:
   felist *prev;
   void *node;
 
-  felist(void* nodeptr);
-  felist(felist* prevptr, void* nodeptr);
+  felist(void *nodeptr);
+  felist(felist *prevptr, void *nodeptr);
 };
 
 felist *listNew(void *node);

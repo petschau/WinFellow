@@ -2,14 +2,14 @@
 
 namespace fellow::hardfile::hunks
 {
-  const char* HunkSize::GetMemoryFlagsToString()
+  const char *HunkSize::GetMemoryFlagsToString()
   {
     switch (MemoryFlags)
     {
-    case 0: return "Any memory";
-    case 1: return "Chip memory";
-    case 2: return "Fast memory";
-    default: return "With additional memory flags";
+      case 0: return "Any memory";
+      case 1: return "Chip memory";
+      case 2: return "Fast memory";
+      default: return "With additional memory flags";
     }
   }
 

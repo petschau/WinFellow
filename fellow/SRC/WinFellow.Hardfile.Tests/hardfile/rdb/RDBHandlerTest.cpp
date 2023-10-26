@@ -9,9 +9,9 @@ using namespace fellow::api::module;
 
 namespace test::fellow::hardfile::rdb
 {
-  rdb_status CallHasRigidDiskBlock(const char* filename)
+  rdb_status CallHasRigidDiskBlock(const char *filename)
   {
-    FILE* F = fopen(filename, "rb");
+    FILE *F = fopen(filename, "rb");
     if (F == nullptr)
     {
       throw std::exception();
@@ -23,9 +23,9 @@ namespace test::fellow::hardfile::rdb
     return result;
   }
 
-  unique_ptr<RDB> CallGetDriveInformation(const char* filename)
+  unique_ptr<RDB> CallGetDriveInformation(const char *filename)
   {
-    FILE* F = fopen(filename, "rb");
+    FILE *F = fopen(filename, "rb");
     if (F == nullptr)
     {
       throw std::exception();
@@ -43,7 +43,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Returns RDB_FOUND for RDB hardfile with SFS filesystem")
     {
-      const char* BlankWithRDB_SFS = R"(testdata\hardfile\rdb\BlankWithRDB_SFS.hdf)";
+      const char *BlankWithRDB_SFS = R"(testdata\hardfile\rdb\BlankWithRDB_SFS.hdf)";
       rdb_status result = CallHasRigidDiskBlock(BlankWithRDB_SFS);
 
       REQUIRE(result == rdb_status::RDB_FOUND);
@@ -58,7 +58,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Returns RDB_NOT_FOUND for hardfile without RDB")
     {
-      const char* BlankWithoutRDB_OFS = R"(testdata\hardfile\rdb\BlankWithoutRDB_OFS.hdf)";
+      const char *BlankWithoutRDB_OFS = R"(testdata\hardfile\rdb\BlankWithoutRDB_OFS.hdf)";
       rdb_status result = CallHasRigidDiskBlock(BlankWithoutRDB_OFS);
 
       REQUIRE(result == rdb_status::RDB_NOT_FOUND);
@@ -73,7 +73,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Returns RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR for RDB hardfile with invalid checksum")
     {
-      const char* RDBInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDSKMarkerInvalidChecksum.hdf)";
+      const char *RDBInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDSKMarkerInvalidChecksum.hdf)";
       rdb_status result = CallHasRigidDiskBlock(RDBInvalidCheckSum);
 
       REQUIRE(result == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR);
@@ -88,7 +88,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Returns RDB_FOUND_WITH_PARTITION_ERROR for RDB hardfile with invalid partition checksum")
     {
-      const char* RDBPartitionInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf)";
+      const char *RDBPartitionInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf)";
       rdb_status result = CallHasRigidDiskBlock(RDBPartitionInvalidCheckSum);
 
       REQUIRE(result == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR);
@@ -103,7 +103,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Should find error in RDB hardfile with invalid partition checksum")
     {
-      const char* RDBPartitionInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf)";
+      const char *RDBPartitionInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf)";
       auto rdb = CallGetDriveInformation(RDBPartitionInvalidCheckSum);
 
       REQUIRE(rdb->HasPartitionErrors == true);
@@ -121,7 +121,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Should find error in RDB hardfile with invalid filesystem header checksum")
     {
-      const char* RDBFileSystemHeaderInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf)";
+      const char *RDBFileSystemHeaderInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf)";
       auto rdb = CallGetDriveInformation(RDBFileSystemHeaderInvalidCheckSum);
 
       REQUIRE(rdb->HasFileSystemHandlerErrors == true);
@@ -139,7 +139,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Should find error in RDB hardfile with invalid LSeg block checksum")
     {
-      const char* RDBLSegBlockInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidLSegBlockCheckSum.hdf)";
+      const char *RDBLSegBlockInvalidCheckSum = R"(testdata\hardfile\rdb\WithRDBInvalidLSegBlockCheckSum.hdf)";
       auto rdb = CallGetDriveInformation(RDBLSegBlockInvalidCheckSum);
 
       REQUIRE(rdb->HasFileSystemHandlerErrors == true);
@@ -157,7 +157,7 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Should read header correctly for RDB hardfile with PFS")
     {
-      const char* BlankWithRDB_PFS = R"(testdata\hardfile\rdb\BlankWithRDB_PFS.hdf)";
+      const char *BlankWithRDB_PFS = R"(testdata\hardfile\rdb\BlankWithRDB_PFS.hdf)";
       auto rdb = CallGetDriveInformation(BlankWithRDB_PFS);
 
       REQUIRE(rdb->ID == "RDSK");
@@ -202,12 +202,12 @@ namespace test::fellow::hardfile::rdb
 
     SECTION("Should read partition list correctly for RDB hardfile with FFS13")
     {
-      const char* BlankWithRDB_FFS13 = R"(testdata\hardfile\rdb\BlankWithRDB_FFS13.hdf)";
+      const char *BlankWithRDB_FFS13 = R"(testdata\hardfile\rdb\BlankWithRDB_FFS13.hdf)";
       auto rdb = CallGetDriveInformation(BlankWithRDB_FFS13);
 
       REQUIRE(rdb->Partitions.size() == 1);
 
-      RDBPartition* partition = rdb->Partitions[0].get();
+      RDBPartition *partition = rdb->Partitions[0].get();
 
       REQUIRE(partition->ID == "PART");
       REQUIRE(partition->SizeInLongs == 0x40);

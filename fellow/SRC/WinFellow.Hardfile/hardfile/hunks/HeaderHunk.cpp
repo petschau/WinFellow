@@ -13,7 +13,7 @@ namespace fellow::hardfile::hunks
     return (uint32_t)_hunkSizes.size();
   }
 
-  const HunkSize& HeaderHunk::GetHunkSize(uint32_t index)
+  const HunkSize &HeaderHunk::GetHunkSize(uint32_t index)
   {
     return _hunkSizes[index];
   }
@@ -23,7 +23,7 @@ namespace fellow::hardfile::hunks
     return (uint32_t)_residentLibraries.size();
   }
 
-  const std::string& HeaderHunk::GetResidentLibrary(uint32_t index)
+  const std::string &HeaderHunk::GetResidentLibrary(uint32_t index)
   {
     return _residentLibraries[index];
   }
@@ -38,7 +38,7 @@ namespace fellow::hardfile::hunks
     return _lastLoadHunk;
   }
 
-  void HeaderHunk::Parse(RawDataReader& rawDataReader)
+  void HeaderHunk::Parse(RawDataReader &rawDataReader)
   {
     _core.Log->AddLogDebug("fhfile: RDB filesystem - Header hunk (%u)\n", ID);
 
@@ -74,12 +74,12 @@ namespace fellow::hardfile::hunks
       }
       _hunkSizes.emplace_back(hunkSize, memoryFlags, additionalFlags);
 
-      _core.Log->AddLogDebug("fhfile: RDB filesystem - Header hunk table entry %u size: %u %s\n", i, _hunkSizes.back().SizeInLongwords * 4, _hunkSizes.back().GetMemoryFlagsToString());
+      _core.Log->AddLogDebug(
+          "fhfile: RDB filesystem - Header hunk table entry %u size: %u %s\n", i, _hunkSizes.back().SizeInLongwords * 4, _hunkSizes.back().GetMemoryFlagsToString());
     }
   }
 
-  HeaderHunk::HeaderHunk()
-    : _firstLoadHunk(0), _lastLoadHunk(0)
+  HeaderHunk::HeaderHunk() : _firstLoadHunk(0), _lastLoadHunk(0)
   {
   }
 }

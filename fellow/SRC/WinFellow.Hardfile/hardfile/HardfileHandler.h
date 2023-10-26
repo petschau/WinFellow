@@ -30,18 +30,18 @@ namespace fellow::hardfile
 
     void CreateMountList();
     std::string MakeDeviceName();
-    std::string MakeDeviceName(const std::string& preferredName);
-    bool PreferredNameExists(const std::string& preferredName);
-    bool FindOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version, unsigned int& olderOrSameFileSystemIndex);
+    std::string MakeDeviceName(const std::string &preferredName);
+    bool PreferredNameExists(const std::string &preferredName);
+    bool FindOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version, unsigned int &olderOrSameFileSystemIndex);
     HardfileFileSystemEntry *GetFileSystemForDOSType(uint32_t DOSType);
-    void AddFileSystemsFromRdb(HardfileDevice& device);
+    void AddFileSystemsFromRdb(HardfileDevice &device);
     void AddFileSystemsFromRdb();
     void EraseOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version);
-    void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration& config, rdb::RDB* rdb, bool readonly);
-    bool OpenHardfileFile(HardfileDevice& device);
+    void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration &config, rdb::RDB *rdb, bool readonly);
+    bool OpenHardfileFile(HardfileDevice &device);
     void InitializeHardfile(unsigned int index);
     void RebuildHardfileConfiguration();
-    void ClearDeviceRuntimeInfo(HardfileDevice& device);
+    void ClearDeviceRuntimeInfo(HardfileDevice &device);
 
     void SetIOError(int8_t errorCode);
     void SetIOActual(uint32_t ioActual);
@@ -86,8 +86,8 @@ namespace fellow::hardfile
     void DoRemoveRDBFileSystemsAlreadySupportedBySystem(uint32_t filesystemResource);
 
     void CreateDOSDevPackets(uint32_t devicename);
-    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, uint32_t deviceNameAddress);
-    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, uint32_t deviceNameAddress);
+    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry &mountListEntry, uint32_t deviceNameAddress);
+    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry &mountListEntry, uint32_t deviceNameAddress);
 
   public:
     // Autoconfig and ROM memory
@@ -104,15 +104,15 @@ namespace fellow::hardfile
     void SetEnabled(bool enabled) override;
     bool GetEnabled() override;
     void Clear() override;
-    bool CompareHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
-    void SetHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
+    bool CompareHardfile(const fellow::api::module::HardfileConfiguration &configuration, unsigned int index) override;
+    void SetHardfile(const fellow::api::module::HardfileConfiguration &configuration, unsigned int index) override;
     bool RemoveHardfile(unsigned int index) override;
     unsigned int GetMaxHardfileCount() override;
 
     // UI helper function
-    bool Create(const fellow::api::module::HardfileConfiguration& configuration, uint32_t size) override;
-    fellow::api::module::rdb_status HasRDB(const std::string& filename) override;
-    fellow::api::module::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) override;
+    bool Create(const fellow::api::module::HardfileConfiguration &configuration, uint32_t size) override;
+    fellow::api::module::rdb_status HasRDB(const std::string &filename) override;
+    fellow::api::module::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string &filename) override;
 
     // Global events
     void EmulationStart() override;

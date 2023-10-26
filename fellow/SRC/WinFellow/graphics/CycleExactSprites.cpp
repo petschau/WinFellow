@@ -62,35 +62,41 @@ void CycleExactSprites::Arm(uint32_t sprite_number)
   {
     SpriteState[sprite_number].dat_hold[2].w = sprite_registers.sprdata[sprite_number - 1];
     SpriteState[sprite_number].dat_hold[3].w = sprite_registers.sprdatb[sprite_number - 1];
-    SpriteP2CDecoder::Decode16(&(SpriteState[sprite_number].dat_decoded.blu[0].l), SpriteState[sprite_number].dat_hold[2].w, SpriteState[sprite_number].dat_hold[3].w, SpriteState[sprite_number].dat_hold[0].w, SpriteState[sprite_number].dat_hold[1].w);
+    SpriteP2CDecoder::Decode16(
+        &(SpriteState[sprite_number].dat_decoded.blu[0].l),
+        SpriteState[sprite_number].dat_hold[2].w,
+        SpriteState[sprite_number].dat_hold[3].w,
+        SpriteState[sprite_number].dat_hold[0].w,
+        SpriteState[sprite_number].dat_hold[1].w);
   }
   else
   {
-    SpriteP2CDecoder::Decode4(sprite_number, &(SpriteState[sprite_number].dat_decoded.blu[0].l), SpriteState[sprite_number].dat_hold[1].w, SpriteState[sprite_number].dat_hold[0].w);
+    SpriteP2CDecoder::Decode4(
+        sprite_number, &(SpriteState[sprite_number].dat_decoded.blu[0].l), SpriteState[sprite_number].dat_hold[1].w, SpriteState[sprite_number].dat_hold[0].w);
   }
 }
 
 void CycleExactSprites::MergeLores(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t* playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  uint8_t* sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeLores(spriteNo, playfield, sprite_data, pixel_count);
 }
 
 void CycleExactSprites::MergeHires(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t* playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  uint8_t* sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHires(spriteNo, playfield, sprite_data, pixel_count);
 }
 
 void CycleExactSprites::MergeHam(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  uint8_t* playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
-  uint8_t* ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
-  uint8_t* sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  uint8_t *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  uint8_t *ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
+  uint8_t *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
 
   SpriteMerger::MergeHam(spriteNo, playfield, ham_sprites_playfield, sprite_data, pixel_count);
 }
@@ -112,8 +118,7 @@ bool CycleExactSprites::InRange(uint32_t spriteNo, uint32_t startCylinder, uint3
   // Comparison happens at x, sprite image visible one cylinder later
   uint32_t visible_at_cylinder = SpriteState[spriteNo].x + 1;
 
-  return (visible_at_cylinder >= startCylinder)
-    && (visible_at_cylinder < (startCylinder + cylinderCount));
+  return (visible_at_cylinder >= startCylinder) && (visible_at_cylinder < (startCylinder + cylinderCount));
 }
 
 void CycleExactSprites::OutputSprite(uint32_t spriteNo, uint32_t startCylinder, uint32_t cylinderCount)
@@ -140,7 +145,7 @@ void CycleExactSprites::OutputSprite(uint32_t spriteNo, uint32_t startCylinder, 
 
       if (_core.RegisterUtility.IsHiresEnabled())
       {
-        pixel_index = pixel_index * 2;  // Hires coordinates
+        pixel_index = pixel_index * 2; // Hires coordinates
       }
 
       Merge(spriteNo, SpriteState[spriteNo].pixels_output, pixel_index, pixel_count);
@@ -315,15 +320,9 @@ void CycleExactSprites::DMAHandler(uint32_t rasterY)
   {
     switch (SpriteState[spriteNo].DMAState.state)
     {
-    case SPRITE_DMA_STATE_READ_CONTROL:
-      DMAReadControl(spriteNo, rasterY);
-      break;
-    case SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE:
-      DMAWaitingForFirstLine(spriteNo, rasterY);
-      break;
-    case SPRITE_DMA_STATE_READ_DATA:
-      DMAReadData(spriteNo, rasterY);
-      break;
+      case SPRITE_DMA_STATE_READ_CONTROL: DMAReadControl(spriteNo, rasterY); break;
+      case SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE: DMAWaitingForFirstLine(spriteNo, rasterY); break;
+      case SPRITE_DMA_STATE_READ_DATA: DMAReadData(spriteNo, rasterY); break;
     }
     spriteNo++;
   }
@@ -366,8 +365,7 @@ void CycleExactSprites::EmulationStop()
 {
 }
 
-CycleExactSprites::CycleExactSprites()
-  : Sprites()
+CycleExactSprites::CycleExactSprites() : Sprites()
 {
 }
 

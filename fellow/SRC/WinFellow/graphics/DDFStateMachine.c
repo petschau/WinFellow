@@ -29,8 +29,7 @@
 
 using namespace CustomChipset;
 
-static const char* DDFStateNames[2] = { "WAITING_FOR_FIRST_FETCH",
-                                "WAITING_FOR_NEXT_FETCH" };
+static const char *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH", "WAITING_FOR_NEXT_FETCH"};
 
 void DDFStateMachine::Log(uint32_t line, uint32_t cylinder)
 {
@@ -121,9 +120,7 @@ void DDFStateMachine::DoStateWaitingForNextFetch(uint32_t rasterY, uint32_t cyli
 
 bool DDFStateMachine::CanRead()
 {
-  return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH)
-    && _core.RegisterUtility.GetEnabledBitplaneCount() > 0
-    && GraphicsContext.DIWYStateMachine.IsVisible();
+  return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH) && _core.RegisterUtility.GetEnabledBitplaneCount() > 0 && GraphicsContext.DIWYStateMachine.IsVisible();
 }
 
 void DDFStateMachine::ChangedValue()
@@ -137,18 +134,14 @@ void DDFStateMachine::ChangedValue()
 
   switch (_state)
   {
-  case DDF_STATE_WAITING_FOR_FIRST_FETCH:
-    SetStateWaitingForFirstFetch(busGetRasterY(), busGetRasterX() * 2);
-    break;
-  case DDF_STATE_WAITING_FOR_NEXT_FETCH:
-    SetStateWaitingForNextFetch(busGetRasterY(), busGetRasterX() * 2);
-    break;
+    case DDF_STATE_WAITING_FOR_FIRST_FETCH: SetStateWaitingForFirstFetch(busGetRasterY(), busGetRasterX() * 2); break;
+    case DDF_STATE_WAITING_FOR_NEXT_FETCH: SetStateWaitingForNextFetch(busGetRasterY(), busGetRasterX() * 2); break;
   }
 }
 
 /* Bus event handler */
 
-void DDFStateMachine::InitializeEvent(GraphicsEventQueue* queue)
+void DDFStateMachine::InitializeEvent(GraphicsEventQueue *queue)
 {
   _queue = queue;
   SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition() * 2));
@@ -160,12 +153,8 @@ void DDFStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
   switch (_state)
   {
-  case DDF_STATE_WAITING_FOR_FIRST_FETCH:
-    DoStateWaitingForFirstFetch(rasterY, cylinder);
-    break;
-  case DDF_STATE_WAITING_FOR_NEXT_FETCH:
-    DoStateWaitingForNextFetch(rasterY, cylinder);
-    break;
+    case DDF_STATE_WAITING_FOR_FIRST_FETCH: DoStateWaitingForFirstFetch(rasterY, cylinder); break;
+    case DDF_STATE_WAITING_FOR_NEXT_FETCH: DoStateWaitingForNextFetch(rasterY, cylinder); break;
   }
   if (CanRead())
   {

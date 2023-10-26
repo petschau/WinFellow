@@ -36,7 +36,6 @@
 #define strnicmp _strnicmp
 #define strlwr _strlwr
 
-
 /*====================================*/
 /* memory manipulation and allocation */
 /*====================================*/
@@ -52,11 +51,10 @@
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
 #include <crtdbg.h>
 
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define DBG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW
 
 #endif
-
 
 /*========*/
 /* setjmp */

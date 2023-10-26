@@ -201,16 +201,6 @@ void busEndOfFrame()
 
   automator.EndOfFrame();
 
-#ifdef RETRO_PLATFORM
-  /* in RetroPlatform versions greater or equal 10.2.2,
-     an update of the window position at the end of every frame is necessary as
-     WM_MOVE messages are no longer being received
-  */
-  if (RP.GetHeadlessMode())
-    if (gfxDrvCommon->GetOutputWindowed())
-      if (drawGetDisplayDriver() == DISPLAYDRIVER_DIRECTDRAW) gfxDrvPositionChanged();
-#endif
-
   eofEvent.cycle = busGetCyclesInThisFrame();
   busInsertEvent(&eofEvent);
   bus.frame_no++;

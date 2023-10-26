@@ -44,8 +44,8 @@ static uint32_t cpu_integration_chip_slowdown;
 /* CPU properties                                                            */
 /*===========================================================================*/
 
-uint32_t cpu_integration_speed; // The speed as expressed in the fellow configuration settings
-uint32_t cpu_integration_speed_multiplier; // The cycle multiplier used to adjust the cpu-speed, calculated from cpu_integration_speed
+uint32_t cpu_integration_speed;               // The speed as expressed in the fellow configuration settings
+uint32_t cpu_integration_speed_multiplier;    // The cycle multiplier used to adjust the cpu-speed, calculated from cpu_integration_speed
 cpu_integration_models cpu_integration_model; // The cpu model as expressed in the fellow configuration settings
 
 /*===========================================================================*/
@@ -78,25 +78,22 @@ void cpuIntegrationCalculateMultiplier()
 
   switch (cpuGetModelMajor())
   {
-  case 0:
-    multiplier = 12;
-    break;
-  case 1:
-    multiplier = 12;
-    break;
-  case 2:
-    multiplier = 11;
-    break;
-  case 3:
-    multiplier = 11;
-    break;
+    case 0: multiplier = 12; break;
+    case 1: multiplier = 12; break;
+    case 2: multiplier = 11; break;
+    case 3: multiplier = 11; break;
   }
 
-  if (cpuIntegrationGetSpeed() >= 8) cpuIntegrationSetSpeedMultiplier(multiplier);
-  else if (cpuIntegrationGetSpeed() >= 4) cpuIntegrationSetSpeedMultiplier(multiplier - 1);
-  else if (cpuIntegrationGetSpeed() >= 2) cpuIntegrationSetSpeedMultiplier(multiplier - 2);
-  else if (cpuIntegrationGetSpeed() >= 1) cpuIntegrationSetSpeedMultiplier(multiplier - 3);
-  else cpuIntegrationSetSpeedMultiplier(multiplier - 4);
+  if (cpuIntegrationGetSpeed() >= 8)
+    cpuIntegrationSetSpeedMultiplier(multiplier);
+  else if (cpuIntegrationGetSpeed() >= 4)
+    cpuIntegrationSetSpeedMultiplier(multiplier - 1);
+  else if (cpuIntegrationGetSpeed() >= 2)
+    cpuIntegrationSetSpeedMultiplier(multiplier - 2);
+  else if (cpuIntegrationGetSpeed() >= 1)
+    cpuIntegrationSetSpeedMultiplier(multiplier - 3);
+  else
+    cpuIntegrationSetSpeedMultiplier(multiplier - 4);
 }
 
 BOOLE cpuIntegrationSetModel(cpu_integration_models model)
@@ -106,12 +103,12 @@ BOOLE cpuIntegrationSetModel(cpu_integration_models model)
 
   switch (cpu_integration_model)
   {
-  case M68000: cpuSetModel(0, 0); break;
-  case M68010: cpuSetModel(1, 0); break;
-  case M68020: cpuSetModel(2, 0); break;
-  case M68030: cpuSetModel(3, 0); break;
-  case M68EC20: cpuSetModel(2, 1); break;
-  case M68EC30: cpuSetModel(3, 1); break;
+    case M68000: cpuSetModel(0, 0); break;
+    case M68010: cpuSetModel(1, 0); break;
+    case M68020: cpuSetModel(2, 0); break;
+    case M68030: cpuSetModel(3, 0); break;
+    case M68EC20: cpuSetModel(2, 1); break;
+    case M68EC30: cpuSetModel(3, 1); break;
   }
   return needreset;
 }
@@ -186,7 +183,7 @@ void cpuIntegrationResetExceptionFunc()
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
-FILE* CPUINSTRUCTIONLOG;
+FILE *CPUINSTRUCTIONLOG;
 int cpu_disable_instruction_log = TRUE;
 
 void cpuInstructionLogOpen()
@@ -241,7 +238,7 @@ void cpuIntegrationInstructionLogging()
   fprintf(CPUINSTRUCTIONLOG, "SSP:%.6X USP:%.6X SP:%.4X %s %s\t%s\t%s\n", cpuGetSspDirect(), cpuGetUspDirect(), cpuGetSR(), saddress, sdata, sinstruction, soperands);
 }
 
-void cpuIntegrationExceptionLogging(const char* description, uint32_t original_pc, uint16_t opcode)
+void cpuIntegrationExceptionLogging(const char *description, uint32_t original_pc, uint16_t opcode)
 {
   if (cpu_disable_instruction_log) return;
   cpuInstructionLogOpen();
@@ -341,7 +338,7 @@ void cpuIntegrationSetDefaultConfig()
 /* Fellow lifecycle events */
 /*=========================*/
 
-void cpuIntegrationSaveState(FILE* F)
+void cpuIntegrationSaveState(FILE *F)
 {
   cpuSaveState(F);
 
@@ -349,7 +346,7 @@ void cpuIntegrationSaveState(FILE* F)
   // Everything else is configuration options which will be set when the associated config-file is loaded.
 }
 
-void cpuIntegrationLoadState(FILE* F)
+void cpuIntegrationLoadState(FILE *F)
 {
   cpuLoadState(F);
 

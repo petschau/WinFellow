@@ -89,20 +89,19 @@ Monday, February 04, 2008
 /* Joystick device specific data                                             */
 /*===========================================================================*/
 
-#define	MAX_JOY_PORT  2
+#define MAX_JOY_PORT 2
 
-BOOLE		      joy_drv_failed;
+BOOLE joy_drv_failed;
 
-IDirectInput8* joy_drv_lpDI;
-IDirectInputDevice8* joy_drv_lpDID[MAX_JOY_PORT];
+IDirectInput8 *joy_drv_lpDI;
+IDirectInputDevice8 *joy_drv_lpDID[MAX_JOY_PORT];
 
-int		      num_joy_supported;
-int		      num_joy_attached;
+int num_joy_supported;
+int num_joy_attached;
 
-BOOLE		      joy_drv_active;
-BOOLE		      joy_drv_focus;
-BOOLE		      joy_drv_in_use;
-
+BOOLE joy_drv_active;
+BOOLE joy_drv_focus;
+BOOLE joy_drv_in_use;
 
 // min and max values for the axis
 // -------------------------------
@@ -111,11 +110,10 @@ BOOLE		      joy_drv_in_use;
 // the lever of the joystick is at the extreme left (x) or the extreme top (y)
 // the max values are the same but for the extreme right (x) and the extreme bottom (y)
 
-#define MINX		0
-#define MINY		0
-#define MAXX		8000
-#define MAXY		8000
-
+#define MINX 0
+#define MINY 0
+#define MAXX 8000
+#define MAXY 8000
 
 // med values for both axis
 // ------------------------
@@ -125,9 +123,8 @@ BOOLE		      joy_drv_in_use;
 // but they are precalculated for a very very little speed increase (why should we bother
 // with runtime division when we already know the results?)
 
-#define MEDX		4000  // precalculated value should be MAXX / 2
-#define MEDY		4000  // precalculated value should be MAXY / 2
-
+#define MEDX 4000 // precalculated value should be MAXX / 2
+#define MEDY 4000 // precalculated value should be MAXY / 2
 
 // dead zone
 // ---------
@@ -136,65 +133,62 @@ BOOLE		      joy_drv_in_use;
 // it is automatically handled by DirectX and it is calculated around the
 // center and it based on min and max values previously setuped
 
-#define DEADX		1000  // 10%
-#define DEADY		1000  // 10%
+#define DEADX 1000 // 10%
+#define DEADY 1000 // 10%
 
 /*==========================================================================*/
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-const char* joyDrvDInputErrorString(HRESULT hResult)
+const char *joyDrvDInputErrorString(HRESULT hResult)
 {
 #ifdef _DEBUG
-  char* UnErr = nullptr;
+  char *UnErr = nullptr;
 #endif
 
   switch (hResult)
   {
-  case DI_OK:				return "The operation completed successfully.";
-  case DI_BUFFEROVERFLOW:		return "The device buffer overflowed and some input was lost.";
-  case DI_POLLEDDEVICE:		return "The device is a polled device.";
-  case DIERR_ACQUIRED:		return "The operation cannot be performed while the device is acquired.";
-  case DIERR_ALREADYINITIALIZED:	return "This object is already initialized.";
-  case DIERR_BADDRIVERVER:		return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
-  case DIERR_BETADIRECTINPUTVERSION:  return "The application was written for an unsupported prerelease version of DirectInput.";
-  case DIERR_DEVICENOTREG:		return "The device or device instance is not registered with DirectInput.";
-  case DIERR_GENERIC:			return "An undetermined error occurred inside the DirectInput subsystem.";
-  case DIERR_HANDLEEXISTS:		return "The device already has an event notification associated with it.";
-  case DIERR_INPUTLOST:		return "Access to the input device has been lost. It must be re-acquired.";
-  case DIERR_INVALIDPARAM:		return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
-  case DIERR_NOAGGREGATION:		return "This object does not support aggregation.";
-  case DIERR_NOINTERFACE:		return "The specified interface is not supported by the object.";
-  case DIERR_NOTACQUIRED:	        return "The operation cannot be performed unless the device is acquired.";
-  case DIERR_NOTINITIALIZED:		return "This object has not been initialized.";
-  case DIERR_OBJECTNOTFOUND:		return "The requested object does not exist.";
-  case DIERR_OLDDIRECTINPUTVERSION:	return "The application requires a newer version of DirectInput.";
-  case DIERR_OUTOFMEMORY:		return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
-  case DIERR_UNSUPPORTED:		return "The function called is not supported at this time.";
-  case E_PENDING:			return "Data is not yet available.";
-  case E_POINTER:                     return "Invalid pointer.";
+    case DI_OK: return "The operation completed successfully.";
+    case DI_BUFFEROVERFLOW: return "The device buffer overflowed and some input was lost.";
+    case DI_POLLEDDEVICE: return "The device is a polled device.";
+    case DIERR_ACQUIRED: return "The operation cannot be performed while the device is acquired.";
+    case DIERR_ALREADYINITIALIZED: return "This object is already initialized.";
+    case DIERR_BADDRIVERVER: return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
+    case DIERR_BETADIRECTINPUTVERSION: return "The application was written for an unsupported prerelease version of DirectInput.";
+    case DIERR_DEVICENOTREG: return "The device or device instance is not registered with DirectInput.";
+    case DIERR_GENERIC: return "An undetermined error occurred inside the DirectInput subsystem.";
+    case DIERR_HANDLEEXISTS: return "The device already has an event notification associated with it.";
+    case DIERR_INPUTLOST: return "Access to the input device has been lost. It must be re-acquired.";
+    case DIERR_INVALIDPARAM: return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
+    case DIERR_NOAGGREGATION: return "This object does not support aggregation.";
+    case DIERR_NOINTERFACE: return "The specified interface is not supported by the object.";
+    case DIERR_NOTACQUIRED: return "The operation cannot be performed unless the device is acquired.";
+    case DIERR_NOTINITIALIZED: return "This object has not been initialized.";
+    case DIERR_OBJECTNOTFOUND: return "The requested object does not exist.";
+    case DIERR_OLDDIRECTINPUTVERSION: return "The application requires a newer version of DirectInput.";
+    case DIERR_OUTOFMEMORY: return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
+    case DIERR_UNSUPPORTED: return "The function called is not supported at this time.";
+    case E_PENDING: return "Data is not yet available.";
+    case E_POINTER: return "Invalid pointer.";
   }
 
 #ifdef _DEBUG
-  UnErr = (char*)malloc(255 * sizeof(char));
+  UnErr = (char *)malloc(255 * sizeof(char));
   sprintf(UnErr, "Not a DirectInput Error [%08x]", hResult);
   return UnErr;
 #else
   return "Not a DirectInput Error";
 #endif
-
 }
-
 
 /*==========================================================================*/
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void joyDrvDInputFailure(const char* header, HRESULT err)
+void joyDrvDInputFailure(const char *header, HRESULT err)
 {
   _core.Log->AddLog("%s %s\n", header, joyDrvDInputErrorString(err));
 }
-
 
 /*===========================================================================*/
 /* Set joystick cooperative level                                            */
@@ -212,22 +206,23 @@ void joyDrvDInputSetCooperativeLevel(int port)
     return;
   }
 
-  HRESULT res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(),
-    ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) |
-    DISCL_FOREGROUND);
+  HRESULT res =
+      IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(), ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel():", res);
   }
 
-#define INITDIPROP( diprp, obj, how ) \
-  { diprp.diph.dwSize = sizeof( diprp ); \
-  diprp.diph.dwHeaderSize = sizeof( diprp.diph ); \
-  diprp.diph.dwObj        = obj; \
-  diprp.diph.dwHow        = how; }
+#define INITDIPROP(diprp, obj, how)                                                                                                                                           \
+  {                                                                                                                                                                           \
+    diprp.diph.dwSize = sizeof(diprp);                                                                                                                                        \
+    diprp.diph.dwHeaderSize = sizeof(diprp.diph);                                                                                                                             \
+    diprp.diph.dwObj = obj;                                                                                                                                                   \
+    diprp.diph.dwHow = how;                                                                                                                                                   \
+  }
 
   INITDIPROP(diprg, DIJOFS_X, DIPH_BYOFFSET)
-    diprg.lMin = MINX;
+  diprg.lMin = MINX;
   diprg.lMax = MAXX;
 
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_RANGE, &diprg.diph);
@@ -237,7 +232,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   }
 
   INITDIPROP(diprg, DIJOFS_Y, DIPH_BYOFFSET)
-    diprg.lMin = MINY;
+  diprg.lMin = MINY;
   diprg.lMax = MAXY;
 
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_RANGE, &diprg.diph);
@@ -247,7 +242,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   }
 
   INITDIPROP(dipdw, DIJOFS_X, DIPH_BYOFFSET)
-    dipdw.dwData = DEADX;
+  dipdw.dwData = DEADX;
 
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_DEADZONE, &dipdw.diph);
   if (res != DI_OK)
@@ -256,7 +251,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   }
 
   INITDIPROP(dipdw, DIJOFS_Y, DIPH_BYOFFSET)
-    dipdw.dwData = DEADY;
+  dipdw.dwData = DEADY;
 
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_DEADZONE, &dipdw.diph);
   if (res != DI_OK)
@@ -266,7 +261,6 @@ void joyDrvDInputSetCooperativeLevel(int port)
 
 #undef INITDIPROP
 }
-
 
 /*===========================================================================*/
 /* Unacquire DirectInput joystick device                                     */
@@ -288,7 +282,6 @@ void joyDrvDInputUnacquire(int port)
     }
   }
 }
-
 
 /*===========================================================================*/
 /* Acquire DirectInput joystick device                                       */
@@ -316,13 +309,13 @@ void joyDrvDInputAcquire(int port)
   }
 }
 
-BOOLE joyDrvDxCreateAndInitDevice(IDirectInput8* pDi, IDirectInputDevice8* pDiD[], GUID guid, int port)
+BOOLE joyDrvDxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevice8 *pDiD[], GUID guid, int port)
 {
   HRESULT res;
 
   if (!pDiD[port])
   {
-    res = CoCreateInstance(CLSID_DirectInputDevice8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInputDevice8, (LPVOID*)&(pDiD[port]));
+    res = CoCreateInstance(CLSID_DirectInputDevice8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInputDevice8, (LPVOID *)&(pDiD[port]));
     if (res != DI_OK)
     {
       joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance()", res);
@@ -349,7 +342,7 @@ BOOLE joyDrvDxCreateAndInitDevice(IDirectInput8* pDi, IDirectInputDevice8* pDiD[
 
 BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
-  IDirectInput8* pdi = (IDirectInput8*)pvRef;
+  IDirectInput8 *pdi = (IDirectInput8 *)pvRef;
 
   _core.Log->AddLog("**** Joystick %d **** '%s'\n", num_joy_attached, pdinst->tszProductName);
 
@@ -380,8 +373,7 @@ void joyDrvDInputInitialize()
 
   if (!joy_drv_lpDI)
   {
-    HRESULT res = CoCreateInstance(CLSID_DirectInput8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInput8,
-      (LPVOID*)&joy_drv_lpDI);
+    HRESULT res = CoCreateInstance(CLSID_DirectInput8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInput8, (LPVOID *)&joy_drv_lpDI);
     if (res != DI_OK)
     {
       joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance()", res);
@@ -411,7 +403,6 @@ void joyDrvDInputInitialize()
   }
 }
 
-
 /*===========================================================================*/
 /* Release DirectInput for joystick                                          */
 /*===========================================================================*/
@@ -436,7 +427,6 @@ void joyDrvDInputRelease()
     joy_drv_lpDI = nullptr;
   }
 }
-
 
 /*===========================================================================*/
 /* joystick grab status has changed                                          */
@@ -468,7 +458,6 @@ void joyDrvStateHasChanged(BOOLE active)
   }
 }
 
-
 /*===========================================================================*/
 /* joystick toggle focus                                                     */
 /*===========================================================================*/
@@ -479,8 +468,7 @@ void joyDrvToggleFocus()
   joyDrvStateHasChanged(joy_drv_active);
 }
 
-
-BOOLE joyDrvCheckJoyMovement(int port, BOOLE* Up, BOOLE* Down, BOOLE* Left, BOOLE* Right, BOOLE* Button1, BOOLE* Button2)
+BOOLE joyDrvCheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOLE *Right, BOOLE *Button1, BOOLE *Button2)
 {
   DIJOYSTATE dims;
   HRESULT res;
@@ -595,8 +583,7 @@ void joyDrvMovementHandler()
 
   for (int gameport = 0; gameport < 2; gameport++)
   {
-    if ((gameport_input[gameport] == GP_ANALOG0) ||
-      (gameport_input[gameport] == GP_ANALOG1))
+    if ((gameport_input[gameport] == GP_ANALOG0) || (gameport_input[gameport] == GP_ANALOG1))
     {
       BOOLE Button1;
       BOOLE Button2;
@@ -627,19 +614,14 @@ void joyDrvMovementHandler()
         return;
       }
 
-      if (gameport_left[gameport] != Left ||
-        gameport_right[gameport] != Right ||
-        gameport_up[gameport] != Up ||
-        gameport_down[gameport] != Down ||
-        gameport_fire0[gameport] != Button1 ||
-        gameport_fire1[gameport] != Button2)
+      if (gameport_left[gameport] != Left || gameport_right[gameport] != Right || gameport_up[gameport] != Up || gameport_down[gameport] != Down ||
+          gameport_fire0[gameport] != Button1 || gameport_fire1[gameport] != Button2)
       {
         gameportJoystickHandler(gameport_input[gameport], Left, Up, Right, Down, Button1, Button2);
       }
     }
   }
 }
-
 
 /*===========================================================================*/
 /* Hard Reset                                                                */
@@ -648,7 +630,6 @@ void joyDrvMovementHandler()
 void joyDrvHardReset()
 {
 }
-
 
 /*===========================================================================*/
 /* Emulation Starting                                                        */
@@ -663,7 +644,6 @@ void joyDrvEmulationStart()
   joyDrvDInputInitialize();
 }
 
-
 /*===========================================================================*/
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
@@ -673,7 +653,6 @@ void joyDrvEmulationStop()
   joyDrvDInputRelease();
   joy_drv_failed = TRUE;
 }
-
 
 /*===========================================================================*/
 /* Emulation Startup                                                         */
@@ -699,7 +678,6 @@ void joyDrvStartup()
   num_joy_supported = 0;
   num_joy_attached = 0;
 }
-
 
 /*===========================================================================*/
 /* Emulation Shutdown                                                        */

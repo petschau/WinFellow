@@ -18,7 +18,7 @@ namespace fellow::hardfile
     std::string Name;
     uint32_t NameAddress;
 
-    HardfileMountListEntry(unsigned int deviceIndex, int partitionIndex, const std::string& name)
+    HardfileMountListEntry(unsigned int deviceIndex, int partitionIndex, const std::string &name)
       : DeviceIndex(deviceIndex), PartitionIndex(partitionIndex), Name(name), NameAddress(0)
     {
     }
@@ -26,7 +26,7 @@ namespace fellow::hardfile
 
   struct HardfileFileSystemEntry
   {
-    rdb::RDBFileSystemHeader* Header;
+    rdb::RDBFileSystemHeader *Header;
     uint32_t SegListAddress;
 
     bool IsOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version);
@@ -39,7 +39,7 @@ namespace fellow::hardfile
     uint32_t GetVersion();
     void CopyHunkToAddress(uint32_t destinationAddress, uint32_t hunkIndex);
 
-    HardfileFileSystemEntry(rdb::RDBFileSystemHeader* header, uint32_t segListAddress);
+    HardfileFileSystemEntry(rdb::RDBFileSystemHeader *header, uint32_t segListAddress);
   };
 
   class HardfileDevice
@@ -50,8 +50,8 @@ namespace fellow::hardfile
 
     // Internal properties, actual runtime values used for the hardfile
     bool Readonly;
-    unsigned int FileSize;    // Actual file size
-    unsigned int GeometrySize;// Size taken by configured geometry
+    unsigned int FileSize;     // Actual file size
+    unsigned int GeometrySize; // Size taken by configured geometry
     fhfile_status Status;
     FILE *F;
     bool HasRDB;
@@ -91,8 +91,7 @@ namespace fellow::hardfile
       return result;
     }
 
-    HardfileDevice()
-      : Readonly(false), FileSize(0), GeometrySize(0), Status(FHFILE_NONE), F(nullptr), HasRDB(false), RDB(nullptr)
+    HardfileDevice() : Readonly(false), FileSize(0), GeometrySize(0), Status(FHFILE_NONE), F(nullptr), HasRDB(false), RDB(nullptr)
     {
     }
 

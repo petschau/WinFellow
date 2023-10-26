@@ -9,7 +9,7 @@ using namespace fellow::hardfile::hunks;
 namespace test::fellow::hardfile::hunks
 {
 
-  unsigned int CreateOffsetTable(uint8_t* hunkData, unsigned int entries, unsigned int index)
+  unsigned int CreateOffsetTable(uint8_t *hunkData, unsigned int entries, unsigned int index)
   {
     // Entry count
     hunkData[index++] = 0;

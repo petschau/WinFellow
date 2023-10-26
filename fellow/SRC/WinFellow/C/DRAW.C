@@ -50,7 +50,7 @@
 #include "RetroPlatform.h"
 #endif
 
-cfg* draw_config;
+cfg *draw_config;
 
 /*============================================================================*/
 /* Mode list, nodes created by the graphics driver, and pointer to the mode   */
@@ -58,22 +58,20 @@ cfg* draw_config;
 /*============================================================================*/
 
 draw_mode_list draw_modes;
-draw_mode* draw_mode_current;
+draw_mode *draw_mode_current;
 draw_mode draw_mode_windowed;
 draw_buffer_information draw_buffer_info;
-
 
 /*============================================================================*/
 /* Host display rendering properties                                          */
 /*============================================================================*/
-
 
 DISPLAYSCALE draw_displayscale;
 DISPLAYSCALE_STRATEGY draw_displayscale_strategy;
 DISPLAYDRIVER draw_displaydriver;
 GRAPHICSEMULATIONMODE draw_graphicsemulationmode;
 
-BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
+BOOLE draw_allow_multiple_buffers; /* allows the use of more buffers */
 uint32_t draw_clear_buffers;
 
 /*============================================================================*/
@@ -82,12 +80,12 @@ uint32_t draw_clear_buffers;
 
 draw_rect draw_buffer_clip;
 
-void drawSetBufferClip(const draw_rect& buffer_clip)
+void drawSetBufferClip(const draw_rect &buffer_clip)
 {
   draw_buffer_clip = buffer_clip;
 }
 
-const draw_rect& drawGetBufferClip()
+const draw_rect &drawGetBufferClip()
 {
   return draw_buffer_clip;
 }
@@ -141,30 +139,28 @@ draw_rect draw_clip_max_pal;
 draw_rect draw_internal_clip;
 draw_rect draw_output_clip;
 
-void drawSetInternalClip(const draw_rect& internal_clip)
+void drawSetInternalClip(const draw_rect &internal_clip)
 {
 #ifdef _DEBUG
-  _core.Log->AddLog("drawSetInternalClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
-    internal_clip.left, internal_clip.top, internal_clip.right, internal_clip.bottom);
+  _core.Log->AddLog("drawSetInternalClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n", internal_clip.left, internal_clip.top, internal_clip.right, internal_clip.bottom);
 #endif
   draw_internal_clip = internal_clip;
 }
 
-const draw_rect& drawGetInternalClip()
+const draw_rect &drawGetInternalClip()
 {
   return draw_internal_clip;
 }
 
-void drawSetOutputClip(const draw_rect& output_clip)
+void drawSetOutputClip(const draw_rect &output_clip)
 {
 #ifdef _DEBUG
-  _core.Log->AddLog("drawSetOutputClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
-    output_clip.left, output_clip.top, output_clip.right, output_clip.bottom);
+  _core.Log->AddLog("drawSetOutputClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n", output_clip.left, output_clip.top, output_clip.right, output_clip.bottom);
 #endif
   draw_output_clip = output_clip;
 }
 
-const draw_rect& drawGetOutputClip()
+const draw_rect &drawGetOutputClip()
 {
   return draw_output_clip;
 }
@@ -181,7 +177,7 @@ void drawInitializePredefinedClipRectangles()
 /* Add one mode to the list of useable modes                                  */
 /*============================================================================*/
 
-void drawAddMode(draw_mode* modenode)
+void drawAddMode(draw_mode *modenode)
 {
   draw_modes.push_back(modenode);
 }
@@ -190,7 +186,7 @@ void drawAddMode(draw_mode* modenode)
 /* Returns the first mode, or nullptr if list is empty                        */
 /*============================================================================*/
 
-static draw_mode* drawGetFirstMode()
+static draw_mode *drawGetFirstMode()
 {
   return (draw_modes.empty()) ? nullptr : draw_modes.front();
 }
@@ -201,7 +197,7 @@ static draw_mode* drawGetFirstMode()
 
 void drawClearModeList()
 {
-  for (draw_mode* dm : draw_modes)
+  for (draw_mode *dm : draw_modes)
   {
     delete dm;
   }
@@ -209,21 +205,16 @@ void drawClearModeList()
   draw_mode_current = &draw_mode_windowed;
 }
 
-static draw_mode* drawFindMode(uint32_t width, uint32_t height, uint32_t colorbits, uint32_t refresh, bool allow_any_refresh)
+static draw_mode *drawFindMode(uint32_t width, uint32_t height, uint32_t colorbits, uint32_t refresh, bool allow_any_refresh)
 {
-  auto item_iterator = std::find_if(draw_modes.begin(), draw_modes.end(),
-    [width, height, colorbits, refresh, allow_any_refresh](draw_mode* dm)
-    {
-      return (dm->width == width) &&
-        (dm->height == height) &&
-        (dm->bits == colorbits) &&
-        (allow_any_refresh || (dm->refresh == refresh));
-    });
+  auto item_iterator = std::find_if(draw_modes.begin(), draw_modes.end(), [width, height, colorbits, refresh, allow_any_refresh](draw_mode *dm) {
+    return (dm->width == width) && (dm->height == height) && (dm->bits == colorbits) && (allow_any_refresh || (dm->refresh == refresh));
+  });
 
   return (item_iterator != draw_modes.end()) ? *item_iterator : nullptr;
 }
 
-draw_mode_list& drawGetModes()
+draw_mode_list &drawGetModes()
 {
   return draw_modes;
 }
@@ -257,31 +248,30 @@ draw_line_func draw_line_dual_lores_routine;
 draw_line_func draw_line_dual_hires_routine;
 draw_line_func draw_line_HAM_lores_routine;
 
-
 /*============================================================================*/
 /* Framebuffer information                                                    */
 /*============================================================================*/
 
-uint32_t draw_buffer_show;                 /* Number of the currently shown buffer */
-uint32_t draw_buffer_draw;                 /* Number of the current drawing buffer */
-uint32_t draw_buffer_count;                    /* Number of available framebuffers */
-uint32_t draw_frame_count;                /* Counts frames, both skipped and drawn */
-uint32_t draw_frame_skip_factor;            /* Frame-skip factor, 1 / (factor + 1) */
-int32_t draw_frame_skip;                            /* Running frame-skip counter */
-uint32_t draw_switch_bg_to_bpl;       /* Flag TRUE if on current line, switch from */
+uint32_t draw_buffer_show;       /* Number of the currently shown buffer */
+uint32_t draw_buffer_draw;       /* Number of the current drawing buffer */
+uint32_t draw_buffer_count;      /* Number of available framebuffers */
+uint32_t draw_frame_count;       /* Counts frames, both skipped and drawn */
+uint32_t draw_frame_skip_factor; /* Frame-skip factor, 1 / (factor + 1) */
+int32_t draw_frame_skip;         /* Running frame-skip counter */
+uint32_t draw_switch_bg_to_bpl;  /* Flag TRUE if on current line, switch from */
 /* background color to bitplane data */
 
 /*============================================================================*/
 /* These constants define the LED symbol appearance                           */
 /*============================================================================*/
 
-#define DRAW_LED_COUNT      5
-#define DRAW_LED_WIDTH     12
-#define DRAW_LED_HEIGHT     4
-#define DRAW_LED_FIRST_X   16
-#define DRAW_LED_FIRST_Y    4
-#define DRAW_LED_GAP        8
-#define DRAW_LED_COLOR_ON  0x00FF00 /* Green */
+#define DRAW_LED_COUNT 5
+#define DRAW_LED_WIDTH 12
+#define DRAW_LED_HEIGHT 4
+#define DRAW_LED_FIRST_X 16
+#define DRAW_LED_FIRST_Y 4
+#define DRAW_LED_GAP 8
+#define DRAW_LED_COLOR_ON 0x00FF00  /* Green */
 #define DRAW_LED_COLOR_OFF 0x000000 /* Black */
 
 bool draw_LEDs_enabled;
@@ -293,27 +283,22 @@ bool draw_LEDs_state[DRAW_LED_COUNT];
 
 static void drawLED16(int x, int y, int width, int height, uint32_t color)
 {
-  uint16_t* bufw = ((uint16_t*)(draw_buffer_info.top_ptr + draw_buffer_info.pitch * y)) + x;
-  uint16_t color16 = (uint16_t)draw_color_table[((color & 0xf00000) >> 12) |
-    ((color & 0x00f000) >> 8) |
-    ((color & 0x0000f0) >> 4)];
+  uint16_t *bufw = ((uint16_t *)(draw_buffer_info.top_ptr + draw_buffer_info.pitch * y)) + x;
+  uint16_t color16 = (uint16_t)draw_color_table[((color & 0xf00000) >> 12) | ((color & 0x00f000) >> 8) | ((color & 0x0000f0) >> 4)];
   for (int y1 = 0; y1 < height; y1++)
   {
     for (int x1 = 0; x1 < width; x1++)
     {
       *(bufw + x1) = color16;
     }
-    bufw = (uint16_t*)(((uint8_t*)bufw) + draw_buffer_info.pitch);
+    bufw = (uint16_t *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
   }
 }
 
-
 static void drawLED24(int x, int y, int width, int height, uint32_t color)
 {
-  uint8_t* bufb = draw_buffer_info.top_ptr + draw_buffer_info.pitch * y + x * 3;
-  uint32_t color24 = draw_color_table[((color & 0xf00000) >> 12) |
-    ((color & 0x00f000) >> 8) |
-    ((color & 0x0000f0) >> 4)];
+  uint8_t *bufb = draw_buffer_info.top_ptr + draw_buffer_info.pitch * y + x * 3;
+  uint32_t color24 = draw_color_table[((color & 0xf00000) >> 12) | ((color & 0x00f000) >> 8) | ((color & 0x0000f0) >> 4)];
   uint8_t color24_1 = (uint8_t)((color24 & 0xff0000) >> 16);
   uint8_t color24_2 = (uint8_t)((color24 & 0x00ff00) >> 8);
   uint8_t color24_3 = (uint8_t)(color24 & 0x0000ff);
@@ -331,17 +316,15 @@ static void drawLED24(int x, int y, int width, int height, uint32_t color)
 
 static void drawLED32(int x, int y, int width, int height, uint32_t color)
 {
-  uint32_t* bufl = ((uint32_t*)(draw_buffer_info.top_ptr + draw_buffer_info.pitch * y)) + x;
-  uint32_t color32 = draw_color_table[((color & 0xf00000) >> 12) |
-    ((color & 0x00f000) >> 8) |
-    ((color & 0x0000f0) >> 4)];
+  uint32_t *bufl = ((uint32_t *)(draw_buffer_info.top_ptr + draw_buffer_info.pitch * y)) + x;
+  uint32_t color32 = draw_color_table[((color & 0xf00000) >> 12) | ((color & 0x00f000) >> 8) | ((color & 0x0000f0) >> 4)];
   for (int y1 = 0; y1 < height; y1++)
   {
     for (int x1 = 0; x1 < width; x1++)
     {
       *(bufl + x1) = color32;
     }
-    bufl = (uint32_t*)(((uint8_t*)bufl) + draw_buffer_info.pitch);
+    bufl = (uint32_t *)(((uint8_t *)bufl) + draw_buffer_info.pitch);
   }
 }
 
@@ -372,17 +355,10 @@ static void drawLED(int index, bool state)
 
   switch (draw_buffer_info.bits)
   {
-  case 16:
-    drawLED16(x, y, DRAW_LED_WIDTH, height, color);
-    break;
-  case 24:
-    drawLED24(x, y, DRAW_LED_WIDTH, height, color);
-    break;
-  case 32:
-    drawLED32(x, y, DRAW_LED_WIDTH, height, color);
-    break;
-  default:
-    break;
+    case 16: drawLED16(x, y, DRAW_LED_WIDTH, height, color); break;
+    case 24: drawLED24(x, y, DRAW_LED_WIDTH, height, color); break;
+    case 32: drawLED32(x, y, DRAW_LED_WIDTH, height, color); break;
+    default: break;
   }
 }
 
@@ -397,14 +373,12 @@ static void drawLEDs()
   }
 }
 
-
 /*============================================================================*/
 /* FPS image buffer                                                           */
 /*============================================================================*/
 
 bool draw_fps_counter_enabled;
 bool draw_fps_buffer[5][20];
-
 
 /*============================================================================*/
 /* Draws one char in the FPS counter buffer                                   */
@@ -421,47 +395,33 @@ static void drawFpsChar(int character, int x)
   }
 }
 
-
 /*============================================================================*/
 /* Draws text in the FPS counter buffer                                       */
 /*============================================================================*/
 
-static void drawFpsText(char* text)
+static void drawFpsText(char *text)
 {
   for (int i = 0; i < 4; i++)
   {
     char c = *text++;
     switch (c)
     {
-    case '0': drawFpsChar(9, i);
-      break;
-    case '1': drawFpsChar(0, i);
-      break;
-    case '2': drawFpsChar(1, i);
-      break;
-    case '3': drawFpsChar(2, i);
-      break;
-    case '4': drawFpsChar(3, i);
-      break;
-    case '5': drawFpsChar(4, i);
-      break;
-    case '6': drawFpsChar(5, i);
-      break;
-    case '7': drawFpsChar(6, i);
-      break;
-    case '8': drawFpsChar(7, i);
-      break;
-    case '9': drawFpsChar(8, i);
-      break;
-    case '%': drawFpsChar(10, i);
-      break;
-    case ' ':
-    default:  drawFpsChar(11, i);
-      break;
+      case '0': drawFpsChar(9, i); break;
+      case '1': drawFpsChar(0, i); break;
+      case '2': drawFpsChar(1, i); break;
+      case '3': drawFpsChar(2, i); break;
+      case '4': drawFpsChar(3, i); break;
+      case '5': drawFpsChar(4, i); break;
+      case '6': drawFpsChar(5, i); break;
+      case '7': drawFpsChar(6, i); break;
+      case '8': drawFpsChar(7, i); break;
+      case '9': drawFpsChar(8, i); break;
+      case '%': drawFpsChar(10, i); break;
+      case ' ':
+      default: drawFpsChar(11, i); break;
     }
   }
 }
-
 
 /*============================================================================*/
 /* Copy FPS buffer to a 16 bit screen                                         */
@@ -469,17 +429,16 @@ static void drawFpsText(char* text)
 
 static void drawFpsToFramebuffer16()
 {
-  uint16_t* bufw = ((uint16_t*)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
+  uint16_t *bufw = ((uint16_t *)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
     {
       *(bufw + x) = draw_fps_buffer[y][x] ? 0xffff : 0;
     }
-    bufw = (uint16_t*)(((uint8_t*)bufw) + draw_buffer_info.pitch);
+    bufw = (uint16_t *)(((uint8_t *)bufw) + draw_buffer_info.pitch);
   }
 }
-
 
 /*============================================================================*/
 /* Copy FPS buffer to a 24 bit screen                                         */
@@ -487,7 +446,7 @@ static void drawFpsToFramebuffer16()
 
 static void drawFpsToFramebuffer24()
 {
-  uint8_t* bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
+  uint8_t *bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
 
   for (int y = 0; y < 5; y++)
   {
@@ -502,14 +461,13 @@ static void drawFpsToFramebuffer24()
   }
 }
 
-
 /*============================================================================*/
 /* Copy FPS buffer to a 32 bit screen                                         */
 /*============================================================================*/
 
 static void drawFpsToFramebuffer32()
 {
-  uint32_t* bufl = ((uint32_t*)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
+  uint32_t *bufl = ((uint32_t *)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
@@ -528,10 +486,9 @@ static void drawFpsToFramebuffer32()
     {
       *(bufl + x) = draw_fps_buffer[y][x] ? 0xffffffff : 0;
     }
-    bufl = (uint32_t*)(((uint8_t*)bufl) + draw_buffer_info.pitch);
+    bufl = (uint32_t *)(((uint8_t *)bufl) + draw_buffer_info.pitch);
   }
 }
-
 
 /*============================================================================*/
 /* Draws FPS counter in current framebuffer                                   */
@@ -547,17 +504,10 @@ static void drawFpsCounter()
     drawFpsText(s);
     switch (draw_buffer_info.bits)
     {
-    case 16:
-      drawFpsToFramebuffer16();
-      break;
-    case 24:
-      drawFpsToFramebuffer24();
-      break;
-    case 32:
-      drawFpsToFramebuffer32();
-      break;
-    default:
-      break;
+      case 16: drawFpsToFramebuffer16(); break;
+      case 24: drawFpsToFramebuffer24(); break;
+      case 32: drawFpsToFramebuffer32(); break;
+      default: break;
     }
   }
 }
@@ -577,7 +527,7 @@ void drawSetFullScreenMode(uint32_t width, uint32_t height, uint32_t colorbits, 
 #endif
 
   // Find with exact refresh
-  draw_mode* mode_found = drawFindMode(width, height, colorbits, refresh, false);
+  draw_mode *mode_found = drawFindMode(width, height, colorbits, refresh, false);
   if (mode_found == nullptr)
   {
     // Try to ignore refresh
@@ -644,18 +594,10 @@ uint32_t drawGetOutputScaleFactor()
 
   switch (drawGetDisplayScale())
   {
-  case DISPLAYSCALE::DISPLAYSCALE_1X:
-    output_scale_factor = 2;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_2X:
-    output_scale_factor = 4;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_3X:
-    output_scale_factor = 6;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_4X:
-    output_scale_factor = 8;
-    break;
+    case DISPLAYSCALE::DISPLAYSCALE_1X: output_scale_factor = 2; break;
+    case DISPLAYSCALE::DISPLAYSCALE_2X: output_scale_factor = 4; break;
+    case DISPLAYSCALE::DISPLAYSCALE_3X: output_scale_factor = 6; break;
+    case DISPLAYSCALE::DISPLAYSCALE_4X: output_scale_factor = 8; break;
   }
   return output_scale_factor;
 }
@@ -756,7 +698,6 @@ static void drawColorTranslationInitialize()
   }
 }
 
-
 /*============================================================================*/
 /* Calculate the width of the screen in Amiga lores pixels                    */
 /*============================================================================*/
@@ -768,7 +709,7 @@ std::pair<uint32_t, uint32_t> drawCalculateHorizontalOutputClip(uint32_t buffer_
   {
     // Output width must fit in the buffer or be reduced in width to fit
     uint32_t width_amiga = buffer_width / buffer_scale_factor;
-    const draw_rect& internal_clip = drawGetInternalClip();
+    const draw_rect &internal_clip = drawGetInternalClip();
 
     if (width_amiga > internal_clip.GetWidth())
     {
@@ -800,7 +741,6 @@ std::pair<uint32_t, uint32_t> drawCalculateHorizontalOutputClip(uint32_t buffer_
   return std::pair<uint32_t, uint32_t>(left, right);
 }
 
-
 /*============================================================================*/
 /* Calculate the height of the screen in Amiga lores pixels                   */
 /*============================================================================*/
@@ -812,7 +752,7 @@ std::pair<uint32_t, uint32_t> drawCalculateVerticalOutputClip(uint32_t buffer_he
   {
     // Output height must fit in the buffer or be reduced in height to fit
     uint32_t height_amiga = buffer_height / buffer_scale_factor;
-    const draw_rect& internal_clip = drawGetInternalClip();
+    const draw_rect &internal_clip = drawGetInternalClip();
 
     if (height_amiga > internal_clip.GetHeight())
     {
@@ -862,7 +802,7 @@ static void drawAmigaScreenGeometry(uint32_t buffer_width, uint32_t buffer_heigh
   draw_rect output_clip(horizontal_clip.first, vertical_clip.first, horizontal_clip.second, vertical_clip.second);
   drawSetOutputClip(output_clip);
 
-  const draw_rect& internal_clip = drawGetInternalClip();
+  const draw_rect &internal_clip = drawGetInternalClip();
 
   if (!RP.GetHeadlessMode())
   {
@@ -881,7 +821,6 @@ static void drawAmigaScreenGeometry(uint32_t buffer_width, uint32_t buffer_heigh
 
   drawSetBufferClip(draw_rect(buffer_clip_left, buffer_clip_top, buffer_clip_left + buffer_clip_width, buffer_clip_top + buffer_clip_height));
 }
-
 
 /*============================================================================*/
 /* Selects drawing routines for the current mode                              */
@@ -918,7 +857,6 @@ static void drawBufferFlip()
   }
   gfxDrvBufferFlip();
 }
-
 
 /*============================================================================*/
 /* Performance statistics interface					      */
@@ -1020,7 +958,6 @@ uint32_t drawStatSessionFps()
   return (draw_frame_count * 20) / (session_time + 14);
 }
 
-
 /*============================================================================*/
 /* Validates the buffer pointer                                               */
 /* Returns the width in bytes of one line                                     */
@@ -1040,9 +977,7 @@ uint32_t drawValidateBufferPointer(uint32_t amiga_line_number)
   }
 
   // Calculate a pointer to the first pixel on the requested line.
-  draw_buffer_info.current_ptr =
-    draw_buffer_info.top_ptr +
-    draw_buffer_info.pitch * internal_scale_factor * (amiga_line_number - drawGetInternalClip().top);
+  draw_buffer_info.current_ptr = draw_buffer_info.top_ptr + draw_buffer_info.pitch * internal_scale_factor * (amiga_line_number - drawGetInternalClip().top);
   //+
   //  draw_buffer_info.pitch * draw_buffer_clip_offset.y +
   //  draw_buffer_clip_offset.x * (draw_mode_current->bits >> 3);
@@ -1059,7 +994,6 @@ uint32_t drawValidateBufferPointer(uint32_t amiga_line_number)
   return draw_buffer_info.pitch * internal_scale_factor;
 }
 
-
 /*============================================================================*/
 /* Invalidates the buffer pointer                                             */
 /*============================================================================*/
@@ -1068,7 +1002,6 @@ void drawInvalidateBufferPointer()
 {
   gfxDrvInvalidateBufferPointer();
 }
-
 
 /*============================================================================*/
 /* Called on every end of frame                                               */
@@ -1116,7 +1049,6 @@ BOOLE drawEmulationStartPost()
   return result;
 }
 
-
 /*============================================================================*/
 /* Called on emulation halt                                                   */
 /*============================================================================*/
@@ -1125,7 +1057,6 @@ void drawEmulationStop()
 {
   gfxDrvEmulationStop();
 }
-
 
 /*============================================================================*/
 /* Things initialized once at startup                                         */
@@ -1193,7 +1124,7 @@ void drawUpdateDrawmode()
   if (graph_playfield_on == 1)
   {
     // check if bit 8 of register dmacon is 1; check if bitplane DMA is enabled
-    // check if bit 12, 13 and 14 of register bplcon0 is 1; 
+    // check if bit 12, 13 and 14 of register bplcon0 is 1;
     // check if atleast one bitplane is active
     if (((dmacon & 0x0100) == 0x0100) && _core.RegisterUtility.GetEnabledBitplaneCount() != 0)
     {
@@ -1249,10 +1180,10 @@ void drawEndOfFrame()
       if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
       {
         uint32_t height = drawGetInternalClip().GetHeight();
-        uint8_t* draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+        uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
         for (uint32_t i = 0; i < height; i++)
         {
-          graph_line* graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);
+          graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);
           if (graph_frame_ptr != nullptr)
           {
             if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)

@@ -23,7 +23,7 @@ void gfxDrvClearCurrentBuffer()
   }
 }
 
-uint8_t* gfxDrvValidateBufferPointer()
+uint8_t *gfxDrvValidateBufferPointer()
 {
   gfxDrvCommon->RunEventWait();
 
@@ -186,8 +186,7 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const char *szFile
     result = gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
   }
 
-  _core.Log->AddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n",
-    bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
+  _core.Log->AddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n", bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
 
   return result;
 }

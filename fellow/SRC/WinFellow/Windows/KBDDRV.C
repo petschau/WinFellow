@@ -70,247 +70,173 @@ Sunday, February 10, 2008: carfesh
 
 #define DINPUT_BUFFERSIZE 256
 
-#define MAPPING_FILENAME  "mapping.key"
+#define MAPPING_FILENAME "mapping.key"
 
 /*===========================================================================*/
 /* Keyboard specific data                                                    */
 /*===========================================================================*/
 
-BOOLE		      kbd_drv_active;
-BOOLE		      kbd_drv_in_use;
-LPDIRECTINPUT	      kbd_drv_lpDI;
-LPDIRECTINPUTDEVICE   kbd_drv_lpDID;
-HANDLE		      kbd_drv_DIevent;
-BYTE		      keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
-BYTE		      prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
-bool		      kbd_drv_initialization_failed;
-BOOLE		      prs_rewrite_mapping_file;
-char		      kbd_drv_mapping_filename[MAX_PATH];
+BOOLE kbd_drv_active;
+BOOLE kbd_drv_in_use;
+LPDIRECTINPUT kbd_drv_lpDI;
+LPDIRECTINPUTDEVICE kbd_drv_lpDID;
+HANDLE kbd_drv_DIevent;
+BYTE keys[MAX_KEYS];     // contains boolean values (pressed/not pressed) for actual keystroke
+BYTE prevkeys[MAX_KEYS]; // contains boolean values (pressed/not pressed) for past keystroke
+bool kbd_drv_initialization_failed;
+BOOLE prs_rewrite_mapping_file;
+char kbd_drv_mapping_filename[MAX_PATH];
 
 bool kbd_in_task_switcher = false;
-
 
 /*===========================================================================*/
 /* Map symbolic key to a description string                                  */
 /*===========================================================================*/
 
-const char* kbd_drv_pc_symbol_to_string[106] =
-{
-  "NONE",
-  "ESCAPE",
-  "F1",
-  "F2",
-  "F3",
-  "F4",
-  "F5",
-  "F6",
-  "F7",
-  "F8",
-  "F9",
-  "F10",
-  "F11",
-  "F12",
-  "PRINT_SCREEN",
-  "SCROLL_LOCK",
-  "PAUSE",
-  "GRAVE",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "0",
-  "MINUS",
-  "EQUALS",
-  "BACKSPACE",
-  "INSERT",
-  "HOME",
-  "PAGE_UP",
-  "NUM_LOCK",
-  "NUMPAD_DIVIDE",
-  "NUMPAD_MULTIPLY",
-  "NUMPAD_MINUS",
-  "TAB",
-  "Q",
-  "W",
-  "E",
-  "R",
-  "T",
-  "Y",
-  "U",
-  "I",
-  "O",
-  "P",
-  "LEFT_BRACKET",
-  "RIGHT_BRACKET",
-  "RETURN",
-  "DELETE",
-  "END",
-  "PAGE_DOWN",
-  "NUMPAD_7",
-  "NUMPAD_8",
-  "NUMPAD_9",
-  "NUMPAD_PLUS",
-  "CAPS_LOCK",
-  "A",
-  "S",
-  "D",
-  "F",
-  "G",
-  "H",
-  "J",
-  "K",
-  "L",
-  "SEMICOLON",
-  "APOSTROPHE",
-  "BACKSLASH",
-  "NUMPAD_4",
-  "NUMPAD_5",
-  "NUMPAD_6",
-  "LEFT_SHIFT",
-  "NONAME1",
-  "Z",
-  "X",
-  "C",
-  "V",
-  "B",
-  "N",
-  "M",
-  "COMMA",
-  "PERIOD",
-  "SLASH",
-  "RIGHT_SHIFT",
-  "UP",
-  "NUMPAD_1",
-  "NUMPAD_2",
-  "NUMPAD_3",
-  "NUMPAD_ENTER",
-  "LEFT_CTRL",
-  "LEFT_WINDOWS",
-  "LEFT_ALT",
-  "SPACE",
-  "RIGHT_ALT",
-  "RIGHT_WINDOWS",
-  "RIGHT_MENU",
-  "RIGHT_CTRL",
-  "LEFT",
-  "DOWN",
-  "RIGHT",
-  "NUMPAD_0",
-  "NUMPAD_DOT" };
+const char *kbd_drv_pc_symbol_to_string[106] = {
+    "NONE",
+    "ESCAPE",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "PRINT_SCREEN",
+    "SCROLL_LOCK",
+    "PAUSE",
+    "GRAVE",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "0",
+    "MINUS",
+    "EQUALS",
+    "BACKSPACE",
+    "INSERT",
+    "HOME",
+    "PAGE_UP",
+    "NUM_LOCK",
+    "NUMPAD_DIVIDE",
+    "NUMPAD_MULTIPLY",
+    "NUMPAD_MINUS",
+    "TAB",
+    "Q",
+    "W",
+    "E",
+    "R",
+    "T",
+    "Y",
+    "U",
+    "I",
+    "O",
+    "P",
+    "LEFT_BRACKET",
+    "RIGHT_BRACKET",
+    "RETURN",
+    "DELETE",
+    "END",
+    "PAGE_DOWN",
+    "NUMPAD_7",
+    "NUMPAD_8",
+    "NUMPAD_9",
+    "NUMPAD_PLUS",
+    "CAPS_LOCK",
+    "A",
+    "S",
+    "D",
+    "F",
+    "G",
+    "H",
+    "J",
+    "K",
+    "L",
+    "SEMICOLON",
+    "APOSTROPHE",
+    "BACKSLASH",
+    "NUMPAD_4",
+    "NUMPAD_5",
+    "NUMPAD_6",
+    "LEFT_SHIFT",
+    "NONAME1",
+    "Z",
+    "X",
+    "C",
+    "V",
+    "B",
+    "N",
+    "M",
+    "COMMA",
+    "PERIOD",
+    "SLASH",
+    "RIGHT_SHIFT",
+    "UP",
+    "NUMPAD_1",
+    "NUMPAD_2",
+    "NUMPAD_3",
+    "NUMPAD_ENTER",
+    "LEFT_CTRL",
+    "LEFT_WINDOWS",
+    "LEFT_ALT",
+    "SPACE",
+    "RIGHT_ALT",
+    "RIGHT_WINDOWS",
+    "RIGHT_MENU",
+    "RIGHT_CTRL",
+    "LEFT",
+    "DOWN",
+    "RIGHT",
+    "NUMPAD_0",
+    "NUMPAD_DOT"};
 
-const char* symbol_pretty_name[106] = {
-  "none",
-  "Escape",
-  "F1",
-  "F2",
-  "F3",
-  "F4",
-  "F5",
-  "F6",
-  "F7",
-  "F8",
-  "F9",
-  "F10",
-  "F11",
-  "F12",
-  "Print screen",
-  "Scroll lock",
-  "Pause",
-  "Grave",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "0",
-  "-",
-  "=",
-  "Backspace",
-  "Insert",
-  "Home",
-  "Page up",
-  "Num lock",
-  "/ (numpad)",
-  "* (numpad)",
-  "- (numpad)",
-  "Tab",
-  "Q",
-  "W",
-  "E",
-  "R",
-  "T",
-  "Y",
-  "U",
-  "I",
-  "O",
-  "P",
-  "[",
-  "]",
-  "Return",
-  "Delete",
-  "End",
-  "Page down",
-  "7 (numpad)",
-  "8 (numpad)",
-  "9 (numpad)",
-  "+ (numpad)",
-  "Caps lock",
-  "A",
-  "S",
-  "D",
-  "F",
-  "G",
-  "H",
-  "J",
-  "K",
-  "L",
-  ";",
-  "'",
-  "\\",
-  "4 (numpad)",
-  "5 (numpad)",
-  "6 (numpad)",
-  "Left shift",
-  "<",
-  "Z",
-  "X",
-  "C",
-  "V",
-  "B",
-  "N",
-  "M",
-  ",",
-  ".",
-  "/",
-  "Right shift",
-  "Arrow up",
-  "1 (numpad)",
-  "2 (numpad)",
-  "3 (numpad)",
-  "Enter (numpad)",
-  "Left ctrl",
-  "Left win",
-  "Left alt",
-  " ",
-  "Right alt",
-  "Right win",
-  "Right menu",
-  "Right ctrl",
-  "Arrow left",
-  "Arrow down",
-  "Arrow right",
-  "0 (numpad)",
-  ". (numpad)" };
-
+const char *symbol_pretty_name[106] = {"none",        "Escape",      "F1",
+                                       "F2",          "F3",          "F4",
+                                       "F5",          "F6",          "F7",
+                                       "F8",          "F9",          "F10",
+                                       "F11",         "F12",         "Print screen",
+                                       "Scroll lock", "Pause",       "Grave",
+                                       "1",           "2",           "3",
+                                       "4",           "5",           "6",
+                                       "7",           "8",           "9",
+                                       "0",           "-",           "=",
+                                       "Backspace",   "Insert",      "Home",
+                                       "Page up",     "Num lock",    "/ (numpad)",
+                                       "* (numpad)",  "- (numpad)",  "Tab",
+                                       "Q",           "W",           "E",
+                                       "R",           "T",           "Y",
+                                       "U",           "I",           "O",
+                                       "P",           "[",           "]",
+                                       "Return",      "Delete",      "End",
+                                       "Page down",   "7 (numpad)",  "8 (numpad)",
+                                       "9 (numpad)",  "+ (numpad)",  "Caps lock",
+                                       "A",           "S",           "D",
+                                       "F",           "G",           "H",
+                                       "J",           "K",           "L",
+                                       ";",           "'",           "\\",
+                                       "4 (numpad)",  "5 (numpad)",  "6 (numpad)",
+                                       "Left shift",  "<",           "Z",
+                                       "X",           "C",           "V",
+                                       "B",           "N",           "M",
+                                       ",",           ".",           "/",
+                                       "Right shift", "Arrow up",    "1 (numpad)",
+                                       "2 (numpad)",  "3 (numpad)",  "Enter (numpad)",
+                                       "Left ctrl",   "Left win",    "Left alt",
+                                       " ",           "Right alt",   "Right win",
+                                       "Right menu",  "Right ctrl",  "Arrow left",
+                                       "Arrow down",  "Arrow right", "0 (numpad)",
+                                       ". (numpad)"};
 
 /*===========================================================================*/
 /* Map windows virtual key to intermediate key symbol                        */
@@ -318,268 +244,169 @@ const char* symbol_pretty_name[106] = {
 
 kbd_drv_pc_symbol kbddrv_DIK_to_symbol[MAX_KEYS];
 
-int symbol_to_DIK_kbddrv[PCK_LAST_KEY] =
-{
-  0,
-  DIK_ESCAPE,
-  DIK_F1,
-  DIK_F2,
-  DIK_F3,
-  DIK_F4,
-  DIK_F5,
-  DIK_F6,
-  DIK_F7,
-  DIK_F8,
-  DIK_F9,
-  DIK_F10,
-  DIK_F11,
-  DIK_F12,
-  DIK_SYSRQ,
-  DIK_SCROLL,
-  0 /*DIK_PAUSE*/,
-  DIK_GRAVE,
-  DIK_1,
-  DIK_2,
-  DIK_3,
-  DIK_4,
-  DIK_5,
-  DIK_6,
-  DIK_7,
-  DIK_8,
-  DIK_9,
-  DIK_0,
-  DIK_MINUS,
-  DIK_EQUALS,
-  DIK_BACK,
-  DIK_INSERT,
-  DIK_HOME,
-  DIK_PRIOR,
-  DIK_NUMLOCK,
-  DIK_DIVIDE,
-  DIK_MULTIPLY,
-  DIK_MINUS,
-  DIK_TAB,
-  DIK_Q,
-  DIK_W,
-  DIK_E,
-  DIK_R,
-  DIK_T,
-  DIK_Y,
-  DIK_U,
-  DIK_I,
-  DIK_O,
-  DIK_P,
-  DIK_LBRACKET,
-  DIK_RBRACKET,
-  DIK_RETURN,
-  DIK_DELETE,
-  DIK_END,
-  DIK_NEXT,
-  DIK_NUMPAD7,
-  DIK_NUMPAD8,
-  DIK_NUMPAD9,
-  DIK_ADD,
-  DIK_CAPITAL,
-  DIK_A,
-  DIK_S,
-  DIK_D,
-  DIK_F,
-  DIK_G,
-  DIK_H,
-  DIK_J,
-  DIK_K,
-  DIK_L,
-  DIK_SEMICOLON,
-  DIK_APOSTROPHE,
-  DIK_BACKSLASH,
-  DIK_NUMPAD4,
-  DIK_NUMPAD5,
-  DIK_NUMPAD6,
-  DIK_LSHIFT,
-  0x56,  /* Not defined */
-  DIK_Z,
-  DIK_X,
-  DIK_C,
-  DIK_V,
-  DIK_B,
-  DIK_N,
-  DIK_M,
-  DIK_COMMA,
-  DIK_PERIOD,
-  DIK_SLASH,
-  DIK_RSHIFT,
-  DIK_UP,
-  DIK_NUMPAD1,
-  DIK_NUMPAD2,
-  DIK_NUMPAD3,
-  DIK_NUMPADENTER,
-  DIK_LCONTROL,
-  DIK_LWIN,
-  DIK_LMENU,
-  DIK_SPACE,
-  DIK_RMENU,
-  DIK_RWIN,
-  DIK_APPS,
-  DIK_RCONTROL,
-  DIK_LEFT,
-  DIK_DOWN,
-  DIK_RIGHT,
-  DIK_NUMPAD0,
-  DIK_DECIMAL
-};
+int symbol_to_DIK_kbddrv[PCK_LAST_KEY] = {
+    0,           DIK_ESCAPE,   DIK_F1,      DIK_F2,        DIK_F3,          DIK_F4,          DIK_F5,       DIK_F6,      DIK_F7,      DIK_F8,     DIK_F9,
+    DIK_F10,     DIK_F11,      DIK_F12,     DIK_SYSRQ,     DIK_SCROLL,      0 /*DIK_PAUSE*/, DIK_GRAVE,    DIK_1,       DIK_2,       DIK_3,      DIK_4,
+    DIK_5,       DIK_6,        DIK_7,       DIK_8,         DIK_9,           DIK_0,           DIK_MINUS,    DIK_EQUALS,  DIK_BACK,    DIK_INSERT, DIK_HOME,
+    DIK_PRIOR,   DIK_NUMLOCK,  DIK_DIVIDE,  DIK_MULTIPLY,  DIK_MINUS,       DIK_TAB,         DIK_Q,        DIK_W,       DIK_E,       DIK_R,      DIK_T,
+    DIK_Y,       DIK_U,        DIK_I,       DIK_O,         DIK_P,           DIK_LBRACKET,    DIK_RBRACKET, DIK_RETURN,  DIK_DELETE,  DIK_END,    DIK_NEXT,
+    DIK_NUMPAD7, DIK_NUMPAD8,  DIK_NUMPAD9, DIK_ADD,       DIK_CAPITAL,     DIK_A,           DIK_S,        DIK_D,       DIK_F,       DIK_G,      DIK_H,
+    DIK_J,       DIK_K,        DIK_L,       DIK_SEMICOLON, DIK_APOSTROPHE,  DIK_BACKSLASH,   DIK_NUMPAD4,  DIK_NUMPAD5, DIK_NUMPAD6, DIK_LSHIFT, 0x56, /* Not defined */
+    DIK_Z,       DIK_X,        DIK_C,       DIK_V,         DIK_B,           DIK_N,           DIK_M,        DIK_COMMA,   DIK_PERIOD,  DIK_SLASH,  DIK_RSHIFT,
+    DIK_UP,      DIK_NUMPAD1,  DIK_NUMPAD2, DIK_NUMPAD3,   DIK_NUMPADENTER, DIK_LCONTROL,    DIK_LWIN,     DIK_LMENU,   DIK_SPACE,   DIK_RMENU,  DIK_RWIN,
+    DIK_APPS,    DIK_RCONTROL, DIK_LEFT,    DIK_DOWN,      DIK_RIGHT,       DIK_NUMPAD0,     DIK_DECIMAL};
 
 /*===========================================================================*/
 /* Map symbolic pc key to amiga scancode                                     */
 /*===========================================================================*/
 
-uint8_t kbd_drv_pc_symbol_to_amiga_scancode[106] =
-{
-  /* 0x00 */
+uint8_t kbd_drv_pc_symbol_to_amiga_scancode[106] = {
+    /* 0x00 */
 
-  A_NONE,           /* PCK_NONE            */
-  A_ESCAPE,         /* PCK_ESCAPE          */
-  A_F1,             /* PCK_F1              */
-  A_F2,             /* PCK_F2              */
+    A_NONE,   /* PCK_NONE            */
+    A_ESCAPE, /* PCK_ESCAPE          */
+    A_F1,     /* PCK_F1              */
+    A_F2,     /* PCK_F2              */
 
-  A_F3,             /* PCK_F3              */
-  A_F4,             /* PCK_F4              */
-  A_F5,             /* PCK_F5              */
-  A_F6,             /* PCK_F6              */
+    A_F3, /* PCK_F3              */
+    A_F4, /* PCK_F4              */
+    A_F5, /* PCK_F5              */
+    A_F6, /* PCK_F6              */
 
-  A_F7,             /* PCK_F7              */
-  A_F8,             /* PCK_F8              */
-  A_F9,             /* PCK_F9              */
-  A_F10,            /* PCK_F10             */
+    A_F7,  /* PCK_F7              */
+    A_F8,  /* PCK_F8              */
+    A_F9,  /* PCK_F9              */
+    A_F10, /* PCK_F10             */
 
-  A_NONE,           /* PCK_F11             */
-  A_NONE,           /* PCK_F12             */
-  A_NONE,           /* PCK_PRINT_SCREEN    */
-  A_BACKSLASH2,     /* PCK_SCROLL_LOCK     */
+    A_NONE,       /* PCK_F11             */
+    A_NONE,       /* PCK_F12             */
+    A_NONE,       /* PCK_PRINT_SCREEN    */
+    A_BACKSLASH2, /* PCK_SCROLL_LOCK     */
 
-  /* 0x10 */
+    /* 0x10 */
 
-  A_NUMPAD_RIGHT_BRACKET,/* PCK_PAUSE           */
-  A_GRAVE,          /* PCK_GRAVE           */
-  A_1,              /* PCK_1               */
-  A_2,              /* PCK_2               */
+    A_NUMPAD_RIGHT_BRACKET, /* PCK_PAUSE           */
+    A_GRAVE,                /* PCK_GRAVE           */
+    A_1,                    /* PCK_1               */
+    A_2,                    /* PCK_2               */
 
-  A_3,              /* PCK_3               */
-  A_4,              /* PCK_4               */
-  A_5,              /* PCK_5               */
-  A_6,              /* PCK_6               */
+    A_3, /* PCK_3               */
+    A_4, /* PCK_4               */
+    A_5, /* PCK_5               */
+    A_6, /* PCK_6               */
 
-  A_7,              /* PCK_7               */
-  A_8,              /* PCK_8               */
-  A_9,              /* PCK_9               */
-  A_0,              /* PCK_0               */
+    A_7, /* PCK_7               */
+    A_8, /* PCK_8               */
+    A_9, /* PCK_9               */
+    A_0, /* PCK_0               */
 
-  A_MINUS,          /* PCK_MINUS           */
-  A_EQUALS,         /* PCK_EQUALS          */
-  A_BACKSPACE,      /* PCK_BACKSPACE       */
-  A_HELP,           /* PCK_INSERT          */
+    A_MINUS,     /* PCK_MINUS           */
+    A_EQUALS,    /* PCK_EQUALS          */
+    A_BACKSPACE, /* PCK_BACKSPACE       */
+    A_HELP,      /* PCK_INSERT          */
 
-  /* 0x20 */
+    /* 0x20 */
 
-  A_NONE,           /* PCK_HOME            */
-  A_RIGHT_AMIGA,    /* PCK_PAGE_UP         */
-  A_NUMPAD_LEFT_BRACKET,/* PCK_NUM_LOCK        */
-  A_NUMPAD_DIVIDE,  /* PCK_NUMPAD_DIVIDE   */
+    A_NONE,                /* PCK_HOME            */
+    A_RIGHT_AMIGA,         /* PCK_PAGE_UP         */
+    A_NUMPAD_LEFT_BRACKET, /* PCK_NUM_LOCK        */
+    A_NUMPAD_DIVIDE,       /* PCK_NUMPAD_DIVIDE   */
 
-  A_NUMPAD_MULTIPLY,/* PCK_NUMPAD_MULTIPLY */
-  A_NUMPAD_MINUS,   /* PCK_NUMPAD_MINUS    */
-  A_TAB,            /* PCK_TAB             */
-  A_Q,              /* PCK_Q               */
+    A_NUMPAD_MULTIPLY, /* PCK_NUMPAD_MULTIPLY */
+    A_NUMPAD_MINUS,    /* PCK_NUMPAD_MINUS    */
+    A_TAB,             /* PCK_TAB             */
+    A_Q,               /* PCK_Q               */
 
-  A_W,              /* PCK_W               */
-  A_E,              /* PCK_E               */
-  A_R,              /* PCK_R               */
-  A_T,              /* PCK_T               */
+    A_W, /* PCK_W               */
+    A_E, /* PCK_E               */
+    A_R, /* PCK_R               */
+    A_T, /* PCK_T               */
 
-  A_Y,              /* PCK_Y               */
-  A_U,              /* PCK_U               */
-  A_I,              /* PCK_I               */
-  A_O,              /* PCK_O               */
+    A_Y, /* PCK_Y               */
+    A_U, /* PCK_U               */
+    A_I, /* PCK_I               */
+    A_O, /* PCK_O               */
 
-  /* 0x30 */
+    /* 0x30 */
 
-  A_P,              /* PCK_P               */
-  A_LEFT_BRACKET,   /* PCK_LBRACKET        */
-  A_RIGHT_BRACKET,  /* PCK_RBRACKET        */
-  A_RETURN,         /* PCK_RETURN          */
+    A_P,             /* PCK_P               */
+    A_LEFT_BRACKET,  /* PCK_LBRACKET        */
+    A_RIGHT_BRACKET, /* PCK_RBRACKET        */
+    A_RETURN,        /* PCK_RETURN          */
 
-  A_DELETE,         /* PCK_DELETE          */
-  A_NONE,           /* PCK_END             */
-  A_LEFT_AMIGA,     /* PCK_PAGE_DOWN       */
-  A_NUMPAD_7,       /* PCK_NUMPAD_7        */
+    A_DELETE,     /* PCK_DELETE          */
+    A_NONE,       /* PCK_END             */
+    A_LEFT_AMIGA, /* PCK_PAGE_DOWN       */
+    A_NUMPAD_7,   /* PCK_NUMPAD_7        */
 
-  A_NUMPAD_8,       /* PCK_NUMPAD_8        */
-  A_NUMPAD_9,       /* PCK_NUMPAD_9        */
-  A_NUMPAD_PLUS,    /* PCK_NUMPAD_PLUS     */
-  A_CAPS_LOCK,      /* PCK_CAPS_LOCK       */
+    A_NUMPAD_8,    /* PCK_NUMPAD_8        */
+    A_NUMPAD_9,    /* PCK_NUMPAD_9        */
+    A_NUMPAD_PLUS, /* PCK_NUMPAD_PLUS     */
+    A_CAPS_LOCK,   /* PCK_CAPS_LOCK       */
 
-  A_A,              /* PCK_A               */
-  A_S,              /* PCK_S               */
-  A_D,              /* PCK_D               */
-  A_F,              /* PCK_F               */
+    A_A, /* PCK_A               */
+    A_S, /* PCK_S               */
+    A_D, /* PCK_D               */
+    A_F, /* PCK_F               */
 
-  /* 0x40 */
+    /* 0x40 */
 
-  A_G,              /* PCK_G               */
-  A_H,              /* PCK_H               */
-  A_J,              /* PCK_J               */
-  A_K,              /* PCK_K               */
+    A_G, /* PCK_G               */
+    A_H, /* PCK_H               */
+    A_J, /* PCK_J               */
+    A_K, /* PCK_K               */
 
-  A_L,              /* PCK_L               */
-  A_SEMICOLON,      /* PCK_SEMICOLON       */
-  A_APOSTROPHE,     /* PCK_APOSTROPHE      */
-  A_BACKSLASH,      /* PCK_BACKSLASH       */
+    A_L,          /* PCK_L               */
+    A_SEMICOLON,  /* PCK_SEMICOLON       */
+    A_APOSTROPHE, /* PCK_APOSTROPHE      */
+    A_BACKSLASH,  /* PCK_BACKSLASH       */
 
-  A_NUMPAD_4,       /* PCK_NUMPAD_4        */
-  A_NUMPAD_5,       /* PCK_NUMPAD_5        */
-  A_NUMPAD_6,       /* PCK_NUMPAD_6        */
-  A_LEFT_SHIFT,     /* PCK_LEFT_SHIFT      */
+    A_NUMPAD_4,   /* PCK_NUMPAD_4        */
+    A_NUMPAD_5,   /* PCK_NUMPAD_5        */
+    A_NUMPAD_6,   /* PCK_NUMPAD_6        */
+    A_LEFT_SHIFT, /* PCK_LEFT_SHIFT      */
 
-  A_LESS_THAN,      /* PCK_NONAME1         */
-  A_Z,              /* PCK_Z               */
-  A_X,              /* PCK_X               */
-  A_C,              /* PCK_C               */
+    A_LESS_THAN, /* PCK_NONAME1         */
+    A_Z,         /* PCK_Z               */
+    A_X,         /* PCK_X               */
+    A_C,         /* PCK_C               */
 
-  /* 0x50 */
+    /* 0x50 */
 
-  A_V,              /* PCK_V               */
-  A_B,              /* PCK_B               */
-  A_N,              /* PCK_N               */
-  A_M,              /* PCK_M               */
+    A_V, /* PCK_V               */
+    A_B, /* PCK_B               */
+    A_N, /* PCK_N               */
+    A_M, /* PCK_M               */
 
-  A_COMMA,          /* PCK_COMMA           */
-  A_PERIOD,         /* PCK_PERIOD          */
-  A_SLASH,          /* PCK_SLASH           */
-  A_RIGHT_SHIFT,    /* PCK_RIGHT_SHIFT     */
+    A_COMMA,       /* PCK_COMMA           */
+    A_PERIOD,      /* PCK_PERIOD          */
+    A_SLASH,       /* PCK_SLASH           */
+    A_RIGHT_SHIFT, /* PCK_RIGHT_SHIFT     */
 
-  A_UP,             /* PCK_UP              */
-  A_NUMPAD_1,       /* PCK_NUMPAD_1        */
-  A_NUMPAD_2,       /* PCK_NUMPAD_2        */
-  A_NUMPAD_3,       /* PCK_NUMPAD_3        */
+    A_UP,       /* PCK_UP              */
+    A_NUMPAD_1, /* PCK_NUMPAD_1        */
+    A_NUMPAD_2, /* PCK_NUMPAD_2        */
+    A_NUMPAD_3, /* PCK_NUMPAD_3        */
 
-  A_NUMPAD_ENTER,   /* PCK_NUMPAD_ENTER    */
-  A_LEFT_AMIGA,     /* PCK_LEFT_CTRL       */
-  A_LEFT_AMIGA,     /* PCK_LEFT_WINDOWS    */
-  A_LEFT_ALT,       /* PCK_LEFT_ALT        */
+    A_NUMPAD_ENTER, /* PCK_NUMPAD_ENTER    */
+    A_LEFT_AMIGA,   /* PCK_LEFT_CTRL       */
+    A_LEFT_AMIGA,   /* PCK_LEFT_WINDOWS    */
+    A_LEFT_ALT,     /* PCK_LEFT_ALT        */
 
-  /* 0x60 */
+    /* 0x60 */
 
-  A_SPACE,          /* PCK_SPACE           */
-  A_RIGHT_ALT,      /* PCK_RIGHT_ALT       */
-  A_RIGHT_AMIGA,    /* PCK_RIGHT_WINDOWS   */
-  A_NONE,           /* PCK_START_MENU      */
+    A_SPACE,       /* PCK_SPACE           */
+    A_RIGHT_ALT,   /* PCK_RIGHT_ALT       */
+    A_RIGHT_AMIGA, /* PCK_RIGHT_WINDOWS   */
+    A_NONE,        /* PCK_START_MENU      */
 
-  A_CTRL,           /* PCK_RIGHT_CTRL      */
-  A_LEFT,           /* PCK_LEFT            */
-  A_DOWN,           /* PCK_DOWN            */
-  A_RIGHT,          /* PCK_RIGHT           */
+    A_CTRL,  /* PCK_RIGHT_CTRL      */
+    A_LEFT,  /* PCK_LEFT            */
+    A_DOWN,  /* PCK_DOWN            */
+    A_RIGHT, /* PCK_RIGHT           */
 
-  A_NUMPAD_0,       /* PCK_NUMPAD_0        */
-  A_NUMPAD_DOT      /* PCK_NUMPAD_DOT      */
+    A_NUMPAD_0,  /* PCK_NUMPAD_0        */
+    A_NUMPAD_DOT /* PCK_NUMPAD_DOT      */
 };
 
 /*===========================================================================*/
@@ -603,12 +430,11 @@ typedef enum
   JOYKEY_AUTOFIRE1 = 7
 } kbd_drv_joykey_directions;
 
-kbd_drv_pc_symbol		kbd_drv_joykey[2][MAX_JOYKEY_VALUE];			/* Keys for joykeys 0 and 1 */
-BOOLE				kbd_drv_joykey_enabled[2][2];	/* For each port, the enabled joykeys */
-kbd_event			kbd_drv_joykey_event[2][2][MAX_JOYKEY_VALUE];	/* Event ID for each joykey [port][pressed][direction] */
-volatile kbd_drv_pc_symbol	kbd_drv_captured_key;
-BOOLE				kbd_drv_capture;
-
+kbd_drv_pc_symbol kbd_drv_joykey[2][MAX_JOYKEY_VALUE];  /* Keys for joykeys 0 and 1 */
+BOOLE kbd_drv_joykey_enabled[2][2];                     /* For each port, the enabled joykeys */
+kbd_event kbd_drv_joykey_event[2][2][MAX_JOYKEY_VALUE]; /* Event ID for each joykey [port][pressed][direction] */
+volatile kbd_drv_pc_symbol kbd_drv_captured_key;
+BOOLE kbd_drv_capture;
 
 void kbdDrvClearPressedKeys()
 {
@@ -622,42 +448,42 @@ void kbdDrvClearPressedKeys()
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-const char* kbdDrvDInputErrorString(HRESULT hResult)
+const char *kbdDrvDInputErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
-  case DI_OK:				return "The operation completed successfully.";
-  case DI_BUFFEROVERFLOW:		return "The device buffer overflowed and some input was lost.";
-  case DI_POLLEDDEVICE:		return "The device is a polled device.";
-  case DIERR_ACQUIRED:		return "The operation cannot be performed while the device is acquired.";
-  case DIERR_ALREADYINITIALIZED:	return "This object is already initialized.";
-  case DIERR_BADDRIVERVER:		return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
-  case DIERR_BETADIRECTINPUTVERSION:	return "The application was written for an unsupported prerelease version of DirectInput.";
-  case DIERR_DEVICENOTREG:		return "The device or device instance is not registered with DirectInput.";
-  case DIERR_GENERIC:			return "An undetermined error occurred inside the DirectInput subsystem.";
-  case DIERR_HANDLEEXISTS:	        return "The device already has an event notification associated with it.";
-  case DIERR_INPUTLOST:		return "Access to the input device has been lost. It must be re-acquired.";
-  case DIERR_INVALIDPARAM:		return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
-  case DIERR_NOAGGREGATION:		return "This object does not support aggregation.";
-  case DIERR_NOINTERFACE:		return "The specified interface is not supported by the object.";
-  case DIERR_NOTACQUIRED:		return "The operation cannot be performed unless the device is acquired.";
-  case DIERR_NOTINITIALIZED:		return "This object has not been initialized.";
-  case DIERR_OBJECTNOTFOUND:		return "The requested object does not exist.";
-  case DIERR_OLDDIRECTINPUTVERSION:	return "The application requires a newer version of DirectInput.";
-  case DIERR_OUTOFMEMORY:		return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
-  case DIERR_UNSUPPORTED:		return "The function called is not supported at this time.";
-  case E_PENDING:			return "Data is not yet available.";
-  case E_POINTER:                     return "Invalid pointer.";
+    case DI_OK: return "The operation completed successfully.";
+    case DI_BUFFEROVERFLOW: return "The device buffer overflowed and some input was lost.";
+    case DI_POLLEDDEVICE: return "The device is a polled device.";
+    case DIERR_ACQUIRED: return "The operation cannot be performed while the device is acquired.";
+    case DIERR_ALREADYINITIALIZED: return "This object is already initialized.";
+    case DIERR_BADDRIVERVER: return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
+    case DIERR_BETADIRECTINPUTVERSION: return "The application was written for an unsupported prerelease version of DirectInput.";
+    case DIERR_DEVICENOTREG: return "The device or device instance is not registered with DirectInput.";
+    case DIERR_GENERIC: return "An undetermined error occurred inside the DirectInput subsystem.";
+    case DIERR_HANDLEEXISTS: return "The device already has an event notification associated with it.";
+    case DIERR_INPUTLOST: return "Access to the input device has been lost. It must be re-acquired.";
+    case DIERR_INVALIDPARAM: return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
+    case DIERR_NOAGGREGATION: return "This object does not support aggregation.";
+    case DIERR_NOINTERFACE: return "The specified interface is not supported by the object.";
+    case DIERR_NOTACQUIRED: return "The operation cannot be performed unless the device is acquired.";
+    case DIERR_NOTINITIALIZED: return "This object has not been initialized.";
+    case DIERR_OBJECTNOTFOUND: return "The requested object does not exist.";
+    case DIERR_OLDDIRECTINPUTVERSION: return "The application requires a newer version of DirectInput.";
+    case DIERR_OUTOFMEMORY: return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
+    case DIERR_UNSUPPORTED: return "The function called is not supported at this time.";
+    case E_PENDING: return "Data is not yet available.";
+    case E_POINTER: return "Invalid pointer.";
   }
   return "Not a DirectInput Error";
 }
 
-const char* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
+const char *kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
-  case DI_OK:	    return "The operation completed successfully.";
-  case DI_NOEFFECT: return "The device was not in an acquired state.";
+    case DI_OK: return "The operation completed successfully.";
+    case DI_NOEFFECT: return "The device was not in an acquired state.";
   }
   return "Not a known Unacquire() DirectInput return value.";
 }
@@ -666,12 +492,12 @@ const char* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void kbdDrvDInputFailure(const char* header, HRESULT err)
+void kbdDrvDInputFailure(const char *header, HRESULT err)
 {
   _core.Log->AddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
-void kbdDrvDInputUnacquireFailure(const char* header, HRESULT err)
+void kbdDrvDInputUnacquireFailure(const char *header, HRESULT err)
 {
   _core.Log->AddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
 }
@@ -691,7 +517,7 @@ bool kbdDrvDInputSetCooperativeLevel()
   return true;
 }
 
-void kbdDrvDInputAcquireFailure(const char* header, HRESULT err)
+void kbdDrvDInputAcquireFailure(const char *header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -726,10 +552,12 @@ void kbdDrvEOFHandler()
 
   t = RP.GetEscapeKeySimulatedTargetTime();
 
-  if (t) {
+  if (t)
+  {
     ULONGLONG tCurrentTime = RP.GetTime();
 
-    if (t < tCurrentTime) {
+    if (t < tCurrentTime)
+    {
       uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
       _core.Log->AddLog("RetroPlatform escape key simulation interval ended.\n");
@@ -801,22 +629,20 @@ void kbdDrvDInputRelease()
   }
 }
 
-
 /*===========================================================================*/
 /* Initialize DirectInput for keyboard                                       */
 /*===========================================================================*/
 
 bool kbdDrvDInputInitialize()
 {
-  DIPROPDWORD dipdw =
-  {
-    {
-      sizeof(DIPROPDWORD),        /* diph.dwSize */
-      sizeof(DIPROPHEADER),       /* diph.dwHeaderSize */
-      0,                          /* diph.dwObj */
-      DIPH_DEVICE,                /* diph.dwHow */
-    },
-    DINPUT_BUFFERSIZE            /* dwData */
+  DIPROPDWORD dipdw = {
+      {
+          sizeof(DIPROPDWORD),  /* diph.dwSize */
+          sizeof(DIPROPHEADER), /* diph.dwHeaderSize */
+          0,                    /* diph.dwObj */
+          DIPH_DEVICE,          /* diph.dwHow */
+      },
+      DINPUT_BUFFERSIZE /* dwData */
   };
 
   /* Create Direct Input object */
@@ -825,7 +651,7 @@ bool kbdDrvDInputInitialize()
   kbd_drv_lpDID = nullptr;
   kbd_drv_DIevent = nullptr;
   kbd_drv_initialization_failed = false;
-  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, nullptr);
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&kbd_drv_lpDI, nullptr);
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create()", res);
@@ -898,7 +724,6 @@ bool kbdDrvDInputInitialize()
   return true;
 }
 
-
 /*===========================================================================*/
 /* keyboard grab status has changed                                          */
 /*===========================================================================*/
@@ -921,10 +746,13 @@ void kbdDrvStateHasChanged(BOOLE active)
 #define symbolickey(scancode) kbddrv_DIK_to_symbol[scancode]
 #define ispressed(sym) (keys[map(sym)])
 #define waspressed(sym) (prevkeys[map(sym)])
-#define issue_event(the_event) { kbdEventEOFAdd((the_event)); break; }
-#define released(sym) (!ispressed( (sym) ) && waspressed( (sym) ))
+#define issue_event(the_event)                                                                                                                                                \
+  {                                                                                                                                                                           \
+    kbdEventEOFAdd((the_event));                                                                                                                                              \
+    break;                                                                                                                                                                    \
+  }
+#define released(sym) (!ispressed((sym)) && waspressed((sym)))
 #define pressed(sym) ((ispressed((sym))) && (!waspressed((sym))))
-
 
 /*===========================================================================*/
 /* Keyboard keypress emulator control event checker                          */
@@ -982,18 +810,15 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 
     if (ispressed(PCK_RIGHT_WINDOWS) || ispressed(PCK_START_MENU))
       if (ispressed(PCK_LEFT_WINDOWS))
-        if (ispressed(PCK_LEFT_CTRL))
-          issue_event(EVENT_HARD_RESET);
+        if (ispressed(PCK_LEFT_CTRL)) issue_event(EVENT_HARD_RESET);
 
-    if (ispressed(PCK_PRINT_SCREEN))
-      issue_event(EVENT_BMP_DUMP);
+    if (ispressed(PCK_PRINT_SCREEN)) issue_event(EVENT_BMP_DUMP);
 
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
     {
       if (ispressed(PCK_LEFT_ALT))
-        if (ispressed(PCK_F4))
-          issue_event(EVENT_EXIT);
+        if (ispressed(PCK_F4)) issue_event(EVENT_EXIT);
 
       if (!RP.GetEmulationPaused())
       {
@@ -1010,8 +835,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
           {
             uint8_t a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
-            _core.Log->AddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
-              t);
+            _core.Log->AddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n", t);
             RP.SetEscapeKeySimulatedTargetTime(RP.GetTime() + RP.GetEscapeKeyHoldTime());
             kbdKeyAdd(a_code); // hold escape key
             return TRUE;
@@ -1023,8 +847,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 #ifndef FELLOW_SUPPORT_RP_API_VERSION_71
       else
       {
-        if (pressed(RP.GetEscapeKey()))
-          RP.PostEscaped();
+        if (pressed(RP.GetEscapeKey())) RP.PostEscaped();
       }
 #endif
     }
@@ -1075,7 +898,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
       {
         if (kbd_drv_joykey_enabled[port][setting])
         {
-          // Here the gameport is set up for input from the specified set of joykeys 
+          // Here the gameport is set up for input from the specified set of joykeys
           // Check each key for change
           for (int direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
           {
@@ -1093,10 +916,8 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
     break;
   }
 
-  return (eol_evpos != kbd_state.eventsEOL.inpos) ||
-    (eof_evpos != kbd_state.eventsEOF.inpos);
+  return (eol_evpos != kbd_state.eventsEOL.inpos) || (eof_evpos != kbd_state.eventsEOF.inpos);
 }
-
 
 /*===========================================================================*/
 /* Handle one specific keycode change                                        */
@@ -1143,7 +964,7 @@ void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
 
 #ifdef _DEBUG
     _core.Log->AddLog("Keypress LEFT-ALT released ignored due to ALT-TAB ending\n");
-#endif    
+#endif
     return;
   }
   else if (kbd_in_task_switcher)
@@ -1174,7 +995,6 @@ void kbdDrvKeypress(uint32_t keycode, BOOL pressed)
   prevkeys[keycode] = pressed;
 }
 
-
 /*===========================================================================*/
 /* Handle one specific RAW keycode change                                    */
 /*===========================================================================*/
@@ -1186,9 +1006,12 @@ void kbdDrvKeypressRaw(uint32_t lRawKeyCode, BOOL pressed)
 #endif
 
 #ifdef _DEBUG
-  _core.Log->AddLog("  kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n",
-    lRawKeyCode, pressed ? "pressed" : "released",
-    kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
+  _core.Log->AddLog(
+      "  kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n",
+      lRawKeyCode,
+      pressed ? "pressed" : "released",
+      kbd_state.scancodes.inpos & KBDBUFFERMASK,
+      kbd_state.scancodes.inpos);
 #endif
 
 #ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
@@ -1217,7 +1040,6 @@ void kbdDrvKeypressRaw(uint32_t lRawKeyCode, BOOL pressed)
 #endif
 }
 
-
 /*===========================================================================*/
 /* Keyboard keypress handler                                                 */
 /*===========================================================================*/
@@ -1225,7 +1047,6 @@ void kbdDrvKeypressRaw(uint32_t lRawKeyCode, BOOL pressed)
 void kbdDrvBufferOverflowHandler()
 {
 }
-
 
 /*===========================================================================*/
 /* Keyboard keypress handler                                                 */
@@ -1268,7 +1089,7 @@ void kbdDrvKeypressHandler()
 /* Return string describing the given symbolic key                           */
 /*===========================================================================*/
 
-const char* kbdDrvKeyString(uint32_t symbolickey)
+const char *kbdDrvKeyString(uint32_t symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1277,7 +1098,7 @@ const char* kbdDrvKeyString(uint32_t symbolickey)
   return kbd_drv_pc_symbol_to_string[symbolickey];
 }
 
-const char* kbdDrvKeyPrettyString(uint32_t symbolickey)
+const char *kbdDrvKeyPrettyString(uint32_t symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1286,7 +1107,7 @@ const char* kbdDrvKeyPrettyString(uint32_t symbolickey)
   return symbol_pretty_name[symbolickey];
 }
 
-const char* DikKeyString(int dikkey)
+const char *DikKeyString(int dikkey)
 {
   for (int j = 0; j < PCK_LAST_KEY; j++)
   {
@@ -1298,7 +1119,6 @@ const char* DikKeyString(int dikkey)
   return "UNKNOWN";
 }
 
-
 /*===========================================================================*/
 /* Set joystick replacement for a given joystick and direction               */
 /*===========================================================================*/
@@ -1307,54 +1127,22 @@ void kbdDrvJoystickReplacementSet(kbd_event event, uint32_t symbolickey)
 {
   switch (event)
   {
-  case EVENT_JOY0_UP_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_UP] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY0_DOWN_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_DOWN] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY0_LEFT_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_LEFT] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY0_RIGHT_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_RIGHT] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY0_FIRE0_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_FIRE0] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY0_FIRE1_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_FIRE1] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY0_AUTOFIRE0_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY0_AUTOFIRE1_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_UP_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_UP] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_DOWN_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_DOWN] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_LEFT_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_LEFT] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_RIGHT_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_RIGHT] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_FIRE0_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_FIRE0] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_FIRE1_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_FIRE1] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_AUTOFIRE0_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol)symbolickey;
-    break;
-  case EVENT_JOY1_AUTOFIRE1_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol)symbolickey;
-    break;
+    case EVENT_JOY0_UP_ACTIVE: kbd_drv_joykey[0][JOYKEY_UP] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY0_DOWN_ACTIVE: kbd_drv_joykey[0][JOYKEY_DOWN] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY0_LEFT_ACTIVE: kbd_drv_joykey[0][JOYKEY_LEFT] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY0_RIGHT_ACTIVE: kbd_drv_joykey[0][JOYKEY_RIGHT] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY0_FIRE0_ACTIVE: kbd_drv_joykey[0][JOYKEY_FIRE0] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY0_FIRE1_ACTIVE: kbd_drv_joykey[0][JOYKEY_FIRE1] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY0_AUTOFIRE0_ACTIVE: kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY0_AUTOFIRE1_ACTIVE: kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_UP_ACTIVE: kbd_drv_joykey[1][JOYKEY_UP] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_DOWN_ACTIVE: kbd_drv_joykey[1][JOYKEY_DOWN] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_LEFT_ACTIVE: kbd_drv_joykey[1][JOYKEY_LEFT] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_RIGHT_ACTIVE: kbd_drv_joykey[1][JOYKEY_RIGHT] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_FIRE0_ACTIVE: kbd_drv_joykey[1][JOYKEY_FIRE0] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_FIRE1_ACTIVE: kbd_drv_joykey[1][JOYKEY_FIRE1] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_AUTOFIRE0_ACTIVE: kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol)symbolickey; break;
+    case EVENT_JOY1_AUTOFIRE1_ACTIVE: kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol)symbolickey; break;
   }
 }
 
@@ -1366,38 +1154,22 @@ uint32_t kbdDrvJoystickReplacementGet(kbd_event event)
 {
   switch (event)
   {
-  case EVENT_JOY0_UP_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_UP];
-  case EVENT_JOY0_DOWN_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_DOWN];
-  case EVENT_JOY0_LEFT_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_LEFT];
-  case EVENT_JOY0_RIGHT_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_RIGHT];
-  case EVENT_JOY0_FIRE0_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_FIRE0];
-  case EVENT_JOY0_FIRE1_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_FIRE1];
-  case EVENT_JOY0_AUTOFIRE0_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_AUTOFIRE0];
-  case EVENT_JOY0_AUTOFIRE1_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_AUTOFIRE1];
-  case EVENT_JOY1_UP_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_UP];
-  case EVENT_JOY1_DOWN_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_DOWN];
-  case EVENT_JOY1_LEFT_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_LEFT];
-  case EVENT_JOY1_RIGHT_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_RIGHT];
-  case EVENT_JOY1_FIRE0_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_FIRE0];
-  case EVENT_JOY1_FIRE1_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_FIRE1];
-  case EVENT_JOY1_AUTOFIRE0_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_AUTOFIRE0];
-  case EVENT_JOY1_AUTOFIRE1_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_AUTOFIRE1];
+    case EVENT_JOY0_UP_ACTIVE: return kbd_drv_joykey[0][JOYKEY_UP];
+    case EVENT_JOY0_DOWN_ACTIVE: return kbd_drv_joykey[0][JOYKEY_DOWN];
+    case EVENT_JOY0_LEFT_ACTIVE: return kbd_drv_joykey[0][JOYKEY_LEFT];
+    case EVENT_JOY0_RIGHT_ACTIVE: return kbd_drv_joykey[0][JOYKEY_RIGHT];
+    case EVENT_JOY0_FIRE0_ACTIVE: return kbd_drv_joykey[0][JOYKEY_FIRE0];
+    case EVENT_JOY0_FIRE1_ACTIVE: return kbd_drv_joykey[0][JOYKEY_FIRE1];
+    case EVENT_JOY0_AUTOFIRE0_ACTIVE: return kbd_drv_joykey[0][JOYKEY_AUTOFIRE0];
+    case EVENT_JOY0_AUTOFIRE1_ACTIVE: return kbd_drv_joykey[0][JOYKEY_AUTOFIRE1];
+    case EVENT_JOY1_UP_ACTIVE: return kbd_drv_joykey[1][JOYKEY_UP];
+    case EVENT_JOY1_DOWN_ACTIVE: return kbd_drv_joykey[1][JOYKEY_DOWN];
+    case EVENT_JOY1_LEFT_ACTIVE: return kbd_drv_joykey[1][JOYKEY_LEFT];
+    case EVENT_JOY1_RIGHT_ACTIVE: return kbd_drv_joykey[1][JOYKEY_RIGHT];
+    case EVENT_JOY1_FIRE0_ACTIVE: return kbd_drv_joykey[1][JOYKEY_FIRE0];
+    case EVENT_JOY1_FIRE1_ACTIVE: return kbd_drv_joykey[1][JOYKEY_FIRE1];
+    case EVENT_JOY1_AUTOFIRE0_ACTIVE: return kbd_drv_joykey[1][JOYKEY_AUTOFIRE0];
+    case EVENT_JOY1_AUTOFIRE1_ACTIVE: return kbd_drv_joykey[1][JOYKEY_AUTOFIRE1];
   }
   return PC_NONE;
 }
@@ -1425,7 +1197,7 @@ void kbdDrvInitializeDIKToSymbolKeyTable()
   kbddrv_DIK_to_symbol[DIK_SYSRQ] = PCK_PRINT_SCREEN;
   kbddrv_DIK_to_symbol[DIK_SCROLL] = PCK_SCROLL_LOCK;
   /*kbddrv_DIK_to_symbol[ DIK_PAUSE           ] = PCK_PAUSE; */
-  kbddrv_DIK_to_symbol[DIK_GRAVE] = PCK_GRAVE;  /* Second row */
+  kbddrv_DIK_to_symbol[DIK_GRAVE] = PCK_GRAVE; /* Second row */
   kbddrv_DIK_to_symbol[DIK_1] = PCK_1;
   kbddrv_DIK_to_symbol[DIK_2] = PCK_2;
   kbddrv_DIK_to_symbol[DIK_3] = PCK_3;
@@ -1446,7 +1218,7 @@ void kbdDrvInitializeDIKToSymbolKeyTable()
   kbddrv_DIK_to_symbol[DIK_DIVIDE] = PCK_NUMPAD_DIVIDE;
   kbddrv_DIK_to_symbol[DIK_MULTIPLY] = PCK_NUMPAD_MULTIPLY;
   kbddrv_DIK_to_symbol[DIK_SUBTRACT] = PCK_NUMPAD_MINUS;
-  kbddrv_DIK_to_symbol[DIK_TAB] = PCK_TAB;  /* Third row */
+  kbddrv_DIK_to_symbol[DIK_TAB] = PCK_TAB; /* Third row */
   kbddrv_DIK_to_symbol[DIK_Q] = PCK_Q;
   kbddrv_DIK_to_symbol[DIK_W] = PCK_W;
   kbddrv_DIK_to_symbol[DIK_E] = PCK_E;
@@ -1532,7 +1304,6 @@ void kbdDrvHardReset()
 {
 }
 
-
 /*===========================================================================*/
 /* Emulation Starting                                                        */
 /*===========================================================================*/
@@ -1549,7 +1320,6 @@ void kbdDrvEmulationStart()
   kbdDrvDInputInitialize();
   kbd_in_task_switcher = false;
 }
-
 
 /*===========================================================================*/
 /* Emulation Stopping                                                        */

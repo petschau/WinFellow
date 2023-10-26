@@ -8,26 +8,26 @@
 
 namespace fellow::hardfile::hunks
 {
-  InitialHunk* HunkFactory::CreateInitialHunk(uint32_t type, uint32_t allocateSizeInLongwords)
+  InitialHunk *HunkFactory::CreateInitialHunk(uint32_t type, uint32_t allocateSizeInLongwords)
   {
     // The lower 29 bits are used, except on header
     switch (type & 0x1fffffff)
     {
-    case CodeHunkID: return new CodeHunk(allocateSizeInLongwords);
-    case DataHunkID: return new DataHunk(allocateSizeInLongwords);
-    case BSSHunkID: return new BSSHunk(allocateSizeInLongwords);
-    default: return nullptr;
+      case CodeHunkID: return new CodeHunk(allocateSizeInLongwords);
+      case DataHunkID: return new DataHunk(allocateSizeInLongwords);
+      case BSSHunkID: return new BSSHunk(allocateSizeInLongwords);
+      default: return nullptr;
     }
   }
 
-  AdditionalHunk* HunkFactory::CreateAdditionalHunk(uint32_t type, uint32_t sourceHunkIndex)
+  AdditionalHunk *HunkFactory::CreateAdditionalHunk(uint32_t type, uint32_t sourceHunkIndex)
   {
     // The lower 29 bits are used, except on header
     switch (type & 0x1fffffff)
     {
-    case Reloc32HunkID: return new Reloc32Hunk(sourceHunkIndex);
-    case EndHunkID: return new EndHunk();
-    default: return nullptr;
+      case Reloc32HunkID: return new Reloc32Hunk(sourceHunkIndex);
+      case EndHunkID: return new EndHunk();
+      default: return nullptr;
     }
   }
 }

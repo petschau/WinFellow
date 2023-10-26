@@ -24,7 +24,6 @@
 #define ERR_GZIP 19
 #define ERR_READDISK 20
 
-
 /* Command to execute */
 #define CMD_VIEW 1
 #define CMD_VIEWFULL 2
@@ -35,13 +34,10 @@
 #define CMD_UNPKGZ 7
 #define CMD_EXTRACT 8
 
-
 #define OPT_VERBOSE 1
 #define OPT_QUIET 2
 
-
 extern int OverrideErrors;
-
 
 USHORT Process_File(char *, char *, USHORT, USHORT, USHORT, USHORT);
 

@@ -4,5 +4,5 @@
 class Drivers
 {
 public:
-  ISoundDriver* SoundDriver;
+  ISoundDriver *SoundDriver;
 };

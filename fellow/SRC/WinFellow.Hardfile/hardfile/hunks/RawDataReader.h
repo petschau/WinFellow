@@ -7,7 +7,7 @@ namespace fellow::hardfile::hunks
   class RawDataReader
   {
   private:
-    uint8_t * _rawData;
+    uint8_t *_rawData;
     uint32_t _rawDataLength;
     uint32_t _index;
 

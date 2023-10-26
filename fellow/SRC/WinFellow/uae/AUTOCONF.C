@@ -7,31 +7,31 @@
  * Copyright 1996 Ed Hanway
  */
 
- /* FELLOW IN (START)-----------------
+/* FELLOW IN (START)-----------------
 
-   This file has been adapted for use in WinFellow.
-   It originates from the UAE 0.8.22 source code distribution.
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
 
-   Torsten Enderling (carfesh@gmx.net) 2004
+  Torsten Enderling (carfesh@gmx.net) 2004
 
-    FELLOW IN (END)------------------- */
+   FELLOW IN (END)------------------- */
 
-    /* FELLOW OUT (START)----------------
+/* FELLOW OUT (START)----------------
 
-    #include "sysconfig.h"
-    #include "sysdeps.h"
+#include "sysconfig.h"
+#include "sysdeps.h"
 
-    #include "config.h"
-    #include "options.h"
-    #include "uae.h"
-    #include "memory.h"
-    #include "custom.h"
-    #include "newcpu.h"
-    #include "compiler.h"
-    #include "autoconf.h"
-    #include "osdep/exectasks.h"
-       FELLOW OUT (END)------------------ */
-       /* FELLOW IN (START)----------------- */
+#include "config.h"
+#include "options.h"
+#include "uae.h"
+#include "memory.h"
+#include "custom.h"
+#include "newcpu.h"
+#include "compiler.h"
+#include "autoconf.h"
+#include "osdep/exectasks.h"
+   FELLOW OUT (END)------------------ */
+/* FELLOW IN (START)----------------- */
 #include <stdio.h>
 #include <setjmp.h>
 #include "uae2fell.h"
@@ -46,7 +46,7 @@
 #define MAX_TRAPS 4096
 static TrapFunction traps[MAX_TRAPS];
 static int trapmode[MAX_TRAPS];
-static const char* trapstr[MAX_TRAPS];
+static const char *trapstr[MAX_TRAPS];
 static uaecptr trapoldfunc[MAX_TRAPS];
 
 static int max_trap = 0;
@@ -82,81 +82,80 @@ int lasttrap;
  * A bearded man enters the room, carrying a bowl of spaghetti.
  */
 
- /* This _shouldn't_ crash with a stack size of 4096, but it does...
-  * might be a bug */
+/* This _shouldn't_ crash with a stack size of 4096, but it does...
+ * might be a bug */
 #ifndef EXTRA_STACK_SIZE
 #define EXTRA_STACK_SIZE 65536
 #endif
 
-static void* extra_stack_list = NULL;
+static void *extra_stack_list = NULL;
 
-static void* get_extra_stack()
+static void *get_extra_stack()
 {
-  void* s = extra_stack_list;
-  if (s)
-    extra_stack_list = *(void**)s;
-  if (!s)
-    s = xmalloc(EXTRA_STACK_SIZE);
+  void *s = extra_stack_list;
+  if (s) extra_stack_list = *(void **)s;
+  if (!s) s = xmalloc(EXTRA_STACK_SIZE);
   return s;
 }
 
-static void free_extra_stack(void* s)
+static void free_extra_stack(void *s)
 {
-  *(void**)s = extra_stack_list;
+  *(void **)s = extra_stack_list;
   extra_stack_list = s;
 }
 
-static void stack_stub(void* s, TrapFunction f, uae_u32* retval)
+static void stack_stub(void *s, TrapFunction f, uae_u32 *retval)
 {
 #ifdef CAN_DO_STACK_MAGIC
   /*printf("in stack_stub: %p %p %p %x\n", s, f, retval, (int)*retval);*/
-  * retval = f();
+  *retval = f();
   /*write_log ("returning from stack_stub\n");*/
-  longjmp(((jmp_buf*)s)[0], 1);
+  longjmp(((jmp_buf *)s)[0], 1);
 #endif
 }
 
-static void* current_extra_stack = NULL;
+static void *current_extra_stack = NULL;
 static uaecptr m68k_calladdr;
 
-static void do_stack_magic(TrapFunction f, void* s, int has_retval)
+static void do_stack_magic(TrapFunction f, void *s, int has_retval)
 {
 #ifdef CAN_DO_STACK_MAGIC
   uaecptr a7;
-  jmp_buf* j = (jmp_buf*)s;
-  switch (setjmp(j[0])) {
-  case 0:
-    /* Returning directly */
-    current_extra_stack = s;
-    if (has_retval == -1) {
-      /*write_log ("finishing m68k mode return\n");*/
-      longjmp(j[1], 1);
-    }
-    /*write_log ("calling native function\n");*/
-    transfer_control(s, EXTRA_STACK_SIZE, stack_stub, f, has_retval);
-    /* not reached */
-    abort();
+  jmp_buf *j = (jmp_buf *)s;
+  switch (setjmp(j[0]))
+  {
+    case 0:
+      /* Returning directly */
+      current_extra_stack = s;
+      if (has_retval == -1)
+      {
+        /*write_log ("finishing m68k mode return\n");*/
+        longjmp(j[1], 1);
+      }
+      /*write_log ("calling native function\n");*/
+      transfer_control(s, EXTRA_STACK_SIZE, stack_stub, f, has_retval);
+      /* not reached */
+      abort();
 
-  case 1:
-    /*write_log ("native function complete\n");*/
-    /* Returning normally. */
-    if (stack_has_retval(s, EXTRA_STACK_SIZE))
-      m68k_dreg(regs, 0) = get_retval_from_stack(s, EXTRA_STACK_SIZE);
-    free_extra_stack(s);
-    break;
+    case 1:
+      /*write_log ("native function complete\n");*/
+      /* Returning normally. */
+      if (stack_has_retval(s, EXTRA_STACK_SIZE)) m68k_dreg(regs, 0) = get_retval_from_stack(s, EXTRA_STACK_SIZE);
+      free_extra_stack(s);
+      break;
 
-  case 2:
-    /* Returning to do a m68k call. We're now back on the main stack. */
-    a7 = m68k_areg(regs, 7) -= (sizeof(void*) + 7) & ~3;
-    /* Save stack to restore */
-    *((void**)get_real_address(a7 + 4)) = s;
-    /* Save special return address: this address contains a
-     * calltrap that will longjmp to the right stack. */
-    put_long(m68k_areg(regs, 7), RTAREA_BASE + 0xFF00);
-    m68k_setpc(m68k_calladdr);
-    fill_prefetch_0();
-    /*write_log ("native function calls m68k\n");*/
-    break;
+    case 2:
+      /* Returning to do a m68k call. We're now back on the main stack. */
+      a7 = m68k_areg(regs, 7) -= (sizeof(void *) + 7) & ~3;
+      /* Save stack to restore */
+      *((void **)get_real_address(a7 + 4)) = s;
+      /* Save special return address: this address contains a
+       * calltrap that will longjmp to the right stack. */
+      put_long(m68k_areg(regs, 7), RTAREA_BASE + 0xFF00);
+      m68k_setpc(m68k_calladdr);
+      fill_prefetch_0();
+      /*write_log ("native function calls m68k\n");*/
+      break;
   }
   current_extra_stack = 0;
 #endif
@@ -165,7 +164,7 @@ static void do_stack_magic(TrapFunction f, void* s, int has_retval)
 static uae_u32 execute_fn_on_extra_stack(TrapFunction f, int has_retval)
 {
 #ifdef CAN_DO_STACK_MAGIC
-  void* s = get_extra_stack();
+  void *s = get_extra_stack();
   do_stack_magic(f, s, has_retval);
 #endif
   return 0;
@@ -175,8 +174,8 @@ static uae_u32 m68k_mode_return()
 {
 #ifdef CAN_DO_STACK_MAGIC
   uaecptr a7 = m68k_areg(regs, 7);
-  void* s = *(void**)get_real_address(a7);
-  m68k_areg(regs, 7) += (sizeof(void*) + 3) & ~3;
+  void *s = *(void **)get_real_address(a7);
+  m68k_areg(regs, 7) += (sizeof(void *) + 3) & ~3;
   /*write_log ("doing m68k mode return\n");*/
   do_stack_magic(NULL, s, -1);
 #endif
@@ -187,28 +186,26 @@ static uae_u32 call_m68k(uaecptr addr, int saveregs)
 {
   volatile uae_u32 retval = 0;
   volatile int do_save = saveregs;
-  if (current_extra_stack == NULL)
-    abort();
+  if (current_extra_stack == NULL) abort();
 #ifdef CAN_DO_STACK_MAGIC
   {
     volatile struct regstruct saved_regs;
-    jmp_buf* j = (jmp_buf*)current_extra_stack;
+    jmp_buf *j = (jmp_buf *)current_extra_stack;
 
-    if (do_save)
-      saved_regs = regs;
+    if (do_save) saved_regs = regs;
     m68k_calladdr = addr;
-    switch (setjmp(j[1])) {
-    case 0:
-      /*write_log ("doing call\n");*/
-      /* Returning directly: now switch to main stack and do the call */
-      longjmp(j[0], 2);
-    case 1:
-      /*write_log ("returning from call\n");*/
-      retval = m68k_dreg(regs, 0);
-      if (do_save)
-        regs = saved_regs;
-      /* Returning after the call. */
-      break;
+    switch (setjmp(j[1]))
+    {
+      case 0:
+        /*write_log ("doing call\n");*/
+        /* Returning directly: now switch to main stack and do the call */
+        longjmp(j[0], 2);
+      case 1:
+        /*write_log ("returning from call\n");*/
+        retval = m68k_dreg(regs, 0);
+        if (do_save) regs = saved_regs;
+        /* Returning after the call. */
+        break;
     }
   }
 #endif
@@ -240,9 +237,9 @@ uaecptr EXPANSION_bootcode, EXPANSION_nullfunc;
 uaecptr EXPANSION_cddevice;
    FELLOW OUT (END)------------------ */
 
-   /* ROM tag area memory access */
+/* ROM tag area memory access */
 
-   /* FELLOW CHANGE: static uae_u8 *rtarea; */
+/* FELLOW CHANGE: static uae_u8 *rtarea; */
 uae_u8 rtarea[65536];
 
 /* FELLOW OUT (START)-----------------------------------
@@ -304,7 +301,6 @@ void REGPARAM2 rtarea_bput (uaecptr addr, uae_u32 value)
 
 FELLOW OUT (END)-------------------------------------*/
 
-
 /* FELLOW IN (START)---------------------------------*/
 
 /* Had to change these a bit since the cpuemu assumes that addr survives */
@@ -316,14 +312,11 @@ uint16_t rtarea_wget(uint32_t addr)
   return (uint16_t)(rtarea[maskedAddress - RTAREA_BASE] << 8) + rtarea[maskedAddress - RTAREA_BASE + 1];
 }
 
-
 uint32_t rtarea_lget(uint32_t addr)
 {
   uint32_t maskedAddress = addr & 0xffffff;
-  return (uint32_t)(rtarea[maskedAddress - RTAREA_BASE] << 24) |
-    (rtarea[maskedAddress - RTAREA_BASE + 1] << 16) |
-    (rtarea[maskedAddress - RTAREA_BASE + 2] << 8) |
-    rtarea[maskedAddress - RTAREA_BASE + 3];
+  return (uint32_t)(rtarea[maskedAddress - RTAREA_BASE] << 24) | (rtarea[maskedAddress - RTAREA_BASE + 1] << 16) | (rtarea[maskedAddress - RTAREA_BASE + 2] << 8) |
+         rtarea[maskedAddress - RTAREA_BASE + 3];
 }
 
 uint8_t rtarea_bget(uint32_t addr)
@@ -334,12 +327,17 @@ uint8_t rtarea_bget(uint32_t addr)
 
 /* Swapped parameter order */
 
-void rtarea_lput(uint32_t value, uint32_t addr) { }
-void rtarea_wput(uint16_t value, uint32_t addr) { }
-void rtarea_bput(uint8_t value, uint32_t addr) { }
+void rtarea_lput(uint32_t value, uint32_t addr)
+{
+}
+void rtarea_wput(uint16_t value, uint32_t addr)
+{
+}
+void rtarea_bput(uint8_t value, uint32_t addr)
+{
+}
 
 /* FELLOW IN (END)---------------------------------*/
-
 
 static int trace_traps = 1;
 
@@ -349,19 +347,21 @@ void REGPARAM2 call_calltrap(int func)
   int has_retval = (trapmode[func] & TRAPFLAG_NO_RETVAL) == 0;
   int implicit_rts = (trapmode[func] & TRAPFLAG_DORET) != 0;
 
-  if (*trapstr[func] != 0 && trace_traps)
-    write_log("TRAP: %s\n", trapstr[func]);
+  if (*trapstr[func] != 0 && trace_traps) write_log("TRAP: %s\n", trapstr[func]);
 
   /* For monitoring only? */
 
-  if (traps[func] == NULL) {
+  if (traps[func] == NULL)
+  {
     m68k_setpc(trapoldfunc[func]);
     fill_prefetch_0();
     return;
   }
 
-  if (func < max_trap) {
-    if (trapmode[func] & TRAPFLAG_EXTRA_STACK) {
+  if (func < max_trap)
+  {
+    if (trapmode[func] & TRAPFLAG_EXTRA_STACK)
+    {
       execute_fn_on_extra_stack(traps[func], has_retval);
       return;
     }
@@ -370,9 +370,9 @@ void REGPARAM2 call_calltrap(int func)
   else
     write_log("illegal emulator trap\n");
 
-  if (has_retval)
-    cpuSetDReg(0, retval);
-  if (implicit_rts) {
+  if (has_retval) cpuSetDReg(0, retval);
+  if (implicit_rts)
+  {
     m68k_do_rts();
     fill_prefetch_0();
   }
@@ -381,8 +381,7 @@ void REGPARAM2 call_calltrap(int func)
 /* @$%&§ compiler bugs */
 static volatile int four = 4;
 
-uaecptr libemu_InstallFunctionFlags(TrapFunction f, uaecptr libbase, int offset,
-  int flags, const char* tracename)
+uaecptr libemu_InstallFunctionFlags(TrapFunction f, uaecptr libbase, int offset, int flags, const char *tracename)
 {
   /* FELLOW REMOVE (unreferenced): int i; */
   uaecptr retval;
@@ -451,12 +450,12 @@ void dl(uae_u32 data)
  * backward.  store pointer at current address
  */
 
-uae_u32 ds(const char* str)
+uae_u32 ds(const char *str)
 {
   size_t len = strlen(str) + 1;
 
   rt_straddr -= (int)len;
-  strcpy((char*)rtarea + rt_straddr, str);
+  strcpy((char *)rtarea + rt_straddr, str);
 
   return addr(rt_straddr);
 }
@@ -476,7 +475,7 @@ uae_u32 here()
   return addr(rt_addr);
 }
 
-int deftrap2(TrapFunction func, int mode, const char* str)
+int deftrap2(TrapFunction func, int mode, const char *str)
 {
   int num = max_trap++;
   traps[num] = func;
@@ -508,7 +507,7 @@ static uae_u32 getchipmemsize()
 
 static uae_u32 uae_puts()
 {
-  puts((char*)get_real_address(m68k_areg(regs, 0)));
+  puts((char *)get_real_address(m68k_areg(regs, 0)));
   return 0;
 }
 
@@ -573,12 +572,12 @@ void set_uae_int_flag()
 void rtarea_setup()
 {
   /* FELLOW IN (START)------------------- */
-  if (memoryGetKickImageBaseBank() >= 0xf8) {
+  if (memoryGetKickImageBaseBank() >= 0xf8)
+  {
     int bank = RTAREA_BASE >> 16;
 
-    memoryBankSet(rtarea_bget, rtarea_wget, rtarea_lget, rtarea_bput,
-      rtarea_wput, rtarea_lput, rtarea, bank, bank, FALSE);
+    memoryBankSet(rtarea_bget, rtarea_wget, rtarea_lget, rtarea_bput, rtarea_wput, rtarea_lput, rtarea, bank, bank, FALSE);
   }
   /* NOTE: No direct pointer must be used */
-/* FELLOW IN (END)------------------- */
+  /* FELLOW IN (END)------------------- */
 }

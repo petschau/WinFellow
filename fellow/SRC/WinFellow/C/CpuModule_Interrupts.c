@@ -84,15 +84,15 @@ BOOLE cpuSetIrqLevel(uint32_t new_interrupt_level)
 
 void cpuSetUpInterrupt(uint32_t new_interrupt_level)
 {
-  uint16_t vector_offset = (uint16_t) (0x60 + new_interrupt_level*4);
+  uint16_t vector_offset = (uint16_t)(0x60 + new_interrupt_level * 4);
   uint32_t vector_address = memoryReadLong(cpuGetVbr() + vector_offset);
 
   cpuActivateSSP(); // Switch to using ssp or msp. Loads a7 and preserves usp if we came from user-mode.
 
   cpuStackFrameGenerate(vector_offset, cpuGetPC()); // This will end up on msp if master is enabled, or on the ssp/isp if not.
 
-  cpuSetSR(cpuGetSR() & 0x38ff);  // Clear interrupt level
-  cpuSetSR(cpuGetSR() | 0x2000);  // Set supervisor mode
+  cpuSetSR(cpuGetSR() & 0x38ff);                               // Clear interrupt level
+  cpuSetSR(cpuGetSR() | 0x2000);                               // Set supervisor mode
   cpuSetSR(cpuGetSR() | (uint16_t)(new_interrupt_level << 8)); // Set interrupt level
 
 #ifdef CPU_INSTRUCTION_LOGGING
@@ -106,8 +106,8 @@ void cpuSetUpInterrupt(uint32_t new_interrupt_level)
       uint32_t oldA7 = cpuGetAReg(7);
       cpuSetMspDirect(oldA7);
       cpuSetAReg(7, cpuGetSspDirect());
-      cpuFrame1(vector_offset, cpuGetPC());   // Make the throwaway frame on ssp/isp
-      cpuSetSR(cpuGetSR() & 0xefff);  // Clear master bit
+      cpuFrame1(vector_offset, cpuGetPC()); // Make the throwaway frame on ssp/isp
+      cpuSetSR(cpuGetSR() & 0xefff);        // Clear master bit
     }
   }
   cpuInitializeFromNewPC(vector_address);

@@ -11,7 +11,7 @@ namespace fellow::hardfile::hunks
 
   public:
     uint32_t GetID() override;
-    void Parse(RawDataReader& rawDataReader) override;
+    void Parse(RawDataReader &rawDataReader) override;
 
     DataHunk(uint32_t allocateSizeInLongwords);
   };

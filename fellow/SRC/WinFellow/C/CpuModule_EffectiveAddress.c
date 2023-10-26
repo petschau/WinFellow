@@ -67,11 +67,10 @@ static uint32_t cpuEA06Ext(uint16_t ext, uint32_t base_reg_value, uint32_t index
   uint32_t base_displacement_size = (ext >> 4) & 3;
   uint32_t memory_indirect_action = (ext & 7);
 
-  if (memory_indirect_action == 4 
-      || (memory_indirect_action > 4 && index_register_suppressed))
+  if (memory_indirect_action == 4 || (memory_indirect_action > 4 && index_register_suppressed))
   {
-      cpuThrowIllegalInstructionException(TRUE);	  /* Illegal instruction */
-      // Never returns
+    cpuThrowIllegalInstructionException(TRUE); /* Illegal instruction */
+                                               // Never returns
   }
 
   if (index_register_suppressed)
@@ -86,26 +85,18 @@ static uint32_t cpuEA06Ext(uint16_t ext, uint32_t base_reg_value, uint32_t index
 
   switch (base_displacement_size)
   {
-    case 0:			  /* Reserved */
-      cpuThrowIllegalInstructionException(TRUE);	  /* Illegal instruction */
+    case 0:                                      /* Reserved */
+      cpuThrowIllegalInstructionException(TRUE); /* Illegal instruction */
       break;
-    case 1:			  /* Null base displacement */
-      base_displacement = 0;
-      break;
-    case 2:			  /* Word base displacement */
-      base_displacement = cpuGetNextWordSignExt();
-      break;
-    case 3:			  /* Long base displacement */
-      base_displacement = cpuGetNextLong();
-      break;
+    case 1: /* Null base displacement */ base_displacement = 0; break;
+    case 2: /* Word base displacement */ base_displacement = cpuGetNextWordSignExt(); break;
+    case 3: /* Long base displacement */ base_displacement = cpuGetNextLong(); break;
   }
 
   switch (memory_indirect_action)
   {
-    case 0: /* No memory indirect action */
-      return base_reg_value + base_displacement + index_value;
-    case 1: /* Indirect preindexed with null outer displacement */
-      return memoryReadLong(base_reg_value + base_displacement + index_value);
+    case 0: /* No memory indirect action */ return base_reg_value + base_displacement + index_value;
+    case 1: /* Indirect preindexed with null outer displacement */ return memoryReadLong(base_reg_value + base_displacement + index_value);
     case 2: /* Indirect preindexed with word outer displacement */
       outer_displacement = cpuGetNextWordSignExt();
       return memoryReadLong(base_reg_value + base_displacement + index_value) + outer_displacement;
@@ -136,8 +127,8 @@ uint32_t cpuEA06(uint32_t regno)
   }
   if (cpuGetModelMajor() >= 2)
   {
-    index_value = index_value << ((ext >> 9) & 3);	/* Scaling index value */
-    if (ext & 0x0100)					/* Full extension word */
+    index_value = index_value << ((ext >> 9) & 3); /* Scaling index value */
+    if (ext & 0x0100)                              /* Full extension word */
     {
       return cpuEA06Ext(ext, reg_value, index_value);
     }
@@ -182,8 +173,8 @@ uint32_t cpuEA73()
   }
   if (cpuGetModelMajor() >= 2)
   {
-    index_value = index_value << ((ext >> 9) & 0x3);	// Scaling index value
-    if (ext & 0x0100)					// Full extension word
+    index_value = index_value << ((ext >> 9) & 0x3); // Scaling index value
+    if (ext & 0x0100)                                // Full extension word
     {
       return cpuEA06Ext(ext, reg_value, index_value);
     }

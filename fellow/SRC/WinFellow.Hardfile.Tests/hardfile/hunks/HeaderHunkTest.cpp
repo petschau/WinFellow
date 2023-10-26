@@ -8,7 +8,7 @@ using namespace fellow::hardfile::hunks;
 
 namespace test::fellow::hardfile::hunks
 {
-  unsigned int CreateResidentLibraryList(uint8_t* hunkData, unsigned int residentLibraryCount, unsigned int index)
+  unsigned int CreateResidentLibraryList(uint8_t *hunkData, unsigned int residentLibraryCount, unsigned int index)
   {
     for (unsigned int i = 0; i < residentLibraryCount; i++)
     {
@@ -36,7 +36,7 @@ namespace test::fellow::hardfile::hunks
     return index;
   }
 
-  unsigned int CreateHunkTable(uint8_t* hunkData, unsigned int index)
+  unsigned int CreateHunkTable(uint8_t *hunkData, unsigned int index)
   {
     // Table size
     hunkData[index++] = 0;
@@ -88,7 +88,7 @@ namespace test::fellow::hardfile::hunks
     return index;
   }
 
-  unsigned int FillHeaderHunkData(uint8_t* hunkData, unsigned int residentLibraryCount)
+  unsigned int FillHeaderHunkData(uint8_t *hunkData, unsigned int residentLibraryCount)
   {
     unsigned int index = 0;
     index = CreateResidentLibraryList(hunkData, residentLibraryCount, index);

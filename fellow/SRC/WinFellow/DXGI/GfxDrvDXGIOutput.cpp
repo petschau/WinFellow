@@ -6,25 +6,20 @@
 
 using namespace std;
 
-const char* GfxDrvDXGIOutput::GetRotationDescription(DXGI_MODE_ROTATION rotation)
+const char *GfxDrvDXGIOutput::GetRotationDescription(DXGI_MODE_ROTATION rotation)
 {
   switch (rotation)
   {
-  case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_IDENTITY:
-    return "DXGI_MODE_ROTATION_IDENTITY";
-  case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_ROTATE90:
-    return "DXGI_MODE_ROTATION_ROTATE90";
-  case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_ROTATE180:
-    return "DXGI_MODE_ROTATION_ROTATE180";
-  case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_ROTATE270:
-    return "DXGI_MODE_ROTATION_ROTATE270";
-  case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_UNSPECIFIED:
-    return "DXGI_MODE_ROTATION_UNSPECIFIED";
+    case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_IDENTITY: return "DXGI_MODE_ROTATION_IDENTITY";
+    case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_ROTATE90: return "DXGI_MODE_ROTATION_ROTATE90";
+    case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_ROTATE180: return "DXGI_MODE_ROTATION_ROTATE180";
+    case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_ROTATE270: return "DXGI_MODE_ROTATION_ROTATE270";
+    case DXGI_MODE_ROTATION::DXGI_MODE_ROTATION_UNSPECIFIED: return "DXGI_MODE_ROTATION_UNSPECIFIED";
   }
   return "UNKNOWN ROTATION";
 }
 
-void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput* output)
+void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput *output)
 {
   if (output)
   {
@@ -41,7 +36,13 @@ void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput* output)
       logmessages.emplace_back(s);
       sprintf(s, "Attached to desktop: %s", (desc.AttachedToDesktop) ? "YES" : "NO");
       logmessages.emplace_back(s);
-      sprintf(s, "Desktop coordinates: (%ld, %ld) (%ld, %ld)", desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom);
+      sprintf(
+          s,
+          "Desktop coordinates: (%ld, %ld) (%ld, %ld)",
+          desc.DesktopCoordinates.left,
+          desc.DesktopCoordinates.top,
+          desc.DesktopCoordinates.right,
+          desc.DesktopCoordinates.bottom);
       logmessages.emplace_back(s);
       sprintf(s, "Rotation: %s", GetRotationDescription(desc.Rotation));
       logmessages.emplace_back(s);
@@ -50,17 +51,17 @@ void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput* output)
   }
 }
 
-void GfxDrvDXGIOutput::EnumerateModes(IDXGIOutput* output)
+void GfxDrvDXGIOutput::EnumerateModes(IDXGIOutput *output)
 {
   GfxDrvDXGIModeEnumerator::EnumerateModes(output, _modes);
 }
 
-const GfxDrvDXGIModeList& GfxDrvDXGIOutput::GetModes()
+const GfxDrvDXGIModeList &GfxDrvDXGIOutput::GetModes()
 {
   return _modes;
 }
 
-GfxDrvDXGIOutput::GfxDrvDXGIOutput(IDXGIOutput* output)
+GfxDrvDXGIOutput::GfxDrvDXGIOutput(IDXGIOutput *output)
 {
   LogCapabilities(output);
   EnumerateModes(output);

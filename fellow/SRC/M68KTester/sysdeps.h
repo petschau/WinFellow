@@ -39,7 +39,6 @@ typedef uint32_t uint32;
 typedef uint64_t uint64;
 typedef uintptr_t uintptr;
 
-
 #include <Winsock2.h>
 #include <io.h>
 #define STDIN_FILENO 0

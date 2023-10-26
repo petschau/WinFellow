@@ -24,7 +24,6 @@
 #include "CpuModule.h"
 #include "CpuModule_Internal.h"
 
-
 /// Sets the Z flag for bit operations
 void cpuSetZFlagBitOpsB(uint8_t res)
 {
@@ -42,56 +41,56 @@ void cpuSetZFlagBitOpsL(uint32_t res)
 }
 
 // rm,dm,sm
-uint32_t cpu_xnvc_flag_add_table[2][2][2] = { 0,0x11,0x11,0x13,0xa,8,8,0x19};
+uint32_t cpu_xnvc_flag_add_table[2][2][2] = {0, 0x11, 0x11, 0x13, 0xa, 8, 8, 0x19};
 
 /// <summary>
 /// Calculate XNVC flags of an add operation.
 /// </summary>
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 static uint32_t cpuMakeFlagXNVCAdd(BOOLE rm, BOOLE dm, BOOLE sm)
 {
   return cpu_xnvc_flag_add_table[rm][dm][sm];
 }
 
 // rm,dm,sm
-uint32_t cpu_nvc_flag_add_table[2][2][2] = { 0,1,1,3,0xa,8,8,9};
+uint32_t cpu_nvc_flag_add_table[2][2][2] = {0, 1, 1, 3, 0xa, 8, 8, 9};
 
 /// <summary>
 /// Calculate NVC flags of an add operation for instructions not setting X.
 /// </summary>
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 static uint32_t cpuMakeFlagNVCAdd(BOOLE rm, BOOLE dm, BOOLE sm)
 {
   return cpu_nvc_flag_add_table[rm][dm][sm];
 }
 
 // rm,dm,sm
-uint32_t cpu_xnvc_flag_sub_table[2][2][2] = { 0,0x11,2,0,0x19,0x1b,8,0x19};
+uint32_t cpu_xnvc_flag_sub_table[2][2][2] = {0, 0x11, 2, 0, 0x19, 0x1b, 8, 0x19};
 
 /// <summary>
 /// Calculate XNVC flags of a sub operation.
 /// </summary>
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 static uint32_t cpuMakeFlagXNVCSub(BOOLE rm, BOOLE dm, BOOLE sm)
 {
   return cpu_xnvc_flag_sub_table[rm][dm][sm];
 }
 
 // rm,dm,sm
-uint32_t cpu_nvc_flag_sub_table[2][2][2] = { 0,1,2,0,9,0xb,8,9};
+uint32_t cpu_nvc_flag_sub_table[2][2][2] = {0, 1, 2, 0, 9, 0xb, 8, 9};
 
 /// <summary>
 /// Calculate NVC flags of a sub operation for instructions not setting X.
 /// </summary>
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 static uint32_t cpuMakeFlagNVCSub(BOOLE rm, BOOLE dm, BOOLE sm)
 {
   return cpu_nvc_flag_sub_table[rm][dm][sm];
@@ -100,7 +99,7 @@ static uint32_t cpuMakeFlagNVCSub(BOOLE rm, BOOLE dm, BOOLE sm)
 /// <summary>
 /// Set the X and C flags to the value f.
 /// </summary>
-/// <param name="f">The new state of the flags.</param>        
+/// <param name="f">The new state of the flags.</param>
 void cpuSetFlagXC(BOOLE f)
 {
   cpu_sr = (cpu_sr & 0xffee) | ((f) ? 0x11 : 0);
@@ -109,7 +108,7 @@ void cpuSetFlagXC(BOOLE f)
 /// <summary>
 /// Set the C flag to the value f.
 /// </summary>
-/// <param name="f">The new state of the flag.</param>        
+/// <param name="f">The new state of the flag.</param>
 void cpuSetFlagC(BOOLE f)
 {
   cpu_sr = (cpu_sr & 0xfffe) | ((f) ? 1 : 0);
@@ -118,7 +117,7 @@ void cpuSetFlagC(BOOLE f)
 /// <summary>
 /// Set the V flag.
 /// </summary>
-/// <param name="f">The new state of the flag.</param>        
+/// <param name="f">The new state of the flag.</param>
 void cpuSetFlagV(BOOLE f)
 {
   cpu_sr = (cpu_sr & 0xfffd) | ((f) ? 2 : 0);
@@ -135,7 +134,7 @@ BOOLE cpuGetFlagV()
 /// <summary>
 /// Set the N flag.
 /// </summary>
-/// <param name="f">The new state of the flag.</param>        
+/// <param name="f">The new state of the flag.</param>
 void cpuSetFlagN(BOOLE f)
 {
   cpu_sr = (cpu_sr & 0xfff7) | ((f) ? 8 : 0);
@@ -144,7 +143,7 @@ void cpuSetFlagN(BOOLE f)
 /// <summary>
 /// Set the Z flag.
 /// </summary>
-/// <param name="f">The new state of the flag.</param>        
+/// <param name="f">The new state of the flag.</param>
 void cpuSetFlagZ(BOOLE f)
 {
   cpu_sr = (cpu_sr & 0xfffb) | ((f) ? 4 : 0);
@@ -174,26 +173,46 @@ void cpuClearFlagsVC()
   cpu_sr = cpu_sr & 0xfffc;
 }
 
-uint16_t cpuGetZFlagB(uint8_t res) {return (uint16_t)((res) ? 0 : 4);}
-uint16_t cpuGetZFlagW(uint16_t res) {return (uint16_t)((res) ? 0 : 4);}
-uint16_t cpuGetZFlagL(uint32_t res) {return (uint16_t)((res) ? 0 : 4);}
+uint16_t cpuGetZFlagB(uint8_t res)
+{
+  return (uint16_t)((res) ? 0 : 4);
+}
+uint16_t cpuGetZFlagW(uint16_t res)
+{
+  return (uint16_t)((res) ? 0 : 4);
+}
+uint16_t cpuGetZFlagL(uint32_t res)
+{
+  return (uint16_t)((res) ? 0 : 4);
+}
 
-uint16_t cpuGetNFlagB(uint8_t res) {return (uint16_t)((res & 0x80) >> 4);}
-uint16_t cpuGetNFlagW(uint16_t res) {return (uint16_t)((res & 0x8000) >> 12);}
-uint16_t cpuGetNFlagL(uint32_t res) {return (uint16_t)((res & 0x80000000) >> 28);}
+uint16_t cpuGetNFlagB(uint8_t res)
+{
+  return (uint16_t)((res & 0x80) >> 4);
+}
+uint16_t cpuGetNFlagW(uint16_t res)
+{
+  return (uint16_t)((res & 0x8000) >> 12);
+}
+uint16_t cpuGetNFlagL(uint32_t res)
+{
+  return (uint16_t)((res & 0x80000000) >> 28);
+}
 
 /// <summary>
 /// Set the flags NZVC.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="n">The N flag.</param>        
-/// <param name="v">The V flag.</param>        
-/// <param name="c">The C flag.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="n">The N flag.</param>
+/// <param name="v">The V flag.</param>
+/// <param name="c">The C flag.</param>
 void cpuSetFlagsNZVC(BOOLE z, BOOLE n, BOOLE v, BOOLE c)
 {
   uint32_t flags = cpu_sr & 0xfff0;
-  if (n) flags |= 8;
-  else if (z) flags |= 4;
+  if (n)
+    flags |= 8;
+  else if (z)
+    flags |= 4;
   if (v) flags |= 2;
   if (c) flags |= 1;
   cpu_sr = flags;
@@ -202,8 +221,8 @@ void cpuSetFlagsNZVC(BOOLE z, BOOLE n, BOOLE v, BOOLE c)
 /// <summary>
 /// Set the flags VC.
 /// </summary>
-/// <param name="v">The V flag.</param>        
-/// <param name="c">The C flag.</param>        
+/// <param name="v">The V flag.</param>
+/// <param name="c">The C flag.</param>
 void cpuSetFlagsVC(BOOLE v, BOOLE c)
 {
   uint32_t flags = cpu_sr & 0xfffc;
@@ -215,10 +234,10 @@ void cpuSetFlagsVC(BOOLE v, BOOLE c)
 /// <summary>
 /// Set the flags (all) of an add operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 void cpuSetFlagsAdd(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
   uint32_t flags = cpu_sr & 0xffe0;
@@ -230,10 +249,10 @@ void cpuSetFlagsAdd(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <summary>
 /// Set the flags (all) of a sub operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 void cpuSetFlagsSub(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
   uint32_t flags = cpu_sr & 0xffe0;
@@ -245,10 +264,10 @@ void cpuSetFlagsSub(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <summary>
 /// Set the flags (all) of an addx operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 void cpuSetFlagsAddX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
   uint32_t flags = cpu_sr & ((z) ? 0xffe4 : 0xffe0); // Clear z if result is non-zero
@@ -259,10 +278,10 @@ void cpuSetFlagsAddX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <summary>
 /// Set the flags (all) of a subx operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 void cpuSetFlagsSubX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
   uint32_t flags = cpu_sr & ((z) ? 0xffe4 : 0xffe0); // Clear z if result is non-zero
@@ -273,20 +292,21 @@ void cpuSetFlagsSubX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <summary>
 /// Set the flags (all) of a neg operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
 void cpuSetFlagsNeg(BOOLE z, BOOLE rm, BOOLE dm)
 {
   uint32_t flags = cpu_sr & 0xffe0;
-  if (z) flags |= 4;
+  if (z)
+    flags |= 4;
   else
   {
     flags |= 0x11; // set XC if result is non-zero
     if (rm)
     {
-	flags |= 8;
-	if (dm) flags |= 2; // V
+      flags |= 8;
+      if (dm) flags |= 2; // V
     }
   }
   cpu_sr = flags;
@@ -295,9 +315,9 @@ void cpuSetFlagsNeg(BOOLE z, BOOLE rm, BOOLE dm)
 /// <summary>
 /// Set the flags (all) of a negx operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
 void cpuSetFlagsNegx(BOOLE z, BOOLE rm, BOOLE dm)
 {
   uint32_t flags = cpu_sr & ((z) ? 0xffe4 : 0xffe0); // Clear z if result is non-zero
@@ -316,14 +336,14 @@ void cpuSetFlagsNegx(BOOLE z, BOOLE rm, BOOLE dm)
 /// <summary>
 /// Set the flags (all) of a cmp operation. (Same as sub, but no X.)
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="dm">The MSB of the destination source.</param>
+/// <param name="sm">The MSB of the source.</param>
 void cpuSetFlagsCmp(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
   uint32_t flags = cpu_sr & 0xfff0;
-  if (z) flags |= 4;    
+  if (z) flags |= 4;
   flags |= cpuMakeFlagNVCSub(rm, dm, sm);
   cpu_sr = flags;
 }
@@ -331,28 +351,32 @@ void cpuSetFlagsCmp(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <summary>
 /// Set the flags of a 0 shift count operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
 void cpuSetFlagsShiftZero(BOOLE z, BOOLE rm)
 {
   uint32_t flags = cpu_sr & 0xfff0; // Always clearing the VC flag
-  if (rm) flags |= 8;
-  else if (z) flags |= 4;  
+  if (rm)
+    flags |= 8;
+  else if (z)
+    flags |= 4;
   cpu_sr = flags;
 }
 
 /// <summary>
 /// Set the flags of a shift operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="c">The carry of the result.</param>        
-/// <param name="c">The overflow of the result.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="c">The carry of the result.</param>
+/// <param name="c">The overflow of the result.</param>
 void cpuSetFlagsShift(BOOLE z, BOOLE rm, BOOLE c, BOOLE v)
 {
   uint32_t flags = cpu_sr & 0xffe0;
-  if (rm) flags |= 8;
-  else if (z) flags |= 4;
+  if (rm)
+    flags |= 8;
+  else if (z)
+    flags |= 4;
   if (v) flags |= 2;
   if (c) flags |= 0x11;
   cpu_sr = flags;
@@ -361,26 +385,28 @@ void cpuSetFlagsShift(BOOLE z, BOOLE rm, BOOLE c, BOOLE v)
 /// <summary>
 /// Set the flags of a rotate operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="c">The carry of the result.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="c">The carry of the result.</param>
 void cpuSetFlagsRotate(BOOLE z, BOOLE rm, BOOLE c)
 {
   uint32_t flags = cpu_sr & 0xfff0; // Always clearing the V flag
-  
-  if (rm) flags |= 8;
-  else if (z) flags |= 4;
+
+  if (rm)
+    flags |= 8;
+  else if (z)
+    flags |= 4;
   if (c) flags |= 1;
-  
+
   cpu_sr = flags;
 }
 
 /// <summary>
 /// Set the flags of a rotate with x operation.
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="c">The extend bit and carry of the result.</param>        
+/// <param name="z">The Z flag.</param>
+/// <param name="rm">The MSB of the result.</param>
+/// <param name="c">The extend bit and carry of the result.</param>
 void cpuSetFlagsRotateX(uint16_t z, uint16_t rm, uint16_t x)
 {
   cpu_sr = (cpu_sr & 0xffe0) | z | rm | x;
@@ -392,8 +418,10 @@ void cpuSetFlagsRotateX(uint16_t z, uint16_t rm, uint16_t x)
 void cpuSetFlagsNZ00NewB(uint8_t res)
 {
   uint32_t flag = cpu_sr & 0xfff0;
-  if (res & 0x80) flag |= 0x8;
-  else if (res == 0) flag |= 0x4;
+  if (res & 0x80)
+    flag |= 0x8;
+  else if (res == 0)
+    flag |= 0x4;
   cpu_sr = flag;
 }
 
@@ -403,8 +431,10 @@ void cpuSetFlagsNZ00NewB(uint8_t res)
 void cpuSetFlagsNZ00NewW(uint16_t res)
 {
   uint32_t flag = cpu_sr & 0xfff0;
-  if (res & 0x8000) flag |= 0x8;
-  else if (res == 0) flag |= 0x4;
+  if (res & 0x8000)
+    flag |= 0x8;
+  else if (res == 0)
+    flag |= 0x4;
   cpu_sr = flag;
 }
 
@@ -414,8 +444,10 @@ void cpuSetFlagsNZ00NewW(uint16_t res)
 void cpuSetFlagsNZ00NewL(uint32_t res)
 {
   uint32_t flag = cpu_sr & 0xfff0;
-  if (res & 0x80000000) flag |= 0x8;
-  else if (res == 0) flag |= 0x4;
+  if (res & 0x80000000)
+    flag |= 0x8;
+  else if (res == 0)
+    flag |= 0x4;
   cpu_sr = flag;
 }
 
@@ -425,15 +457,17 @@ void cpuSetFlagsNZ00NewL(uint32_t res)
 void cpuSetFlagsNZ00New64(int64_t res)
 {
   uint32_t flag = cpu_sr & 0xfff0;
-  if (res < 0) flag |= 0x8;
-  else if (res == 0) flag |= 0x4;
+  if (res < 0)
+    flag |= 0x8;
+  else if (res == 0)
+    flag |= 0x4;
   cpu_sr = flag;
 }
 
 /// <summary>
 /// Set the 4 flags absolute.
 /// </summary>
-/// <param name="f">flags</param>        
+/// <param name="f">flags</param>
 void cpuSetFlagsAbs(uint16_t f)
 {
   cpu_sr = (cpu_sr & 0xfff0) | f;
@@ -455,76 +489,76 @@ BOOLE cpuCalculateConditionCode1()
 
 BOOLE cpuCalculateConditionCode2()
 {
-  return !(cpu_sr & 5);     // HI - !C && !Z
+  return !(cpu_sr & 5); // HI - !C && !Z
 }
 
 BOOLE cpuCalculateConditionCode3()
 {
-  return cpu_sr & 5;	      // LS - C || Z
+  return cpu_sr & 5; // LS - C || Z
 }
 
 BOOLE cpuCalculateConditionCode4()
 {
-  return (~cpu_sr) & 1;	      // CC - !C
+  return (~cpu_sr) & 1; // CC - !C
 }
 
 BOOLE cpuCalculateConditionCode5()
 {
-  return cpu_sr & 1;	      // CS - C
+  return cpu_sr & 1; // CS - C
 }
 
 BOOLE cpuCalculateConditionCode6()
 {
-  return (~cpu_sr) & 4;	      // NE - !Z
+  return (~cpu_sr) & 4; // NE - !Z
 }
 
 BOOLE cpuCalculateConditionCode7()
 {
-  return cpu_sr & 4;	      // EQ - Z
+  return cpu_sr & 4; // EQ - Z
 }
 
 BOOLE cpuCalculateConditionCode8()
 {
-  return (~cpu_sr) & 2;	      // VC - !V
+  return (~cpu_sr) & 2; // VC - !V
 }
 
 BOOLE cpuCalculateConditionCode9()
 {
-  return cpu_sr & 2;	      // VS - V
+  return cpu_sr & 2; // VS - V
 }
 
 BOOLE cpuCalculateConditionCode10()
 {
-  return (~cpu_sr) & 8;      // PL - !N
+  return (~cpu_sr) & 8; // PL - !N
 }
 
 BOOLE cpuCalculateConditionCode11()
 {
-  return cpu_sr & 8;	      // MI - N
+  return cpu_sr & 8; // MI - N
 }
 
 BOOLE cpuCalculateConditionCode12()
 {
   uint32_t tmp = cpu_sr & 0xa;
-  return (tmp == 0xa) || (tmp == 0);  // GE - (N && V) || (!N && !V)
+  return (tmp == 0xa) || (tmp == 0); // GE - (N && V) || (!N && !V)
 }
 
 BOOLE cpuCalculateConditionCode13()
 {
   uint32_t tmp = cpu_sr & 0xa;
-  return (tmp == 0x8) || (tmp == 0x2);	// LT - (N && !V) || (!N && V)
+  return (tmp == 0x8) || (tmp == 0x2); // LT - (N && !V) || (!N && V)
 }
 
 BOOLE cpuCalculateConditionCode14()
 {
   uint32_t tmp = cpu_sr & 0xa;
-  return (!(cpu_sr & 0x4)) && ((tmp == 0xa) || (tmp == 0)); // GT - (N && V && !Z) || (!N && !V && !Z) 
+  return (!(cpu_sr & 0x4)) && ((tmp == 0xa) || (tmp == 0)); // GT - (N && V && !Z) || (!N && !V && !Z)
 }
 
 BOOLE cpuCalculateConditionCode15()
 {
   uint32_t tmp = cpu_sr & 0xa;
-  return (cpu_sr & 0x4) || (tmp == 0x8) || (tmp == 2);// LE - Z || (N && !V) || (!N && V)
+  return (cpu_sr & 0x4) || (tmp == 0x8) || (tmp == 2); // LE - Z || (N && !V) || (!N && V)
 }
 
 BOOLE cpuCalculateConditionCode(uint32_t cc)

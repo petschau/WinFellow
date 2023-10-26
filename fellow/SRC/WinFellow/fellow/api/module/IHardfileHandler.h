@@ -34,12 +34,9 @@ namespace fellow::api::module
       ReservedBlocks = 0;
     }
 
-    bool operator==(const HardfileGeometry& other) const
+    bool operator==(const HardfileGeometry &other) const
     {
-      return BytesPerSector == other.BytesPerSector &&
-        SectorsPerTrack == other.SectorsPerTrack &&
-        Surfaces == other.Surfaces &&
-        ReservedBlocks == other.ReservedBlocks;
+      return BytesPerSector == other.BytesPerSector && SectorsPerTrack == other.SectorsPerTrack && Surfaces == other.Surfaces && ReservedBlocks == other.ReservedBlocks;
     }
   };
 
@@ -58,7 +55,7 @@ namespace fellow::api::module
 
     std::vector<HardfilePartition> Partitions;
 
-    bool operator==(const HardfileConfiguration& other) const
+    bool operator==(const HardfileConfiguration &other) const
     {
       return Filename == other.Filename && Geometry == other.Geometry && Readonly == other.Readonly;
     }
@@ -100,16 +97,16 @@ namespace fellow::api::module
     virtual void SetEnabled(bool enabled) = 0;
     virtual bool GetEnabled() = 0;
     virtual void Clear() = 0;
-    virtual bool CompareHardfile(const HardfileConfiguration& hardfile, unsigned int index) = 0;
-    virtual void SetHardfile(const HardfileConfiguration& hardfile, unsigned int index) = 0;
+    virtual bool CompareHardfile(const HardfileConfiguration &hardfile, unsigned int index) = 0;
+    virtual void SetHardfile(const HardfileConfiguration &hardfile, unsigned int index) = 0;
     virtual bool RemoveHardfile(unsigned int index) = 0;
     virtual unsigned int GetMaxHardfileCount() = 0;
 
     // UI helper function
-    virtual bool Create(const HardfileConfiguration& configuration, uint32_t size) = 0;
-    virtual rdb_status HasRDB(const std::string& filename) = 0;
-    virtual HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) = 0;
-    
+    virtual bool Create(const HardfileConfiguration &configuration, uint32_t size) = 0;
+    virtual rdb_status HasRDB(const std::string &filename) = 0;
+    virtual HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string &filename) = 0;
+
     // Global events
     virtual void EmulationStart() = 0;
     virtual void EmulationStop() = 0;
