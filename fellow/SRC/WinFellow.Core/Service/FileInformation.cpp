@@ -6,9 +6,9 @@
 using namespace std;
 using namespace Service;
 
-FileProperties* FileInformation::GetFileProperties(const string& filename)
+FileProperties *FileInformation::GetFileProperties(const string &filename)
 {
-  FileProperties* fileProperties = nullptr;
+  FileProperties *fileProperties = nullptr;
 
   try
   {
@@ -26,13 +26,7 @@ FileProperties* FileInformation::GetFileProperties(const string& filename)
       return nullptr;
     }
 
-    fileProperties = new FileProperties
-    {
-        .Name = filename,
-        .IsWritable = false,
-        .Size = 0,
-        .Type = GetFileType(filestatus)
-    };
+    fileProperties = new FileProperties{.Name = filename, .IsWritable = false, .Size = 0, .Type = GetFileType(filestatus)};
 
     if (fileProperties->Type != FileType::File)
     {
@@ -51,9 +45,9 @@ FileProperties* FileInformation::GetFileProperties(const string& filename)
   return fileProperties;
 }
 
-FilePropertiesW* FileInformation::GetFilePropertiesW(const wstring& filename)
+FilePropertiesW *FileInformation::GetFilePropertiesW(const wstring &filename)
 {
-  FilePropertiesW* fileProperties = nullptr;
+  FilePropertiesW *fileProperties = nullptr;
 
   try
   {
@@ -71,13 +65,7 @@ FilePropertiesW* FileInformation::GetFilePropertiesW(const wstring& filename)
       return nullptr;
     }
 
-    fileProperties = new FilePropertiesW
-    {
-        .Name = filename,
-        .IsWritable = false,
-        .Size = 0,
-        .Type = GetFileType(filestatus)
-    };
+    fileProperties = new FilePropertiesW{.Name = filename, .IsWritable = false, .Size = 0, .Type = GetFileType(filestatus)};
 
     if (fileProperties->Type != FileType::File)
     {
@@ -101,7 +89,7 @@ bool FileInformation::GetIsReadable(const filesystem::perms permissions)
   return (permissions & std::filesystem::perms::owner_read) != std::filesystem::perms::none;
 }
 
-bool FileInformation::GetIsWritable(const filesystem::perms permissions, const filesystem::path& filename)
+bool FileInformation::GetIsWritable(const filesystem::perms permissions, const filesystem::path &filename)
 {
   if ((permissions & std::filesystem::perms::owner_write) == std::filesystem::perms::none)
   {
@@ -115,7 +103,7 @@ bool FileInformation::GetIsWritable(const filesystem::perms permissions, const f
   return !failed;
 }
 
-FileType FileInformation::GetFileType(filesystem::file_status& filestatus)
+FileType FileInformation::GetFileType(filesystem::file_status &filestatus)
 {
   if (filesystem::is_regular_file(filestatus))
   {

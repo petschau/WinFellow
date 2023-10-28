@@ -1513,7 +1513,7 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
 
   if (fileProperties != nullptr && hf->bytespersector != 0 && hf->sectorspertrack != 0 && hf->surfaces != 0)
   {
-    configuration.Geometry.HighCylinder = (fileProperties->Size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1;
+    configuration.Geometry.HighCylinder = (unsigned int)((fileProperties->Size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1);
     delete fileProperties;
   }
 

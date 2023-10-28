@@ -355,7 +355,7 @@ namespace fellow::hardfile
 
     device.Readonly = device.Configuration.Readonly || (!fileProperties->IsWritable);
     fopen_s(&device.F, device.Configuration.Filename.c_str(), device.Readonly ? "rb" : "r+b");
-    device.FileSize = fileProperties->Size;
+    device.FileSize = (unsigned int)fileProperties->Size;
     delete fileProperties;
 
     const auto &geometry = device.Configuration.Geometry;

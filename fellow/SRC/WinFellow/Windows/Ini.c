@@ -381,8 +381,9 @@ BOOLE iniSaveToFilename(ini *initdata, char *filename)
 /* Returns TRUE if the option was recognized                                  */
 /*============================================================================*/
 
-BOOLE iniSetOption(ini* initdata, char* initoptionstr) {
-  char* value = strchr(initoptionstr, '=');
+BOOLE iniSetOption(ini *initdata, char *initoptionstr)
+{
+  char *value = strchr(initoptionstr, '=');
   BOOLE result = (value != nullptr);
   if (result)
   {
@@ -398,10 +399,12 @@ BOOLE iniSetOption(ini* initdata, char* initoptionstr) {
         _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
         iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
       }
-      else {
+      else
+      {
         auto fileProperties = _core.FileInformation->GetFileProperties(value);
 
-        if (fileProperties != nullptr) {
+        if (fileProperties != nullptr)
+        {
           delete fileProperties;
 
           _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);

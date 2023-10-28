@@ -123,7 +123,7 @@ static uint8_t floppyBootBlockFFS[] = {
     0x61, 0x72, 0x79, 0x00, 0x65, 0x78, 0x70, 0x61, 0x6E, 0x73, 0x69, 0x6F, 0x6E, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x00, 0x00,
 };
 
-//#define FLOPPY_LOG
+// #define FLOPPY_LOG
 #ifdef FLOPPY_LOG
 
 char floppylogfilename[MAX_PATH];
@@ -1136,7 +1136,7 @@ uint32_t floppyImageGeometryCheck(FileProperties *fsnp, uint32_t drive)
 #endif
   else
   {
-    floppy[drive].tracks = fsnp->Size / 11264;
+    floppy[drive].tracks = (uint32_t)(fsnp->Size / 11264);
     if ((floppy[drive].tracks * 11264) != fsnp->Size)
     {
       floppyError(drive, FLOPPY_ERROR_SIZE);

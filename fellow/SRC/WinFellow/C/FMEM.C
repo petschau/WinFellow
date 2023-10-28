@@ -2854,7 +2854,7 @@ void memoryKickLoad()
         memoryKickError(MEMORY_ROM_ERROR_EXISTS_NOT, 0);
 
       else
-        memory_kickimage_size = fileProperties->Size;
+        memory_kickimage_size = (uint32_t)fileProperties->Size;
     }
 
     delete fileProperties;
@@ -3046,7 +3046,7 @@ void memoryKickExtendedLoad()
 
   if ((F = fopen(memory_kickimage_ext, "rb")) == nullptr) return;
 
-  size = fsnp->Size;
+  size = (uint32_t)fsnp->Size;
 
   delete fsnp;
 

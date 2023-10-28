@@ -17,7 +17,7 @@ private:
     filesystem::remove(FilePath);
   }
 
-  void WriteToFile(const string& text)
+  void WriteToFile(const string &text)
   {
     ofstream ofs(FilePath);
     ofs << text;
@@ -56,12 +56,12 @@ private:
 public:
   filesystem::path FilePath;
 
-  TestFileReference(const string& filename, bool isReadable, bool isWritable) : FilePath(filename)
+  TestFileReference(const string &filename, bool isReadable, bool isWritable) : FilePath(filename)
   {
     PrepareFile(isReadable, isWritable);
   }
 
-  TestFileReference(const wstring& filename, bool isReadable, bool isWritable) : FilePath(filename)
+  TestFileReference(const wstring &filename, bool isReadable, bool isWritable) : FilePath(filename)
   {
     PrepareFile(isReadable, isWritable);
   }
