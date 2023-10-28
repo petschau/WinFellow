@@ -61,6 +61,8 @@ private:
   void RegisterModes();
   void AddFullScreenModes();
 
+  void DeleteAllResources();
+
   bool CreateD3D11Device();
   void DeleteD3D11Device();
 

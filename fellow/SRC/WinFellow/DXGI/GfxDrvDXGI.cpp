@@ -31,38 +31,44 @@ bool GfxDrvDXGI::ValidateRequirements()
   _requirementsValidated = true;
 
   HINSTANCE hDll = LoadLibrary("d3d11.dll");
-  if (hDll)
+  if (hDll == nullptr)
   {
-    FreeLibrary(hDll);
-  }
-  else
-  {
-    _core.Log->AddLog("gfxDrvDXGIValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
+    _core.Log->AddLog("GfxDrvDXGI::ValidateRequirements() ERROR: d3d11.dll could not be loaded, falling back to DirectDraw.\n");
     _requirementsValidationResult = false;
     return false;
   }
 
+  FreeLibrary(hDll);
+
   hDll = LoadLibrary("dxgi.dll");
-  if (hDll)
+  if (hDll == nullptr)
   {
-    FreeLibrary(hDll);
-  }
-  else
-  {
-    _core.Log->AddLog("gfxDrvDXGIValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
+    _core.Log->AddLog("GfxDrvDXGI::ValidateRequirements() ERROR: dxgi.dll could not be loaded, falling back to DirectDraw.\n");
     _requirementsValidationResult = false;
     return false;
   }
+
+  FreeLibrary(hDll);
 
   GfxDrvDXGI dxgi;
   bool adaptersFound = dxgi.CreateAdapterList();
   if (!adaptersFound)
   {
-    _core.Log->AddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    _core.Log->AddLog("GfxDrvDXGI::ValidateRequirements() ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
     _requirementsValidationResult = false;
     return false;
   }
 
+  bool d3d11DeviceCanBeCreated = dxgi.CreateD3D11Device();
+  if (!d3d11DeviceCanBeCreated)
+  {
+    _core.Log->AddLog("GfxDrvDXGI::ValidateRequirements() ERROR: D3D11Device could not be created, falling back to DirectDraw.\n");
+    _requirementsValidationResult = false;
+    dxgi.DeleteAllResources();
+    return false;
+  }
+
+  _core.Log->AddLog("GfxDrvDXGI::ValidateRequirements() All tests OK.\n");
   _requirementsValidationResult = true;
   return true;
 }
@@ -160,6 +166,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
   if (FAILED(hr))
   {
     _core.Log->AddLog("Failed to query interface for IDXGIDevice\n");
+    DeleteAllResources();
     return false;
   }
 
@@ -169,6 +176,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
   if (FAILED(hr))
   {
     ReleaseCOM(&dxgiDevice);
+    DeleteAllResources();
     _core.Log->AddLog("Failed to get IDXGIAdapter via GetParent() on IDXGIDevice\n");
     return false;
   }
@@ -182,13 +190,17 @@ bool GfxDrvDXGI::CreateD3D11Device()
 
   if (FAILED(hr))
   {
+    ReleaseCOM(&dxgiAdapter);
     ReleaseCOM(&dxgiDevice);
-
+    DeleteAllResources();
     _core.Log->AddLog("Failed to get IDXGIFactory via GetParent() on IDXGIAdapter\n");
     return false;
   }
 
+  ReleaseCOM(&dxgiAdapter);
   ReleaseCOM(&dxgiDevice);
+
+  // Objects or references live at this point is _d3d11device, _dxgiFactory and _immediateContext
   return true;
 }
 
@@ -245,6 +257,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
     if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("Failed to create host screen texture.", hr);
+      DeleteAllResources();
       return false;
     }
   }
@@ -337,6 +350,7 @@ bool GfxDrvDXGI::CreateSwapChain()
   if (FAILED(hr))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create swap chain.", hr);
+    DeleteAllResources();
     return false;
   }
 
@@ -347,6 +361,11 @@ bool GfxDrvDXGI::CreateSwapChain()
 
 void GfxDrvDXGI::DeleteSwapChain()
 {
+  if (_swapChain == nullptr)
+  {
+    return;
+  }
+
   if (!gfxDrvCommon->GetOutputWindowed())
   {
     _swapChain->SetFullscreenState(FALSE, nullptr);
@@ -490,6 +509,7 @@ bool GfxDrvDXGI::CreateVertexShader()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create vertex shader.", result);
+    DeleteAllResources();
     return false;
   }
 
@@ -519,6 +539,7 @@ bool GfxDrvDXGI::CreateVertexShader()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create polygon layout.", result);
+    DeleteAllResources();
     return false;
   }
 
@@ -544,6 +565,7 @@ bool GfxDrvDXGI::CreatePixelShader()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create pixel shader.", result);
+    DeleteAllResources();
     return false;
   }
 
@@ -569,6 +591,7 @@ bool GfxDrvDXGI::CreatePixelShader()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create sampler state.", result);
+    DeleteAllResources();
     return false;
   }
 
@@ -586,8 +609,10 @@ bool GfxDrvDXGI::CreatePixelShader()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create matrix buffer.", result);
+    DeleteAllResources();
     return false;
   }
+
   return true;
 }
 
@@ -716,6 +741,7 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create vertex buffer.", result);
+    DeleteAllResources();
     return false;
   }
 
@@ -736,7 +762,7 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create index buffer.", result);
-    ReleaseCOM(&_vertexBuffer);
+    DeleteAllResources();
     return false;
   }
   return true;
@@ -771,8 +797,10 @@ bool GfxDrvDXGI::CreateDepthDisabledStencil()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create depth disabled stencil.", result);
+    DeleteAllResources();
     return false;
   }
+
   return true;
 }
 
@@ -1029,6 +1057,7 @@ bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
     _core.Log->AddLog("GfxDrvDXGI::EmulationStart() - Failed to create depth disabled stencil\n");
     return false;
   }
+
   return true;
 }
 
@@ -1054,6 +1083,11 @@ unsigned int GfxDrvDXGI::EmulationStartPost()
 }
 
 void GfxDrvDXGI::EmulationStop()
+{
+  DeleteAllResources();
+}
+
+void GfxDrvDXGI::DeleteAllResources()
 {
   if (_immediateContext != nullptr)
   {

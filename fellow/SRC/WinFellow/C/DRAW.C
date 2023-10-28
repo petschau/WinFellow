@@ -1016,7 +1016,7 @@ void drawHardReset()
 /* Called on emulation start                                                  */
 /*============================================================================*/
 
-void drawEmulationStart()
+bool drawEmulationStart()
 {
   uint32_t gfxModeNumberOfBuffers = (drawGetAllowMultipleBuffers() && !cfgGetDeinterlace(draw_config)) ? 3 : 1;
 
@@ -1024,29 +1024,41 @@ void drawEmulationStart()
   draw_frame_skip = 0;
   gfxDrvSetMode(draw_mode_current, draw_mode_current == &draw_mode_windowed);
 
-  gfxDrvEmulationStart(gfxModeNumberOfBuffers);
+  if (!gfxDrvEmulationStart(gfxModeNumberOfBuffers))
+  {
+    // Here the basic initialization of the graphics driver failed
+
+    // At this point it is hard to backtrack and do something else automatically like fall back to directdraw if direct3d 11 was used
+    // For instance the selection of screen modes might be different
+
+    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
+    return false;
+  }
+
   drawStatClear();
 
   drawSetDeinterlace(cfgGetDeinterlace(draw_config));
+
+  return true;
 }
 
-BOOLE drawEmulationStartPost()
+bool drawEmulationStartPost()
 {
   drawAmigaScreenGeometry(draw_buffer_info.width, draw_buffer_info.height);
   draw_buffer_count = gfxDrvEmulationStartPost();
-  bool result = (draw_buffer_count != 0);
-  if (result)
-  {
-    draw_buffer_show = 0;
-    draw_buffer_draw = draw_buffer_count - 1;
-    drawModeTablesInitialize();
-  }
-  else
+
+  if (draw_buffer_count == 0)
   {
     fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
+    return false;
   }
+
+  draw_buffer_show = 0;
+  draw_buffer_draw = draw_buffer_count - 1;
+  drawModeTablesInitialize();
+
   _core.Log->AddLog("drawEmulationStartPost(): Buffer is (%d,%d,%d)\n", draw_buffer_info.width, draw_buffer_info.height, draw_buffer_info.bits);
-  return result;
+  return true;
 }
 
 /*============================================================================*/

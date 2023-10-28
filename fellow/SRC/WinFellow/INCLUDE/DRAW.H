@@ -179,8 +179,8 @@ extern void drawInvalidateBufferPointer();
 
 extern void drawEndOfFrame();
 extern void drawHardReset();
-extern void drawEmulationStart();
-extern BOOLE drawEmulationStartPost();
+extern bool drawEmulationStart();
+extern bool drawEmulationStartPost();
 extern void drawEmulationStop();
 extern BOOLE drawStartup();
 extern void drawShutdown();
