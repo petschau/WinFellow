@@ -265,6 +265,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\RegistersUtilityTest.cpp" />
+    <ClCompile Include="Service\FileInformationTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WinFellow.Test.Infrastructure\WinFellow.Test.Infrastructure.vcxproj">

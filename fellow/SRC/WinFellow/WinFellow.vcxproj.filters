@@ -480,9 +480,6 @@
     <ClCompile Include="Windows\Service\FileopsWin32.cpp">
       <Filter>Windows\Service</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\Service\FileInformationWin32.cpp">
-      <Filter>Windows\Service</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xdms\include\cdata.h">
@@ -909,9 +906,6 @@
       <Filter>VirtualHost</Filter>
     </ClInclude>
     <ClInclude Include="Windows\Service\FileopsWin32.h">
-      <Filter>Windows\Service</Filter>
-    </ClInclude>
-    <ClInclude Include="Windows\Service\FileInformationWin32.h">
       <Filter>Windows\Service</Filter>
     </ClInclude>
   </ItemGroup>

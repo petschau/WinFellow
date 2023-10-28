@@ -383,8 +383,6 @@ BOOLE iniSaveToFilename(ini *initdata, char *filename)
 
 BOOLE iniSetOption(ini *initdata, char *initoptionstr)
 {
-  struct stat bla;
-
   char *value = strchr(initoptionstr, '=');
   BOOLE result = (value != nullptr);
   if (result)
@@ -403,8 +401,12 @@ BOOLE iniSetOption(ini *initdata, char *initoptionstr)
       }
       else
       {
-        if (_core.FileInformation->Stat(value, &bla) != 0)
+        auto fileProperties = _core.FileInformation->GetFileProperties(value);
+
+        if (fileProperties != nullptr)
         {
+          delete fileProperties;
+
           _core.Fileops->GetDefaultConfigFileName(ini_default_config_filename);
           iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
         }

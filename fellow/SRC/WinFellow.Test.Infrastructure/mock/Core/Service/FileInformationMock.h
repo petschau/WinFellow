@@ -7,7 +7,7 @@ namespace mock::Core::Service
   class FileInformationMock : public ::Service::IFileInformation
   {
   public:
-    ::Service::FileProperties *GetFileProperties(const char *filename) override;
-    int Stat(const char *szFilename, struct stat *pStatBuffer) override;
+    ::Service::FileProperties *GetFileProperties(const std::string &filename) override;
+    ::Service::FilePropertiesW *GetFilePropertiesW(const std::wstring &filename) override;
   };
 }

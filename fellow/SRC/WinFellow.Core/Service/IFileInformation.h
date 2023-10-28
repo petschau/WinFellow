@@ -1,21 +1,30 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 
 namespace Service
 {
   typedef enum
   {
+    Other,
     File,
     Directory,
-    Other
   } FileType;
 
   struct FileProperties
   {
     std::string Name;
     bool IsWritable;
-    uint32_t Size;
+    uintmax_t Size;
+    FileType Type;
+  };
+
+  struct FilePropertiesW
+  {
+    std::wstring Name;
+    bool IsWritable;
+    uintmax_t Size;
     FileType Type;
   };
 
@@ -23,7 +32,8 @@ namespace Service
   {
   public:
     virtual ~IFileInformation() = default;
-    virtual FileProperties *GetFileProperties(const char *filename) = 0;
-    virtual int Stat(const char *szFilename, struct stat *pStatBuffer) = 0;
+
+    virtual FileProperties *GetFileProperties(const std::string &filename) = 0;
+    virtual FilePropertiesW *GetFilePropertiesW(const std::wstring &filename) = 0;
   };
 }

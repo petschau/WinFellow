@@ -4,10 +4,16 @@
     <Filter Include="CustomChipset">
       <UniqueIdentifier>{bea4e31d-3a86-4fb6-b238-4d405eb5d6a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Service">
+      <UniqueIdentifier>{8c59fb09-1aac-4b1e-9abe-d37a7d9fc7fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\RegistersUtilityTest.cpp">
       <Filter>CustomChipset</Filter>
+    </ClCompile>
+    <ClCompile Include="Service\FileInformationTest.cpp">
+      <Filter>Service</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

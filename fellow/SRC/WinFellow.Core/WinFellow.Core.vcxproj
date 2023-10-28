@@ -38,6 +38,7 @@
     <ClInclude Include="IO\RtcOkiMsm6242rs.h" />
     <ClInclude Include="IO\Uart.h" />
     <ClInclude Include="NullDriver\Sound\NullSound.h" />
+    <ClInclude Include="Service\FileInformation.h" />
     <ClInclude Include="Service\IFileops.h" />
     <ClInclude Include="Service\IFileInformation.h" />
     <ClInclude Include="Service\ILog.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="CustomChipset\RegisterUtility.cpp" />
     <ClCompile Include="IO\RtcOkiMsm6242rs.cpp" />
     <ClCompile Include="NullDriver\Sound\NullSound.cpp" />
+    <ClCompile Include="Service\FileInformation.cpp" />
     <ClCompile Include="Service\Log.cpp" />
     <ClCompile Include="VirtualHost\Core.cpp" />
   </ItemGroup>

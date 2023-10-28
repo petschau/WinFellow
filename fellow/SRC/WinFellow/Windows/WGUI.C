@@ -1502,19 +1502,19 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
     MessageBox(wgui_hDialog, s, "Configuration Error", 0);
   }
 
-  struct stat StatBuffer = {};
-  int result = _core.FileInformation->Stat(hf->filename, &StatBuffer);
+  auto fileProperties = _core.FileInformation->GetFileProperties(hf->filename);
 
-  if (result != 0)
+  if (fileProperties == nullptr)
   {
     char s[256];
     sprintf(s, "ERROR: Unable to open hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", hf->filename);
     MessageBox(wgui_hDialog, s, "Configuration Error", 0);
   }
 
-  if (result == 0 && hf->bytespersector != 0 && hf->sectorspertrack != 0 && hf->surfaces != 0)
+  if (fileProperties != nullptr && hf->bytespersector != 0 && hf->sectorspertrack != 0 && hf->surfaces != 0)
   {
-    configuration.Geometry.HighCylinder = (StatBuffer.st_size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1;
+    configuration.Geometry.HighCylinder = (unsigned int)((fileProperties->Size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1);
+    delete fileProperties;
   }
 
   configuration.Geometry.BytesPerSector = hf->bytespersector;

@@ -75,6 +75,9 @@
     <ClInclude Include="Service\IFileInformation.h">
       <Filter>Service</Filter>
     </ClInclude>
+    <ClInclude Include="Service\FileInformation.h">
+      <Filter>Service</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="IO\RtcOkiMsm6242rs.cpp">
       <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Service\FileInformation.cpp">
+      <Filter>Service</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

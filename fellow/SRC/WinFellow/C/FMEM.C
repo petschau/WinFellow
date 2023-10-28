@@ -2854,10 +2854,10 @@ void memoryKickLoad()
         memoryKickError(MEMORY_ROM_ERROR_EXISTS_NOT, 0);
 
       else
-        memory_kickimage_size = fileProperties->Size;
+        memory_kickimage_size = (uint32_t)fileProperties->Size;
     }
 
-    free(fileProperties);
+    delete fileProperties;
   }
 
   /* Either the file is open, or memory_kickimage_none is TRUE */
@@ -3046,9 +3046,9 @@ void memoryKickExtendedLoad()
 
   if ((F = fopen(memory_kickimage_ext, "rb")) == nullptr) return;
 
-  size = fsnp->Size;
+  size = (uint32_t)fsnp->Size;
 
-  free(fsnp);
+  delete fsnp;
 
   if (F)
   {
