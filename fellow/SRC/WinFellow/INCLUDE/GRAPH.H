@@ -48,6 +48,8 @@ void wbpl1mod(uint16_t data, uint32_t address);
 void wbpl2mod(uint16_t data, uint32_t address);
 void wcolor(uint16_t data, uint32_t address);
 
+typedef void (*planar2chunkyroutine)();
+
 extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
 extern planar2chunkyroutine graph_decode_line_dual_tab[16];

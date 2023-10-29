@@ -93,6 +93,15 @@
 using namespace std;
 using namespace fellow::api;
 
+#ifndef X64
+#define PTR_TO_INT(i) ((uint32_t)i)
+#define PTR_TO_INT_MASK_TYPE(i) ((uint32_t)i)
+#endif
+#ifdef X64
+#define PTR_TO_INT(i) ((uint64_t)i)
+#define PTR_TO_INT_MASK_TYPE(i) ((uint64_t)i)
+#endif
+
 /*==========================================================================*/
 /* Structs for holding information about a DirectDraw device and mode       */
 /*==========================================================================*/
