@@ -37,7 +37,7 @@
 #include "gameport.h"
 #include "kbd.h"
 #include "graph.h"
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 #include "bus.h"
 #include "copper.h"
 #include "cia.h"
@@ -60,7 +60,6 @@
 #include "VirtualHost/Core.h"
 #include "VirtualHost/CoreFactory.h"
 
-using namespace fellow::api::module;
 using namespace fellow::api;
 
 BOOLE fellow_request_emulation_stop;
@@ -164,7 +163,7 @@ void fellowSoftReset()
 {
   memorySoftReset();
   interruptSoftReset();
-  HardfileHandler->HardReset();
+  _core.HardfileHandler->HardReset();
   spriteHardReset();
   drawHardReset();
   kbdHardReset();
@@ -190,7 +189,7 @@ void fellowHardReset()
 {
   memoryHardReset();
   interruptHardReset();
-  HardfileHandler->HardReset();
+  _core.HardfileHandler->HardReset();
   spriteHardReset();
   drawHardReset();
   kbdHardReset();
@@ -265,7 +264,7 @@ bool fellowEmulationStart()
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStart();
 
   _core.Uart->EmulationStart();
-  HardfileHandler->EmulationStart();
+  _core.HardfileHandler->EmulationStart();
 
   return memoryGetKickImageOK();
 }
@@ -279,7 +278,7 @@ void fellowEmulationStop()
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.EmulationStop();
 #endif
-  HardfileHandler->EmulationStop();
+  _core.HardfileHandler->EmulationStop();
   timerEmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
@@ -465,7 +464,7 @@ static void fellowModulesStartup(int argc, const char **argv)
 
   chipsetStartup();
   timerStartup();
-  HardfileHandler->Startup();
+  _core.HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
   iniStartup();
@@ -521,10 +520,9 @@ static void fellowModulesShutdown()
   iniShutdown();
   spriteShutdown();
   ffilesysShutdown();
-  HardfileHandler->Shutdown();
+  _core.HardfileHandler->Shutdown();
   timerShutdown();
 
-  delete HardfileHandler;
   delete fellow::api::Service;
   delete fellow::api::VM;
 

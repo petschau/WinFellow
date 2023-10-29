@@ -4,7 +4,7 @@
 #include "hardfile/rdb/CheckSumCalculator.h"
 
 using namespace std;
-using namespace fellow::api::module;
+using namespace Module::Hardfile;
 
 namespace fellow::hardfile::rdb
 {

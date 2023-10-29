@@ -38,6 +38,11 @@
     <ClInclude Include="Driver\SoundDriverRuntimeConfiguration.h" />
     <ClInclude Include="IO\RtcOkiMsm6242rs.h" />
     <ClInclude Include="IO\Uart.h" />
+    <ClInclude Include="Module\Hardfile\HardfileConfiguration.h" />
+    <ClInclude Include="Module\Hardfile\HardfileGeometry.h" />
+    <ClInclude Include="Module\Hardfile\HardfilePartition.h" />
+    <ClInclude Include="Module\Hardfile\IHardfileHandler.h" />
+    <ClInclude Include="Module\Hardfile\RdbStatus.h" />
     <ClInclude Include="NullDriver\Sound\NullSound.h" />
     <ClInclude Include="Portable.h" />
     <ClInclude Include="Service\FileInformation.h" />
@@ -51,6 +56,8 @@
     <ClCompile Include="CustomChipset\Registers.cpp" />
     <ClCompile Include="CustomChipset\RegisterUtility.cpp" />
     <ClCompile Include="IO\RtcOkiMsm6242rs.cpp" />
+    <ClCompile Include="Module\Hardfile\HardfileConfiguration.cpp" />
+    <ClCompile Include="Module\Hardfile\HardfileGeometry.cpp" />
     <ClCompile Include="NullDriver\Sound\NullSound.cpp" />
     <ClCompile Include="Service\FileInformation.cpp" />
     <ClCompile Include="Service\Log.cpp" />

@@ -52,7 +52,7 @@
 #include "windrv.h"
 #include "ListTree.h"
 #include "gameport.h"
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 #include "config.h"
 #include "draw.h"
 #include "wdbg.h"
@@ -70,7 +70,7 @@
 #include "FFILESYS.H"
 #include "versioninfo.h"
 
-using namespace fellow::api::module;
+using namespace Module::Hardfile;
 using namespace CustomChipset;
 
 HWND wgui_hDialog; /* Handle of the main dialog box */
@@ -1485,7 +1485,7 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
 
   if (hf->rdbstatus == rdb_status::RDB_FOUND)
   {
-    configuration = HardfileHandler->GetConfigurationFromRDBGeometry(hf->filename);
+    configuration = _core.HardfileHandler->GetConfigurationFromRDBGeometry(hf->filename);
   }
 
   if (hf->rdbstatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
@@ -2882,7 +2882,7 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
             }
 
             // creates the HDF file
-            if (!HardfileHandler->Create(hfile, (uint32_t)size))
+            if (!_core.HardfileHandler->Create(hfile, (uint32_t)size))
             {
               MessageBox(hwndDlg, "Failed to create file", "Create Hardfile", 0);
               break;
@@ -2945,7 +2945,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
           wgui_current_hardfile_edit->surfaces,
           wgui_current_hardfile_edit->reservedblocks,
           wgui_current_hardfile_edit->bytespersector,
-          HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename) == rdb_status::RDB_NOT_FOUND);
+          _core.HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename) == rdb_status::RDB_NOT_FOUND);
       return TRUE;
     case WM_COMMAND:
       if (HIWORD(wParam) == BN_CLICKED)
@@ -2955,7 +2955,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
           case IDC_BUTTON_HARDFILE_ADD_FILEDIALOG:
             if (wguiSelectFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile", FSEL_HDF))
             {
-              rdb_status rdbStatus = HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
+              rdb_status rdbStatus = _core.HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
               if (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
               {
                 char s[256];
@@ -2973,7 +2973,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
                 ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
                 if (rdbStatus == rdb_status::RDB_FOUND)
                 {
-                  const HardfileConfiguration configuration = HardfileHandler->GetConfigurationFromRDBGeometry(wgui_current_hardfile_edit->filename);
+                  const HardfileConfiguration configuration = _core.HardfileHandler->GetConfigurationFromRDBGeometry(wgui_current_hardfile_edit->filename);
                   const HardfileGeometry &geometry = configuration.Geometry;
                   wguiHardfileAddDialogSetGeometryEdits(
                       hwndDlg,
@@ -2998,7 +2998,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
               MessageBox(hwndDlg, "You must specify a hardfile name", "Edit Hardfile", 0);
               break;
             }
-            wgui_current_hardfile_edit->rdbstatus = HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
+            wgui_current_hardfile_edit->rdbstatus = _core.HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
             ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp, 32);
             if (wgui_current_hardfile_edit->rdbstatus == rdb_status::RDB_NOT_FOUND && atoi(stmp) < 1)
             {

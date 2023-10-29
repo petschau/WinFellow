@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Driver/Drivers.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 #include "Service/ILog.h"
 #include "Service/IFileops.h"
 #include "Service/IFileInformation.h"
@@ -18,6 +19,8 @@ public:
   Sound *Sound;
   Uart *Uart;
   RtcOkiMsm6242rs *RtcOkiMsm6242rs;
+
+  Module::Hardfile::IHardfileHandler *HardfileHandler;
 
   Drivers Drivers;
   Service::ILog *Log;

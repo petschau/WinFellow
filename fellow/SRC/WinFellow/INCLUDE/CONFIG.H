@@ -4,7 +4,7 @@
 #include "CpuIntegration.h"
 #include "gameport.h"
 #include "ListTree.h"
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 
 #include <string>
 
@@ -20,7 +20,7 @@ typedef struct
   uint32_t sectorspertrack;
   uint32_t surfaces;
   uint32_t reservedblocks;
-  fellow::api::module::rdb_status rdbstatus;
+  Module::Hardfile::rdb_status rdbstatus;
 } cfg_hardfile;
 
 /*============================================================================*/

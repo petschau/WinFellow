@@ -61,9 +61,6 @@
     <Filter Include="fellow\vm">
       <UniqueIdentifier>{2c26c775-ae0b-4bda-9d2d-41c9c45dc9bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="fellow\api\module">
-      <UniqueIdentifier>{bea23d8d-ea57-414c-8500-178645ffc0b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="fellow\api\service">
       <UniqueIdentifier>{737e3c60-d979-4f05-a032-f1469bcd8e6b}</UniqueIdentifier>
     </Filter>
@@ -733,9 +730,6 @@
     </ClInclude>
     <ClInclude Include="fellow\api\VM.h">
       <Filter>fellow\api</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\module\IHardfileHandler.h">
-      <Filter>fellow\api\module</Filter>
     </ClInclude>
     <ClInclude Include="fellow\api\vm\IM68K.h">
       <Filter>fellow\api\vm</Filter>

@@ -29,7 +29,7 @@
 #include "Defs.h"
 #include "fellow/api/Services.h"
 #include "fellow/api/VM.h"
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 #include "hardfile/HardfileHandler.h"
 #include "hardfile/rdb/RDBHandler.h"
 #include "hardfile/hunks/HunkRelocator.h"
@@ -38,14 +38,9 @@
 using namespace Service;
 using namespace fellow::hardfile::rdb;
 using namespace fellow::api::service;
-using namespace fellow::api::module;
+using namespace Module::Hardfile;
 using namespace fellow::api;
 using namespace std;
-
-namespace fellow::api::module
-{
-  IHardfileHandler *HardfileHandler = new fellow::hardfile::HardfileHandler();
-}
 
 namespace fellow::hardfile
 {
@@ -66,27 +61,27 @@ namespace fellow::hardfile
 
   void HardfileHandler_CardInit()
   {
-    fellow::api::module::HardfileHandler->CardInit();
+    _core.HardfileHandler->CardInit();
   }
 
   void HardfileHandler_CardMap(uint32_t mapping)
   {
-    fellow::api::module::HardfileHandler->CardMap(mapping);
+    _core.HardfileHandler->CardMap(mapping);
   }
 
   uint8_t HardfileHandler_ReadByte(uint32_t address)
   {
-    return fellow::api::module::HardfileHandler->ReadByte(address);
+    return _core.HardfileHandler->ReadByte(address);
   }
 
   uint16_t HardfileHandler_ReadWord(uint32_t address)
   {
-    return fellow::api::module::HardfileHandler->ReadWord(address);
+    return _core.HardfileHandler->ReadWord(address);
   }
 
   uint32_t HardfileHandler_ReadLong(uint32_t address)
   {
-    return fellow::api::module::HardfileHandler->ReadLong(address);
+    return _core.HardfileHandler->ReadLong(address);
   }
 
   void HardfileHandler_WriteByte(uint8_t data, uint32_t address)
@@ -2400,7 +2395,7 @@ namespace fellow::hardfile
   /* Create hardfile          */
   /*==========================*/
 
-  bool HardfileHandler::Create(const fellow::api::module::HardfileConfiguration &configuration, uint32_t size)
+  bool HardfileHandler::Create(const HardfileConfiguration &configuration, uint32_t size)
   {
     bool result = false;
 

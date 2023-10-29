@@ -91,7 +91,6 @@
 #endif
 
 using namespace std;
-using namespace fellow::api;
 
 #ifndef X64
 #define PTR_TO_INT(i) ((uint32_t)i)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 #include "hardfile/rdb/RDB.h"
 
 namespace fellow::hardfile
@@ -46,7 +46,7 @@ namespace fellow::hardfile
   {
   public:
     // Filename and geometry as listed in the config or on the RDB
-    fellow::api::module::HardfileConfiguration Configuration;
+    Module::Hardfile::HardfileConfiguration Configuration;
 
     // Internal properties, actual runtime values used for the hardfile
     bool Readonly;
