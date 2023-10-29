@@ -1,14 +1,12 @@
-#include "fellow/api/Services.h"
 #include "VirtualHost/Core.h"
 
 #include "mock/Core/Service/LogMock.h"
 #include "mock/Core/Service/FileInformationMock.h"
 
-#include "mock/service/HUDMock.h"
-#include "mock/service/RetroPlatformWrapperMock.h"
+#include "mock/Core/Service/HUDMock.h"
+#include "mock/Core/Service/RetroPlatformWrapperMock.h"
 
 using namespace fellow::api;
-using namespace test::mock::fellow::api::service;
 using namespace mock::Core::Service;
 
 namespace fellow::api

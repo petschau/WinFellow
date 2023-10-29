@@ -32,10 +32,8 @@
 #include "Defs.h"
 #include "DirectSoundDriver.h"
 #include "windrv.h"
-#include "fellow/api/Services.h"
 #include "VirtualHost/Core.h"
 
-using namespace fellow::api;
 using namespace CustomChipset;
 
 const char *DirectSoundDriver::DSoundErrorString(HRESULT hResult)

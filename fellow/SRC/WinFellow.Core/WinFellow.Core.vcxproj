@@ -48,7 +48,9 @@
     <ClInclude Include="Service\FileInformation.h" />
     <ClInclude Include="Service\IFileops.h" />
     <ClInclude Include="Service\IFileInformation.h" />
+    <ClInclude Include="Service\IHud.h" />
     <ClInclude Include="Service\ILog.h" />
+    <ClInclude Include="Service\IRetroPlatform.h" />
     <ClInclude Include="Service\Log.h" />
     <ClInclude Include="VirtualHost\Core.h" />
   </ItemGroup>

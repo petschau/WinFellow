@@ -101,6 +101,12 @@
     <ClInclude Include="Module\Hardfile\RdbStatus.h">
       <Filter>Module\Hardfile</Filter>
     </ClInclude>
+    <ClInclude Include="Service\IHud.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Service\IRetroPlatform.h">
+      <Filter>Service</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">

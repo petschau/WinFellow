@@ -1,10 +1,11 @@
 #pragma once
-namespace fellow::api::service
+
+namespace Service
 {
-  class IHUD
+  class IHud
   {
   public:
-    virtual ~IHUD() = default;
+    virtual ~IHud() = default;
     virtual void SetFloppyLED(int driveIndex, bool active, bool write) = 0;
     virtual void SetHarddiskLED(int deviceIndex, bool active, bool write) = 0;
   };

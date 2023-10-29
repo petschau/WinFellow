@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Defs.h"
+#include <cstdint>
 
-namespace fellow::api::service
+namespace Service
 {
   class IRetroPlatform
   {

@@ -54,7 +54,6 @@
 
 #include "graphics/Graphics.h"
 #include "../automation/Automator.h"
-#include "fellow/api/Services.h"
 #include "fellow/api/VM.h"
 
 #include "VirtualHost/Core.h"
@@ -523,7 +522,6 @@ static void fellowModulesShutdown()
   _core.HardfileHandler->Shutdown();
   timerShutdown();
 
-  delete fellow::api::Service;
   delete fellow::api::VM;
 
   CoreFactory::DestroyModules();

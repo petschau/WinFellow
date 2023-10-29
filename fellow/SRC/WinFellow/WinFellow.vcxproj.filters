@@ -55,14 +55,8 @@
     <Filter Include="fellow\api">
       <UniqueIdentifier>{53c74a65-4800-4187-9e67-dfc45a8676a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="fellow\service">
-      <UniqueIdentifier>{7be8a4ec-ba20-4ef0-9b2c-f3e9de96ad9e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="fellow\vm">
       <UniqueIdentifier>{2c26c775-ae0b-4bda-9d2d-41c9c45dc9bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\api\service">
-      <UniqueIdentifier>{737e3c60-d979-4f05-a032-f1469bcd8e6b}</UniqueIdentifier>
     </Filter>
     <Filter Include="fellow\api\vm">
       <UniqueIdentifier>{3fd128fb-e4d3-49ad-a62f-72d00f4b2e54}</UniqueIdentifier>
@@ -306,15 +300,6 @@
     <ClCompile Include="DXGI\GfxDrvDXGIOutputEnumerator.cpp">
       <Filter>DXGI</Filter>
     </ClCompile>
-    <ClCompile Include="fellow\service\HUD.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\service\RetroPlatformWrapper.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\service\Services.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
     <ClCompile Include="fellow\vm\M68K.cpp">
       <Filter>fellow\vm</Filter>
     </ClCompile>
@@ -475,6 +460,12 @@
       <Filter>VirtualHost</Filter>
     </ClCompile>
     <ClCompile Include="Windows\Service\FileopsWin32.cpp">
+      <Filter>Windows\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\Service\Hud.cpp">
+      <Filter>Windows\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\Service\RetroPlatformWrapper.cpp">
       <Filter>Windows\Service</Filter>
     </ClCompile>
   </ItemGroup>
@@ -725,9 +716,6 @@
     <ClInclude Include="DXGI\GfxDrvDXGIOutputEnumerator.h">
       <Filter>DXGI</Filter>
     </ClInclude>
-    <ClInclude Include="fellow\api\Services.h">
-      <Filter>fellow\api</Filter>
-    </ClInclude>
     <ClInclude Include="fellow\api\VM.h">
       <Filter>fellow\api</Filter>
     </ClInclude>
@@ -736,18 +724,6 @@
     </ClInclude>
     <ClInclude Include="fellow\api\vm\IMemorySystem.h">
       <Filter>fellow\api\vm</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\service\IHUD.h">
-      <Filter>fellow\api\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\service\IRetroPlatform.h">
-      <Filter>fellow\api\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\service\HUD.h">
-      <Filter>fellow\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\service\RetroPlatformWrapper.h">
-      <Filter>fellow\service</Filter>
     </ClInclude>
     <ClInclude Include="fellow\vm\M68K.h">
       <Filter>fellow\vm</Filter>
@@ -888,6 +864,12 @@
       <Filter>VirtualHost</Filter>
     </ClInclude>
     <ClInclude Include="Windows\Service\FileopsWin32.h">
+      <Filter>Windows\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Service\Hud.h">
+      <Filter>Windows\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Service\RetroPlatformWrapper.h">
       <Filter>Windows\Service</Filter>
     </ClInclude>
   </ItemGroup>

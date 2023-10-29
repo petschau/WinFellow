@@ -27,7 +27,6 @@
 #include <algorithm>
 
 #include "Defs.h"
-#include "fellow/api/Services.h"
 #include "fellow/api/VM.h"
 #include "Module/Hardfile/IHardfileHandler.h"
 #include "hardfile/HardfileHandler.h"
@@ -37,9 +36,7 @@
 
 using namespace Service;
 using namespace fellow::hardfile::rdb;
-using namespace fellow::api::service;
 using namespace Module::Hardfile;
-using namespace fellow::api;
 using namespace std;
 
 namespace fellow::hardfile
@@ -510,7 +507,7 @@ namespace fellow::hardfile
 
     _core.Log->AddLog("SetHardfile('%s', %u)\n", configuration.Filename.c_str(), index);
 
-    fellow::api::Service->RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
+    RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
   }
 
   bool HardfileHandler::CompareHardfile(const HardfileConfiguration &configuration, unsigned int index)

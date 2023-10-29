@@ -1,10 +1,10 @@
 #pragma once
 
-#include "fellow/api/service/IHUD.h"
+#include "Service/IHud.h"
 
 namespace test::mock::fellow::api::service
 {
-  class HUDMock : public ::fellow::api::service::IHUD
+  class HUDMock : public ::Service::IHud
   {
   public:
     void SetFloppyLED(int driveIndex, bool active, bool write) override;
