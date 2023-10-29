@@ -25,7 +25,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "defs.h"
+#include "Defs.h"
 
 BOOLE gzUnpack(const char *src, const char *dest);
 BOOLE gzPack(const char *src, const char *dest);

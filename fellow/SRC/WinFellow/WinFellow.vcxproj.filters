@@ -614,9 +614,6 @@
     <ClInclude Include="INCLUDE\CpuModule_Profile.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\DEFS.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\DRAW.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -730,12 +727,6 @@
     </ClInclude>
     <ClInclude Include="DXGI\GfxDrvDXGIOutputEnumerator.h">
       <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\defs.h">
-      <Filter>fellow\api</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\portable.h">
-      <Filter>fellow\api</Filter>
     </ClInclude>
     <ClInclude Include="fellow\api\Services.h">
       <Filter>fellow\api</Filter>
@@ -864,9 +855,6 @@
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\modrip_win32.h">
-      <Filter>Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="Windows\PORTABLE.H">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\RetroPlatform.h">

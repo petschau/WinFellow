@@ -25,7 +25,7 @@
 #include <cmath>
 #include <algorithm>
 
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 #include "bus.h"
 #include "draw.h"

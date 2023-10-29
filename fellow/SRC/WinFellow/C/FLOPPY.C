@@ -50,7 +50,7 @@
 #include <crtdbg.h>
 #endif
 
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 #include "chipset.h"
 #include "fmem.h"

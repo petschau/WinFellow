@@ -1,4 +1,4 @@
-#include "DEFS.H"
+#include "Defs.h"
 #include "SpriteP2CDecoder.h"
 
 sprite_deco SpriteP2CDecoder::sprite_deco4[4][2][256];

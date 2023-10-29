@@ -69,7 +69,7 @@ Monday, February 04, 2008
 
 */
 
-#include "defs.h"
+#include "Defs.h"
 #include <windows.h>
 #include "gameport.h"
 #include "fellow.h"

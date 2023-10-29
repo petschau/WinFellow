@@ -4,7 +4,7 @@
 #include <D3D11.h>
 #include <DirectXMath.h>
 
-#include "DEFS.H"
+#include "Defs.h"
 #include "GfxDrvDXGIAdapter.h"
 #include "DRAW.H"
 

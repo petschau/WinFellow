@@ -32,12 +32,14 @@
     <ClInclude Include="CustomChipset\Sound\Sound.h" />
     <ClInclude Include="CustomChipset\Sound\SoundConfiguration.h" />
     <ClInclude Include="CustomChipset\Sound\WavFileWriter.h" />
+    <ClInclude Include="Defs.h" />
     <ClInclude Include="Driver\Drivers.h" />
     <ClInclude Include="Driver\ISoundDriver.h" />
     <ClInclude Include="Driver\SoundDriverRuntimeConfiguration.h" />
     <ClInclude Include="IO\RtcOkiMsm6242rs.h" />
     <ClInclude Include="IO\Uart.h" />
     <ClInclude Include="NullDriver\Sound\NullSound.h" />
+    <ClInclude Include="Portable.h" />
     <ClInclude Include="Service\FileInformation.h" />
     <ClInclude Include="Service\IFileops.h" />
     <ClInclude Include="Service\IFileInformation.h" />

@@ -38,7 +38,7 @@
 #include "gfxdrv.h"
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
-#include "defs.h"
+#include "Defs.h"
 
 #define RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS 100
 #define RETRO_PLATFORM_KEYSET_COUNT 6 ///< north, east, south, west, fire, autofire

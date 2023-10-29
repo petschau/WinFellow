@@ -59,7 +59,7 @@
 
 #define INITGUID
 
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include <windowsx.h>
 #include "gui_general.h"
 #include <ddraw.h>

@@ -26,7 +26,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include "fellow/api/Services.h"
 #include "fellow/api/VM.h"
 #include "fellow/api/module/IHardfileHandler.h"

@@ -1,6 +1,6 @@
 #include "fellow/service/HUD.h"
 #include "fellow/api/Services.h"
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include "DRAW.H"
 
 #ifdef RETRO_PLATFORM

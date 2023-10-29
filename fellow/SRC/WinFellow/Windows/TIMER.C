@@ -21,7 +21,7 @@
 
 /*=========================================================================*/
 #include <list>
-#include "defs.h"
+#include "Defs.h"
 #include <windows.h>
 #include "fellow.h"
 #include "TIMER.H"

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "fellow/api/defs.h"
+#include "Defs.h"
 
 #define FHFILE_MAX_DEVICES 20
 

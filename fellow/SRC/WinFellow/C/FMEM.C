@@ -48,7 +48,7 @@
 
 #endif
 
-#include "defs.h"
+#include "Defs.h"
 
 #include "fellow.h"
 

@@ -1,5 +1,5 @@
 #include "GfxDrvDXGIErrorLogger.h"
-#include "DEFS.H"
+#include "Defs.h"
 #include "FELLOW.H"
 #include "VirtualHost/Core.h"
 

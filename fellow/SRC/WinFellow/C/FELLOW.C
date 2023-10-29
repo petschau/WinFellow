@@ -25,7 +25,7 @@
 
 #include <time.h>
 
-#include "defs.h"
+#include "Defs.h"
 #include "versioninfo.h"
 #include "fellow.h"
 #include "chipset.h"

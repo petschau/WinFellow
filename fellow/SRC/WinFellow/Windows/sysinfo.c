@@ -30,7 +30,7 @@
 
 #include <windows.h>
 #include <excpt.h>
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 #include "sysinfo.h"
 #include "VirtualHost/Core.h"

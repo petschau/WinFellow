@@ -78,6 +78,8 @@
     <ClInclude Include="Service\FileInformation.h">
       <Filter>Service</Filter>
     </ClInclude>
+    <ClInclude Include="Defs.h" />
+    <ClInclude Include="Portable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">

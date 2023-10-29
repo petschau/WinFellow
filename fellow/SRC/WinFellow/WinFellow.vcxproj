@@ -1209,9 +1209,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="DXGI\GfxDrvDXGIModeEnumerator.h" />
     <ClInclude Include="DXGI\GfxDrvDXGIOutput.h" />
     <ClInclude Include="DXGI\GfxDrvDXGIOutputEnumerator.h" />
-    <ClInclude Include="fellow\api\defs.h" />
     <ClInclude Include="fellow\api\module\IHardfileHandler.h" />
-    <ClInclude Include="fellow\api\portable.h" />
     <ClInclude Include="fellow\api\Services.h" />
     <ClInclude Include="fellow\api\service\IHUD.h" />
     <ClInclude Include="fellow\api\service\IRetroPlatform.h" />
@@ -1254,7 +1252,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\CpuModule_Internal.h" />
     <ClInclude Include="INCLUDE\CpuModule_Memory.h" />
     <ClInclude Include="INCLUDE\CpuModule_Profile.h" />
-    <ClInclude Include="INCLUDE\DEFS.H" />
     <ClInclude Include="INCLUDE\DRAW.H" />
     <ClInclude Include="INCLUDE\draw_interlace_control.h" />
     <ClInclude Include="INCLUDE\draw_pixelrenderers.h" />
@@ -1305,7 +1302,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\gfxdrv_directdraw.h" />
     <ClInclude Include="Windows\kbdparser.h" />
     <ClInclude Include="Windows\modrip_win32.h" />
-    <ClInclude Include="Windows\PORTABLE.H" />
     <ClInclude Include="Windows\RetroPlatform.h" />
     <ClInclude Include="Windows\RetroPlatformGuestIPC.h" />
     <ClInclude Include="Windows\RetroPlatformIPC.h" />

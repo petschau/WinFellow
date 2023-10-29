@@ -27,7 +27,7 @@ Tuesday, September 19, 2000
 - added autofire support
 */
 
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 #include "draw.h"
 #include "fmem.h"

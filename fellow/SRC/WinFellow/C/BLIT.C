@@ -8,7 +8,7 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 #include "blit.h"
 #include "fmem.h"
@@ -22,8 +22,8 @@
 
 using namespace CustomChipset;
 
-//#define BLIT_VERIFY_MINTERMS
-//#define BLIT_OPERATION_LOG
+// #define BLIT_VERIFY_MINTERMS
+// #define BLIT_OPERATION_LOG
 
 /*============================================================================*/
 /* Blitter registers                                                          */

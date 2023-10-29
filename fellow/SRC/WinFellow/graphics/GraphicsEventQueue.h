@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DEFS.H"
+#include "Defs.h"
 #include "GraphicsEvent.h"
 
 class GraphicsEventQueue

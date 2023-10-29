@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DEFS.H"
+#include "Defs.h"
 #include "COPPER.H"
 
 typedef enum CopperStates_

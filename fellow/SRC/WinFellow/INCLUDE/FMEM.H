@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DEFS.H"
+#include "Defs.h"
 
 /* Access for chipset emulation that already have validated addresses */
 

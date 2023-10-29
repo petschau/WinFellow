@@ -1,5 +1,4 @@
-#include "PORTABLE.H"
-#include "DEFS.H"
+#include "Defs.h"
 #include "FELLOW.H"
 #include "WINDRV.H"
 #include "Ini.h"

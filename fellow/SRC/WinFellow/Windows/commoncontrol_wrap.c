@@ -26,7 +26,7 @@
 #include <cstdio>
 #include <commctrl.h>
 
-#include "defs.h"
+#include "Defs.h"
 #include "commoncontrol_wrap.h"
 
 //#include "windrv.h"

@@ -26,7 +26,7 @@
  *  Window GUI code
  */
 
-#include "defs.h"
+#include "Defs.h"
 
 #include <windows.h>
 #include <windowsx.h>

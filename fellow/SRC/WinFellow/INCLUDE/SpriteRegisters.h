@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DEFS.H"
+#include "Defs.h"
 
 extern void wsprxpth(uint16_t data, uint32_t address);
 extern void wsprxptl(uint16_t data, uint32_t address);

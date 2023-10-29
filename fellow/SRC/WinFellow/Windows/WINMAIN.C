@@ -22,7 +22,7 @@
 #include <windows.h>
 
 #include "gui_general.h"
-#include "defs.h"
+#include "Defs.h"
 #include "versioninfo.h"
 #include "wgui.h"
 #include "wdbg.h"

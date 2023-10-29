@@ -91,7 +91,7 @@
  * RetroPlatformIPC.h).
  */
 
-#include "defs.h"
+#include "Defs.h"
 
 #include "RetroPlatform.h"
 #include "RetroPlatformGuestIPC.h"

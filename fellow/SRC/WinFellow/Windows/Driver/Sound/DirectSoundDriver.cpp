@@ -29,7 +29,7 @@
 #include <windowsx.h>
 
 #include "GfxDrvCommon.h"
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include "DirectSoundDriver.h"
 #include "windrv.h"
 #include "fellow/api/Services.h"

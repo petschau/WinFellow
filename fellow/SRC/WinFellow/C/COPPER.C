@@ -22,7 +22,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include "DRAW.H"
 #include "CopperRegisters.h"
 #include "LineExactCopper.h"

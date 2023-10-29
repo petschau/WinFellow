@@ -1,4 +1,4 @@
-#include "DEFS.H"
+#include "Defs.h"
 #include "Script.h"
 #include "BUS.H"
 #include "KBD.H"

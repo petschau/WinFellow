@@ -32,7 +32,7 @@
 #include <sstream>
 #include <vector>
 
-#include "defs.h"
+#include "Defs.h"
 #include "versioninfo.h"
 #include "chipset.h"
 #include "floppy.h"
