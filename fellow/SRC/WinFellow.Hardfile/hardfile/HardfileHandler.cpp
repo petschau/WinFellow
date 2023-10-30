@@ -561,11 +561,6 @@ namespace fellow::hardfile
 
   int8_t HardfileHandler::Read(uint32_t index)
   {
-    if (index == 2)
-    {
-      int ihj = 0;
-    }
-
     if (_devices[index].F == nullptr)
     {
       _log.AddLogDebug("CMD_READ Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);

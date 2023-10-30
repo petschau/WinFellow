@@ -1133,6 +1133,7 @@ GfxDrvDXGI::GfxDrvDXGI()
 GfxDrvDXGI::~GfxDrvDXGI()
 {
   Shutdown();
+  DeleteAllResources();
 }
 
 bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *filename)
