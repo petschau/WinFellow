@@ -1,7 +1,7 @@
 #include "hardfile/HardfileStructs.h"
-#include "fellow/api/VM.h"
+#include "Debug/IMemorySystem.h"
 
-using namespace fellow::api;
+using namespace Debug;
 using namespace fellow::hardfile::rdb;
 using namespace fellow::hardfile::hunks;
 
@@ -41,15 +41,15 @@ namespace fellow::hardfile
   {
     InitialHunk *hunk = Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex);
     hunk->SetVMAddress(destinationAddress);
-    memcpy(VM->Memory.AddressToPtr(destinationAddress), hunk->GetContent(), hunk->GetContentSizeInBytes());
+    memcpy(Memory.AddressToPtr(destinationAddress), hunk->GetContent(), hunk->GetContentSizeInBytes());
     if (hunk->GetAllocateSizeInBytes() > hunk->GetContentSizeInBytes())
     {
       uint32_t overflow = hunk->GetAllocateSizeInBytes() - hunk->GetContentSizeInBytes();
-      memset(VM->Memory.AddressToPtr(destinationAddress), 0, overflow);
+      memset(Memory.AddressToPtr(destinationAddress), 0, overflow);
     }
   }
 
-  HardfileFileSystemEntry::HardfileFileSystemEntry(RDBFileSystemHeader *header, uint32_t segListAddress) : Header(header), SegListAddress(segListAddress)
+  HardfileFileSystemEntry::HardfileFileSystemEntry(IMemorySystem& memory, RDBFileSystemHeader *header, uint32_t segListAddress) : Memory(memory), Header(header), SegListAddress(segListAddress)
   {
   }
 }

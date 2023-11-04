@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include "Module/Hardfile/IHardfileHandler.h"
+#include "Debug/IMemorySystem.h"
+#include "Debug/IM68K.h"
+#include "Service/ILog.h"
 #include "hardfile/HardfileStructs.h"
 
 #define FHFILE_MAX_DEVICES 20
@@ -12,6 +15,10 @@ namespace fellow::hardfile
   class HardfileHandler : public Module::Hardfile::IHardfileHandler
   {
   private:
+    Debug::IMemorySystem &_memory;
+    Debug::IM68K &_cpu;
+    Service::ILog &_log;
+
     HardfileDevice _devices[FHFILE_MAX_DEVICES];
     std::vector<std::unique_ptr<HardfileFileSystemEntry>> _fileSystems;
     std::vector<std::unique_ptr<HardfileMountListEntry>> _mountList;
@@ -121,7 +128,7 @@ namespace fellow::hardfile
     void Startup() override;
     void Shutdown() override;
 
-    HardfileHandler();
+    HardfileHandler(Debug::IMemorySystem& memory, Debug::IM68K& cpu, Service::ILog& log);
     virtual ~HardfileHandler();
   };
 }

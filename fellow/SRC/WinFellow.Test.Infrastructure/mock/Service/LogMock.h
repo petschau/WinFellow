@@ -2,7 +2,7 @@
 
 #include "Service/ILog.h"
 
-namespace mock::Core::Service
+namespace mock::Service
 {
   class LogMock : public ::Service::ILog
   {

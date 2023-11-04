@@ -1,8 +1,8 @@
-#include "mock/Core/Service/LogMock.h"
+#include "mock/Service/LogMock.h"
 
 using namespace std;
 
-namespace mock::Core::Service
+namespace mock::Service
 {
   void LogMock::AddLogDebug(const char *, ...)
   {

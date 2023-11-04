@@ -1,28 +1,19 @@
 #include "VirtualHost/Core.h"
 
-#include "mock/Core/Service/LogMock.h"
-#include "mock/Core/Service/FileInformationMock.h"
+#include "mock/Service/LogMock.h"
+#include "mock/Service/FileInformationMock.h"
 
-#include "mock/Core/Service/HUDMock.h"
-#include "mock/Core/Service/RetroPlatformWrapperMock.h"
+#include "mock/Service/HUDMock.h"
+#include "mock/Service/RetroPlatformWrapperMock.h"
 
-using namespace fellow::api;
-using namespace mock::Core::Service;
-
-namespace fellow::api
-{
-  Services *Service = nullptr;
-}
-
-HUDMock hudMock;
-RetroPlatformWrapperMock rpMock;
+using namespace mock::Service;
 
 void InitializeTestframework()
 {
-  fellow::api::Service = new Services(hudMock, rpMock);
-
   _core.Log = new LogMock();
   _core.FileInformation = new FileInformationMock();
+  _core.Hud = new HudMock();
+  _core.RP = new RetroPlatformWrapperMock();
 }
 
 void ShutdownTestframework()
@@ -33,6 +24,9 @@ void ShutdownTestframework()
   delete _core.Log;
   _core.Log = nullptr;
 
-  delete fellow::api::Service;
-  fellow::api::Service = nullptr;
+  delete _core.Hud;
+  _core.Hud = nullptr;
+
+  delete _core.RP;
+  _core.RP = nullptr;
 }

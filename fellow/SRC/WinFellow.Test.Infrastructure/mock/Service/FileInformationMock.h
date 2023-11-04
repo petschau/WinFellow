@@ -2,7 +2,7 @@
 
 #include "Service/IFileInformation.h"
 
-namespace mock::Core::Service
+namespace mock::Service
 {
   class FileInformationMock : public ::Service::IFileInformation
   {

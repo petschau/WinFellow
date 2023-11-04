@@ -2,9 +2,9 @@
 
 #include "Service/IHud.h"
 
-namespace test::mock::fellow::api::service
+namespace mock::Service
 {
-  class HUDMock : public ::Service::IHud
+  class HudMock : public ::Service::IHud
   {
   public:
     void SetFloppyLED(int driveIndex, bool active, bool write) override;

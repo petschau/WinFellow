@@ -7,13 +7,7 @@
     <Filter Include="mock">
       <UniqueIdentifier>{da8d249b-1db3-4dbd-9f91-63b2f910f512}</UniqueIdentifier>
     </Filter>
-    <Filter Include="mock\service">
-      <UniqueIdentifier>{edd5486d-93ef-4cc1-91d5-78515195fd1b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="mock\Core">
-      <UniqueIdentifier>{091c47d3-923a-4c79-8c29-d8c1a31f9208}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="mock\Core\Service">
+    <Filter Include="mock\Service">
       <UniqueIdentifier>{478886dc-5098-4541-908a-6d3a4da6f9b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -26,36 +20,36 @@
     <ClCompile Include="catch\catch_amalgamated.cpp">
       <Filter>catch</Filter>
     </ClCompile>
-    <ClCompile Include="mock\service\HUDMock.cpp">
-      <Filter>mock\service</Filter>
-    </ClCompile>
-    <ClCompile Include="mock\service\RetroPlatformWrapperMock.cpp">
-      <Filter>mock\service</Filter>
-    </ClCompile>
     <ClCompile Include="TestBootstrap.cpp" />
-    <ClCompile Include="mock\Core\Service\LogMock.cpp">
-      <Filter>mock\Core\Service</Filter>
+    <ClCompile Include="mock\Service\FileInformationMock.cpp">
+      <Filter>mock\Service</Filter>
     </ClCompile>
-    <ClCompile Include="mock\Core\Service\FileInformationMock.cpp">
-      <Filter>mock\Core\Service</Filter>
+    <ClCompile Include="mock\Service\HudMock.cpp">
+      <Filter>mock\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="mock\Service\LogMock.cpp">
+      <Filter>mock\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="mock\Service\RetroPlatformWrapperMock.cpp">
+      <Filter>mock\Service</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch\catch_amalgamated.hpp">
       <Filter>catch</Filter>
     </ClInclude>
-    <ClInclude Include="mock\service\HUDMock.h">
-      <Filter>mock\service</Filter>
-    </ClInclude>
-    <ClInclude Include="mock\service\RetroPlatformWrapperMock.h">
-      <Filter>mock\service</Filter>
-    </ClInclude>
     <ClInclude Include="TestBootstrap.h" />
-    <ClInclude Include="mock\Core\Service\LogMock.h">
-      <Filter>mock\Core\Service</Filter>
+    <ClInclude Include="mock\Service\FileInformationMock.h">
+      <Filter>mock\Service</Filter>
     </ClInclude>
-    <ClInclude Include="mock\Core\Service\FileInformationMock.h">
-      <Filter>mock\Core\Service</Filter>
+    <ClInclude Include="mock\Service\HudMock.h">
+      <Filter>mock\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="mock\Service\LogMock.h">
+      <Filter>mock\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="mock\Service\RetroPlatformWrapperMock.h">
+      <Filter>mock\Service</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

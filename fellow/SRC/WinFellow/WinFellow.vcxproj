@@ -1097,7 +1097,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\DRAW.C" />
     <ClCompile Include="C\draw_interlace_control.cpp" />
     <ClCompile Include="C\draw_pixelrenderers.cpp" />
-    <ClCompile Include="C\FELLOW.C" />
+    <ClCompile Include="C\Fellow.cpp" />
     <ClCompile Include="C\FFILESYS.C" />
     <ClCompile Include="C\FLOPPY.C" />
     <ClCompile Include="C\FMEM.C" />

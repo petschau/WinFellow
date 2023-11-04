@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include "Defs.h"
+
 // This header file defines the internal interfaces of the CPU module.
 extern void cpuMakeOpcodeTableForModel();
 extern void cpuCreateMulTimeTables();

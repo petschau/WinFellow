@@ -54,12 +54,9 @@
 
 #include "graphics/Graphics.h"
 #include "../automation/Automator.h"
-#include "fellow/api/VM.h"
 
 #include "VirtualHost/Core.h"
 #include "VirtualHost/CoreFactory.h"
-
-using namespace fellow::api;
 
 BOOLE fellow_request_emulation_stop;
 
@@ -459,6 +456,7 @@ static void fellowModulesStartup(int argc, const char **argv)
   sysinfoLogSysInfo();
 
   CoreFactory::CreateDrivers();
+  CoreFactory::CreateDebugVM();
   CoreFactory::CreateModules();
 
   chipsetStartup();
@@ -522,9 +520,8 @@ static void fellowModulesShutdown()
   _core.HardfileHandler->Shutdown();
   timerShutdown();
 
-  delete fellow::api::VM;
-
   CoreFactory::DestroyModules();
+  CoreFactory::DestroyDebugVM();
   CoreFactory::DestroyDrivers();
   CoreFactory::DestroyServices();
 }

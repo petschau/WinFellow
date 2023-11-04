@@ -1,9 +1,9 @@
-#include "mock/Core/Service/FileInformationMock.h"
+#include "mock/Service/FileInformationMock.h"
 
 using namespace ::Service;
 using namespace std;
 
-namespace mock::Core::Service
+namespace mock::Service
 {
   FileProperties *FileInformationMock::GetFileProperties(const string &filename)
   {

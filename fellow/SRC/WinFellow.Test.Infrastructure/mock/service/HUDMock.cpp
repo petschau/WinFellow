@@ -1,13 +1,13 @@
-#include "mock/service/HUDMock.h"
+#include "mock/Service/HudMock.h"
 
-namespace test::mock::fellow::api::service
+namespace mock::Service
 {
-  void HUDMock::SetFloppyLED(int driveIndex, bool active, bool write)
+  void HudMock::SetFloppyLED(int driveIndex, bool active, bool write)
   {
     // Stub
   }
 
-  void HUDMock::SetHarddiskLED(int deviceIndex, bool active, bool write)
+  void HudMock::SetHarddiskLED(int deviceIndex, bool active, bool write)
   {
     // Stub
   }

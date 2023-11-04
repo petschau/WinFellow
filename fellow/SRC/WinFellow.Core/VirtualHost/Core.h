@@ -12,6 +12,7 @@
 #include "CustomChipset/RegisterUtility.h"
 #include "IO/Uart.h"
 #include "IO/RtcOkiMsm6242rs.h"
+#include "Debug/DebugVM.h"
 
 class Core
 {
@@ -30,6 +31,8 @@ public:
   Service::IFileInformation *FileInformation;
   Service::IHud *Hud;
   Service::IRetroPlatform *RP;
+
+  Debug::DebugVM DebugVM;
 
   Core();
   ~Core();

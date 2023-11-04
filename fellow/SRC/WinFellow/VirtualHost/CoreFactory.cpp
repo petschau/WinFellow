@@ -12,7 +12,11 @@
 
 #include "Windows/Service/FileopsWin32.h"
 
+#include "Debug/M68K.h"
+#include "Debug/MemorySystem.h"
+
 using namespace Service;
+using namespace Debug;
 using namespace fellow::hardfile;
 
 void CoreFactory::CreateDrivers()
@@ -58,7 +62,7 @@ void CoreFactory::CreateModules()
   _core.Sound = new Sound();
   _core.Uart = new Uart();
   _core.RtcOkiMsm6242rs = new RtcOkiMsm6242rs(_core.Log);
-  _core.HardfileHandler = new HardfileHandler();
+  _core.HardfileHandler = new HardfileHandler(*_core.DebugVM.Memory, *_core.DebugVM.CPU, *_core.Log);
 }
 
 void CoreFactory::DestroyModules()
@@ -74,4 +78,19 @@ void CoreFactory::DestroyModules()
 
   delete _core.RtcOkiMsm6242rs;
   _core.RtcOkiMsm6242rs = nullptr;
+}
+
+void CoreFactory::CreateDebugVM()
+{
+  _core.DebugVM.CPU = new M68K();
+  _core.DebugVM.Memory = new MemorySystem();
+}
+
+void CoreFactory::DestroyDebugVM()
+{
+  delete _core.DebugVM.Memory;
+  _core.DebugVM.Memory = nullptr;
+
+  delete _core.DebugVM.CPU;
+  _core.DebugVM.CPU = nullptr;
 }

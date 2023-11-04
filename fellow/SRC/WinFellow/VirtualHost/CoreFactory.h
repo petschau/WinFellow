@@ -9,4 +9,6 @@ public:
   static void DestroyServices();
   static void CreateModules();
   static void DestroyModules();
+  static void CreateDebugVM();
+  static void DestroyDebugVM();
 };

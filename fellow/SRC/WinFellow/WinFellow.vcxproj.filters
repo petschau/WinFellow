@@ -204,7 +204,7 @@
     <ClCompile Include="C\draw_pixelrenderers.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\FELLOW.C">
+    <ClCompile Include="C\Fellow.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\FFILESYS.C">
