@@ -31,7 +31,7 @@
     <Filter Include="Module\Hardfile">
       <UniqueIdentifier>{32917180-f62e-4787-b4fc-e1387ca91014}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Debug">
+    <Filter Include="DebugApi">
       <UniqueIdentifier>{82fb5aee-8c48-4c42-8bdd-d9dc76624636}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -110,20 +110,20 @@
     <ClInclude Include="Service\IRetroPlatform.h">
       <Filter>Service</Filter>
     </ClInclude>
-    <ClInclude Include="Debug\IM68K.h">
-      <Filter>Debug</Filter>
+    <ClInclude Include="DebugApi\DebugVM.h">
+      <Filter>DebugApi</Filter>
     </ClInclude>
-    <ClInclude Include="Debug\IMemorySystem.h">
-      <Filter>Debug</Filter>
+    <ClInclude Include="DebugApi\IM68K.h">
+      <Filter>DebugApi</Filter>
     </ClInclude>
-    <ClInclude Include="Debug\M68K.h">
-      <Filter>Debug</Filter>
+    <ClInclude Include="DebugApi\IMemorySystem.h">
+      <Filter>DebugApi</Filter>
     </ClInclude>
-    <ClInclude Include="Debug\MemorySystem.h">
-      <Filter>Debug</Filter>
+    <ClInclude Include="DebugApi\M68K.h">
+      <Filter>DebugApi</Filter>
     </ClInclude>
-    <ClInclude Include="Debug\DebugVM.h">
-      <Filter>Debug</Filter>
+    <ClInclude Include="DebugApi\MemorySystem.h">
+      <Filter>DebugApi</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -154,8 +154,8 @@
     <ClCompile Include="Module\Hardfile\HardfileConfiguration.cpp">
       <Filter>Module\Hardfile</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\DebugVM.cpp">
-      <Filter>Debug</Filter>
+    <ClCompile Include="DebugApi\DebugVM.cpp">
+      <Filter>DebugApi</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

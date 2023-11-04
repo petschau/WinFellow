@@ -1,6 +1,6 @@
-#include "Debug/DebugVM.h"
-#include "Debug/M68K.h"
-#include "Debug/MemorySystem.h"
+#include "DebugApi/DebugVM.h"
+#include "DebugApi/M68K.h"
+#include "DebugApi/MemorySystem.h"
 
 namespace Debug
 {

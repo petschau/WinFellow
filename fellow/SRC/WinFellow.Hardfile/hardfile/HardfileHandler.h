@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 #include "Module/Hardfile/IHardfileHandler.h"
-#include "Debug/IMemorySystem.h"
-#include "Debug/IM68K.h"
+#include "DebugApi/IMemorySystem.h"
+#include "DebugApi/IM68K.h"
 #include "Service/ILog.h"
 #include "hardfile/HardfileStructs.h"
 
@@ -128,7 +128,7 @@ namespace fellow::hardfile
     void Startup() override;
     void Shutdown() override;
 
-    HardfileHandler(Debug::IMemorySystem& memory, Debug::IM68K& cpu, Service::ILog& log);
+    HardfileHandler(Debug::IMemorySystem &memory, Debug::IM68K &cpu, Service::ILog &log);
     virtual ~HardfileHandler();
   };
 }

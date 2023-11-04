@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Debug/IMemorySystem.h"
+#include "DebugApi/IMemorySystem.h"
 #include "hardfile/hunks/FileImage.h"
 #include "hardfile/hunks/Reloc32Hunk.h"
 

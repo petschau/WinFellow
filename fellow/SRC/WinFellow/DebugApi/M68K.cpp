@@ -1,4 +1,4 @@
-#include "Debug/M68K.h"
+#include "DebugApi/M68K.h"
 #include "CpuModule_Internal.h"
 
 namespace Debug

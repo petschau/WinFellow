@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Debug/IM68K.h"
+#include "DebugApi/IM68K.h"
 
 namespace Debug
 {

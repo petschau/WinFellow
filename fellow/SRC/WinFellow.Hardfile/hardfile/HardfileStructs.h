@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Module/Hardfile/IHardfileHandler.h"
-#include "Debug/IMemorySystem.h"
+#include "DebugApi/IMemorySystem.h"
 #include "hardfile/rdb/RDB.h"
 
 namespace fellow::hardfile
@@ -41,7 +41,7 @@ namespace fellow::hardfile
     uint32_t GetVersion();
     void CopyHunkToAddress(uint32_t destinationAddress, uint32_t hunkIndex);
 
-    HardfileFileSystemEntry(Debug::IMemorySystem& memory, rdb::RDBFileSystemHeader *header, uint32_t segListAddress);
+    HardfileFileSystemEntry(Debug::IMemorySystem &memory, rdb::RDBFileSystemHeader *header, uint32_t segListAddress);
   };
 
   class HardfileDevice

@@ -484,8 +484,8 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C\WavFileWriter.cpp" />
-    <ClCompile Include="Debug\M68K.cpp" />
-    <ClCompile Include="Debug\MemorySystem.cpp" />
+    <ClCompile Include="DebugApi\M68K.cpp" />
+    <ClCompile Include="DebugApi\MemorySystem.cpp" />
     <ClCompile Include="VirtualHost\CoreFactory.cpp" />
     <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
     <ClCompile Include="Windows\Service\FileopsWin32.cpp" />

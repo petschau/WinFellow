@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Debug/IMemorySystem.h"
+#include "DebugApi/IMemorySystem.h"
 
 namespace Debug
 {

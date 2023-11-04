@@ -1,5 +1,5 @@
 #include "hardfile/HardfileStructs.h"
-#include "Debug/IMemorySystem.h"
+#include "DebugApi/IMemorySystem.h"
 
 using namespace Debug;
 using namespace fellow::hardfile::rdb;

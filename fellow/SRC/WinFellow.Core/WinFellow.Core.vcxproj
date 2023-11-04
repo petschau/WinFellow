@@ -32,11 +32,11 @@
     <ClInclude Include="CustomChipset\Sound\Sound.h" />
     <ClInclude Include="CustomChipset\Sound\SoundConfiguration.h" />
     <ClInclude Include="CustomChipset\Sound\WavFileWriter.h" />
-    <ClInclude Include="Debug\IM68K.h" />
-    <ClInclude Include="Debug\IMemorySystem.h" />
-    <ClInclude Include="Debug\M68K.h" />
-    <ClInclude Include="Debug\MemorySystem.h" />
-    <ClInclude Include="Debug\DebugVM.h" />
+    <ClInclude Include="DebugApi\DebugVM.h" />
+    <ClInclude Include="DebugApi\IM68K.h" />
+    <ClInclude Include="DebugApi\IMemorySystem.h" />
+    <ClInclude Include="DebugApi\M68K.h" />
+    <ClInclude Include="DebugApi\MemorySystem.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="Driver\Drivers.h" />
     <ClInclude Include="Driver\ISoundDriver.h" />
@@ -62,7 +62,7 @@
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp" />
     <ClCompile Include="CustomChipset\RegisterUtility.cpp" />
-    <ClCompile Include="Debug\DebugVM.cpp" />
+    <ClCompile Include="DebugApi\DebugVM.cpp" />
     <ClCompile Include="IO\RtcOkiMsm6242rs.cpp" />
     <ClCompile Include="Module\Hardfile\HardfileConfiguration.cpp" />
     <ClCompile Include="Module\Hardfile\HardfileGeometry.cpp" />

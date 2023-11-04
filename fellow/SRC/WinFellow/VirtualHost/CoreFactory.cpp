@@ -12,8 +12,8 @@
 
 #include "Windows/Service/FileopsWin32.h"
 
-#include "Debug/M68K.h"
-#include "Debug/MemorySystem.h"
+#include "DebugApi/M68K.h"
+#include "DebugApi/MemorySystem.h"
 
 using namespace Service;
 using namespace Debug;

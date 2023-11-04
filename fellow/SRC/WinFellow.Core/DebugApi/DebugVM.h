@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Debug/IM68K.h"
-#include "Debug/IMemorySystem.h"
+#include "DebugApi/IM68K.h"
+#include "DebugApi/IMemorySystem.h"
 
 namespace Debug
 {

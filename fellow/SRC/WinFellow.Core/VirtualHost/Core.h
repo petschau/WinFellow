@@ -12,7 +12,7 @@
 #include "CustomChipset/RegisterUtility.h"
 #include "IO/Uart.h"
 #include "IO/RtcOkiMsm6242rs.h"
-#include "Debug/DebugVM.h"
+#include "DebugApi/DebugVM.h"
 
 class Core
 {
