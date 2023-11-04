@@ -3,7 +3,7 @@
 #include <windows.h>
 
 #include "Defs.h"
-#include "DRAW.H"
+#include "Renderer.h"
 #include "Ini.h"
 
 class GfxDrvCommon

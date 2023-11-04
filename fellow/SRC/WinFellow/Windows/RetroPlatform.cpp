@@ -103,7 +103,7 @@
 #include "GfxDrvDXGI.h"
 #include "KBDDRV.H"
 #include "VirtualHost/Core.h"
-#include "config.h"
+#include "Configuration.h"
 #include "dxver.h" /// needed for DirectInput based joystick detection code
 #include "fellow.h"
 #include "Module/Hardfile/IHardfileHandler.h"

@@ -23,7 +23,7 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "DRAW.H"
+#include "Renderer.h"
 #include "CopperRegisters.h"
 #include "LineExactCopper.h"
 #include "graphics/CycleExactCopper.h"

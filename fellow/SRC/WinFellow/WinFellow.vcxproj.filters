@@ -153,10 +153,10 @@
     <ClCompile Include="C\CIA.C">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\CONFIG.C">
+    <ClCompile Include="C\Configuration.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\COPPER.C">
+    <ClCompile Include="C\LegacyCopper.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\CopperRegisters.cpp">
@@ -195,7 +195,7 @@
     <ClCompile Include="C\CpuModule_StackFrameGen.c">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\DRAW.C">
+    <ClCompile Include="C\Renderer.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\draw_interlace_control.cpp">
@@ -387,7 +387,7 @@
     <ClCompile Include="Windows\kbdparser.c">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\modrip_win32.c">
+    <ClCompile Include="Windows\ModripWin32.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="Windows\MOUSEDRV.C">
@@ -408,7 +408,7 @@
     <ClCompile Include="Windows\WDBG.C">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\WGUI.C">
+    <ClCompile Include="Windows\WindowsUI.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="Windows\WINMAIN.C">
@@ -551,10 +551,10 @@
     <ClInclude Include="INCLUDE\CIA.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\CONFIG.H">
+    <ClInclude Include="INCLUDE\Configuration.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\COPPER.H">
+    <ClInclude Include="INCLUDE\LegacyCopper.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\CopperRegisters.h">
@@ -590,7 +590,7 @@
     <ClInclude Include="INCLUDE\CpuModule_Profile.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\DRAW.H">
+    <ClInclude Include="INCLUDE\Renderer.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\draw_interlace_control.h">
@@ -674,7 +674,7 @@
     <ClInclude Include="INCLUDE\TIMER.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\WGUI.H">
+    <ClInclude Include="INCLUDE\WindowsUI.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\zlibwrap.h">
@@ -797,7 +797,7 @@
     <ClInclude Include="Windows\kbdparser.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\modrip_win32.h">
+    <ClInclude Include="Windows\ModripWin32.h">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\RetroPlatform.h">

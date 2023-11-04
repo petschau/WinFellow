@@ -24,7 +24,7 @@
 #include "gui_general.h"
 #include "Defs.h"
 #include "versioninfo.h"
-#include "wgui.h"
+#include "WindowsUI.h"
 #include "wdbg.h"
 #include "bus.h"
 #include "windrv.h"

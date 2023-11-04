@@ -48,13 +48,13 @@
 #include "gui_general.h"
 #include "gui_debugger.h"
 #include "commoncontrol_wrap.h"
-#include "wgui.h"
+#include "WindowsUI.h"
 #include "windrv.h"
 #include "ListTree.h"
 #include "gameport.h"
 #include "Module/Hardfile/IHardfileHandler.h"
-#include "config.h"
-#include "draw.h"
+#include "Configuration.h"
+#include "Renderer.h"
 #include "wdbg.h"
 #include "ini.h"
 #include "kbd.h"
@@ -1238,7 +1238,7 @@ void wguiInstallSoundConfig(HWND hwndDlg, cfg *conf)
   ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SOUND_VOLUME, cfgGetSoundVolume(conf));
 
   /* Set sound rate */
-  ccwButtonSetCheck(hwndDlg, wgui_sound_rates_cci[cfgGetSoundRate(conf)]);
+  ccwButtonSetCheck(hwndDlg, wgui_sound_rates_cci[(int)cfgGetSoundRate(conf)]);
 
   /* set sound hardware notification */
   ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION, cfgGetSoundNotification(conf) == SOUND_DSOUND_NOTIFICATION);

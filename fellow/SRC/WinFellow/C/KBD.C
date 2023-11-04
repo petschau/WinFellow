@@ -32,7 +32,7 @@ Tuesday, September 19, 2000: nova
 #include "gameport.h"
 #include "graph.h"
 #include "cia.h"
-#include "draw.h"
+#include "Renderer.h"
 #include "FLOPPY.H"
 #include "VirtualHost/Core.h"
 

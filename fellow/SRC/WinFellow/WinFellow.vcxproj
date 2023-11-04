@@ -1080,8 +1080,8 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\BUS.C" />
     <ClCompile Include="C\chipset.cpp" />
     <ClCompile Include="C\CIA.C" />
-    <ClCompile Include="C\CONFIG.C" />
-    <ClCompile Include="C\COPPER.C" />
+    <ClCompile Include="C\Configuration.cpp" />
+    <ClCompile Include="C\LegacyCopper.cpp" />
     <ClCompile Include="C\CopperRegisters.cpp" />
     <ClCompile Include="C\CpuIntegration.c" />
     <ClCompile Include="C\CpuModule.c" />
@@ -1094,7 +1094,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\CpuModule_Interrupts.c" />
     <ClCompile Include="C\CpuModule_Logging.c" />
     <ClCompile Include="C\CpuModule_StackFrameGen.c" />
-    <ClCompile Include="C\DRAW.C" />
+    <ClCompile Include="C\Renderer.cpp" />
     <ClCompile Include="C\draw_interlace_control.cpp" />
     <ClCompile Include="C\draw_pixelrenderers.cpp" />
     <ClCompile Include="C\Fellow.cpp" />
@@ -1159,14 +1159,14 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="Windows\JOYDRV.C" />
     <ClCompile Include="Windows\KBDDRV.C" />
     <ClCompile Include="Windows\kbdparser.c" />
-    <ClCompile Include="Windows\modrip_win32.c" />
+    <ClCompile Include="Windows\ModripWin32.cpp" />
     <ClCompile Include="Windows\MOUSEDRV.C" />
     <ClCompile Include="Windows\RetroPlatform.cpp" />
     <ClCompile Include="Windows\RetroPlatformGuestIPC.c" />
     <ClCompile Include="Windows\sysinfo.c" />
     <ClCompile Include="Windows\TIMER.C" />
     <ClCompile Include="Windows\WDBG.C" />
-    <ClCompile Include="Windows\WGUI.C" />
+    <ClCompile Include="Windows\WindowsUI.cpp" />
     <ClCompile Include="Windows\WINMAIN.C" />
   </ItemGroup>
   <ItemGroup>
@@ -1228,8 +1228,8 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\BUS.H" />
     <ClInclude Include="INCLUDE\chipset.h" />
     <ClInclude Include="INCLUDE\CIA.H" />
-    <ClInclude Include="INCLUDE\CONFIG.H" />
-    <ClInclude Include="INCLUDE\COPPER.H" />
+    <ClInclude Include="INCLUDE\Configuration.h" />
+    <ClInclude Include="INCLUDE\LegacyCopper.h" />
     <ClInclude Include="INCLUDE\CopperRegisters.h" />
     <ClInclude Include="INCLUDE\CpuIntegration.h" />
     <ClInclude Include="INCLUDE\CpuModule.h" />
@@ -1241,7 +1241,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\CpuModule_Internal.h" />
     <ClInclude Include="INCLUDE\CpuModule_Memory.h" />
     <ClInclude Include="INCLUDE\CpuModule_Profile.h" />
-    <ClInclude Include="INCLUDE\DRAW.H" />
+    <ClInclude Include="INCLUDE\Renderer.h" />
     <ClInclude Include="INCLUDE\draw_interlace_control.h" />
     <ClInclude Include="INCLUDE\draw_pixelrenderers.h" />
     <ClInclude Include="INCLUDE\FELLOW.H" />
@@ -1269,7 +1269,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\SpriteP2CDecoder.h" />
     <ClInclude Include="INCLUDE\SpriteRegisters.h" />
     <ClInclude Include="INCLUDE\TIMER.H" />
-    <ClInclude Include="INCLUDE\WGUI.H" />
+    <ClInclude Include="INCLUDE\WindowsUI.h" />
     <ClInclude Include="INCLUDE\zlibwrap.h" />
     <ClInclude Include="IPF\CapsAPI.h" />
     <ClInclude Include="IPF\CapsPlug.h" />
@@ -1290,7 +1290,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\GfxDrvCommon.h" />
     <ClInclude Include="Windows\gfxdrv_directdraw.h" />
     <ClInclude Include="Windows\kbdparser.h" />
-    <ClInclude Include="Windows\modrip_win32.h" />
+    <ClInclude Include="Windows\ModripWin32.h" />
     <ClInclude Include="Windows\RetroPlatform.h" />
     <ClInclude Include="Windows\RetroPlatformGuestIPC.h" />
     <ClInclude Include="Windows\RetroPlatformIPC.h" />

@@ -312,19 +312,19 @@ void Sound::LowPass(uint32_t count, int16_t *bufferLeft, int16_t *bufferRight)
   double filterValue;
   switch (GetRate())
   {
-    case SOUND_44100:
+    case sound_rates::SOUND_44100:
       amplitudeDiv = _amplitudeDiv45;
       filterValue = _filterValue45;
       break;
-    case SOUND_31300:
+    case sound_rates::SOUND_31300:
       amplitudeDiv = _amplitudeDiv33;
       filterValue = _filterValue33;
       break;
-    case SOUND_22050:
+    case sound_rates::SOUND_22050:
       amplitudeDiv = _amplitudeDiv22;
       filterValue = _filterValue22;
       break;
-    case SOUND_15650:
+    case sound_rates::SOUND_15650:
       amplitudeDiv = _amplitudeDiv15;
       filterValue = _filterValue15;
       break;
@@ -395,9 +395,9 @@ void Sound::FrequencyHandler()
   int16_t *bufferRight = (int16_t *)_right + _bufferSampleCount;
   uint32_t count = 0;
   uint32_t samplesAdded;
-  bool halfscale = (GetRate() == SOUND_22050 || GetRate() == SOUND_15650);
+  bool halfscale = (GetRate() == sound_rates::SOUND_22050 || GetRate() == sound_rates::SOUND_15650);
 
-  if (GetRate() == SOUND_44100 || GetRate() == SOUND_22050)
+  if (GetRate() == sound_rates::SOUND_44100 || GetRate() == sound_rates::SOUND_22050)
   {
     while (audiocounter <= 0x40000)
     {
@@ -450,10 +450,10 @@ uint32_t Sound::GetRateReal()
 {
   switch (GetRate())
   {
-    case SOUND_44100: return 44100;
-    case SOUND_31300: return 31300;
-    case SOUND_22050: return 22050;
-    case SOUND_15650: return 15650;
+    case sound_rates::SOUND_44100: return 44100;
+    case sound_rates::SOUND_31300: return 31300;
+    case sound_rates::SOUND_22050: return 22050;
+    case sound_rates::SOUND_15650: return 15650;
   }
   return 0;
 }
@@ -793,7 +793,7 @@ void Sound::Startup()
 {
   SetEmulation(SOUND_EMULATE);
   SetFilter(SOUND_FILTER_ORIGINAL);
-  SetRate(SOUND_15650);
+  SetRate(sound_rates::SOUND_15650);
   SetIsStereo(false);
   SetIs16Bits(false);
   SetNotification(SOUND_MMTIMER_NOTIFICATION);

@@ -5,7 +5,7 @@
 #include "FELLOW.H"
 #include "BUS.H"
 #include "FMEM.H"
-#include "DRAW.H"
+#include "Renderer.h"
 #include "chipset.h"
 #include "VirtualHost/Core.h"
 

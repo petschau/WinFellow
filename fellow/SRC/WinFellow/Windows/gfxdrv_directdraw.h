@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Defs.h"
-#include "DRAW.H"
+#include "Renderer.h"
 
 void gfxDrvDDrawClearCurrentBuffer();
 void gfxDrvDDrawSetMode(draw_mode *dm, bool windowed);

@@ -15,7 +15,7 @@
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
-#include "config.h"
+#include "Configuration.h"
 #endif
 
 #include "windowsx.h"

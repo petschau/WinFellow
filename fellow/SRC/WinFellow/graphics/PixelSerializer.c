@@ -25,7 +25,7 @@
 #include "Defs.h"
 #include "bus.h"
 #include "graph.h"
-#include "draw.h"
+#include "Renderer.h"
 #include "fmem.h"
 #include "Graphics.h"
 

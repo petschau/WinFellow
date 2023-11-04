@@ -23,7 +23,7 @@
 #include "FELLOW.H"
 #include "BUS.H"
 #include "GRAPH.H"
-#include "DRAW.H"
+#include "Renderer.h"
 #include "draw_interlace_control.h"
 #include "VirtualHost/Core.h"
 

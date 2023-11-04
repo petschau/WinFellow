@@ -1,6 +1,6 @@
 #include "Windows/Service/Hud.h"
 #include "Defs.h"
-#include "DRAW.H"
+#include "Renderer.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"

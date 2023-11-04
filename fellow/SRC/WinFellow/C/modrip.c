@@ -42,7 +42,7 @@
 
 #include "modrip.h"
 #ifdef WIN32
-#include "modrip_win32.h"
+#include "ModripWin32.h"
 #else
 #include "modrip_linux.h"
 #endif

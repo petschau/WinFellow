@@ -4,7 +4,7 @@
 #include "graph.h"
 #endif
 
-#include "CONFIG.H"
+#include "Configuration.h"
 #include <map>
 #include <list>
 

@@ -68,7 +68,7 @@
 #include "fellow.h"
 #include "fmem.h"
 #include "graph.h"
-#include "draw.h"
+#include "Renderer.h"
 #include "kbd.h"
 #include "kbddrv.h"
 #include "ListTree.h"
@@ -76,7 +76,7 @@
 #include "gameport.h"
 #include "mousedrv.h"
 #include "joydrv.h"
-#include "wgui.h"
+#include "WindowsUI.h"
 #include "ini.h"
 
 #include <list>
@@ -87,7 +87,7 @@
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
-#include "config.h"
+#include "Configuration.h"
 #endif
 
 using namespace std;

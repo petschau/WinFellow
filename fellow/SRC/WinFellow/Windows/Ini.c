@@ -22,7 +22,7 @@
 #include <windows.h>
 #include <direct.h>
 #include "ini.h"
-#include "draw.h"
+#include "Renderer.h"
 #include "fellow.h"
 #include "VirtualHost/Core.h"
 

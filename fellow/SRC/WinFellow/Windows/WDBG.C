@@ -39,8 +39,8 @@
 #include "windrv.h"
 #include "ListTree.h"
 #include "gameport.h"
-#include "config.h"
-#include "draw.h"
+#include "Configuration.h"
+#include "Renderer.h"
 #include "CpuModule_Disassembler.h"
 #include "kbd.h"
 #include "fmem.h"
@@ -54,7 +54,7 @@
 #include "SpriteRegisters.h"
 #include "modrip.h"
 #include "blit.h"
-#include "wgui.h"
+#include "WindowsUI.h"
 
 /*===============================*/
 /* Handle of the main dialog box */

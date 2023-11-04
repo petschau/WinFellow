@@ -55,7 +55,7 @@
 #include "chipset.h"
 #include "fmem.h"
 #include "floppy.h"
-#include "draw.h"
+#include "Renderer.h"
 #include "graph.h"
 #include "cia.h"
 #include "bus.h"

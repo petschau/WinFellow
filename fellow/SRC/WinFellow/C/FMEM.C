@@ -54,7 +54,7 @@
 
 #include "chipset.h"
 
-#include "draw.h"
+#include "Renderer.h"
 
 #include "CpuModule.h"
 
@@ -66,7 +66,7 @@
 
 #include "floppy.h"
 
-#include "copper.h"
+#include "LegacyCopper.h"
 
 #include "cia.h"
 
@@ -74,7 +74,7 @@
 
 #include "fmem.h"
 
-#include "wgui.h"
+#include "WindowsUI.h"
 
 #include "rtc.h"
 

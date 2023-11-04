@@ -25,7 +25,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "config.h"
+#include "Configuration.h"
 #include "options.h"
 #include "uae.h"
 #include "memory.h"

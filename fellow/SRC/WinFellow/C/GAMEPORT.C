@@ -29,7 +29,7 @@ Tuesday, September 19, 2000
 
 #include "Defs.h"
 #include "fellow.h"
-#include "draw.h"
+#include "Renderer.h"
 #include "fmem.h"
 #include "gameport.h"
 #include "mousedrv.h"

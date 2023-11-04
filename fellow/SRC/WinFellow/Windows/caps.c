@@ -28,7 +28,7 @@
 
 #ifdef FELLOW_SUPPORT_CAPS
 
-#include "wgui.h"
+#include "WindowsUI.h"
 #include "fellow.h"
 #include "floppy.h"
 #include "VirtualHost/Core.h"

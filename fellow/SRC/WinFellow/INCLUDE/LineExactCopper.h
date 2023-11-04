@@ -1,6 +1,6 @@
 #pragma once
 
-#include "COPPER.H"
+#include "LegacyCopper.h"
 
 class LineExactCopper : public Copper
 {

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <cstdio>
+
 extern void copperInitializeFromEmulationMode();
 extern void copperEventHandler();
 extern void copperSaveState(FILE *F);

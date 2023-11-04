@@ -2,7 +2,7 @@
 #include "SPRITE.H"
 #include "FMEM.H"
 #include "chipset.h"
-#include "DRAW.H"
+#include "Renderer.h"
 
 SpriteRegisters sprite_registers;
 

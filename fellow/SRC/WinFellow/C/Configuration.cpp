@@ -39,11 +39,11 @@
 #include "fmem.h"
 #include "gameport.h"
 #include "graph.h"
-#include "draw.h"
+#include "Renderer.h"
 #include "blit.h"
 #include "fellow.h"
 #include "ListTree.h"
-#include "config.h"
+#include "Configuration.h"
 #include "Module/Hardfile/IHardfileHandler.h"
 #include "ffilesys.h"
 #include "ini.h"
@@ -51,7 +51,7 @@
 #include "rtc.h"
 #include "RetroPlatform.h"
 #include "draw_interlace_control.h"
-#include "wgui.h"
+#include "WindowsUI.h"
 #include "KBDDRV.H"
 
 #include "../automation/Automator.h"
@@ -888,7 +888,7 @@ void cfgSetDefaults(cfg *config)
   /*==========================================================================*/
 
   cfgSetSoundEmulation(config, SOUND_PLAY);
-  cfgSetSoundRate(config, SOUND_44100);
+  cfgSetSoundRate(config, sound_rates::SOUND_44100);
   cfgSetSoundStereo(config, TRUE);
   cfgSetSound16Bits(config, TRUE);
   cfgSetSoundFilter(config, SOUND_FILTER_ORIGINAL);
@@ -1217,27 +1217,27 @@ static sound_rates cfgGetSoundRateFromString(const string &value)
 
   if (rate < 22050)
   {
-    return SOUND_15650;
+    return sound_rates::SOUND_15650;
   }
   if (rate < 31300)
   {
-    return SOUND_22050;
+    return sound_rates::SOUND_22050;
   }
   if (rate < 44100)
   {
-    return SOUND_31300;
+    return sound_rates::SOUND_31300;
   }
-  return SOUND_44100;
+  return sound_rates::SOUND_44100;
 }
 
 static const char *cfgGetSoundRateToString(sound_rates soundrate)
 {
   switch (soundrate)
   {
-    case SOUND_15650: return "15650";
-    case SOUND_22050: return "22050";
-    case SOUND_31300: return "31300";
-    case SOUND_44100: return "44100";
+    case sound_rates::SOUND_15650: return "15650";
+    case sound_rates::SOUND_22050: return "22050";
+    case sound_rates::SOUND_31300: return "31300";
+    case sound_rates::SOUND_44100: return "44100";
   }
   return "44100";
 }

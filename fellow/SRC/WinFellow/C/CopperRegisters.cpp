@@ -1,5 +1,5 @@
 #include "CopperRegisters.h"
-#include "COPPER.H"
+#include "LegacyCopper.h"
 
 #include "chipset.h"
 #include "FMEM.H"

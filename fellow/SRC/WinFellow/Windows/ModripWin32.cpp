@@ -27,8 +27,8 @@
 /* own includes */
 #include <windows.h>
 #include "modrip.h"
-#include "modrip_win32.h"
-#include "wgui.h"
+#include "ModripWin32.h"
+#include "WindowsUI.h"
 #include "ini.h"
 
 static HWND modrip_hWnd;
