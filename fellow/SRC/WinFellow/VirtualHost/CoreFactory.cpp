@@ -5,6 +5,8 @@
 
 #include "Service/Log.h"
 #include "Service/FileInformation.h"
+#include "Windows/Service/Hud.h"
+#include "Windows/Service/RetroPlatformWrapper.h"
 
 #include "hardfile/HardfileHandler.h"
 
@@ -29,10 +31,18 @@ void CoreFactory::CreateServices()
   _core.Log = new Log();
   _core.Fileops = new FileopsWin32(_core.Log);
   _core.FileInformation = new FileInformation();
+  _core.Hud = new Hud();
+  _core.RP = new RetroPlatformWrapper();
 }
 
 void CoreFactory::DestroyServices()
 {
+  delete _core.RP;
+  _core.RP = nullptr;
+
+  delete _core.Hud;
+  _core.Hud = nullptr;
+
   delete _core.Fileops;
   _core.Fileops = nullptr;
 

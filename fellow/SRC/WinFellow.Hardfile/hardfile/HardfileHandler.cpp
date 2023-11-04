@@ -507,7 +507,7 @@ namespace fellow::hardfile
 
     _core.Log->AddLog("SetHardfile('%s', %u)\n", configuration.Filename.c_str(), index);
 
-    RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
+    _core.RP->SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
   }
 
   bool HardfileHandler::CompareHardfile(const HardfileConfiguration &configuration, unsigned int index)
@@ -584,13 +584,13 @@ namespace fellow::hardfile
       return -3; // TODO: Out of range, -3 is not the right code
     }
 
-    fellow::api::Service->HUD.SetHarddiskLED(index, true, false);
+    _core.Hud->SetHarddiskLED(index, true, false);
 
     fseek(_devices[index].F, offset, SEEK_SET);
     fread(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
     SetIOActual(length);
 
-    fellow::api::Service->HUD.SetHarddiskLED(index, false, false);
+    _core.Hud->SetHarddiskLED(index, false, false);
 
     return 0;
   }
@@ -614,13 +614,13 @@ namespace fellow::hardfile
       return -3; // TODO: Out of range, -3 is probably not the right one.
     }
 
-    fellow::api::Service->HUD.SetHarddiskLED(index, true, true);
+    _core.Hud->SetHarddiskLED(index, true, true);
 
     fseek(_devices[index].F, offset, SEEK_SET);
     fwrite(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
     SetIOActual(length);
 
-    fellow::api::Service->HUD.SetHarddiskLED(index, false, true);
+    _core.Hud->SetHarddiskLED(index, false, true);
 
     return 0;
   }

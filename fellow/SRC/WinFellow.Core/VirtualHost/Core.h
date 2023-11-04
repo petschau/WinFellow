@@ -5,6 +5,8 @@
 #include "Service/ILog.h"
 #include "Service/IFileops.h"
 #include "Service/IFileInformation.h"
+#include "Service/IHud.h"
+#include "Service/IRetroPlatform.h"
 #include "CustomChipset/Sound/Sound.h"
 #include "CustomChipset/Registers.h"
 #include "CustomChipset/RegisterUtility.h"
@@ -26,6 +28,8 @@ public:
   Service::ILog *Log;
   Service::IFileops *Fileops;
   Service::IFileInformation *FileInformation;
+  Service::IHud *Hud;
+  Service::IRetroPlatform *RP;
 
   Core();
   ~Core();

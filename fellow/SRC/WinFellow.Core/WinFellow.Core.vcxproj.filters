@@ -31,6 +31,9 @@
     <Filter Include="Module\Hardfile">
       <UniqueIdentifier>{32917180-f62e-4787-b4fc-e1387ca91014}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{82fb5aee-8c48-4c42-8bdd-d9dc76624636}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomChipset\Registers.h">
@@ -107,6 +110,21 @@
     <ClInclude Include="Service\IRetroPlatform.h">
       <Filter>Service</Filter>
     </ClInclude>
+    <ClInclude Include="Debug\IM68K.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\IMemorySystem.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\M68K.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\MemorySystem.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\DebugVM.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -135,6 +153,9 @@
     </ClCompile>
     <ClCompile Include="Module\Hardfile\HardfileConfiguration.cpp">
       <Filter>Module\Hardfile</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\DebugVM.cpp">
+      <Filter>Debug</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

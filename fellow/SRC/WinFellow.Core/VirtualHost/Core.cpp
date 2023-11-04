@@ -13,7 +13,9 @@ Core::Core()
     Drivers(),
     Log(nullptr),
     Fileops(nullptr),
-    FileInformation(nullptr)
+    FileInformation(nullptr),
+    Hud(nullptr),
+    RP(nullptr)
 {
 }
 
