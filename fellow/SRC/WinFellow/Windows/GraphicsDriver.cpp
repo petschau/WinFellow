@@ -201,7 +201,7 @@ bool gfxDrvRestart(DISPLAYDRIVER displaydriver)
 // Called when the application starts up
 bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
 {
-  gfx_drv_use_dxgi = (displaydriver == DISPLAYDRIVER_DIRECT3D11);
+  gfx_drv_use_dxgi = (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
 
   gfxDrvCommon = new GfxDrvCommon();
 

@@ -42,13 +42,13 @@ void CycleExactCopper::Load(uint32_t new_copper_ptr)
   {
     start_cycle++;
   }
-  SetState(COPPER_STATE_READ_FIRST_WORD, start_cycle);
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, start_cycle);
 }
 
 void CycleExactCopper::SetStateNone()
 {
   busRemoveEvent(&copperEvent);
-  _state = COPPER_STATE_NONE;
+  _state = CopperStates::COPPER_STATE_NONE;
   _skip_next = false;
   copperEvent.cycle = BUS_CYCLE_DISABLE;
 }
@@ -65,7 +65,7 @@ void CycleExactCopper::Move()
 
   if (IsRegisterAllowed(regno))
   {
-    SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
     if (!_skip_next)
     {
       memory_iobank_write[regno >> 1](value, regno);
@@ -102,7 +102,7 @@ void CycleExactCopper::Wait()
   if ((rasterY & ve) > (vp & ve))
   {
     _skip_next = false;
-    SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
     return;
   }
 
@@ -115,7 +115,7 @@ void CycleExactCopper::Wait()
     if (rasterX < 0xe4)
     {
       if (initial_wait_rasterX == rasterX) rasterX += 2;
-      SetState(COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX);
+      SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX);
       return;
     }
   }
@@ -149,12 +149,12 @@ void CycleExactCopper::Wait()
   else if ((rasterY & ve) == (vp & ve))
   {
     // An exact match on both vp and hp was found
-    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX); // +2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX); // +2);
   }
   else
   {
     // A match on vp being larger (not equal) was found
-    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX); // +2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, rasterY * busGetCyclesInThisLine() + rasterX); // +2);
   }
 }
 
@@ -176,7 +176,7 @@ void CycleExactCopper::Skip()
   }
 
   _skip_next = (((rasterY & ve) > (vp & ve)) || (((rasterY & ve) == (vp & ve)) && ((rasterX & he) >= (hp & he))));
-  SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
 }
 
 bool CycleExactCopper::IsMove()
@@ -193,7 +193,7 @@ void CycleExactCopper::ReadFirstWord()
 {
   _first = ReadWord();
   IncreasePtr();
-  CopperStates next_state = (IsMove()) ? COPPER_STATE_TRANSFER_SECOND_WORD : COPPER_STATE_READ_SECOND_WORD;
+  CopperStates next_state = (IsMove()) ? CopperStates::COPPER_STATE_TRANSFER_SECOND_WORD : CopperStates::COPPER_STATE_READ_SECOND_WORD;
   SetState(next_state, busGetCycle() + 2);
 }
 
@@ -232,9 +232,9 @@ void CycleExactCopper::EventHandler()
   }
   switch (_state)
   {
-    case COPPER_STATE_READ_FIRST_WORD: ReadFirstWord(); break;
-    case COPPER_STATE_READ_SECOND_WORD: ReadSecondWord(); break;
-    case COPPER_STATE_TRANSFER_SECOND_WORD: TransferSecondWord(); break;
+    case CopperStates::COPPER_STATE_READ_FIRST_WORD: ReadFirstWord(); break;
+    case CopperStates::COPPER_STATE_READ_SECOND_WORD: ReadSecondWord(); break;
+    case CopperStates::COPPER_STATE_TRANSFER_SECOND_WORD: TransferSecondWord(); break;
   }
 }
 
@@ -280,7 +280,7 @@ void CycleExactCopper::EndOfFrame()
 {
   copper_registers.copper_pc = copper_registers.cop1lc;
   _skip_next = false;
-  SetState(COPPER_STATE_READ_FIRST_WORD, 40);
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, 40);
 }
 
 void CycleExactCopper::HardReset()

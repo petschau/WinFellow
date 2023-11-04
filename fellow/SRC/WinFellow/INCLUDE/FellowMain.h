@@ -2,19 +2,19 @@
 
 #include "Defs.h"
 
-typedef enum
+enum class fellow_runtime_error_codes
 {
   FELLOW_RUNTIME_ERROR_NO_ERROR = 0,
   FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK = 1
-} fellow_runtime_error_codes;
+};
 
-typedef enum
+enum class FELLOW_REQUESTER_TYPE
 {
   FELLOW_REQUESTER_TYPE_NONE = 0,
   FELLOW_REQUESTER_TYPE_INFO = 1,
   FELLOW_REQUESTER_TYPE_WARN = 2,
   FELLOW_REQUESTER_TYPE_ERROR = 3
-} FELLOW_REQUESTER_TYPE;
+};
 
 extern BOOLE fellow_request_emulation_stop;
 

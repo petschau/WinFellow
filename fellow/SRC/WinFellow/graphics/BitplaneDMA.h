@@ -27,12 +27,12 @@
 #include "Defs.h"
 #include "GraphicsEventQueue.h"
 
-typedef enum BPLDMAStates_
+enum class BPLDMAStates
 {
   BPL_DMA_STATE_NONE = 0,
   BPL_DMA_STATE_FETCH_LORES = 1,
   BPL_DMA_STATE_FETCH_HIRES = 2
-} BPLDMAStates;
+};
 
 class BitplaneDMA : public GraphicsEvent
 {
@@ -62,5 +62,5 @@ public:
 
   void EndOfFrame();
 
-  BitplaneDMA() : GraphicsEvent(), _stopDDF(false), _state(BPL_DMA_STATE_NONE){};
+  BitplaneDMA();
 };

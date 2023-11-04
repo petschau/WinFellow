@@ -3177,15 +3177,15 @@ uint32_t drawGetScaleIndex()
   }
 
   // <Not interlaced>
-  if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return 0; // 2x1
   }
-  else if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
+  else if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID)
   {
     return 1; // 2x2
   }
-  else if (internal_scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  else if (internal_scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return 2; // 4x2
   }

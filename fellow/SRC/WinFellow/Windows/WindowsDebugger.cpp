@@ -1703,7 +1703,7 @@ INT_PTR CALLBACK wdebDebuggerDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
             if (!wdeb_is_working)
             {
               wdeb_is_working = TRUE;
-              winDrvDebugStart(DBG_STEP, hwndDlg);
+              winDrvDebugStart(dbg_operations::DBG_STEP, hwndDlg);
               wdebUpdateCpuDisplay();
               wdeb_is_working = FALSE;
             }
@@ -1712,7 +1712,7 @@ INT_PTR CALLBACK wdebDebuggerDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
             if (!wdeb_is_working)
             {
               wdeb_is_working = TRUE;
-              winDrvDebugStart(DBG_STEP_OVER, hwndDlg);
+              winDrvDebugStart(dbg_operations::DBG_STEP_OVER, hwndDlg);
               wdebUpdateCpuDisplay();
               wdeb_is_working = FALSE;
             }
@@ -1721,7 +1721,7 @@ INT_PTR CALLBACK wdebDebuggerDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
             if (!wdeb_is_working)
             {
               wdeb_is_working = TRUE;
-              winDrvDebugStart(DBG_RUN, hwndDlg);
+              winDrvDebugStart(dbg_operations::DBG_RUN, hwndDlg);
               wdebUpdateCpuDisplay();
               wdeb_is_working = FALSE;
             }

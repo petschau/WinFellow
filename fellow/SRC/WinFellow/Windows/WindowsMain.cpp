@@ -215,7 +215,7 @@ void winDrvEmulationStart()
   }
   else
   {
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Emulation session failed to start up");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Emulation session failed to start up");
   }
   fellowEmulationStop();
 }
@@ -250,9 +250,9 @@ BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg)
 
   switch (operation)
   {
-    case DBG_STEP: winDrvFellowStepOne((LPVOID)1); break;
-    case DBG_STEP_OVER: winDrvFellowStepOver((LPVOID)1); break;
-    case DBG_RUN: winDrvFellowRunDebug((LPVOID) nullptr); break;
+    case dbg_operations::DBG_STEP: winDrvFellowStepOne((LPVOID)1); break;
+    case dbg_operations::DBG_STEP_OVER: winDrvFellowStepOver((LPVOID)1); break;
+    case dbg_operations::DBG_RUN: winDrvFellowRunDebug((LPVOID) nullptr); break;
     default: return FALSE;
   }
   return TRUE;

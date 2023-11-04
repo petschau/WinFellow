@@ -5,12 +5,12 @@
 
 namespace Service
 {
-  typedef enum
+  enum class FileType
   {
     Other,
     File,
     Directory,
-  } FileType;
+  };
 
   struct FileProperties
   {

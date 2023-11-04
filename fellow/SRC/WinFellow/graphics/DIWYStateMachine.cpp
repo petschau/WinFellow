@@ -36,7 +36,7 @@ void DIWYStateMachine::Log(uint32_t line, uint32_t cylinder)
   if (GraphicsContext.Logger.IsLogEnabled())
   {
     char msg[256];
-    sprintf(msg, "DIWY: %s\n", DIWYStateNames[_state]);
+    sprintf(msg, "DIWY: %s\n", DIWYStateNames[(int)_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
@@ -64,12 +64,12 @@ void DIWYStateMachine::SetStateWaitingForStartLine(uint32_t rasterY)
   if ((GetStartLine() > _maxValidY) || (GetStartLine() < rasterY))
   {
     // Start will not be seen (again) in this frame, wait until end of frame (effectively disabled)
-    SetState(DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GraphicsEventQueue::GetCylindersPerLine() + 1, 0));
+    SetState(DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GraphicsEventQueue::GetCylindersPerLine() + 1, 0));
   }
   else
   {
     // This should not affect the current line
-    SetState(DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GetStartLine(), 0));
+    SetState(DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GetStartLine(), 0));
   }
 }
 
@@ -78,11 +78,11 @@ void DIWYStateMachine::SetStateWaitingForStopLine(uint32_t rasterY)
   if ((GetStopLine() > _maxValidY) || (GetStopLine() <= rasterY))
   {
     // Start will not be seen (again) in this frame, wait until end of frame (effectively enabled until end of frame)
-    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GraphicsEventQueue::GetCylindersPerLine() + 1, 0));
+    SetState(DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GraphicsEventQueue::GetCylindersPerLine() + 1, 0));
   }
   else
   {
-    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GetStopLine(), 0));
+    SetState(DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GetStopLine(), 0));
   }
 }
 
@@ -98,15 +98,15 @@ void DIWYStateMachine::DoStateWaitingForStopLine(uint32_t rasterY)
 
 bool DIWYStateMachine::IsVisible()
 {
-  return _state == DIWY_STATE_WAITING_FOR_STOP_LINE;
+  return _state == DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE;
 }
 
 void DIWYStateMachine::ChangedValue()
 {
   switch (_state)
   {
-    case DIWY_STATE_WAITING_FOR_START_LINE: SetStateWaitingForStartLine(busGetRasterY()); break;
-    case DIWY_STATE_WAITING_FOR_STOP_LINE: SetStateWaitingForStopLine(busGetRasterY()); break;
+    case DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE: SetStateWaitingForStartLine(busGetRasterY()); break;
+    case DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE: SetStateWaitingForStopLine(busGetRasterY()); break;
   }
 }
 
@@ -124,8 +124,8 @@ void DIWYStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
   switch (_state)
   {
-    case DIWY_STATE_WAITING_FOR_START_LINE: DoStateWaitingForStartLine(rasterY); break;
-    case DIWY_STATE_WAITING_FOR_STOP_LINE: DoStateWaitingForStopLine(rasterY); break;
+    case DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE: DoStateWaitingForStartLine(rasterY); break;
+    case DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE: DoStateWaitingForStopLine(rasterY); break;
   }
 }
 

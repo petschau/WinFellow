@@ -33,7 +33,7 @@ void DIWXStateMachine::Log(uint32_t line, uint32_t cylinder)
   if (GraphicsContext.Logger.IsLogEnabled())
   {
     char msg[256];
-    sprintf(msg, "DIWX: %s\n", DIWXStateNames[_state]);
+    sprintf(msg, "DIWX: %s\n", DIWXStateNames[(int)_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
@@ -86,7 +86,7 @@ void DIWXStateMachine::SetStateWaitingForStartPos(uint32_t rasterY, uint32_t cyl
     // Start is seen on the next line
     rasterY++;
   }
-  SetState(DIWX_STATE_WAITING_FOR_START_POS, MakeArriveTime(rasterY, start));
+  SetState(DIWXStates::DIWX_STATE_WAITING_FOR_START_POS, MakeArriveTime(rasterY, start));
 }
 
 void DIWXStateMachine::SetStateWaitingForStopPos(uint32_t rasterY, uint32_t cylinder)
@@ -96,16 +96,16 @@ void DIWXStateMachine::SetStateWaitingForStopPos(uint32_t rasterY, uint32_t cyli
   if (GetStopPosition() > _maxValidX)
   {
     // Stop position will never be found, wait beyond end of frame (effectively disabled)
-    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, busGetCyclesInThisFrame() * 2 + 1);
+    SetState(DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS, busGetCyclesInThisFrame() * 2 + 1);
   }
   else if (GetStopPosition() <= cylinder)
   {
     // Stop position will be found on the next line
-    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, MakeArriveTime(rasterY + 1, GetStopPosition()));
+    SetState(DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS, MakeArriveTime(rasterY + 1, GetStopPosition()));
   }
   else
   {
-    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, MakeArriveTime(rasterY, GetStopPosition()));
+    SetState(DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS, MakeArriveTime(rasterY, GetStopPosition()));
   }
 }
 
@@ -121,15 +121,15 @@ void DIWXStateMachine::DoStateWaitingForStopPos(uint32_t rasterY, uint32_t cylin
 
 bool DIWXStateMachine::IsVisible()
 {
-  return (_state == DIWX_STATE_WAITING_FOR_STOP_POS);
+  return (_state == DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS);
 }
 
 void DIWXStateMachine::ChangedValue()
 {
   switch (_state)
   {
-    case DIWX_STATE_WAITING_FOR_START_POS: SetStateWaitingForStartPos(busGetRasterY(), busGetRasterX() * 2); break;
-    case DIWX_STATE_WAITING_FOR_STOP_POS: SetStateWaitingForStopPos(busGetRasterY(), busGetRasterX() * 2); break;
+    case DIWXStates::DIWX_STATE_WAITING_FOR_START_POS: SetStateWaitingForStartPos(busGetRasterY(), busGetRasterX() * 2); break;
+    case DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS: SetStateWaitingForStopPos(busGetRasterY(), busGetRasterX() * 2); break;
   }
 }
 
@@ -147,8 +147,8 @@ void DIWXStateMachine::Handler(uint32_t rasterY, uint32_t cylinder)
 
   switch (_state)
   {
-    case DIWX_STATE_WAITING_FOR_START_POS: DoStateWaitingForStartPos(rasterY, cylinder); break;
-    case DIWX_STATE_WAITING_FOR_STOP_POS: DoStateWaitingForStopPos(rasterY, cylinder); break;
+    case DIWXStates::DIWX_STATE_WAITING_FOR_START_POS: DoStateWaitingForStartPos(rasterY, cylinder); break;
+    case DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS: DoStateWaitingForStopPos(rasterY, cylinder); break;
   }
 }
 

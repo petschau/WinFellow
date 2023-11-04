@@ -752,9 +752,9 @@ void floppyTrackLoad(uint32_t drive, uint32_t track)
 /* Set error conditions */
 /*======================*/
 
-void floppyError(uint32_t drive, uint32_t errorID)
+void floppyError(uint32_t drive, FLOPPY_ERROR_CODE errorID)
 {
-  floppy[drive].imagestatus = FLOPPY_STATUS_ERROR;
+  floppy[drive].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_ERROR;
   floppy[drive].imageerror = errorID;
   floppy[drive].inserted = FALSE;
   if (floppy[drive].F != nullptr)
@@ -920,7 +920,7 @@ BOOLE floppyImageCompressedBZipPrepare(const char *diskname, uint32_t drive)
 
   if ((gzname = _core.Fileops->GetTemporaryFilename()) == nullptr)
   {
-    floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
+    floppyError(drive, FLOPPY_ERROR_CODE::FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
 
@@ -942,7 +942,7 @@ BOOLE floppyImageCompressedDMSPrepare(const char *diskname, uint32_t drive)
 
   if ((gzname = _core.Fileops->GetTemporaryFilename()) == nullptr)
   {
-    floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
+    floppyError(drive, FLOPPY_ERROR_CODE::FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
 
@@ -953,7 +953,7 @@ BOOLE floppyImageCompressedDMSPrepare(const char *diskname, uint32_t drive)
 
     dmsErrMsg(result, (char *)diskname, gzname, (char *)szErrorMessage);
 
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
+    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
 
     free(gzname);
     return FALSE;
@@ -974,7 +974,7 @@ BOOLE floppyImageCompressedGZipPrepare(const char *diskname, uint32_t drive)
   char *gzname;
   if ((gzname = _core.Fileops->GetTemporaryFilename()) == nullptr)
   {
-    floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
+    floppyError(drive, FLOPPY_ERROR_CODE::FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
 
@@ -1067,7 +1067,7 @@ void floppyImageRemove(uint32_t drive)
     fclose(floppy[drive].F);
     floppy[drive].F = nullptr;
   }
-  if (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK || floppy[drive].imagestatus == FLOPPY_STATUS_EXTENDED_OK)
+  if (floppy[drive].imagestatus == FLOPPY_STATUS_CODE::FLOPPY_STATUS_NORMAL_OK || floppy[drive].imagestatus == FLOPPY_STATUS_CODE::FLOPPY_STATUS_EXTENDED_OK)
   {
     if (floppy[drive].zipped)
     {
@@ -1075,7 +1075,7 @@ void floppyImageRemove(uint32_t drive)
     }
   }
 #ifdef FELLOW_SUPPORT_CAPS
-  else if (floppy[drive].imagestatus == FLOPPY_STATUS_IPF_OK)
+  else if (floppy[drive].imagestatus == FLOPPY_STATUS_CODE::FLOPPY_STATUS_IPF_OK)
   {
     capsUnloadImage(drive);
   }
@@ -1086,7 +1086,7 @@ void floppyImageRemove(uint32_t drive)
     RP.SendFloppyDriveContent(drive, "", floppyIsWriteProtected(drive) ? true : false);
   }
 #endif
-  floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
+  floppy[drive].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_NONE;
   floppy[drive].inserted = FALSE;
   floppy[drive].changed = TRUE;
   floppySetReadOnlyEnforced(drive, false);
@@ -1100,7 +1100,7 @@ void floppyImagePrepare(const char *diskname, uint32_t drive)
 {
   if (!floppyImageCompressedPrepare(diskname, drive))
   {
-    if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR)
+    if (floppy[drive].imagestatus != FLOPPY_STATUS_CODE::FLOPPY_STATUS_ERROR)
     {
       strcpy(floppy[drive].imagenamereal, diskname);
       floppy[drive].zipped = FALSE;
@@ -1113,24 +1113,24 @@ void floppyImagePrepare(const char *diskname, uint32_t drive)
 /* Returns the image status              */
 /*=======================================*/
 
-uint32_t floppyImageGeometryCheck(FileProperties *fsnp, uint32_t drive)
+FLOPPY_STATUS_CODE floppyImageGeometryCheck(FileProperties *fsnp, uint32_t drive)
 {
   char head[8];
   fread(head, 1, 8, floppy[drive].F);
   if (strncmp(head, "UAE--ADF", 8) == 0)
   {
-    floppy[drive].imagestatus = FLOPPY_STATUS_EXTENDED_OK;
+    floppy[drive].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_EXTENDED_OK;
     floppy[drive].tracks = 80;
   }
   else if (strncmp(head, "UAE-1ADF", 8) == 0)
   {
-    floppy[drive].imagestatus = FLOPPY_STATUS_EXTENDED2_OK;
+    floppy[drive].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_EXTENDED2_OK;
     floppy[drive].tracks = 80;
   }
 #ifdef FELLOW_SUPPORT_CAPS
   else if (strncmp(head, "CAPS", 4) == 0)
   {
-    floppy[drive].imagestatus = FLOPPY_STATUS_IPF_OK;
+    floppy[drive].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_IPF_OK;
     floppy[drive].tracks = 80;
   }
 #endif
@@ -1139,11 +1139,11 @@ uint32_t floppyImageGeometryCheck(FileProperties *fsnp, uint32_t drive)
     floppy[drive].tracks = (uint32_t)(fsnp->Size / 11264);
     if ((floppy[drive].tracks * 11264) != fsnp->Size)
     {
-      floppyError(drive, FLOPPY_ERROR_SIZE);
+      floppyError(drive, FLOPPY_ERROR_CODE::FLOPPY_ERROR_SIZE);
     }
     else
     {
-      floppy[drive].imagestatus = FLOPPY_STATUS_NORMAL_OK;
+      floppy[drive].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_NORMAL_OK;
     }
     if (floppy[drive].track >= floppy[drive].tracks)
     {
@@ -1270,7 +1270,7 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
   if (strcmp(diskname, "") == 0)
   {
     floppy[drive].inserted = FALSE;
-    floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
+    floppy[drive].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_NONE;
     strcpy(floppy[drive].imagename, "");
     return;
   }
@@ -1278,13 +1278,13 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
   FileProperties *fileProperties = _core.FileInformation->GetFileProperties(diskname);
   if (fileProperties == nullptr)
   {
-    floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
+    floppyError(drive, FLOPPY_ERROR_CODE::FLOPPY_ERROR_EXISTS_NOT);
     return;
   }
 
   if (fileProperties->Type != FileType::File)
   {
-    floppyError(drive, FLOPPY_ERROR_FILE);
+    floppyError(drive, FLOPPY_ERROR_CODE::FLOPPY_ERROR_FILE);
     delete fileProperties;
     return;
   }
@@ -1297,7 +1297,7 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
     fileProperties = _core.FileInformation->GetFileProperties(floppy[drive].imagenamereal);
     if (fileProperties == nullptr)
     {
-      floppyError(drive, FLOPPY_ERROR_COMPRESS);
+      floppyError(drive, FLOPPY_ERROR_CODE::FLOPPY_ERROR_COMPRESS);
       return;
     }
   }
@@ -1307,7 +1307,7 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
   floppy[drive].F = fopen(floppy[drive].imagenamereal, floppyIsWriteProtected(drive) ? "rb" : "r+b");
   if (floppy[drive].F == nullptr)
   {
-    floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
+    floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_CODE::FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_CODE::FLOPPY_ERROR_FILE);
     delete fileProperties;
     return;
   }
@@ -1315,17 +1315,19 @@ void floppySetDiskImage(uint32_t drive, const char *diskname)
   strcpy(floppy[drive].imagename, diskname);
   switch (floppyImageGeometryCheck(fileProperties, drive))
   {
-    case FLOPPY_STATUS_NORMAL_OK:
+    case FLOPPY_STATUS_CODE::FLOPPY_STATUS_NORMAL_OK:
       floppyImageNormalLoad(drive);
       bSuccess = TRUE;
       break;
-    case FLOPPY_STATUS_EXTENDED_OK:
+    case FLOPPY_STATUS_CODE::FLOPPY_STATUS_EXTENDED_OK:
       floppyImageExtendedLoad(drive);
       bSuccess = TRUE;
       break;
-    case FLOPPY_STATUS_EXTENDED2_OK: _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n", drive, diskname); break;
+    case FLOPPY_STATUS_CODE::FLOPPY_STATUS_EXTENDED2_OK:
+      _core.Log->AddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n", drive, diskname);
+      break;
 #ifdef FELLOW_SUPPORT_CAPS
-    case FLOPPY_STATUS_IPF_OK:
+    case FLOPPY_STATUS_CODE::FLOPPY_STATUS_IPF_OK:
       floppyImageIPFLoad(drive);
       bSuccess = TRUE;
       break;
@@ -1406,7 +1408,7 @@ void floppyDriveTableInit()
     floppy[i].idcount = 0;
     floppy[i].imagename[0] = '\0';
     floppy[i].imagenamereal[0] = '\0';
-    floppy[i].imagestatus = FLOPPY_STATUS_NONE;
+    floppy[i].imagestatus = FLOPPY_STATUS_CODE::FLOPPY_STATUS_NONE;
     floppy[i].zipped = FALSE;
     floppy[i].changed = TRUE;
     /* Need to be large enough to hold UAE--ADF encoded tracks */
@@ -1549,11 +1551,12 @@ void floppyDMAReadInit(uint32_t drive)
   }
 
   // Workaround, require normal sync with MFM generated from ADF. (North and South (?), Prince of Persia, Lemmings 2)
-  if (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
+  if (floppy[drive].imagestatus == FLOPPY_STATUS_CODE::FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
     _core.Log->AddLog("floppyDMAReadInit(): WARNING: unusual dsksync value encountered: 0x%x\n", dsksync);
 
-  floppy_DMA.wait_for_sync = (adcon & 0x0400) && ((floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) ||
-                                                  (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914 || dsksync == 0x4124)));
+  floppy_DMA.wait_for_sync =
+      (adcon & 0x0400) && ((floppy[drive].imagestatus != FLOPPY_STATUS_CODE::FLOPPY_STATUS_NORMAL_OK && dsksync != 0) ||
+                           (floppy[drive].imagestatus == FLOPPY_STATUS_CODE::FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914 || dsksync == 0x4124)));
 
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
@@ -1739,7 +1742,7 @@ void floppyNextByte(uint32_t sel_drv, uint32_t track)
   uint32_t modulo;
 #ifdef FELLOW_SUPPORT_CAPS
   uint32_t previous_motor_ticks = floppy[sel_drv].motor_ticks;
-  if (floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK)
+  if (floppy[sel_drv].imagestatus == FLOPPY_STATUS_CODE::FLOPPY_STATUS_IPF_OK)
   {
     modulo = floppy[sel_drv].trackinfo[track].mfm_length;
   }
@@ -1763,7 +1766,7 @@ void floppyNextByte(uint32_t sel_drv, uint32_t track)
 #ifdef FELLOW_SUPPORT_CAPS
   if (previous_motor_ticks > floppy[sel_drv].motor_ticks)
   {
-    if (floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK && floppy[sel_drv].flakey)
+    if (floppy[sel_drv].imagestatus == FLOPPY_STATUS_CODE::FLOPPY_STATUS_IPF_OK && floppy[sel_drv].flakey)
     {
       uint32_t track = floppy[sel_drv].track;
       capsLoadNextRevolution(sel_drv, floppy[sel_drv].track, floppy[sel_drv].trackinfo[track].mfm_data, &floppy[sel_drv].trackinfo[track].mfm_length);

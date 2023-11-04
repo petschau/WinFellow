@@ -27,11 +27,11 @@
 #include "Defs.h"
 #include "GraphicsEventQueue.h"
 
-typedef enum DDFStates_
+enum class DDFStates
 {
   DDF_STATE_WAITING_FOR_FIRST_FETCH = 0,
   DDF_STATE_WAITING_FOR_NEXT_FETCH = 1
-} DDFStates;
+};
 
 class DDFStateMachine : public GraphicsEvent
 {

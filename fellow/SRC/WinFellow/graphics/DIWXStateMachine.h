@@ -27,11 +27,11 @@
 #include "Defs.h"
 #include "GraphicsEventQueue.h"
 
-typedef enum DIWXStates_
+enum class DIWXStates
 {
   DIWX_STATE_WAITING_FOR_START_POS = 0,
   DIWX_STATE_WAITING_FOR_STOP_POS = 1
-} DIWXStates;
+};
 
 class DIWXStateMachine : public GraphicsEvent
 {

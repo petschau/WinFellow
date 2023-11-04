@@ -6,7 +6,9 @@
 #include "DebugApi/IMemorySystem.h"
 #include "DebugApi/IM68K.h"
 #include "Service/ILog.h"
-#include "hardfile/HardfileStructs.h"
+#include "hardfile/HardfileDevice.h"
+#include "hardfile/HardfileFileSystemEntry.h"
+#include "hardfile/HardfileMountListEntry.h"
 
 #define FHFILE_MAX_DEVICES 20
 

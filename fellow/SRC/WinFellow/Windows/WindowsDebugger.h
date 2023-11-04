@@ -28,9 +28,9 @@
 extern void wdbgDebugSessionRun(HWND parent);
 extern void wdebDebug();
 
-typedef enum
+enum class dbg_operations
 {
   DBG_STEP,
   DBG_STEP_OVER,
   DBG_RUN
-} dbg_operations;
+};

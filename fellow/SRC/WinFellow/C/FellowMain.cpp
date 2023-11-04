@@ -142,13 +142,13 @@ static void fellowRuntimeErrorCheck()
 {
   switch (fellowGetRuntimeErrorCode())
   {
-    case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
+    case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
       fellowShowRequester(
-          FELLOW_REQUESTER_TYPE_ERROR,
+          FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR,
           "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
       break;
   }
-  fellowSetRuntimeErrorCode(FELLOW_RUNTIME_ERROR_NO_ERROR);
+  fellowSetRuntimeErrorCode(fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR);
 }
 
 /*============================================================================*/
@@ -174,7 +174,7 @@ void fellowSoftReset()
   ffilesysHardReset();
   memoryHardResetPost();
   fellowSetPreStartReset(false);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.SoftReset();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.SoftReset();
 }
 
 /*============================================================================*/
@@ -201,7 +201,7 @@ void fellowHardReset()
   memoryHardResetPost();
   cpuIntegrationHardReset();
   fellowSetPreStartReset(false);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.HardReset();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.HardReset();
 }
 
 /*============================================================================*/
@@ -257,7 +257,7 @@ bool fellowEmulationStart()
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.EmulationStart();
 #endif
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStart();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStart();
 
   _core.Uart->EmulationStart();
   _core.HardfileHandler->EmulationStart();
@@ -292,7 +292,7 @@ void fellowEmulationStop()
   interruptEmulationStop();
   memoryEmulationStop();
   iniEmulationStop();
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStop();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStop();
 
   _core.Uart->EmulationStop();
 }
@@ -307,7 +307,7 @@ void fellowRun()
 {
   if (fellowGetPreStartReset()) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) busRun();
+  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR) busRun();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
@@ -324,7 +324,7 @@ void fellowStepOne()
     fellowHardReset();
   }
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
+  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
     busDebugStepOneInstruction();
   }
@@ -350,7 +350,7 @@ void fellowStepOver()
   }
 
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
+  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
     uint32_t current_pc = cpuGetPC();
     uint32_t over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
@@ -372,7 +372,7 @@ void fellowRunDebug(uint32_t breakpoint)
   fellowRequestEmulationStopClear();
   if (fellowGetPreStartReset()) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
+  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
     while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
       busDebugStepOneInstruction();
   fellowRequestEmulationStopClear();
@@ -385,7 +385,7 @@ void fellowRunDebug(uint32_t breakpoint)
 
 void fellowNastyExit()
 {
-  longjmp(fellow_runtime_error_env, fellowGetRuntimeErrorCode());
+  longjmp(fellow_runtime_error_env, (int)fellowGetRuntimeErrorCode());
   fprintf(stderr, "You only die twice, I give in!\n");
   _core.Sound->Shutdown();
   fprintf(stderr, "Serious error! Exit.\n");
@@ -398,7 +398,8 @@ void fellowNastyExit()
 
 static void fellowDrawFailed()
 {
-  fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
+  fellowShowRequester(
+      FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
 
   exit(EXIT_FAILURE);
 }
@@ -483,7 +484,7 @@ static void fellowModulesStartup(int argc, const char **argv)
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Startup();
 #endif
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Startup();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Startup();
 
   automator.Startup();
 }
@@ -495,7 +496,7 @@ static void fellowModulesStartup(int argc, const char **argv)
 static void fellowModulesShutdown()
 {
   automator.Shutdown();
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Shutdown();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Shutdown();
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Shutdown();
 #endif

@@ -295,7 +295,7 @@ bool cfgGetUseAutoconfig(cfg *config)
 
 BOOLE cfgGetAddress32Bit(cfg *config)
 { /* CPU type decides this */
-  return (cfgGetCPUType(config) == M68020) || (cfgGetCPUType(config) == M68030);
+  return (cfgGetCPUType(config) == cpu_integration_models::M68020) || (cfgGetCPUType(config) == cpu_integration_models::M68030);
 }
 
 void cfgSetRtc(cfg *config, bool rtc)
@@ -389,7 +389,7 @@ void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver)
   if (!gfxDrvDXGIValidateRequirements())
   {
     _core.Log->AddLog("cfgSetDisplayDriver(): Direct3D requirements not met, falling back to DirectDraw.\n");
-    config->m_displaydriver = DISPLAYDRIVER_DIRECTDRAW;
+    config->m_displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
   }
 }
 
@@ -867,17 +867,16 @@ void cfgSetDefaults(cfg *config)
   cfgSetUseMultipleGraphicalBuffers(config, FALSE);
   cfgSetScreenDrawLEDs(config, true);
   cfgSetDeinterlace(config, true);
-  // cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECTDRAW);
-  cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECT3D11);
+  cfgSetDisplayDriver(config, DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
 
   /*==========================================================================*/
   /* Default graphics emulation configuration                                 */
   /*==========================================================================*/
 
   cfgSetFrameskipRatio(config, 0);
-  cfgSetDisplayScale(config, DISPLAYSCALE_1X);
-  cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY_SOLID);
-  cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE_LINEEXACT);
+  cfgSetDisplayScale(config, DISPLAYSCALE::DISPLAYSCALE_1X);
+  cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
+  cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_LINEEXACT);
   cfgSetClipLeft(config, 96);
   cfgSetClipTop(config, 26);
   cfgSetClipRight(config, 472);
@@ -887,21 +886,21 @@ void cfgSetDefaults(cfg *config)
   /* Default sound configuration                                              */
   /*==========================================================================*/
 
-  cfgSetSoundEmulation(config, SOUND_PLAY);
+  cfgSetSoundEmulation(config, sound_emulations::SOUND_PLAY);
   cfgSetSoundRate(config, sound_rates::SOUND_44100);
   cfgSetSoundStereo(config, TRUE);
   cfgSetSound16Bits(config, TRUE);
-  cfgSetSoundFilter(config, SOUND_FILTER_ORIGINAL);
+  cfgSetSoundFilter(config, sound_filters::SOUND_FILTER_ORIGINAL);
   cfgSetSoundVolume(config, 100);
   cfgSetSoundWAVDump(config, FALSE);
-  cfgSetSoundNotification(config, SOUND_MMTIMER_NOTIFICATION);
+  cfgSetSoundNotification(config, sound_notifications::SOUND_MMTIMER_NOTIFICATION);
   cfgSetSoundBufferLength(config, 60);
 
   /*==========================================================================*/
   /* Default CPU configuration                                                */
   /*==========================================================================*/
 
-  cfgSetCPUType(config, M68000);
+  cfgSetCPUType(config, cpu_integration_models::M68000);
   cfgSetCPUSpeed(config, 4);
 
   /*==========================================================================*/
@@ -1049,49 +1048,49 @@ static cpu_integration_models cfgGetCPUTypeFromString(const string &value)
 
   if (lowercaseValue == "68000")
   {
-    return M68000;
+    return cpu_integration_models::M68000;
   }
   if (lowercaseValue == "68010")
   {
-    return M68010;
+    return cpu_integration_models::M68010;
   }
   if (lowercaseValue == "68020")
   {
-    return M68020;
+    return cpu_integration_models::M68020;
   }
   if (lowercaseValue == "68020/68881")
   {
-    return M68020; /* Unsupp */
+    return cpu_integration_models::M68020; /* Unsupp */
   }
   if (lowercaseValue == "68ec20")
   {
-    return M68EC20;
+    return cpu_integration_models::M68EC20;
   }
   if (lowercaseValue == "68ec20/68881")
   {
-    return M68EC20; /* Unsupp */
+    return cpu_integration_models::M68EC20; /* Unsupp */
   }
   if (lowercaseValue == "68030")
   {
-    return M68030;
+    return cpu_integration_models::M68030;
   }
   if (lowercaseValue == "68ec30")
   {
-    return M68EC30;
+    return cpu_integration_models::M68EC30;
   }
-  return M68000;
+  return cpu_integration_models::M68000;
 }
 
 static const char *cfgGetCPUTypeToString(cpu_integration_models cputype)
 {
   switch (cputype)
   {
-    case M68000: return "68000";
-    case M68010: return "68010";
-    case M68020: return "68020";
-    case M68EC20: return "68ec20";
-    case M68030: return "68030";
-    case M68EC30: return "68ec30";
+    case cpu_integration_models::M68000: return "68000";
+    case cpu_integration_models::M68010: return "68010";
+    case cpu_integration_models::M68020: return "68020";
+    case cpu_integration_models::M68EC20: return "68ec20";
+    case cpu_integration_models::M68030: return "68030";
+    case cpu_integration_models::M68EC30: return "68ec30";
   }
 
   return "68000";
@@ -1125,23 +1124,23 @@ static sound_notifications cfgGetSoundNotificationFromString(const string &value
 
   if (lowercaseValue == "directsound")
   {
-    return SOUND_DSOUND_NOTIFICATION;
+    return sound_notifications::SOUND_DSOUND_NOTIFICATION;
   }
 
   if (lowercaseValue == "mmtimer")
   {
-    return SOUND_MMTIMER_NOTIFICATION;
+    return sound_notifications::SOUND_MMTIMER_NOTIFICATION;
   }
 
-  return SOUND_MMTIMER_NOTIFICATION;
+  return sound_notifications::SOUND_MMTIMER_NOTIFICATION;
 }
 
 static const char *cfgGetSoundNotificationToString(sound_notifications soundnotification)
 {
   switch (soundnotification)
   {
-    case SOUND_DSOUND_NOTIFICATION: return "directsound";
-    case SOUND_MMTIMER_NOTIFICATION: return "mmtimer";
+    case sound_notifications::SOUND_DSOUND_NOTIFICATION: return "directsound";
+    case sound_notifications::SOUND_MMTIMER_NOTIFICATION: return "mmtimer";
   }
   return "mmtimer";
 }
@@ -1152,29 +1151,29 @@ static sound_emulations cfgGetSoundEmulationFromString(const string &value)
 
   if (lowercaseValue == "none")
   {
-    return SOUND_NONE;
+    return sound_emulations::SOUND_NONE;
   }
 
   if (lowercaseValue == "interrupts")
   {
-    return SOUND_EMULATE;
+    return sound_emulations::SOUND_EMULATE;
   }
 
   if (lowercaseValue == "normal" || lowercaseValue == "exact" || lowercaseValue == "good" || lowercaseValue == "best")
   {
-    return SOUND_PLAY;
+    return sound_emulations::SOUND_PLAY;
   }
 
-  return SOUND_NONE;
+  return sound_emulations::SOUND_NONE;
 }
 
 static const char *cfgGetSoundEmulationToString(sound_emulations soundemulation)
 {
   switch (soundemulation)
   {
-    case SOUND_NONE: return "none";
-    case SOUND_EMULATE: return "interrupts";
-    case SOUND_PLAY: return "normal";
+    case sound_emulations::SOUND_NONE: return "none";
+    case sound_emulations::SOUND_EMULATE: return "interrupts";
+    case sound_emulations::SOUND_PLAY: return "normal";
   }
   return "none";
 }
@@ -1248,26 +1247,26 @@ static sound_filters cfgGetSoundFilterFromString(const string &value)
 
   if (lowercaseValue == "never")
   {
-    return SOUND_FILTER_NEVER;
+    return sound_filters::SOUND_FILTER_NEVER;
   }
   if (lowercaseValue == "original")
   {
-    return SOUND_FILTER_ORIGINAL;
+    return sound_filters::SOUND_FILTER_ORIGINAL;
   }
   if (lowercaseValue == "always")
   {
-    return SOUND_FILTER_ALWAYS;
+    return sound_filters::SOUND_FILTER_ALWAYS;
   }
-  return SOUND_FILTER_ORIGINAL;
+  return sound_filters::SOUND_FILTER_ORIGINAL;
 }
 
 static const char *cfgGetSoundFilterToString(sound_filters filter)
 {
   switch (filter)
   {
-    case SOUND_FILTER_NEVER: return "never";
-    case SOUND_FILTER_ORIGINAL: return "original";
-    case SOUND_FILTER_ALWAYS: return "always";
+    case sound_filters::SOUND_FILTER_NEVER: return "never";
+    case sound_filters::SOUND_FILTER_ORIGINAL: return "original";
+    case sound_filters::SOUND_FILTER_ALWAYS: return "always";
   }
   return "original";
 }
@@ -1293,36 +1292,36 @@ static DISPLAYSCALE cfgGetDisplayScaleFromString(const string &value)
 
   if (lowercaseValue == "auto")
   {
-    return DISPLAYSCALE_AUTO;
+    return DISPLAYSCALE::DISPLAYSCALE_AUTO;
   }
   if (lowercaseValue == "quadruple")
   {
-    return DISPLAYSCALE_4X;
+    return DISPLAYSCALE::DISPLAYSCALE_4X;
   }
   if (lowercaseValue == "triple")
   {
-    return DISPLAYSCALE_3X;
+    return DISPLAYSCALE::DISPLAYSCALE_3X;
   }
   if (lowercaseValue == "double")
   {
-    return DISPLAYSCALE_2X;
+    return DISPLAYSCALE::DISPLAYSCALE_2X;
   }
   if (lowercaseValue == "single")
   {
-    return DISPLAYSCALE_1X;
+    return DISPLAYSCALE::DISPLAYSCALE_1X;
   }
-  return DISPLAYSCALE_1X; // Default
+  return DISPLAYSCALE::DISPLAYSCALE_1X; // Default
 }
 
 static const char *cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
 {
   switch (displayscale)
   {
-    case DISPLAYSCALE_AUTO: return "auto";
-    case DISPLAYSCALE_1X: return "single";
-    case DISPLAYSCALE_2X: return "double";
-    case DISPLAYSCALE_3X: return "triple";
-    case DISPLAYSCALE_4X: return "quadruple";
+    case DISPLAYSCALE::DISPLAYSCALE_AUTO: return "auto";
+    case DISPLAYSCALE::DISPLAYSCALE_1X: return "single";
+    case DISPLAYSCALE::DISPLAYSCALE_2X: return "double";
+    case DISPLAYSCALE::DISPLAYSCALE_3X: return "triple";
+    case DISPLAYSCALE::DISPLAYSCALE_4X: return "quadruple";
   }
   return "single";
 }
@@ -1333,21 +1332,21 @@ static DISPLAYDRIVER cfgGetDisplayDriverFromString(const string &value)
 
   if (lowercaseValue == "directdraw")
   {
-    return DISPLAYDRIVER_DIRECTDRAW;
+    return DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
   }
   if (lowercaseValue == "direct3d11")
   {
-    return DISPLAYDRIVER_DIRECT3D11;
+    return DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11;
   }
-  return DISPLAYDRIVER_DIRECTDRAW; // Default
+  return DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW; // Default
 }
 
 static const char *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
 {
   switch (displaydriver)
   {
-    case DISPLAYDRIVER_DIRECTDRAW: return "directdraw";
-    case DISPLAYDRIVER_DIRECT3D11: return "direct3d11";
+    case DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW: return "directdraw";
+    case DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11: return "direct3d11";
   }
   return "directdraw";
 }
@@ -1358,21 +1357,21 @@ static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(const string &
 
   if (lowercaseValue == "scanlines")
   {
-    return DISPLAYSCALE_STRATEGY_SCANLINES;
+    return DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES;
   }
   if (lowercaseValue == "solid")
   {
-    return DISPLAYSCALE_STRATEGY_SOLID;
+    return DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID;
   }
-  return DISPLAYSCALE_STRATEGY_SOLID; // Default
+  return DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID; // Default
 }
 
 static const char *cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscalestrategy)
 {
   switch (displayscalestrategy)
   {
-    case DISPLAYSCALE_STRATEGY_SOLID: return "solid";
-    case DISPLAYSCALE_STRATEGY_SCANLINES: return "scanlines";
+    case DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID: return "solid";
+    case DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES: return "scanlines";
   }
   return "solid";
 }
@@ -1462,21 +1461,21 @@ static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(const string 
 
   if (lowercaseValue == "lineexact")
   {
-    return GRAPHICSEMULATIONMODE_LINEEXACT;
+    return GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_LINEEXACT;
   }
   if (lowercaseValue == "cycleexact")
   {
-    return GRAPHICSEMULATIONMODE_CYCLEEXACT;
+    return GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT;
   }
-  return GRAPHICSEMULATIONMODE_LINEEXACT;
+  return GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_LINEEXACT;
 }
 
 static const char *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsemulationmode)
 {
   switch (graphicsemulationmode)
   {
-    case GRAPHICSEMULATIONMODE_LINEEXACT: return "lineexact";
-    case GRAPHICSEMULATIONMODE_CYCLEEXACT: return "cycleexact";
+    case GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_LINEEXACT: return "lineexact";
+    case GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT: return "cycleexact";
   }
   return "lineexact";
 }
@@ -2049,7 +2048,7 @@ void cfgUpgradeLegacyConfigToCurrentVersion(cfg *config)
   //  * Added : "auto", "triple" and "quadruple".
 
   // Scale
-  if (cfgGetDisplayScale(config) == 0 || cfgGetDisplayScale(config) > 2)
+  if (cfgGetDisplayScale(config) != DISPLAYSCALE::DISPLAYSCALE_1X && cfgGetDisplayScale(config) != DISPLAYSCALE::DISPLAYSCALE_2X)
   {
     cfgSetDisplayScale(config, DISPLAYSCALE::DISPLAYSCALE_1X);
   }
@@ -2493,7 +2492,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
       strncpy(ffilesys.volumename, filesys.volumename, FFILESYS_MAX_VOLUMENAME);
       strncpy(ffilesys.rootpath, filesys.rootpath, CFG_FILENAME_LENGTH);
       ffilesys.readonly = filesys.readonly;
-      ffilesys.status = FFILESYS_INSERTED;
+      ffilesys.status = ffilesys_status::FFILESYS_INSERTED;
       if (!ffilesysCompareFilesys(ffilesys, i))
       {
         needreset = TRUE;

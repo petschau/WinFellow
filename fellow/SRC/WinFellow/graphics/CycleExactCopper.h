@@ -3,13 +3,13 @@
 #include "Defs.h"
 #include "LegacyCopper.h"
 
-typedef enum CopperStates_
+enum class CopperStates
 {
   COPPER_STATE_NONE = 0,
   COPPER_STATE_READ_FIRST_WORD = 1,
   COPPER_STATE_READ_SECOND_WORD = 2,
   COPPER_STATE_TRANSFER_SECOND_WORD = 3
-} CopperStates;
+};
 
 class CycleExactCopper : public Copper
 {

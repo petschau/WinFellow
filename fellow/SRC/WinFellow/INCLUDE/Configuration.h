@@ -34,32 +34,32 @@ typedef struct
   BOOLE readonly;
 } cfg_filesys;
 
-typedef enum
+enum class DISPLAYSCALE
 {
   DISPLAYSCALE_AUTO = 0,
   DISPLAYSCALE_1X = 1,
   DISPLAYSCALE_2X = 2,
   DISPLAYSCALE_3X = 3,
   DISPLAYSCALE_4X = 4
-} DISPLAYSCALE;
+};
 
-typedef enum
+enum class DISPLAYSCALE_STRATEGY
 {
   DISPLAYSCALE_STRATEGY_SOLID = 0,
   DISPLAYSCALE_STRATEGY_SCANLINES = 1
-} DISPLAYSCALE_STRATEGY;
+};
 
-typedef enum
+enum class DISPLAYDRIVER
 {
   DISPLAYDRIVER_DIRECTDRAW = 0,
   DISPLAYDRIVER_DIRECT3D11 = 1
-} DISPLAYDRIVER;
+};
 
-typedef enum
+enum class GRAPHICSEMULATIONMODE
 {
   GRAPHICSEMULATIONMODE_LINEEXACT = 0,
   GRAPHICSEMULATIONMODE_CYCLEEXACT = 1
-} GRAPHICSEMULATIONMODE;
+};
 
 /*============================================================================*/
 /* struct that holds a complete Fellow configuration                          */

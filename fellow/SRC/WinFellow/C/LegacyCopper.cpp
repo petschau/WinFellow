@@ -37,7 +37,7 @@ void copperInitializeFromEmulationMode()
     delete copper;
     copper = nullptr;
   }
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     copper = new CycleExactCopper();
   }

@@ -27,11 +27,11 @@
 #include "Defs.h"
 #include "GraphicsEventQueue.h"
 
-typedef enum DIWYStates_
+enum class DIWYStates
 {
   DIWY_STATE_WAITING_FOR_START_LINE = 0,
   DIWY_STATE_WAITING_FOR_STOP_LINE = 1
-} DIWYStates;
+};
 
 class DIWYStateMachine : public GraphicsEvent
 {

@@ -137,7 +137,7 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info, MemoryAccessFunc func)
 
   if (MessageBox(modrip_hWnd, message, "Module found.", MB_YESNO | MB_ICONQUESTION) == IDYES)
   {
-    if (wguiSaveFile(modrip_hWnd, info->filename, MODRIP_TEMPSTRLEN, "Save Module As:", FSEL_MOD))
+    if (wguiSaveFile(modrip_hWnd, info->filename, MODRIP_TEMPSTRLEN, "Save Module As:", SelectFileFlags::FSEL_MOD))
     {
       if (!modripSaveMem(info, func))
       {

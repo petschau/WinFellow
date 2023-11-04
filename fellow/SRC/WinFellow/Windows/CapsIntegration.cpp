@@ -69,7 +69,8 @@ BOOLE capsStartup()
 
   if (result != 0)
   {
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_INFO, "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
+    fellowShowRequester(
+        FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_INFO, "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
     capsUserIsNotified = TRUE;
     _core.Log->AddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
     return FALSE;

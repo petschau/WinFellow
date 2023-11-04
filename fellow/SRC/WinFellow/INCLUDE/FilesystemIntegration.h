@@ -6,11 +6,11 @@
 #define FFILESYS_MAX_DEVICES 20
 #define FFILESYS_MAX_VOLUMENAME 64
 
-typedef enum
+enum class ffilesys_status
 {
   FFILESYS_NONE = 0,
   FFILESYS_INSERTED = 1
-} ffilesys_status;
+};
 
 typedef struct
 {

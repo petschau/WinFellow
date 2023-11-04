@@ -1,6 +1,6 @@
 #pragma once
 
-typedef enum
+enum class cpu_integration_models
 {
   M68000 = 0,
   M68010 = 1,
@@ -8,7 +8,7 @@ typedef enum
   M68030 = 3,
   M68EC30 = 4,
   M68EC20 = 9
-} cpu_integration_models;
+};
 
 extern void cpuIntegrationCalculateMultiplier();
 

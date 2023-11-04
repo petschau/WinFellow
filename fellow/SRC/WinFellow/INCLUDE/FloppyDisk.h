@@ -34,19 +34,17 @@
 
 /* Status symbols */
 
-typedef enum
+enum class FLOPPY_STATUS_CODE
 {
   FLOPPY_STATUS_NORMAL_OK,
   FLOPPY_STATUS_EXTENDED_OK,
   FLOPPY_STATUS_EXTENDED2_OK,
-#ifdef FELLOW_SUPPORT_CAPS
   FLOPPY_STATUS_IPF_OK,
-#endif
   FLOPPY_STATUS_ERROR,
   FLOPPY_STATUS_NONE
-} FLOPPY_STATUS_CODE;
+};
 
-typedef enum
+enum class FLOPPY_ERROR_CODE
 {
   FLOPPY_ERROR_EXISTS_NOT,
   FLOPPY_ERROR_COMPRESS,
@@ -54,7 +52,7 @@ typedef enum
   FLOPPY_ERROR_COMPRESS_TMPFILEOPEN,
   FLOPPY_ERROR_FILE,
   FLOPPY_ERROR_SIZE
-} FLOPPY_ERROR_CODE;
+};
 
 /* Info about a track */
 
@@ -91,7 +89,7 @@ typedef struct
   uint8_t *mfm_data;                              /* Memory allocated to hold mfm data for the entire drive */
   floppytrackinfostruct trackinfo[FLOPPY_TRACKS]; /* Info about each track */
   FLOPPY_STATUS_CODE imagestatus;                 /* Status of drive (kind of image inserted) */
-  uint32_t imageerror;                            /* What kind of error if status reports error */
+  FLOPPY_ERROR_CODE imageerror;                   /* What kind of error if status reports error */
   char imagename[CFG_FILENAME_LENGTH];            /* Image name presented to user */
   char imagenamereal[CFG_FILENAME_LENGTH];        /* Image name used internally */
 #ifdef FELLOW_SUPPORT_CAPS

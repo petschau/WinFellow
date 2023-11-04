@@ -103,12 +103,12 @@ BOOLE cpuIntegrationSetModel(cpu_integration_models model)
 
   switch (cpu_integration_model)
   {
-    case M68000: cpuSetModel(0, 0); break;
-    case M68010: cpuSetModel(1, 0); break;
-    case M68020: cpuSetModel(2, 0); break;
-    case M68030: cpuSetModel(3, 0); break;
-    case M68EC20: cpuSetModel(2, 1); break;
-    case M68EC30: cpuSetModel(3, 1); break;
+    case cpu_integration_models::M68000: cpuSetModel(0, 0); break;
+    case cpu_integration_models::M68010: cpuSetModel(1, 0); break;
+    case cpu_integration_models::M68020: cpuSetModel(2, 0); break;
+    case cpu_integration_models::M68030: cpuSetModel(3, 0); break;
+    case cpu_integration_models::M68EC20: cpuSetModel(2, 1); break;
+    case cpu_integration_models::M68EC30: cpuSetModel(3, 1); break;
   }
   return needreset;
 }
@@ -318,7 +318,7 @@ void cpuIntegrationExecuteInstructionEventHandler68020()
 
 void cpuIntegrationSetDefaultConfig()
 {
-  cpuIntegrationSetModel(M68000);
+  cpuIntegrationSetModel(cpu_integration_models::M68000);
   cpuIntegrationSetChipCycles(0);
   cpuIntegrationSetChipSlowdown(1);
   cpuIntegrationSetSpeed(4);

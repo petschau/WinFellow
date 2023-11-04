@@ -426,9 +426,9 @@ void Sound::FrequencyHandler()
     audioodd = !audioodd;
   }
 
-  if (_filter != SOUND_FILTER_NEVER)
+  if (_filter != sound_filters::SOUND_FILTER_NEVER)
   {
-    if (_filter == SOUND_FILTER_ALWAYS || ciaIsSoundFilterEnabled())
+    if (_filter == sound_filters::SOUND_FILTER_ALWAYS || ciaIsSoundFilterEnabled())
     {
       LowPass(samplesAdded, bufferLeft, bufferRight);
     }
@@ -643,7 +643,7 @@ void Sound::PeriodTableInitialize(uint32_t outputRate)
 void Sound::PlaybackInitialize()
 {
   audiocounter = 0;
-  if (GetEmulation() != SOUND_NONE)
+  if (GetEmulation() != sound_emulations::SOUND_NONE)
   { // Play sound
     PeriodTableInitialize(GetRateReal());
     VolumeTableInitialize(GetIsStereo());
@@ -704,7 +704,7 @@ void Sound::CopyBufferOverrunToCurrentBuffer(uint32_t availableSamples, uint32_t
 
 void Sound::EndOfLine()
 {
-  if (GetEmulation() == SOUND_NONE)
+  if (GetEmulation() == sound_emulations::SOUND_NONE)
   {
     return;
   }
@@ -717,7 +717,7 @@ void Sound::EndOfLine()
     return;
   }
 
-  if (GetEmulation() == SOUND_PLAY)
+  if (GetEmulation() == sound_emulations::SOUND_PLAY)
   {
     _core.Drivers.SoundDriver->Play(_left[_currentBuffer], _right[_currentBuffer], GetBufferSampleCountMax());
   }
@@ -746,7 +746,7 @@ void Sound::EmulationStart()
   IOHandlersInstall();
   audioodd = 0;
   PlaybackInitialize();
-  if (GetEmulation() == SOUND_PLAY)
+  if (GetEmulation() == sound_emulations::SOUND_PLAY)
   {
     auto soundDriverStarted = _core.Drivers.SoundDriver->EmulationStart(SoundDriverRuntimeConfiguration{
         GetEmulation(),
@@ -762,10 +762,10 @@ void Sound::EmulationStart()
 
     if (!soundDriverStarted)
     {
-      SetEmulation(SOUND_EMULATE);
+      SetEmulation(sound_emulations::SOUND_EMULATE);
     }
   }
-  if (GetWAVDump() && GetEmulation() != SOUND_NONE)
+  if (GetWAVDump() && GetEmulation() != sound_emulations::SOUND_NONE)
   {
     _wavFileWriter.EmulationStart(GetRate(), GetIs16Bits(), GetIsStereo(), GetRateReal());
   }
@@ -773,12 +773,12 @@ void Sound::EmulationStart()
 
 void Sound::EmulationStop()
 {
-  if (GetEmulation() == SOUND_PLAY)
+  if (GetEmulation() == sound_emulations::SOUND_PLAY)
   {
     _core.Drivers.SoundDriver->EmulationStop();
   }
 
-  if (GetWAVDump() && GetEmulation() != SOUND_NONE)
+  if (GetWAVDump() && GetEmulation() != sound_emulations::SOUND_NONE)
   {
     _wavFileWriter.EmulationStop();
   }
@@ -791,21 +791,21 @@ void Sound::HardReset()
 
 void Sound::Startup()
 {
-  SetEmulation(SOUND_EMULATE);
-  SetFilter(SOUND_FILTER_ORIGINAL);
+  SetEmulation(sound_emulations::SOUND_EMULATE);
+  SetFilter(sound_filters::SOUND_FILTER_ORIGINAL);
   SetRate(sound_rates::SOUND_15650);
   SetIsStereo(false);
   SetIs16Bits(false);
-  SetNotification(SOUND_MMTIMER_NOTIFICATION);
+  SetNotification(sound_notifications::SOUND_MMTIMER_NOTIFICATION);
   SetWAVDump(false);
   SetBufferLength(40);
   IORegistersClear();
   SetDeviceFound(_core.Drivers.SoundDriver->IsInitialized());
   _wavFileWriter.Startup();
 
-  if (GetEmulation() == SOUND_PLAY && !GetDeviceFound())
+  if (GetEmulation() == sound_emulations::SOUND_PLAY && !GetDeviceFound())
   {
-    SetEmulation(SOUND_EMULATE);
+    SetEmulation(sound_emulations::SOUND_EMULATE);
   }
 }
 

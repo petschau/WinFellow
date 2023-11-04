@@ -489,7 +489,7 @@ bool GfxDrvCommon::InitializeWindow()
   if (GetOutputWindowed())
   {
     DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
-    if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
+    if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_AUTO)
     {
       dwStyle |= WS_SIZEBOX | WS_MAXIMIZEBOX;
     }
@@ -561,7 +561,7 @@ void GfxDrvCommon::SetPauseEmulationWhenWindowLosesFocus(bool pause)
 
 void GfxDrvCommon::Flip()
 {
-  if (_core.Sound->GetEmulation() == CustomChipset::SOUND_PLAY)
+  if (_core.Sound->GetEmulation() == CustomChipset::sound_emulations::SOUND_PLAY)
   {
     MaybeDelayFlip();
   }

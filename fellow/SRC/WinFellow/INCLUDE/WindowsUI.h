@@ -4,7 +4,7 @@
 #include "FellowMain.h"
 #include "Renderer.h"
 
-typedef enum
+enum class SelectFileFlags
 {
   FSEL_ROM = 0,
   FSEL_ADF = 1,
@@ -13,7 +13,7 @@ typedef enum
   FSEL_WFC = 4,
   FSEL_MOD = 5,
   FSEL_FST = 6
-} SelectFileFlags;
+};
 
 struct wgui_drawmode
 {
