@@ -77,7 +77,7 @@
 #include "uae2fell.h"
 #include "penguin.h"
 #include "filesys.h"
-#include "FFILESYS.H"
+#include "FilesystemIntegration.h"
 #include "autoconf.h"
 #include "fsusage.h"
 

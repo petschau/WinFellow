@@ -31,7 +31,7 @@
 #include "GfxDrvCommon.h"
 #include "Defs.h"
 #include "DirectSoundDriver.h"
-#include "windrv.h"
+#include "WindowsMain.h"
 #include "VirtualHost/Core.h"
 
 using namespace CustomChipset;

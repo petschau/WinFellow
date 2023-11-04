@@ -4,7 +4,7 @@
 
 #include "Defs.h"
 #include "Renderer.h"
-#include "Ini.h"
+#include "IniFile.h"
 
 class GfxDrvCommon
 {

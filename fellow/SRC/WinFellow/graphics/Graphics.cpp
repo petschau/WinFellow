@@ -1,6 +1,6 @@
 #include "Graphics.h"
 
-#include "BUS.H"
+#include "BusScheduler.h"
 
 Graphics GraphicsContext;
 

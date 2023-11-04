@@ -1,10 +1,10 @@
 #include "CopperRegisters.h"
 #include "LineExactCopper.h"
-#include "BUS.H"
-#include "SPRITE.H"
+#include "BusScheduler.h"
+#include "Sprites.h"
 #include "chipset.h"
-#include "FMEM.H"
-#include "BLIT.H"
+#include "MemoryInterface.h"
+#include "Blitter.h"
 #include "VirtualHost/Core.h"
 
 uint32_t LineExactCopper::cycletable[16] = {4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4};

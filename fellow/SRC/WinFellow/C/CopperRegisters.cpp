@@ -2,7 +2,7 @@
 #include "LegacyCopper.h"
 
 #include "chipset.h"
-#include "FMEM.H"
+#include "MemoryInterface.h"
 
 /*============================================================================*/
 /* Copper registers                                                           */

@@ -1,15 +1,15 @@
 #include "Defs.h"
-#include "FELLOW.H"
-#include "WINDRV.H"
-#include "Ini.h"
+#include "FellowMain.h"
+#include "WindowsMain.h"
+#include "IniFile.h"
 #include "GfxDrvCommon.h"
 #include "gui_general.h"
-#include "GFXDRV.H"
+#include "GraphicsDriver.h"
 
-#include "MOUSEDRV.H"
-#include "JOYDRV.H"
-#include "KBDDRV.H"
-#include "TIMER.H"
+#include "MouseDriver.h"
+#include "JoystickDriver.h"
+#include "KeyboardDriver.h"
+#include "Timers.h"
 
 #include "VirtualHost/Core.h"
 

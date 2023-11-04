@@ -1,6 +1,6 @@
 #include "IO/Uart.h"
-#include "BUS.H"
-#include "FMEM.H"
+#include "BusScheduler.h"
+#include "MemoryInterface.h"
 #include "interrupt.h"
 #include "VirtualHost/Core.h"
 

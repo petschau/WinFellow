@@ -38,7 +38,7 @@
 
 #include <stdio.h>
 #include "uae2fell.h"
-#include "fmem.h"
+#include "MemoryInterface.h"
 #include "autoconf.h"
 
 /* FELLOW IN (END)-----------------------*/

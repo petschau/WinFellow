@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Defs.h"
-#include "BUS.H"
+#include "BusScheduler.h"
 
 class GraphicsEventQueue;
 

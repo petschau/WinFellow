@@ -29,7 +29,7 @@
 #include "modrip.h"
 #include "ModripWin32.h"
 #include "WindowsUI.h"
-#include "ini.h"
+#include "IniFile.h"
 
 static HWND modrip_hWnd;
 extern HWND wdbg_hDialog;

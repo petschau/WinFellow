@@ -10,7 +10,7 @@
 
 #else
 
-#include "FMEM.H"
+#include "MemoryInterface.h"
 
 // For trapping into the "UAE filesystem" driver
 #include "uae2fell.h"

@@ -1,7 +1,7 @@
 #include "GfxDrvDXGIOutput.h"
 #include "GfxDrvDXGIModeEnumerator.h"
 #include "Defs.h"
-#include "FELLOW.H"
+#include "FellowMain.h"
 #include "VirtualHost/Core.h"
 
 using namespace std;

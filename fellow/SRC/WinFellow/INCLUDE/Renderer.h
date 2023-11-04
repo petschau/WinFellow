@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef GRAPH_H
-#include "graph.h"
+#include "GraphicsPipeline.h"
 #endif
 
 #include "Configuration.h"

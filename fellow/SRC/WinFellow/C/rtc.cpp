@@ -20,8 +20,8 @@
 /*=========================================================================*/
 
 #include "IO/RtcOkiMsm6242rs.h"
-#include "FMEM.H"
-#include "FELLOW.H"
+#include "MemoryInterface.h"
+#include "FellowMain.h"
 #include "rtc.h"
 #include "VirtualHost/Core.h"
 

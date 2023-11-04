@@ -1,11 +1,11 @@
 #include "Defs.h"
 
 #include "chipset.h"
-#include "bus.h"
-#include "fmem.h"
+#include "BusScheduler.h"
+#include "MemoryInterface.h"
 #include "CopperRegisters.h"
 #include "CycleExactCopper.h"
-#include "GRAPH.H"
+#include "GraphicsPipeline.h"
 
 uint16_t CycleExactCopper::ReadWord()
 {

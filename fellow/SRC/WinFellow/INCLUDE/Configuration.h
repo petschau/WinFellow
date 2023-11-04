@@ -2,8 +2,8 @@
 
 #include "CustomChipset/Sound/SoundConfiguration.h"
 #include "CpuIntegration.h"
-#include "gameport.h"
-#include "ListTree.h"
+#include "Gameports.h"
+#include "FellowList.h"
 #include "Module/Hardfile/IHardfileHandler.h"
 
 #include <string>

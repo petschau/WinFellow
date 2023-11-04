@@ -25,7 +25,7 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "SPRITE.H"
+#include "Sprites.h"
 #include "VirtualHost/Core.h"
 
 typedef enum SpriteDMAStates_

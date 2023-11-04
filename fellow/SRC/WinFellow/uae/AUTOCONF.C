@@ -36,7 +36,7 @@
 #include <setjmp.h>
 #include "uae2fell.h"
 #include "autoconf.h"
-#include "fmem.h"
+#include "MemoryInterface.h"
 
 /* To support memory get/set in C, assembly stubs are in uaesupp.s */
 

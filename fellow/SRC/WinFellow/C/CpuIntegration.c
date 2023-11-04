@@ -23,12 +23,12 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "fellow.h"
-#include "fmem.h"
+#include "FellowMain.h"
+#include "MemoryInterface.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
 #include "CpuModule_Internal.h"
-#include "bus.h"
+#include "BusScheduler.h"
 #include "interrupt.h"
 
 #include "VirtualHost/Core.h"

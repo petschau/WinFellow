@@ -23,7 +23,7 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "graph.h"
+#include "GraphicsPipeline.h"
 #include "Graphics.h"
 
 using namespace CustomChipset;

@@ -18,9 +18,9 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 #include "Defs.h"
-#include "BUS.H"
-#include "FMEM.H"
-#include "CIA.H"
+#include "BusScheduler.h"
+#include "MemoryInterface.h"
+#include "ComplexInterfaceAdapter.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
 #include "VirtualHost/Core.h"

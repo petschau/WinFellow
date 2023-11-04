@@ -1,7 +1,7 @@
 #pragma once
 
 #include <list>
-#include "FELLOW.H"
+#include "FellowMain.h"
 #include "Renderer.h"
 
 typedef enum

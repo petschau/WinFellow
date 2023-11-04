@@ -24,7 +24,7 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "GRAPH.H"
+#include "GraphicsPipeline.h"
 #include "Renderer.h"
 #include "draw_interlace_control.h"
 #include "LineExactSprites.h"

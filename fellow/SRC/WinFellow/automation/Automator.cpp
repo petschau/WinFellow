@@ -1,7 +1,7 @@
 #include "Defs.h"
 #include "Automator.h"
-#include "BUS.H"
-#include "GFXDRV.H"
+#include "BusScheduler.h"
+#include "GraphicsDriver.h"
 #
 Automator automator;
 

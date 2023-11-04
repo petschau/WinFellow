@@ -141,16 +141,16 @@
     <ClCompile Include="automation\Script.cpp">
       <Filter>automation</Filter>
     </ClCompile>
-    <ClCompile Include="C\BLIT.C">
+    <ClCompile Include="C\Blitter.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\BUS.C">
+    <ClCompile Include="C\BusScheduler.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\chipset.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\CIA.C">
+    <ClCompile Include="C\ComplexInterfaceAdapter.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\Configuration.cpp">
@@ -204,28 +204,28 @@
     <ClCompile Include="C\draw_pixelrenderers.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\Fellow.cpp">
+    <ClCompile Include="C\FellowMain.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\FFILESYS.C">
+    <ClCompile Include="C\FilesystemIntegration.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\FLOPPY.C">
+    <ClCompile Include="C\FloppyDisk.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\FMEM.C">
+    <ClCompile Include="C\MemoryInterface.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\GAMEPORT.C">
+    <ClCompile Include="C\Gameports.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\GRAPH.C">
+    <ClCompile Include="C\GraphicsPipeline.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\interrupt.c">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\KBD.C">
+    <ClCompile Include="C\Keyboard.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\LineExactCopper.cpp">
@@ -234,7 +234,7 @@
     <ClCompile Include="C\LineExactSprites.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\ListTree.cpp">
+    <ClCompile Include="C\FellowList.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\modrip.c">
@@ -246,7 +246,7 @@
     <ClCompile Include="C\Sound.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\SPRITE.C">
+    <ClCompile Include="C\Sprites.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\SpriteMerger.cpp">
@@ -360,37 +360,37 @@
     <ClCompile Include="uae\UAESUPP.C">
       <Filter>UAE Filesystem Files</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\commoncontrol_wrap.c">
+    <ClCompile Include="Windows\CommonControlWrapper.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\fsysamnt.c">
+    <ClCompile Include="Windows\FilesystemAutomount.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\GFXDRV.C">
+    <ClCompile Include="Windows\GraphicsDriver.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\gfxdrv_directdraw.cpp">
+    <ClCompile Include="Windows\DirectDrawDriver.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="Windows\GfxDrvCommon.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\Ini.c">
+    <ClCompile Include="Windows\IniFile.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\JOYDRV.C">
+    <ClCompile Include="Windows\JoystickDriver.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\KBDDRV.C">
+    <ClCompile Include="Windows\KeyboardDriver.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\kbdparser.c">
+    <ClCompile Include="Windows\KeyboardParser.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="Windows\ModripWin32.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\MOUSEDRV.C">
+    <ClCompile Include="Windows\MouseDriver.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="Windows\RetroPlatform.cpp">
@@ -399,22 +399,22 @@
     <ClCompile Include="Windows\RetroPlatformGuestIPC.c">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\sysinfo.c">
+    <ClCompile Include="Windows\SystemInformation.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\TIMER.C">
+    <ClCompile Include="Windows\Timers.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\WDBG.C">
+    <ClCompile Include="Windows\WindowsDebugger.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="Windows\WindowsUI.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\WINMAIN.C">
+    <ClCompile Include="Windows\WindowsMain.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\caps.c">
+    <ClCompile Include="Windows\CapsIntegration.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
     <ClCompile Include="zlib\C\gzclose.c">
@@ -539,16 +539,16 @@
     <ClInclude Include="automation\Script.h">
       <Filter>automation</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\BLIT.H">
+    <ClInclude Include="INCLUDE\Blitter.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\BUS.H">
+    <ClInclude Include="INCLUDE\BusScheduler.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\chipset.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\CIA.H">
+    <ClInclude Include="INCLUDE\ComplexInterfaceAdapter.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\Configuration.h">
@@ -599,46 +599,46 @@
     <ClInclude Include="INCLUDE\draw_pixelrenderers.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\FELLOW.H">
+    <ClInclude Include="INCLUDE\FellowMain.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\FFILESYS.H">
+    <ClInclude Include="INCLUDE\FilesystemIntegration.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\FLOPPY.H">
+    <ClInclude Include="INCLUDE\FloppyDisk.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\FMEM.H">
+    <ClInclude Include="INCLUDE\MemoryInterface.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\FONTS.H">
+    <ClInclude Include="INCLUDE\FpsFont.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\GAMEPORT.H">
+    <ClInclude Include="INCLUDE\Gameports.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\GFXDRV.H">
+    <ClInclude Include="INCLUDE\GraphicsDriver.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\GRAPH.H">
+    <ClInclude Include="INCLUDE\GraphicsPipeline.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\Ini.h">
+    <ClInclude Include="INCLUDE\IniFile.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\interrupt.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\JOYDRV.H">
+    <ClInclude Include="INCLUDE\JoystickDriver.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\KBD.H">
+    <ClInclude Include="INCLUDE\Keyboard.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\KBDDRV.H">
+    <ClInclude Include="INCLUDE\KeyboardDriver.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\KEYCODES.H">
+    <ClInclude Include="INCLUDE\Keycode.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\LineExactCopper.h">
@@ -647,19 +647,19 @@
     <ClInclude Include="INCLUDE\LineExactSprites.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\LISTTREE.H">
+    <ClInclude Include="INCLUDE\FellowList.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\modrip.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\MOUSEDRV.H">
+    <ClInclude Include="INCLUDE\MouseDriver.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\rtc.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\SPRITE.H">
+    <ClInclude Include="INCLUDE\Sprites.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\SpriteMerger.h">
@@ -671,7 +671,7 @@
     <ClInclude Include="INCLUDE\SpriteRegisters.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\TIMER.H">
+    <ClInclude Include="INCLUDE\Timers.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\WindowsUI.h">
@@ -782,19 +782,19 @@
     <ClInclude Include="uae\UAEFSYS.H">
       <Filter>UAE Filesystem Files</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\commoncontrol_wrap.h">
+    <ClInclude Include="Windows\CommonControlWrapper.h">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\dxver.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\gfxdrv_directdraw.h">
+    <ClInclude Include="Windows\DirectDrawDriver.h">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\GfxDrvCommon.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\kbdparser.h">
+    <ClInclude Include="Windows\KeyboardParser.h">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\ModripWin32.h">
@@ -809,7 +809,7 @@
     <ClInclude Include="Windows\RetroPlatformIPC.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\sysinfo.h">
+    <ClInclude Include="Windows\SystemInformation.h">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\versioninfo.h">
@@ -818,13 +818,13 @@
     <ClInclude Include="Windows\versioninfo-wcrev.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\WDBG.H">
+    <ClInclude Include="Windows\WindowsDebugger.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\WINDRV.H">
+    <ClInclude Include="Windows\WindowsMain.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\caps.h">
+    <ClInclude Include="Windows\CapsIntegration.h">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h">

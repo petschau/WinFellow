@@ -36,7 +36,7 @@
 #endif
 
 #include "uae2fell.h"
-#include "fmem.h"
+#include "MemoryInterface.h"
 #include "VirtualHost/Core.h"
 
 char uaehf0[256];

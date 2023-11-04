@@ -1,6 +1,6 @@
 #include "SpriteRegisters.h"
-#include "SPRITE.H"
-#include "FMEM.H"
+#include "Sprites.h"
+#include "MemoryInterface.h"
 #include "chipset.h"
 #include "Renderer.h"
 

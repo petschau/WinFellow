@@ -24,9 +24,9 @@
 
 #include "Defs.h"
 #include "chipset.h"
-#include "fmem.h"
-#include "cia.h"
-#include "graph.h"
+#include "MemoryInterface.h"
+#include "ComplexInterfaceAdapter.h"
+#include "GraphicsPipeline.h"
 #include "interrupt.h"
 #include "VirtualHost/Core.h"
 
