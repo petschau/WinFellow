@@ -561,7 +561,7 @@ void GfxDrvCommon::SetPauseEmulationWhenWindowLosesFocus(bool pause)
 
 void GfxDrvCommon::Flip()
 {
-  if (_core.Sound->GetEmulation() == CustomChipset::SOUND_PLAY)
+  if (_core.Sound->GetEmulation() == CustomChipset::sound_emulations::SOUND_PLAY)
   {
     MaybeDelayFlip();
   }

@@ -887,7 +887,7 @@ void cfgSetDefaults(cfg *config)
   /* Default sound configuration                                              */
   /*==========================================================================*/
 
-  cfgSetSoundEmulation(config, SOUND_PLAY);
+  cfgSetSoundEmulation(config, sound_emulations::SOUND_PLAY);
   cfgSetSoundRate(config, sound_rates::SOUND_44100);
   cfgSetSoundStereo(config, TRUE);
   cfgSetSound16Bits(config, TRUE);
@@ -1152,29 +1152,29 @@ static sound_emulations cfgGetSoundEmulationFromString(const string &value)
 
   if (lowercaseValue == "none")
   {
-    return SOUND_NONE;
+    return sound_emulations::SOUND_NONE;
   }
 
   if (lowercaseValue == "interrupts")
   {
-    return SOUND_EMULATE;
+    return sound_emulations::SOUND_EMULATE;
   }
 
   if (lowercaseValue == "normal" || lowercaseValue == "exact" || lowercaseValue == "good" || lowercaseValue == "best")
   {
-    return SOUND_PLAY;
+    return sound_emulations::SOUND_PLAY;
   }
 
-  return SOUND_NONE;
+  return sound_emulations::SOUND_NONE;
 }
 
 static const char *cfgGetSoundEmulationToString(sound_emulations soundemulation)
 {
   switch (soundemulation)
   {
-    case SOUND_NONE: return "none";
-    case SOUND_EMULATE: return "interrupts";
-    case SOUND_PLAY: return "normal";
+    case sound_emulations::SOUND_NONE: return "none";
+    case sound_emulations::SOUND_EMULATE: return "interrupts";
+    case sound_emulations::SOUND_PLAY: return "normal";
   }
   return "none";
 }

@@ -1374,7 +1374,7 @@ void wguiInstallVariousConfig(HWND hwndDlg, cfg *conf)
   ccwButtonCheckConditional(hwndDlg, IDC_CHECK_VARIOUS_RTC, cfgGetRtc(conf));
 
   /* set silent sound emulation */
-  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_EMULATE, cfgGetSoundEmulation(conf) == SOUND_EMULATE ? TRUE : FALSE);
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_EMULATE, cfgGetSoundEmulation(conf) == sound_emulations::SOUND_EMULATE ? TRUE : FALSE);
 
   /* set automatic interlace compensation */
   ccwButtonCheckConditional(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE, cfgGetDeinterlace(conf));
@@ -1384,7 +1384,6 @@ void wguiInstallVariousConfig(HWND hwndDlg, cfg *conf)
 
 void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf)
 {
-
   /* get measure speed */
   cfgSetMeasureSpeed(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_VARIOUS_SPEED));
 
@@ -1398,7 +1397,7 @@ void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf)
   cfgSetRtc(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_VARIOUS_RTC));
 
   /* get silent sound emulation */
-  cfgSetSoundEmulation(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_EMULATE) ? SOUND_EMULATE : SOUND_PLAY);
+  cfgSetSoundEmulation(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_EMULATE) ? sound_emulations::SOUND_EMULATE : sound_emulations::SOUND_PLAY);
 
   /* get automatic interlace compensation */
   cfgSetDeinterlace(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE));
@@ -3390,16 +3389,6 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
             cfgSetDiskImage(wgui_cfg, 3, l_diskimage);
             ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 0));
             ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 3));
-            break;
-          case IDC_BUTTON_TURBO_LOAD:
-            if (cfgGetSoundEmulation(wgui_cfg) != 1)
-            {
-              cfgSetSoundEmulation(wgui_cfg, SOUND_PLAY);
-            }
-            else
-            {
-              cfgSetSoundEmulation(wgui_cfg, SOUND_EMULATE);
-            }
             break;
           default: break;
         }

@@ -10,12 +10,12 @@ namespace CustomChipset
     SOUND_44100
   };
 
-  typedef enum
+  enum class sound_emulations
   {
     SOUND_NONE,
     SOUND_PLAY,
     SOUND_EMULATE
-  } sound_emulations;
+  };
 
   typedef enum
   {
