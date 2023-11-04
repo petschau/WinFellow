@@ -23,8 +23,8 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "bus.h"
-#include "graph.h"
+#include "BusScheduler.h"
+#include "GraphicsPipeline.h"
 #include "Graphics.h"
 
 using namespace CustomChipset;

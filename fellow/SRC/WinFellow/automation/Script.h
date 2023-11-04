@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Defs.h"
-#include "GAMEPORT.H"
-#include "KBD.H"
+#include "Gameports.h"
+#include "Keyboard.h"
 
 #include <vector>
 #include <string>

@@ -3,8 +3,8 @@
 #include <windows.h>
 
 #include "Defs.h"
-#include "DRAW.H"
-#include "Ini.h"
+#include "Renderer.h"
+#include "IniFile.h"
 
 class GfxDrvCommon
 {

@@ -1,6 +1,6 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "Defs.h"
-#include "FELLOW.H"
+#include "FellowMain.h"
 #include "VirtualHost/Core.h"
 
 const char *GfxDrvDXGIErrorLogger::GetErrorString(const HRESULT hResult)

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "KBD.H"
-#include "GAMEPORT.H"
+#include "Keyboard.h"
+#include "Gameports.h"
 #include "Script.h"
 
 class Automator

@@ -1,7 +1,7 @@
 #include "GfxDrvDXGIAdapterEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
 #include "Defs.h"
-#include "FELLOW.H"
+#include "FellowMain.h"
 #include "VirtualHost/Core.h"
 
 GfxDrvDXGIAdapterList *GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(IDXGIFactory *factory)

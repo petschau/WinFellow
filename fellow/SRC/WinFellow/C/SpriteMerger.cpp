@@ -1,5 +1,5 @@
 #include "SpriteMerger.h"
-#include "GRAPH.H"
+#include "GraphicsPipeline.h"
 #include "VirtualHost/Core.h"
 
 uint8_t SpriteMerger::sprite_translate[2][256][256];

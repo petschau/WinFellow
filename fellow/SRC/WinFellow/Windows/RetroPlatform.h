@@ -36,7 +36,7 @@
 #include <dinput.h>
 
 #include "Defs.h"
-#include "gfxdrv.h"
+#include "GraphicsDriver.h"
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 

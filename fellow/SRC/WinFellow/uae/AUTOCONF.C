@@ -21,7 +21,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "config.h"
+#include "Configuration.h"
 #include "options.h"
 #include "uae.h"
 #include "memory.h"
@@ -36,7 +36,7 @@
 #include <setjmp.h>
 #include "uae2fell.h"
 #include "autoconf.h"
-#include "fmem.h"
+#include "MemoryInterface.h"
 
 /* To support memory get/set in C, assembly stubs are in uaesupp.s */
 

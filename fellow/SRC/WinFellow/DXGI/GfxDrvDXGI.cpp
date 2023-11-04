@@ -5,8 +5,8 @@
 #include "GfxDrvDXGIAdapterEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
 #include "GfxDrvCommon.h"
-#include "FELLOW.H"
-#include "gfxdrv_directdraw.h"
+#include "FellowMain.h"
+#include "DirectDrawDriver.h"
 #include "VirtualHost/Core.h"
 
 #include "VertexShader.h"

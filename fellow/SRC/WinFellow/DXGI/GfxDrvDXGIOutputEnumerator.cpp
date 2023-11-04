@@ -1,7 +1,7 @@
 #include "GfxDrvDXGIOutputEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
 #include "Defs.h"
-#include "FELLOW.H"
+#include "FellowMain.h"
 #include "VirtualHost/Core.h"
 
 void GfxDrvDXGIOutputEnumerator::EnumerateOutputs(IDXGIAdapter *adapter, GfxDrvDXGIOutputList &outputs)

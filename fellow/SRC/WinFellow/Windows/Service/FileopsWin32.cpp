@@ -29,10 +29,10 @@
 #include "Windows/Service/FileopsWin32.h"
 
 #include "Defs.h"
-#include "fellow.h"
+#include "FellowMain.h"
 
-#include "zlib.h" // crc32 function
-#include "fmem.h" // decrypt AF2 kickstart
+#include "zlib.h"            // crc32 function
+#include "MemoryInterface.h" // decrypt AF2 kickstart
 
 #include <ctime>
 #include <io.h>

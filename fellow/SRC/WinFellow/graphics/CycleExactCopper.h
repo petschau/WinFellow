@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Defs.h"
-#include "COPPER.H"
+#include "LegacyCopper.h"
 
 typedef enum CopperStates_
 {

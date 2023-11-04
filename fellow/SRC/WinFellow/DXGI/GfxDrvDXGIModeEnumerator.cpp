@@ -1,7 +1,7 @@
 #include "GfxDrvDXGIModeEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
 #include "Defs.h"
-#include "FELLOW.H"
+#include "FellowMain.h"
 #include "VirtualHost/Core.h"
 #include <sstream>
 
@@ -41,7 +41,7 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIMod
 
     loglines.emplace_back(mode->GetModeDescriptionString());
   }
-  
+
   if (numModes > 0)
   {
     _core.Log->AddLogList(loglines);

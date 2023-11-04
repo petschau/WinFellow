@@ -20,10 +20,10 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "FELLOW.H"
-#include "BUS.H"
-#include "GRAPH.H"
-#include "DRAW.H"
+#include "FellowMain.h"
+#include "BusScheduler.h"
+#include "GraphicsPipeline.h"
+#include "Renderer.h"
 #include "draw_interlace_control.h"
 #include "VirtualHost/Core.h"
 

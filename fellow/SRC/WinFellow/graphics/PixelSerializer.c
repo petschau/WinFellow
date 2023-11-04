@@ -23,10 +23,10 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "bus.h"
-#include "graph.h"
-#include "draw.h"
-#include "fmem.h"
+#include "BusScheduler.h"
+#include "GraphicsPipeline.h"
+#include "Renderer.h"
+#include "MemoryInterface.h"
 #include "Graphics.h"
 
 using namespace CustomChipset;

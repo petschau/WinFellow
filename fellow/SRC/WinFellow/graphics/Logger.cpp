@@ -1,7 +1,7 @@
 #include "Defs.h"
 
 #include "Logger.h"
-#include "BUS.H"
+#include "BusScheduler.h"
 
 #include "VirtualHost/Core.h"
 

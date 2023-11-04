@@ -37,7 +37,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "config.h"
+#include "Configuration.h"
 #include "threaddep/thread.h"
 #include "options.h"
 #include "uae.h"
@@ -77,7 +77,7 @@
 #include "uae2fell.h"
 #include "penguin.h"
 #include "filesys.h"
-#include "FFILESYS.H"
+#include "FilesystemIntegration.h"
 #include "autoconf.h"
 #include "fsusage.h"
 

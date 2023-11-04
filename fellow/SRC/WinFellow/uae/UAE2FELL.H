@@ -27,8 +27,8 @@
 
 #include "Defs.h"
 #include "CpuModule.h"
-#include "fmem.h"
-#include "fellow.h"
+#include "MemoryInterface.h"
+#include "FellowMain.h"
 
 /*------------------------*/
 /* Base types             */
@@ -285,7 +285,7 @@ extern void rtarea_setup();
 /* hardfile.c exports */
 void hardfile_install();
 
-/* fsysamnt.c exports (moved from filesys.c) */
+/* FilesystemAutomount.cpp exports (moved from filesys.c) */
 extern BOOLE CheckRM(char *);
 static int get_volume_name(struct uaedev_mount_info *, char *, char *, int, int, int, int);
 extern int valid_volumename(struct uaedev_mount_info *, char *, int);

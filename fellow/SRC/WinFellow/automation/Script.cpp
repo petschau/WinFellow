@@ -1,8 +1,8 @@
 #include "Defs.h"
 #include "Script.h"
-#include "BUS.H"
-#include "KBD.H"
-#include "GAMEPORT.H"
+#include "BusScheduler.h"
+#include "Keyboard.h"
+#include "Gameports.h"
 
 using namespace std;
 

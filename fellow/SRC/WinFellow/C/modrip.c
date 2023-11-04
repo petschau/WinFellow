@@ -29,9 +29,9 @@
 
 /* fellow includes */
 #include "Defs.h"
-#include "fmem.h"
-#include "floppy.h"
-#include "fellow.h"
+#include "MemoryInterface.h"
+#include "FloppyDisk.h"
+#include "FellowMain.h"
 
 /* own includes */
 #include <stdio.h>
@@ -42,7 +42,7 @@
 
 #include "modrip.h"
 #ifdef WIN32
-#include "modrip_win32.h"
+#include "ModripWin32.h"
 #else
 #include "modrip_linux.h"
 #endif
