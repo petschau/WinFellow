@@ -28,7 +28,7 @@
 
 #include "Windows/Service/FileopsWin32.h"
 
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 
 #include "zlib.h" // crc32 function

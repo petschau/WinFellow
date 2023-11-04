@@ -32,7 +32,7 @@
 #include <sstream>
 #include <vector>
 
-#include "defs.h"
+#include "Defs.h"
 #include "versioninfo.h"
 #include "chipset.h"
 #include "floppy.h"
@@ -44,7 +44,7 @@
 #include "fellow.h"
 #include "ListTree.h"
 #include "config.h"
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 #include "ffilesys.h"
 #include "ini.h"
 #include "CpuIntegration.h"
@@ -58,7 +58,7 @@
 #include "VirtualHost/Core.h"
 
 using namespace std;
-using namespace fellow::api::module;
+using namespace Module::Hardfile;
 using namespace CustomChipset;
 
 ini *cfg_initdata; /* CONFIG copy of initialization data */
@@ -1796,10 +1796,10 @@ BOOLE cfgSetOption(cfg *config, const char *optionstr)
 
     strncpy(hf.filename, valueparts[5].c_str(), CFG_FILENAME_LENGTH);
 
-    hf.rdbstatus = HardfileHandler->HasRDB(hf.filename);
+    hf.rdbstatus = _core.HardfileHandler->HasRDB(hf.filename);
     if (hf.rdbstatus == rdb_status::RDB_FOUND)
     {
-      HardfileConfiguration rdbConfiguration = HardfileHandler->GetConfigurationFromRDBGeometry(hf.filename);
+      HardfileConfiguration rdbConfiguration = _core.HardfileHandler->GetConfigurationFromRDBGeometry(hf.filename);
       hf.bytespersector = rdbConfiguration.Geometry.BytesPerSector;
       hf.sectorspertrack = rdbConfiguration.Geometry.SectorsPerTrack;
       hf.surfaces = rdbConfiguration.Geometry.Surfaces;
@@ -2441,13 +2441,13 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   /* Hardfile configuration                                                   */
   /*==========================================================================*/
 
-  if (cfgGetUseAutoconfig(config) != HardfileHandler->GetEnabled())
+  if (cfgGetUseAutoconfig(config) != _core.HardfileHandler->GetEnabled())
   {
     needreset = TRUE;
-    HardfileHandler->Clear();
-    HardfileHandler->SetEnabled(cfgGetUseAutoconfig(config));
+    _core.HardfileHandler->Clear();
+    _core.HardfileHandler->SetEnabled(cfgGetUseAutoconfig(config));
   }
-  if (HardfileHandler->GetEnabled())
+  if (_core.HardfileHandler->GetEnabled())
   {
     for (i = 0; i < cfgGetHardfileCount(config); i++)
     {
@@ -2460,16 +2460,16 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
       fhardfile.Geometry.Surfaces = hardfile.surfaces;
       fhardfile.Filename = hardfile.filename;
 
-      if (!HardfileHandler->CompareHardfile(fhardfile, i))
+      if (!_core.HardfileHandler->CompareHardfile(fhardfile, i))
       {
         needreset = TRUE;
-        HardfileHandler->SetHardfile(fhardfile, i);
+        _core.HardfileHandler->SetHardfile(fhardfile, i);
       }
     }
-    const unsigned int maxDeviceCount = HardfileHandler->GetMaxHardfileCount();
+    const unsigned int maxDeviceCount = _core.HardfileHandler->GetMaxHardfileCount();
     for (unsigned int i = cfgGetHardfileCount(config); i < maxDeviceCount; i++)
     {
-      needreset |= (HardfileHandler->RemoveHardfile(i) == true);
+      needreset |= (_core.HardfileHandler->RemoveHardfile(i) == true);
     }
   }
 

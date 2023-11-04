@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-#include "DEFS.H"
+#include "Defs.h"
 #include "DRAW.H"
 #include "Ini.h"
 

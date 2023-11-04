@@ -1,4 +1,4 @@
-#include "DEFS.H"
+#include "Defs.h"
 #include "Automator.h"
 #include "BUS.H"
 #include "GFXDRV.H"

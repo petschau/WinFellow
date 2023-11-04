@@ -24,16 +24,13 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "defs.h"
+#include "Defs.h"
 #include "bus.h"
 #include "gameport.h"
 #include "fmem.h"
 #include "floppy.h"
 #include "cia.h"
 #include "interrupt.h"
-#include "fellow/api/Services.h"
-
-using namespace fellow::api;
 
 #define CIA_NO_EVENT 0
 #define CIAA_TA_TIMEOUT_EVENT 1
@@ -50,7 +47,7 @@ using namespace fellow::api;
 
 #define CIA_BUS_CYCLE_RATIO 5
 
-//#define CIA_LOGGING
+// #define CIA_LOGGING
 
 #ifdef CIA_LOGGING
 extern uint32_t cpuGetOriginalPC();

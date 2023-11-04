@@ -91,7 +91,7 @@
  * RetroPlatformIPC.h).
  */
 
-#include "defs.h"
+#include "Defs.h"
 
 #include "RetroPlatform.h"
 #include "RetroPlatformGuestIPC.h"
@@ -106,7 +106,7 @@
 #include "config.h"
 #include "dxver.h" /// needed for DirectInput based joystick detection code
 #include "fellow.h"
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 #include "floppy.h"
 #include "gfxdrv.h"
 #include "gfxdrv_directdraw.h"

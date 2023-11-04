@@ -128,7 +128,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>.;../WinFellow.Core;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../WinFellow.Core;../WinFellow.Hardfile;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -195,7 +195,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>.;../WinFellow.Core;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../WinFellow.Core;../WinFellow.Hardfile;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -257,7 +257,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>.;../WinFellow.Core;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../WinFellow.Core;../WinFellow.Hardfile;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -315,7 +315,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;../WinFellow.Core;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../WinFellow.Core;../WinFellow.Hardfile;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -375,7 +375,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;../WinFellow.Core;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../WinFellow.Core;../WinFellow.Hardfile;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -434,7 +434,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;../WinFellow.Core;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;../WinFellow.Core;../WinFellow.Hardfile;include;uae;DXGI;xdms/include;zlib/include;Windows;IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -484,9 +484,13 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C\WavFileWriter.cpp" />
+    <ClCompile Include="DebugApi\M68K.cpp" />
+    <ClCompile Include="DebugApi\MemorySystem.cpp" />
     <ClCompile Include="VirtualHost\CoreFactory.cpp" />
     <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
     <ClCompile Include="Windows\Service\FileopsWin32.cpp" />
+    <ClCompile Include="Windows\Service\Hud.cpp" />
+    <ClCompile Include="Windows\Service\RetroPlatformWrapper.cpp" />
     <ClCompile Include="zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1093,7 +1097,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\DRAW.C" />
     <ClCompile Include="C\draw_interlace_control.cpp" />
     <ClCompile Include="C\draw_pixelrenderers.cpp" />
-    <ClCompile Include="C\FELLOW.C" />
+    <ClCompile Include="C\Fellow.cpp" />
     <ClCompile Include="C\FFILESYS.C" />
     <ClCompile Include="C\FLOPPY.C" />
     <ClCompile Include="C\FMEM.C" />
@@ -1122,12 +1126,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="DXGI\GfxDrvDXGIModeEnumerator.cpp" />
     <ClCompile Include="DXGI\GfxDrvDXGIOutput.cpp" />
     <ClCompile Include="DXGI\GfxDrvDXGIOutputEnumerator.cpp" />
-    <ClCompile Include="fellow\service\HUD.cpp" />
-    <ClCompile Include="fellow\service\RetroPlatformWrapper.cpp" />
-    <ClCompile Include="fellow\service\Services.cpp" />
-    <ClCompile Include="fellow\vm\M68K.cpp" />
-    <ClCompile Include="fellow\vm\MemorySystem.cpp" />
-    <ClCompile Include="fellow\vm\VM.cpp" />
     <ClCompile Include="graphics\BitplaneDMA.c" />
     <ClCompile Include="graphics\BitplaneDraw.c" />
     <ClCompile Include="graphics\CycleExactCopper.cpp" />
@@ -1176,6 +1174,8 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h" />
     <ClInclude Include="Windows\Service\FileopsWin32.h" />
+    <ClInclude Include="Windows\Service\Hud.h" />
+    <ClInclude Include="Windows\Service\RetroPlatformWrapper.h" />
     <ClInclude Include="xdms\include\cdata.h" />
     <ClInclude Include="xdms\include\crc_csum.h" />
     <ClInclude Include="xdms\include\getbits.h" />
@@ -1209,19 +1209,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="DXGI\GfxDrvDXGIModeEnumerator.h" />
     <ClInclude Include="DXGI\GfxDrvDXGIOutput.h" />
     <ClInclude Include="DXGI\GfxDrvDXGIOutputEnumerator.h" />
-    <ClInclude Include="fellow\api\defs.h" />
-    <ClInclude Include="fellow\api\module\IHardfileHandler.h" />
-    <ClInclude Include="fellow\api\portable.h" />
-    <ClInclude Include="fellow\api\Services.h" />
-    <ClInclude Include="fellow\api\service\IHUD.h" />
-    <ClInclude Include="fellow\api\service\IRetroPlatform.h" />
-    <ClInclude Include="fellow\api\VM.h" />
-    <ClInclude Include="fellow\api\vm\IM68K.h" />
-    <ClInclude Include="fellow\api\vm\IMemorySystem.h" />
-    <ClInclude Include="fellow\service\HUD.h" />
-    <ClInclude Include="fellow\service\RetroPlatformWrapper.h" />
-    <ClInclude Include="fellow\vm\M68K.h" />
-    <ClInclude Include="fellow\vm\MemorySystem.h" />
     <ClInclude Include="graphics\BitplaneDMA.h" />
     <ClInclude Include="graphics\BitplaneDraw.h" />
     <ClInclude Include="graphics\CycleExactCopper.h" />
@@ -1254,7 +1241,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\CpuModule_Internal.h" />
     <ClInclude Include="INCLUDE\CpuModule_Memory.h" />
     <ClInclude Include="INCLUDE\CpuModule_Profile.h" />
-    <ClInclude Include="INCLUDE\DEFS.H" />
     <ClInclude Include="INCLUDE\DRAW.H" />
     <ClInclude Include="INCLUDE\draw_interlace_control.h" />
     <ClInclude Include="INCLUDE\draw_pixelrenderers.h" />
@@ -1305,7 +1291,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="Windows\gfxdrv_directdraw.h" />
     <ClInclude Include="Windows\kbdparser.h" />
     <ClInclude Include="Windows\modrip_win32.h" />
-    <ClInclude Include="Windows\PORTABLE.H" />
     <ClInclude Include="Windows\RetroPlatform.h" />
     <ClInclude Include="Windows\RetroPlatformGuestIPC.h" />
     <ClInclude Include="Windows\RetroPlatformIPC.h" />

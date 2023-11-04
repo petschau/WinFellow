@@ -22,7 +22,7 @@
 /*=========================================================================*/
 
 /* fellow includes */
-#include "defs.h"
+#include "Defs.h"
 
 /* own includes */
 #include <windows.h>

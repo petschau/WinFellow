@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include "hardfile/rdb/RDBFileReader.h"
 
 namespace fellow::hardfile::rdb

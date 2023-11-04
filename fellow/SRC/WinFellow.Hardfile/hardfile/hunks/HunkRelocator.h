@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DebugApi/IMemorySystem.h"
 #include "hardfile/hunks/FileImage.h"
 #include "hardfile/hunks/Reloc32Hunk.h"
 
@@ -8,6 +9,7 @@ namespace fellow::hardfile::hunks
   class HunkRelocator
   {
   private:
+    Debug::IMemorySystem &_memory;
     FileImage &_fileImage;
 
     void ProcessReloc32OffsetTable(Reloc32OffsetTable *offsetTable, uint32_t hunkBaseAddress);
@@ -17,6 +19,6 @@ namespace fellow::hardfile::hunks
   public:
     void RelocateHunks();
 
-    HunkRelocator(FileImage &fileImage);
+    HunkRelocator(Debug::IMemorySystem& memory, FileImage &fileImage);
   };
 }

@@ -5,7 +5,7 @@
 
 using namespace std;
 using namespace fellow::hardfile::rdb;
-using namespace fellow::api::module;
+using namespace Module::Hardfile;
 
 namespace test::fellow::hardfile::rdb
 {

@@ -1,7 +1,6 @@
 #include "hardfile/hunks/HunkRelocator.h"
-#include "fellow/api/VM.h"
 
-using namespace fellow::api;
+using namespace Debug;
 
 namespace fellow::hardfile::hunks
 {
@@ -14,8 +13,8 @@ namespace fellow::hardfile::hunks
     {
       uint32_t offset = offsetTable->GetOffset(i);
       uint32_t addressToOffset = hunkBaseAddress + offset;
-      uint32_t originalOffset = VM->Memory.ReadLong(addressToOffset);
-      VM->Memory.WriteLong(relatedHunkBaseAddress + originalOffset, addressToOffset);
+      uint32_t originalOffset = _memory.ReadLong(addressToOffset);
+      _memory.WriteLong(relatedHunkBaseAddress + originalOffset, addressToOffset);
     }
   }
 
@@ -53,7 +52,7 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  HunkRelocator::HunkRelocator(FileImage &fileImage) : _fileImage(fileImage)
+  HunkRelocator::HunkRelocator(IMemorySystem& memory, FileImage &fileImage) : _memory(memory), _fileImage(fileImage)
   {
   }
 }

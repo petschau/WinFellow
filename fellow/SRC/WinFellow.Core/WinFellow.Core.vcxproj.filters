@@ -25,6 +25,15 @@
     <Filter Include="IO">
       <UniqueIdentifier>{c35a0995-5f62-4a9b-a67d-83090c2ef18b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Module">
+      <UniqueIdentifier>{2dee4ab6-e3f0-4bca-ac9f-e35102e7ce1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module\Hardfile">
+      <UniqueIdentifier>{32917180-f62e-4787-b4fc-e1387ca91014}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DebugApi">
+      <UniqueIdentifier>{82fb5aee-8c48-4c42-8bdd-d9dc76624636}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomChipset\Registers.h">
@@ -78,6 +87,44 @@
     <ClInclude Include="Service\FileInformation.h">
       <Filter>Service</Filter>
     </ClInclude>
+    <ClInclude Include="Defs.h" />
+    <ClInclude Include="Portable.h" />
+    <ClInclude Include="Module\Hardfile\IHardfileHandler.h">
+      <Filter>Module\Hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="Module\Hardfile\HardfileGeometry.h">
+      <Filter>Module\Hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="Module\Hardfile\HardfilePartition.h">
+      <Filter>Module\Hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="Module\Hardfile\HardfileConfiguration.h">
+      <Filter>Module\Hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="Module\Hardfile\RdbStatus.h">
+      <Filter>Module\Hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="Service\IHud.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Service\IRetroPlatform.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugApi\DebugVM.h">
+      <Filter>DebugApi</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugApi\IM68K.h">
+      <Filter>DebugApi</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugApi\IMemorySystem.h">
+      <Filter>DebugApi</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugApi\M68K.h">
+      <Filter>DebugApi</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugApi\MemorySystem.h">
+      <Filter>DebugApi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -100,6 +147,15 @@
     </ClCompile>
     <ClCompile Include="Service\FileInformation.cpp">
       <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="Module\Hardfile\HardfileGeometry.cpp">
+      <Filter>Module\Hardfile</Filter>
+    </ClCompile>
+    <ClCompile Include="Module\Hardfile\HardfileConfiguration.cpp">
+      <Filter>Module\Hardfile</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugApi\DebugVM.cpp">
+      <Filter>DebugApi</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

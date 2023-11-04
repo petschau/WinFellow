@@ -48,7 +48,7 @@
 
 #endif
 
-#include "defs.h"
+#include "Defs.h"
 
 #include "fellow.h"
 
@@ -60,7 +60,7 @@
 
 #include "CpuIntegration.h"
 
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
 
 #include "graph.h"
 
@@ -88,7 +88,6 @@
 
 #endif
 
-using namespace fellow::api::module;
 using namespace Service;
 
 /*============================================================================*/
@@ -921,7 +920,7 @@ void memoryDmemWriteLong(uint32_t data, uint32_t address)
 
   {
 
-    HardfileHandler->Do(data);
+    _core.HardfileHandler->Do(data);
   }
 }
 

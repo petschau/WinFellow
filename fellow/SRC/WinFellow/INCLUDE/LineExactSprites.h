@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DEFS.H"
+#include "Defs.h"
 #include "SPRITE.H"
 
 #define SPRITE_MAX_LIST_ITEMS 275

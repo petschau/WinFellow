@@ -1,6 +1,6 @@
 #include <InitGuid.h>
 
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include "GfxDrvDXGI.h"
 #include "GfxDrvDXGIAdapterEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"

@@ -49,7 +49,7 @@ Sunday, February 10, 2008: carfesh
 - move mapping.key to application data
 */
 
-#include "defs.h"
+#include "Defs.h"
 #include "keycodes.h"
 #include "kbd.h"
 #include "kbddrv.h"

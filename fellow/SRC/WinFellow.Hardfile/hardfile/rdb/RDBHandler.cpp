@@ -1,10 +1,10 @@
-#include "fellow/api/defs.h"
+#include "Defs.h"
 #include "hardfile/rdb/RDBFileReader.h"
 #include "hardfile/rdb/RDBHandler.h"
 #include "hardfile/rdb/CheckSumCalculator.h"
 
 using namespace std;
-using namespace fellow::api::module;
+using namespace Module::Hardfile;
 
 namespace fellow::hardfile::rdb
 {

@@ -35,7 +35,7 @@
 /* 07/11/2000: fixed up checks using filesys device status                    */
 /*============================================================================*/
 
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 #include "ffilesys.h"
 #include "filesys.h"

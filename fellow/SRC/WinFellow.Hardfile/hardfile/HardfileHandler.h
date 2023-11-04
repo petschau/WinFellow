@@ -2,16 +2,23 @@
 
 #include <string>
 #include <vector>
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
+#include "DebugApi/IMemorySystem.h"
+#include "DebugApi/IM68K.h"
+#include "Service/ILog.h"
 #include "hardfile/HardfileStructs.h"
 
 #define FHFILE_MAX_DEVICES 20
 
 namespace fellow::hardfile
 {
-  class HardfileHandler : public fellow::api::module::IHardfileHandler
+  class HardfileHandler : public Module::Hardfile::IHardfileHandler
   {
   private:
+    Debug::IMemorySystem &_memory;
+    Debug::IM68K &_cpu;
+    Service::ILog &_log;
+
     HardfileDevice _devices[FHFILE_MAX_DEVICES];
     std::vector<std::unique_ptr<HardfileFileSystemEntry>> _fileSystems;
     std::vector<std::unique_ptr<HardfileMountListEntry>> _mountList;
@@ -37,7 +44,7 @@ namespace fellow::hardfile
     void AddFileSystemsFromRdb(HardfileDevice &device);
     void AddFileSystemsFromRdb();
     void EraseOlderOrSameFileSystemVersion(uint32_t DOSType, uint32_t version);
-    void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration &config, rdb::RDB *rdb, bool readonly);
+    void SetHardfileConfigurationFromRDB(Module::Hardfile::HardfileConfiguration &config, rdb::RDB *rdb, bool readonly);
     bool OpenHardfileFile(HardfileDevice &device);
     void InitializeHardfile(unsigned int index);
     void RebuildHardfileConfiguration();
@@ -104,15 +111,15 @@ namespace fellow::hardfile
     void SetEnabled(bool enabled) override;
     bool GetEnabled() override;
     void Clear() override;
-    bool CompareHardfile(const fellow::api::module::HardfileConfiguration &configuration, unsigned int index) override;
-    void SetHardfile(const fellow::api::module::HardfileConfiguration &configuration, unsigned int index) override;
+    bool CompareHardfile(const Module::Hardfile::HardfileConfiguration &configuration, unsigned int index) override;
+    void SetHardfile(const Module::Hardfile::HardfileConfiguration &configuration, unsigned int index) override;
     bool RemoveHardfile(unsigned int index) override;
     unsigned int GetMaxHardfileCount() override;
 
     // UI helper function
-    bool Create(const fellow::api::module::HardfileConfiguration &configuration, uint32_t size) override;
-    fellow::api::module::rdb_status HasRDB(const std::string &filename) override;
-    fellow::api::module::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string &filename) override;
+    bool Create(const Module::Hardfile::HardfileConfiguration &configuration, uint32_t size) override;
+    Module::Hardfile::rdb_status HasRDB(const std::string &filename) override;
+    Module::Hardfile::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string &filename) override;
 
     // Global events
     void EmulationStart() override;
@@ -121,7 +128,7 @@ namespace fellow::hardfile
     void Startup() override;
     void Shutdown() override;
 
-    HardfileHandler();
+    HardfileHandler(Debug::IMemorySystem &memory, Debug::IM68K &cpu, Service::ILog &log);
     virtual ~HardfileHandler();
   };
 }

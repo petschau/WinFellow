@@ -1,4 +1,4 @@
-#include "DEFS.H"
+#include "Defs.h"
 
 #include "Graphics.h"
 #include "BUS.H"

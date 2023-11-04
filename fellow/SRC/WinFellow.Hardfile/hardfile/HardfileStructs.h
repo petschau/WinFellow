@@ -1,6 +1,7 @@
 #pragma once
 
-#include "fellow/api/module/IHardfileHandler.h"
+#include "Module/Hardfile/IHardfileHandler.h"
+#include "DebugApi/IMemorySystem.h"
 #include "hardfile/rdb/RDB.h"
 
 namespace fellow::hardfile
@@ -26,6 +27,7 @@ namespace fellow::hardfile
 
   struct HardfileFileSystemEntry
   {
+    Debug::IMemorySystem &Memory;
     rdb::RDBFileSystemHeader *Header;
     uint32_t SegListAddress;
 
@@ -39,14 +41,14 @@ namespace fellow::hardfile
     uint32_t GetVersion();
     void CopyHunkToAddress(uint32_t destinationAddress, uint32_t hunkIndex);
 
-    HardfileFileSystemEntry(rdb::RDBFileSystemHeader *header, uint32_t segListAddress);
+    HardfileFileSystemEntry(Debug::IMemorySystem &memory, rdb::RDBFileSystemHeader *header, uint32_t segListAddress);
   };
 
   class HardfileDevice
   {
   public:
     // Filename and geometry as listed in the config or on the RDB
-    fellow::api::module::HardfileConfiguration Configuration;
+    Module::Hardfile::HardfileConfiguration Configuration;
 
     // Internal properties, actual runtime values used for the hardfile
     bool Readonly;

@@ -41,7 +41,7 @@ Sunday, February 03, 2008: carfesh
  * Mouse driver for Windows
  */
 
-#include "defs.h"
+#include "Defs.h"
 #include <windows.h>
 #include "gameport.h"
 #include "fellow.h"

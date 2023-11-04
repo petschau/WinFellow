@@ -26,7 +26,7 @@
 /*=========================================================================*/
 
 #ifdef FELLOW_SUPPORT_CAPS
-#include "defs.h"
+#include "Defs.h"
 
 /* function prototypes */
 

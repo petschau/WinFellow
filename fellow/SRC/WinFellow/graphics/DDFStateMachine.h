@@ -24,7 +24,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "DEFS.H"
+#include "Defs.h"
 #include "GraphicsEventQueue.h"
 
 typedef enum DDFStates_

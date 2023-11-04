@@ -1,6 +1,6 @@
 #include "GfxDrvDXGIAdapter.h"
 #include "GfxDrvDXGIOutputEnumerator.h"
-#include "DEFS.H"
+#include "Defs.h"
 #include "FELLOW.H"
 #include <list>
 #include "VirtualHost/Core.h"

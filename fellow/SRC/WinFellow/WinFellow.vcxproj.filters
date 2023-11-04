@@ -49,27 +49,6 @@
     <Filter Include="automation">
       <UniqueIdentifier>{b409784d-dbc0-4bf3-81f0-589234dd4554}</UniqueIdentifier>
     </Filter>
-    <Filter Include="fellow">
-      <UniqueIdentifier>{4cc17501-a676-4970-88e2-862c2940f346}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\api">
-      <UniqueIdentifier>{53c74a65-4800-4187-9e67-dfc45a8676a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\service">
-      <UniqueIdentifier>{7be8a4ec-ba20-4ef0-9b2c-f3e9de96ad9e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\vm">
-      <UniqueIdentifier>{2c26c775-ae0b-4bda-9d2d-41c9c45dc9bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\api\module">
-      <UniqueIdentifier>{bea23d8d-ea57-414c-8500-178645ffc0b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\api\service">
-      <UniqueIdentifier>{737e3c60-d979-4f05-a032-f1469bcd8e6b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\api\vm">
-      <UniqueIdentifier>{3fd128fb-e4d3-49ad-a62f-72d00f4b2e54}</UniqueIdentifier>
-    </Filter>
     <Filter Include="IPF Access API">
       <UniqueIdentifier>{8a43c7b9-d400-45fc-8ff4-a80b9c0718be}</UniqueIdentifier>
     </Filter>
@@ -87,6 +66,9 @@
     </Filter>
     <Filter Include="Windows\Driver\Sound">
       <UniqueIdentifier>{d3362cca-2d02-4d07-8940-1a7b0be5fb67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DebugApi">
+      <UniqueIdentifier>{f4c581b1-69af-4198-938c-5825eab5edbf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -222,7 +204,7 @@
     <ClCompile Include="C\draw_pixelrenderers.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\FELLOW.C">
+    <ClCompile Include="C\Fellow.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\FFILESYS.C">
@@ -308,24 +290,6 @@
     </ClCompile>
     <ClCompile Include="DXGI\GfxDrvDXGIOutputEnumerator.cpp">
       <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\service\HUD.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\service\RetroPlatformWrapper.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\service\Services.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\vm\M68K.cpp">
-      <Filter>fellow\vm</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\vm\MemorySystem.cpp">
-      <Filter>fellow\vm</Filter>
-    </ClCompile>
-    <ClCompile Include="fellow\vm\VM.cpp">
-      <Filter>fellow\vm</Filter>
     </ClCompile>
     <ClCompile Include="graphics\BitplaneDMA.c">
       <Filter>graphics</Filter>
@@ -480,6 +444,18 @@
     <ClCompile Include="Windows\Service\FileopsWin32.cpp">
       <Filter>Windows\Service</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\Service\Hud.cpp">
+      <Filter>Windows\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\Service\RetroPlatformWrapper.cpp">
+      <Filter>Windows\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugApi\M68K.cpp">
+      <Filter>DebugApi</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugApi\MemorySystem.cpp">
+      <Filter>DebugApi</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xdms\include\cdata.h">
@@ -614,9 +590,6 @@
     <ClInclude Include="INCLUDE\CpuModule_Profile.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\DEFS.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\DRAW.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -731,45 +704,6 @@
     <ClInclude Include="DXGI\GfxDrvDXGIOutputEnumerator.h">
       <Filter>DXGI</Filter>
     </ClInclude>
-    <ClInclude Include="fellow\api\defs.h">
-      <Filter>fellow\api</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\portable.h">
-      <Filter>fellow\api</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\Services.h">
-      <Filter>fellow\api</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\VM.h">
-      <Filter>fellow\api</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\module\IHardfileHandler.h">
-      <Filter>fellow\api\module</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\vm\IM68K.h">
-      <Filter>fellow\api\vm</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\vm\IMemorySystem.h">
-      <Filter>fellow\api\vm</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\service\IHUD.h">
-      <Filter>fellow\api\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\api\service\IRetroPlatform.h">
-      <Filter>fellow\api\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\service\HUD.h">
-      <Filter>fellow\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\service\RetroPlatformWrapper.h">
-      <Filter>fellow\service</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\vm\M68K.h">
-      <Filter>fellow\vm</Filter>
-    </ClInclude>
-    <ClInclude Include="fellow\vm\MemorySystem.h">
-      <Filter>fellow\vm</Filter>
-    </ClInclude>
     <ClInclude Include="graphics\BitplaneDMA.h">
       <Filter>graphics</Filter>
     </ClInclude>
@@ -866,9 +800,6 @@
     <ClInclude Include="Windows\modrip_win32.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\PORTABLE.H">
-      <Filter>Windows</Filter>
-    </ClInclude>
     <ClInclude Include="Windows\RetroPlatform.h">
       <Filter>Windows</Filter>
     </ClInclude>
@@ -906,6 +837,12 @@
       <Filter>VirtualHost</Filter>
     </ClInclude>
     <ClInclude Include="Windows\Service\FileopsWin32.h">
+      <Filter>Windows\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Service\Hud.h">
+      <Filter>Windows\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Service\RetroPlatformWrapper.h">
       <Filter>Windows\Service</Filter>
     </ClInclude>
   </ItemGroup>

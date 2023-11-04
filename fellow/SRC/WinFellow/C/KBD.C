@@ -24,7 +24,7 @@ Tuesday, September 19, 2000: nova
 - added autofire support
 */
 
-#include "defs.h"
+#include "Defs.h"
 #include "fellow.h"
 #include "keycodes.h"
 #include "kbd.h"

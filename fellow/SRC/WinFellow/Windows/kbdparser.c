@@ -42,7 +42,7 @@ Tuesday, September 05, 2000: nova
 - added a third parameter to prsReadFile for the array of joy replacement ** internal **
 */
 
-#include "defs.h"
+#include "Defs.h"
 #include "keycodes.h"
 #include "kbdparser.h"
 #include "fellow.h"

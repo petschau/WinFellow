@@ -28,7 +28,7 @@
 /*=========================================================================*/
 
 /* fellow includes */
-#include "defs.h"
+#include "Defs.h"
 #include "fmem.h"
 #include "floppy.h"
 #include "fellow.h"
