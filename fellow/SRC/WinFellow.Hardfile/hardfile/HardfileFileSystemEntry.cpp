@@ -1,4 +1,4 @@
-#include "hardfile/HardfileStructs.h"
+#include "hardfile/HardfileFileSystemEntry.h"
 #include "DebugApi/IMemorySystem.h"
 
 using namespace Debug;
@@ -49,7 +49,8 @@ namespace fellow::hardfile
     }
   }
 
-  HardfileFileSystemEntry::HardfileFileSystemEntry(IMemorySystem& memory, RDBFileSystemHeader *header, uint32_t segListAddress) : Memory(memory), Header(header), SegListAddress(segListAddress)
+  HardfileFileSystemEntry::HardfileFileSystemEntry(IMemorySystem &memory, RDBFileSystemHeader *header, uint32_t segListAddress)
+    : Memory(memory), Header(header), SegListAddress(segListAddress)
   {
   }
 }

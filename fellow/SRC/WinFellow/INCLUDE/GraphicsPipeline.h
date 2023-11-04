@@ -90,13 +90,13 @@ extern uint32_t diwybottom;
 
 extern BOOLE graph_playfield_on;
 
-typedef enum
+enum class graph_linetypes
 {
   GRAPH_LINE_BG = 0,
   GRAPH_LINE_BPL = 1,
   GRAPH_LINE_SKIP = 2,
   GRAPH_LINE_BPL_SKIP = 3
-} graph_linetypes;
+};
 
 typedef struct
 {

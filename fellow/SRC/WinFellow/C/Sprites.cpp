@@ -51,7 +51,7 @@ void spriteInitializeFromEmulationMode()
     cycle_exact_sprites = nullptr;
   }
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     sprites = cycle_exact_sprites = new CycleExactSprites();
   }

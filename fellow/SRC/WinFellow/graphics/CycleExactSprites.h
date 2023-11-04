@@ -28,13 +28,13 @@
 #include "Sprites.h"
 #include "VirtualHost/Core.h"
 
-typedef enum SpriteDMAStates_
+enum class SpriteDMAStates
 {
   SPRITE_DMA_STATE_READ_CONTROL = 1,
   SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE = 2,
   SPRITE_DMA_STATE_READ_DATA = 3,
   SPRITE_DMA_STATE_DISABLED = 4
-} SpriteDMAStates;
+};
 
 typedef union SpriteDecodedUnion_ {
   uint8_t barray[16];

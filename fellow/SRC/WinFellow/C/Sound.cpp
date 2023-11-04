@@ -426,9 +426,9 @@ void Sound::FrequencyHandler()
     audioodd = !audioodd;
   }
 
-  if (_filter != SOUND_FILTER_NEVER)
+  if (_filter != sound_filters::SOUND_FILTER_NEVER)
   {
-    if (_filter == SOUND_FILTER_ALWAYS || ciaIsSoundFilterEnabled())
+    if (_filter == sound_filters::SOUND_FILTER_ALWAYS || ciaIsSoundFilterEnabled())
     {
       LowPass(samplesAdded, bufferLeft, bufferRight);
     }
@@ -792,11 +792,11 @@ void Sound::HardReset()
 void Sound::Startup()
 {
   SetEmulation(sound_emulations::SOUND_EMULATE);
-  SetFilter(SOUND_FILTER_ORIGINAL);
+  SetFilter(sound_filters::SOUND_FILTER_ORIGINAL);
   SetRate(sound_rates::SOUND_15650);
   SetIsStereo(false);
   SetIs16Bits(false);
-  SetNotification(SOUND_MMTIMER_NOTIFICATION);
+  SetNotification(sound_notifications::SOUND_MMTIMER_NOTIFICATION);
   SetWAVDump(false);
   SetBufferLength(40);
   IORegistersClear();

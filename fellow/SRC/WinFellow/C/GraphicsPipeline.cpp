@@ -116,7 +116,7 @@ void graphLineDescClear()
   {
     for (int line = 0; line < 628; line++)
     {
-      graph_frame[frame][line].linetype = GRAPH_LINE_BG;
+      graph_frame[frame][line].linetype = graph_linetypes::GRAPH_LINE_BG;
       graph_frame[frame][line].draw_line_routine = (void *)draw_line_BG_routine;
       graph_frame[frame][line].colors[0] = 0;
       graph_frame[frame][line].frames_left_until_BG_skip = drawGetBufferCount(); /* ie. one more than normal to draw once in each buffer */
@@ -276,7 +276,7 @@ void wvpos(uint16_t data, uint32_t address)
 
 void wdiwstrt(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
     uint32_t diwstrt_old = diwstrt;
@@ -308,7 +308,7 @@ void wdiwstrt(uint16_t data, uint32_t address)
 
 void wdiwstop(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
     uint32_t diwstop_old = diwstop;
@@ -356,7 +356,7 @@ void wddfstrt(uint16_t data, uint32_t address)
 {
   uint32_t ddfstrt_old;
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
     ddfstrt_old = ddfstrt;
@@ -372,7 +372,7 @@ void wddfstrt(uint16_t data, uint32_t address)
   }
   wbplcon1((uint16_t)bplcon1, address);
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (ddfstrt_old != ddfstrt)
     {
@@ -393,7 +393,7 @@ void wddfstop(uint16_t data, uint32_t address)
 {
   uint32_t ddfstop_old;
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
     ddfstop_old = ddfstop;
@@ -409,7 +409,7 @@ void wddfstop(uint16_t data, uint32_t address)
   }
   graphCalculateWindow();
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (ddfstop_old != ddfstop)
     {
@@ -549,7 +549,7 @@ void wdmacon(uint16_t data, uint32_t address)
 
 void wbpl1pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl1pt = chipsetReplaceHighPtr(bpl1pt, data);
 
@@ -563,7 +563,7 @@ void wbpl1pth(uint16_t data, uint32_t address)
 
 void wbpl1ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl1pt = chipsetReplaceLowPtr(bpl1pt, data);
 
@@ -577,7 +577,7 @@ void wbpl1ptl(uint16_t data, uint32_t address)
 
 void wbpl2pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl2pt = chipsetReplaceHighPtr(bpl2pt, data);
 }
@@ -589,7 +589,7 @@ void wbpl2pth(uint16_t data, uint32_t address)
 
 void wbpl2ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl2pt = chipsetReplaceLowPtr(bpl2pt, data);
 }
@@ -601,7 +601,7 @@ void wbpl2ptl(uint16_t data, uint32_t address)
 
 void wbpl3pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
   bpl3pt = chipsetReplaceHighPtr(bpl3pt, data);
 }
 
@@ -612,7 +612,7 @@ void wbpl3pth(uint16_t data, uint32_t address)
 
 void wbpl3ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl3pt = chipsetReplaceLowPtr(bpl3pt, data);
 }
@@ -624,7 +624,7 @@ void wbpl3ptl(uint16_t data, uint32_t address)
 
 void wbpl4pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl4pt = chipsetReplaceHighPtr(bpl4pt, data);
 }
@@ -636,7 +636,7 @@ void wbpl4pth(uint16_t data, uint32_t address)
 
 void wbpl4ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl4pt = chipsetReplaceLowPtr(bpl4pt, data);
 }
@@ -648,7 +648,7 @@ void wbpl4ptl(uint16_t data, uint32_t address)
 
 void wbpl5pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl5pt = chipsetReplaceHighPtr(bpl5pt, data);
 }
@@ -660,7 +660,7 @@ void wbpl5pth(uint16_t data, uint32_t address)
 
 void wbpl5ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl5pt = chipsetReplaceLowPtr(bpl5pt, data);
 }
@@ -672,7 +672,7 @@ void wbpl5ptl(uint16_t data, uint32_t address)
 
 void wbpl6pth(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl6pt = chipsetReplaceHighPtr(bpl6pt, data);
 }
@@ -684,7 +684,7 @@ void wbpl6pth(uint16_t data, uint32_t address)
 
 void wbpl6ptl(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl6pt = chipsetReplaceLowPtr(bpl6pt, data);
 }
@@ -695,7 +695,7 @@ void wbpl6ptl(uint16_t data, uint32_t address)
 
 void wbplcon0(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (_core.Registers.BplCon0 != data)
     {
@@ -771,7 +771,7 @@ void wbplcon0(uint16_t data, uint32_t address)
 
 void wbplcon1(uint16_t data, uint32_t address)
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bplcon1 != (data & 0xff))
     {
@@ -841,7 +841,7 @@ void wbplcon2(uint16_t data, uint32_t address)
 void wbpl1mod(uint16_t data, uint32_t address)
 {
   uint32_t new_value = (uint32_t)(int32_t)(int16_t)(data & 0xfffe);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl1mod != new_value)
     {
@@ -859,7 +859,7 @@ void wbpl1mod(uint16_t data, uint32_t address)
 void wbpl2mod(uint16_t data, uint32_t address)
 {
   uint32_t new_value = (uint32_t)(int32_t)(int16_t)(data & 0xfffe);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (bpl2mod != new_value)
     {
@@ -878,7 +878,7 @@ void wcolor(uint16_t data, uint32_t address)
 {
   uint32_t color_index = ((address & 0x1ff) - 0x180) >> 1;
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     if (graph_color[color_index] != (data & 0x0fff))
     {
@@ -1944,12 +1944,12 @@ BOOLE graphLinedescSetBackgroundLine(graph_line *current_graph_line)
 {
   if (graph_color_shadow[0] == current_graph_line->colors[0])
   {
-    if (current_graph_line->linetype == GRAPH_LINE_SKIP)
+    if (current_graph_line->linetype == graph_linetypes::GRAPH_LINE_SKIP)
     {
       // Already skipping this line and no changes
       return FALSE;
     }
-    if (current_graph_line->linetype == GRAPH_LINE_BG)
+    if (current_graph_line->linetype == graph_linetypes::GRAPH_LINE_BG)
     {
       /*==================================================================*/
       /* This line was a "background" line during the last drawing of     */
@@ -1961,7 +1961,7 @@ BOOLE graphLinedescSetBackgroundLine(graph_line *current_graph_line)
       if (current_graph_line->frames_left_until_BG_skip == 0)
       {
         // No changes since drawing it last time, change state to skip
-        current_graph_line->linetype = GRAPH_LINE_SKIP;
+        current_graph_line->linetype = graph_linetypes::GRAPH_LINE_SKIP;
         return FALSE;
       }
       else
@@ -1976,7 +1976,7 @@ BOOLE graphLinedescSetBackgroundLine(graph_line *current_graph_line)
   /*==================================================================*/
   /* This background line is different from the one in the buffer     */
   /*==================================================================*/
-  current_graph_line->linetype = GRAPH_LINE_BG;
+  current_graph_line->linetype = graph_linetypes::GRAPH_LINE_BG;
   current_graph_line->colors[0] = graph_color_shadow[0];
   current_graph_line->frames_left_until_BG_skip = drawGetBufferCount() - 1;
   graphLinedescRoutines(current_graph_line);
@@ -1988,11 +1988,11 @@ BOOLE graphLinedescSetBitplaneLine(graph_line *current_graph_line)
   /*===========================================*/
   /* This is a bitplane line                   */
   /*===========================================*/
-  if (current_graph_line->linetype != GRAPH_LINE_BPL)
+  if (current_graph_line->linetype != graph_linetypes::GRAPH_LINE_BPL)
   {
-    if (current_graph_line->linetype != GRAPH_LINE_BPL_SKIP)
+    if (current_graph_line->linetype != graph_linetypes::GRAPH_LINE_BPL_SKIP)
     {
-      current_graph_line->linetype = GRAPH_LINE_BPL;
+      current_graph_line->linetype = graph_linetypes::GRAPH_LINE_BPL;
       graphLinedescColors(current_graph_line);
       graphLinedescGeometry(current_graph_line);
       graphLinedescRoutines(current_graph_line);
@@ -2066,11 +2066,11 @@ void graphComposeLineOutputSmart(graph_line *current_graph_line)
     // final test for line skip
     if (line_desc_changed)
     {
-      current_graph_line->linetype = GRAPH_LINE_BPL;
+      current_graph_line->linetype = graph_linetypes::GRAPH_LINE_BPL;
     }
     else
     {
-      current_graph_line->linetype = GRAPH_LINE_BPL_SKIP;
+      current_graph_line->linetype = graph_linetypes::GRAPH_LINE_BPL_SKIP;
     }
   }
   else
@@ -2155,7 +2155,7 @@ static void graphP2CFunctionsInit()
 
 void graphEndOfLine()
 {
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
     return;

@@ -22,7 +22,7 @@ void wsprxpth(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForPointer(address);
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     sprite_registers.sprpt[sprite_number] = chipsetReplaceHighPtr(sprite_registers.sprpt[sprite_number], data);
   }
@@ -32,7 +32,7 @@ void wsprxpth(uint16_t data, uint32_t address)
 void wsprxptl(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForPointer(address);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     sprite_registers.sprpt[sprite_number] = chipsetReplaceLowPtr(sprite_registers.sprpt[sprite_number], data);
   }
@@ -44,7 +44,7 @@ void wsprxptl(uint16_t data, uint32_t address)
 void wsprxpos(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     sprite_registers.sprpos[sprite_number] = data;
   }
@@ -56,7 +56,7 @@ void wsprxpos(uint16_t data, uint32_t address)
 void wsprxctl(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     sprite_registers.sprctl[sprite_number] = data;
   }
@@ -68,7 +68,7 @@ void wsprxctl(uint16_t data, uint32_t address)
 void wsprxdata(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     sprite_registers.sprdata[sprite_number] = data;
   }
@@ -80,7 +80,7 @@ void wsprxdata(uint16_t data, uint32_t address)
 void wsprxdatb(uint16_t data, uint32_t address)
 {
   unsigned int sprite_number = GetSpriteNumberForControlWords(address);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
     sprite_registers.sprdatb[sprite_number] = data;
   }

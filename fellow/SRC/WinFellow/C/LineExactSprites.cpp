@@ -157,7 +157,7 @@ spr_action_list_item *LineExactSprites::ActionListAddLast(spr_action_list_master
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
   }
 #endif
 
@@ -201,7 +201,7 @@ spr_action_list_item *LineExactSprites::ActionListAddSorted(spr_action_list_mast
       }
       if (l->count >= SPRITE_MAX_LIST_ITEMS)
       {
-        fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+        fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
       }
 #endif
 
@@ -222,7 +222,7 @@ spr_merge_list_item *LineExactSprites::MergeListAddLast(spr_merge_list_master *l
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
   }
 #endif
   return &l->items[l->count++];
@@ -1242,13 +1242,6 @@ void LineExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_n
 /*===========================================================================*/
 /* Sprite decode, C-version                                                  */
 /*===========================================================================*/
-
-typedef enum
-{
-  SPRITE_STATE_CONTROL_WORDS = 0,
-  SPRITE_STATE_WAITING_FOR_FIRST_LINE = 1,
-  SPRITE_STATE_
-} sprite_states;
 
 void LineExactSprites::Log()
 {

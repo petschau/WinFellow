@@ -118,7 +118,7 @@ void busEndOfFrame()
   /*==============================================================*/
   /* Draw the frame in the host buffer                            */
   /*==============================================================*/
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT) drawEndOfFrame();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_LINEEXACT) drawEndOfFrame();
 
     /*==============================================================*/
     /* Handle keyboard events                                       */
@@ -197,7 +197,7 @@ void busEndOfFrame()
   eolEvent.cycle = busGetCyclesInThisLine() - 1;
   busInsertEventWithNullCheck(&eolEvent);
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EndOfFrame();
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EndOfFrame();
 
   automator.EndOfFrame();
 

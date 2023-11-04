@@ -575,12 +575,12 @@ static uint32_t drawGetAutomaticInternalScaleFactor()
 
 uint32_t drawGetInternalScaleFactor()
 {
-  if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
+  if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_AUTO)
   {
     return drawGetAutomaticInternalScaleFactor();
   }
 
-  return (draw_displayscale == DISPLAYSCALE_1X) ? 2 : 4;
+  return (draw_displayscale == DISPLAYSCALE::DISPLAYSCALE_1X) ? 2 : 4;
 }
 
 uint32_t drawGetOutputScaleFactor()
@@ -1031,7 +1031,7 @@ bool drawEmulationStart()
     // At this point it is hard to backtrack and do something else automatically like fall back to directdraw if direct3d 11 was used
     // For instance the selection of screen modes might be different
 
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
     return false;
   }
 
@@ -1049,7 +1049,7 @@ bool drawEmulationStartPost()
 
   if (draw_buffer_count == 0)
   {
-    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
+    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
     return false;
   }
 
@@ -1103,8 +1103,8 @@ BOOLE drawStartup()
   draw_frame_count = 0;
   draw_clear_buffers = 0;
 
-  drawSetDisplayScale(DISPLAYSCALE_1X);
-  drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY_SOLID);
+  drawSetDisplayScale(DISPLAYSCALE::DISPLAYSCALE_1X);
+  drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
   drawSetFrameskipRatio(1);
   drawSetFPSCounterEnabled(false);
   drawSetLEDsEnabled(false);
@@ -1149,15 +1149,15 @@ void drawUpdateDrawmode()
 uint32_t drawGetNextLineOffsetInBytes(uint32_t pitch_in_bytes)
 {
   uint32_t internal_scale_factor = drawGetInternalScaleFactor();
-  if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return 0; // 2x1 (ie. nothing to offset to)
   }
-  else if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
+  else if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID)
   {
     return pitch_in_bytes / 2; // 2x2
   }
-  else if (internal_scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  else if (internal_scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return pitch_in_bytes / 4; // 4x2 (scanline - write two solid lines followed by two blank ones... Awful?)
   }
@@ -1189,7 +1189,7 @@ void drawEndOfFrame()
     // need to test for error
     if (draw_buffer_info.top_ptr != nullptr)
     {
-      if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
+      if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_LINEEXACT)
       {
         uint32_t height = drawGetInternalClip().GetHeight();
         uint8_t *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
@@ -1198,9 +1198,9 @@ void drawEndOfFrame()
           graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);
           if (graph_frame_ptr != nullptr)
           {
-            if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
+            if (graph_frame_ptr->linetype != graph_linetypes::GRAPH_LINE_SKIP)
             {
-              if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
+              if (graph_frame_ptr->linetype != graph_linetypes::GRAPH_LINE_BPL_SKIP)
               {
                 ((draw_line_func)(graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
               }

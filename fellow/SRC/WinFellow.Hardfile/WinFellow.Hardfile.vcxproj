@@ -28,10 +28,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="amiga\fhtrans.c" />
+    <ClCompile Include="hardfile\HardfileDevice.cpp" />
+    <ClCompile Include="hardfile\HardfileFileSystemEntry.cpp" />
     <ClCompile Include="hardfile\HardfileHandler.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">MinSpace</Optimization>
     </ClCompile>
-    <ClCompile Include="hardfile\HardfileStructs.cpp" />
+    <ClCompile Include="hardfile\HardfileMountListEntry.cpp" />
     <ClCompile Include="hardfile\hunks\AdditionalHunk.cpp" />
     <ClCompile Include="hardfile\hunks\BSSHunk.cpp" />
     <ClCompile Include="hardfile\hunks\CodeHunk.cpp" />
@@ -57,8 +59,10 @@
     <ClCompile Include="hardfile\rdb\RDBPartition.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hardfile\HardfileDevice.h" />
     <ClInclude Include="hardfile\HardfileHandler.h" />
-    <ClInclude Include="hardfile\HardfileStructs.h" />
+    <ClInclude Include="hardfile\HardfileMountListEntry.h" />
+    <ClInclude Include="hardfile\HardfileFileSystemEntry.h" />
     <ClInclude Include="hardfile\hunks\AdditionalHunk.h" />
     <ClInclude Include="hardfile\hunks\BSSHunk.h" />
     <ClInclude Include="hardfile\hunks\CodeHunk.h" />

@@ -17,16 +17,16 @@ namespace CustomChipset
     SOUND_EMULATE
   };
 
-  typedef enum
+  enum class sound_filters
   {
     SOUND_FILTER_ORIGINAL,
     SOUND_FILTER_ALWAYS,
     SOUND_FILTER_NEVER
-  } sound_filters;
+  };
 
-  typedef enum
+  enum class sound_notifications
   {
     SOUND_DSOUND_NOTIFICATION,
     SOUND_MMTIMER_NOTIFICATION
-  } sound_notifications;
+  };
 }

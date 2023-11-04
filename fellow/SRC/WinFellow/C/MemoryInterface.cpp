@@ -2338,7 +2338,7 @@ void memoryKickError(uint32_t errorcode, uint32_t data)
       break;
   }
 
-  fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "%s\n%s\n%s\n", error1, error2, error3);
+  fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "%s\n%s\n%s\n", error1, error2, error3);
 
   memoryKickSettingsClear();
 }

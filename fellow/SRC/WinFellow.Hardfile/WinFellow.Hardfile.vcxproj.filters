@@ -18,9 +18,6 @@
     <ClCompile Include="hardfile\HardfileHandler.cpp">
       <Filter>hardfile</Filter>
     </ClCompile>
-    <ClCompile Include="hardfile\HardfileStructs.cpp">
-      <Filter>hardfile</Filter>
-    </ClCompile>
     <ClCompile Include="hardfile\hunks\AdditionalHunk.cpp">
       <Filter>hardfile\hunks</Filter>
     </ClCompile>
@@ -93,12 +90,16 @@
     <ClCompile Include="amiga\fhtrans.c">
       <Filter>amiga</Filter>
     </ClCompile>
+    <ClCompile Include="hardfile\HardfileMountListEntry.cpp">
+      <Filter>hardfile</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\HardfileFileSystemEntry.cpp">
+      <Filter>hardfile</Filter>
+    </ClCompile>
+    <ClCompile Include="hardfile\HardfileDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hardfile\HardfileHandler.h">
-      <Filter>hardfile</Filter>
-    </ClInclude>
-    <ClInclude Include="hardfile\HardfileStructs.h">
       <Filter>hardfile</Filter>
     </ClInclude>
     <ClInclude Include="hardfile\hunks\AdditionalHunk.h">
@@ -175,6 +176,15 @@
     </ClInclude>
     <ClInclude Include="hardfile\rdb\RDBPartition.h">
       <Filter>hardfile\rdb</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\HardfileMountListEntry.h">
+      <Filter>hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\HardfileFileSystemEntry.h">
+      <Filter>hardfile</Filter>
+    </ClInclude>
+    <ClInclude Include="hardfile\HardfileDevice.h">
+      <Filter>hardfile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

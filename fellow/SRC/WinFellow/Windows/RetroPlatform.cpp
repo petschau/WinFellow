@@ -1554,9 +1554,9 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
   uint32_t lHeight, lWidth, lDisplayScale;
 
   if (RP.GetScanlines())
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES);
   else
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
 
   if (bStartup)
   {
@@ -1673,7 +1673,7 @@ bool RetroPlatform::SendFeatures()
   dFeatureFlags |= RP_FEATURE_SCREEN1X;
 
   // features that are currently implemented only for DirectDraw
-  if (pConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
+  if (pConfig->m_displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW)
   {
     dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;
@@ -1684,7 +1684,7 @@ bool RetroPlatform::SendFeatures()
     _core.Log->AddLog("RetroPlatform::SendFeatures(): Display driver is DirectDraw\n");
 #endif
   }
-  else if (pConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11)
+  else if (pConfig->m_displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
   {
     dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;

@@ -65,9 +65,9 @@ BOOLE ffilesysRemoveFilesys(uint32_t index)
   BOOLE result = FALSE;
 
   if (index >= FFILESYS_MAX_DEVICES) return result;
-  result = (ffilesys_devs[index].status == FFILESYS_INSERTED);
+  result = (ffilesys_devs[index].status == ffilesys_status::FFILESYS_INSERTED);
   memset(&(ffilesys_devs[index]), 0, sizeof(ffilesys_dev));
-  ffilesys_devs[index].status = FFILESYS_NONE;
+  ffilesys_devs[index].status = ffilesys_status::FFILESYS_NONE;
   return result;
 }
 
@@ -124,7 +124,7 @@ static BOOLE ffilesysHasZeroDevices()
   uint32_t dev_count = 0;
 
   for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
-    if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
+    if (ffilesys_devs[i].status == ffilesys_status::FFILESYS_INSERTED) dev_count++;
   return (dev_count == 0) && !ffilesysGetAutomountDrives();
 }
 
@@ -146,7 +146,7 @@ void ffilesysDumpConfig()
   FILE *F = fopen(filename, "w");
   for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
   {
-    if (ffilesys_devs[i].status == FFILESYS_INSERTED)
+    if (ffilesys_devs[i].status == ffilesys_status::FFILESYS_INSERTED)
       fprintf(F, "Slot: %u, %s, %s, %s\n", i, ffilesys_devs[i].volumename, ffilesys_devs[i].rootpath, (ffilesys_devs[i].readonly) ? "R" : "RW");
     else
       fprintf(F, "Slot: %u, No filesystem defined.\n", i);
@@ -161,7 +161,7 @@ void ffilesysDumpConfig()
 void ffilesysInstall()
 {
   for (uint32_t i = 0; i < FFILESYS_MAX_DEVICES; i++)
-    if (ffilesys_devs[i].status == FFILESYS_INSERTED)
+    if (ffilesys_devs[i].status == ffilesys_status::FFILESYS_INSERTED)
     {
       size_t len = strlen(ffilesys_devs[i].rootpath) - 1;
       if (ffilesys_devs[i].rootpath[len] == '\\')

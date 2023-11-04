@@ -956,7 +956,7 @@ void gfxDrvDDrawCalculateDestinationRectangle(uint32_t output_width, uint32_t ou
   int upscaled_clip_width = 0;
   int upscaled_clip_height = 0;
 
-  if (drawGetDisplayScale() != DISPLAYSCALE_AUTO)
+  if (drawGetDisplayScale() != DISPLAYSCALE::DISPLAYSCALE_AUTO)
   {
     // Fixed scaling
     float upscale_factor = static_cast<float>(drawGetOutputScaleFactor()) / static_cast<float>(drawGetInternalScaleFactor());

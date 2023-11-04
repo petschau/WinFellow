@@ -168,17 +168,13 @@ const char *wgui_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = {"0 MB", "1 MB", "2 
 
 const char *wgui_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = {"0 KB", "256 KB", "512 KB", "768 KB", "1024 KB", "1280 KB", "1536 KB", "1792 KB"};
 
-// from sound.h: typedef enum {SOUND_15650, SOUND_22050, SOUND_31300, SOUND_44100} sound_rates;
 #define NUMBER_OF_SOUND_RATES 4
 
 int wgui_sound_rates_cci[NUMBER_OF_SOUND_RATES] = {IDC_RADIO_SOUND_15650, IDC_RADIO_SOUND_22050, IDC_RADIO_SOUND_31300, IDC_RADIO_SOUND_44100};
 
-// from sound.h: typedef enum {SOUND_FILTER_ORIGINAL, SOUND_FILTER_ALWAYS, SOUND_FILTER_NEVER} sound_filters;
 #define NUMBER_OF_SOUND_FILTERS 3
 int wgui_sound_filters_cci[NUMBER_OF_SOUND_FILTERS] = {IDC_RADIO_SOUND_FILTER_ORIGINAL, IDC_RADIO_SOUND_FILTER_ALWAYS, IDC_RADIO_SOUND_FILTER_NEVER};
 
-// from CpuIntegration.h: typedef enum {M68000  = 0, M68010  = 1, M68020  = 2, M68030  = 3, M68EC30 = 4, M68040  = 5, M68EC40 = 6, M68060  = 7, M68EC60 = 8, M68EC20 = 9}
-// cpu_types;
 #define NUMBER_OF_CPUS 10
 int wgui_cpus_cci[NUMBER_OF_CPUS] = {
     IDC_RADIO_68000,
@@ -192,7 +188,6 @@ int wgui_cpus_cci[NUMBER_OF_CPUS] = {
     IDC_RADIO_68EC60,
     IDC_RADIO_68EC20};
 
-// from gameport.h: typedef enum {GP_NONE, GP_JOYKEY0, GP_JOYKEY1, GP_ANALOG0, GP_ANALOG1, GP_MOUSE0, GP_MOUSE1} gameport_inputs;
 #define NUMBER_OF_GAMEPORT_STRINGS 6
 const char *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {"none", "keyboard layout 1", "keyboard layout 2", "joystick 1", "joystick 2", "mouse"};
 
@@ -205,7 +200,7 @@ wgui_preset *wgui_presets = nullptr;
 /* Flags for various global events                                            */
 /*============================================================================*/
 
-typedef enum
+enum class wguiActions
 {
   WGUI_NO_ACTION,
   WGUI_START_EMULATION,
@@ -223,7 +218,7 @@ typedef enum
   WGUI_LOAD_STATE,
   WGUI_SAVE_STATE,
   WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS
-} wguiActions;
+};
 
 wguiActions wgui_action;
 
@@ -272,20 +267,7 @@ typedef enum
 
 UINT wgui_propsheetRID[PROP_SHEETS] = {IDD_PRESETS, IDD_CPU, IDD_FLOPPY, IDD_MEMORY, IDD_DISPLAY, IDD_SOUND, IDD_FILESYSTEM, IDD_HARDFILE, IDD_GAMEPORT, IDD_VARIOUS};
 
-UINT wgui_propsheetICON[PROP_SHEETS] = {
-    0,
-    IDI_ICON_CPU,
-    IDI_ICON_FLOPPY,
-    // IDI_ICON_MEMORY,
-    0,
-    IDI_ICON_DISPLAY,
-    IDI_ICON_SOUND,
-    IDI_ICON_FILESYSTEM,
-    IDI_ICON_HARDFILE,
-    // IDI_ICON_GAMEPORT,
-    // IDI_ICON_VARIOUS
-    0,
-    0};
+UINT wgui_propsheetICON[PROP_SHEETS] = {0, IDI_ICON_CPU, IDI_ICON_FLOPPY, 0, IDI_ICON_DISPLAY, IDI_ICON_SOUND, IDI_ICON_FILESYSTEM, IDI_ICON_HARDFILE, 0, 0};
 
 // in this struct, we remember the configuration dialog property sheet handles,
 // so that a refresh can be triggered by the presets propery sheet
@@ -464,18 +446,18 @@ DISPLAYDRIVER wguiGetDisplayDriverFromComboboxIndex(LONG index)
 {
   switch (index)
   {
-    case 0: return DISPLAYDRIVER_DIRECTDRAW;
-    case 1: return DISPLAYDRIVER_DIRECT3D11;
+    case 0: return DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
+    case 1: return DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11;
   }
-  return DISPLAYDRIVER_DIRECTDRAW;
+  return DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
 }
 
 LONG wguiGetComboboxIndexFromDisplayDriver(DISPLAYDRIVER displaydriver)
 {
   switch (displaydriver)
   {
-    case DISPLAYDRIVER_DIRECTDRAW: return 0;
-    case DISPLAYDRIVER_DIRECT3D11: return 1;
+    case DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW: return 0;
+    case DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11: return 1;
   }
   return 0;
 }
@@ -495,7 +477,8 @@ void wguiConvertDrawModeListToGuiDrawModes()
   if (has8BitDesktop)
   {
     fellowShowRequester(
-        FELLOW_REQUESTER_TYPE_ERROR, "Your desktop is currently running an 8-bit color resolution.\nThis is not supported.\nOnly fullscreen modes will be available");
+        FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR,
+        "Your desktop is currently running an 8-bit color resolution.\nThis is not supported.\nOnly fullscreen modes will be available");
   }
 
   for (draw_mode *dm : drawGetModes())
@@ -633,7 +616,7 @@ BOOLE wguiSelectFile(HWND hwndDlg, char *filename, uint32_t filenamesize, const 
   OPENFILENAME ofn;
   char filters[CFG_FILENAME_LENGTH];
 
-  memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
+  memcpy(filters, &FileType[(int)SelectFileType], CFG_FILENAME_LENGTH);
   char *pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn); /* Set all members to familiarize with */
@@ -651,16 +634,16 @@ BOOLE wguiSelectFile(HWND hwndDlg, char *filename, uint32_t filenamesize, const 
 
   switch (SelectFileType)
   {
-    case FSEL_ROM: ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini); break;
-    case FSEL_ADF:
+    case SelectFileFlags::FSEL_ROM: ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_ADF:
       ofn.lpstrInitialDir = cfgGetLastUsedDiskDir(wgui_cfg);
       if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0)
       {
         ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
       }
       break;
-    case FSEL_KEY: ofn.lpstrInitialDir = iniGetLastUsedKeyDir(wgui_ini); break;
-    case FSEL_HDF:
+    case SelectFileFlags::FSEL_KEY: ofn.lpstrInitialDir = iniGetLastUsedKeyDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_HDF:
       ofn.lpstrInitialDir = iniGetLastUsedHdfDir(wgui_ini);
       if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0)
       {
@@ -671,8 +654,8 @@ BOOLE wguiSelectFile(HWND hwndDlg, char *filename, uint32_t filenamesize, const 
         ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
       }
       break;
-    case FSEL_WFC: ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini); break;
-    case FSEL_FST: ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_WFC: ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_FST: ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini); break;
     default: ofn.lpstrInitialDir = nullptr;
   }
 
@@ -692,7 +675,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, const char *filename, uint32_t filenamesize, co
   OPENFILENAME ofn;
   char filters[CFG_FILENAME_LENGTH];
 
-  memcpy(filters, &FileType[selectFileType], CFG_FILENAME_LENGTH);
+  memcpy(filters, &FileType[(int)selectFileType], CFG_FILENAME_LENGTH);
   char *pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn); /* Set all members to familiarize with */
@@ -709,16 +692,16 @@ BOOLE wguiSaveFile(HWND hwndDlg, const char *filename, uint32_t filenamesize, co
 
   switch (selectFileType)
   {
-    case FSEL_ROM: ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini); break;
-    case FSEL_ADF:
+    case SelectFileFlags::FSEL_ROM: ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_ADF:
       ofn.lpstrInitialDir = cfgGetLastUsedDiskDir(wgui_cfg);
       if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0)
       {
         ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
       }
       break;
-    case FSEL_KEY: ofn.lpstrInitialDir = iniGetLastUsedKeyDir(wgui_ini); break;
-    case FSEL_HDF:
+    case SelectFileFlags::FSEL_KEY: ofn.lpstrInitialDir = iniGetLastUsedKeyDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_HDF:
       ofn.lpstrInitialDir = iniGetLastUsedHdfDir(wgui_ini);
       if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0)
       {
@@ -729,9 +712,9 @@ BOOLE wguiSaveFile(HWND hwndDlg, const char *filename, uint32_t filenamesize, co
         ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
       }
       break;
-    case FSEL_WFC: ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini); break;
-    case FSEL_MOD: ofn.lpstrInitialDir = iniGetLastUsedModDir(wgui_ini); break;
-    case FSEL_FST: ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_WFC: ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_MOD: ofn.lpstrInitialDir = iniGetLastUsedModDir(wgui_ini); break;
+    case SelectFileFlags::FSEL_FST: ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini); break;
     default: ofn.lpstrInitialDir = nullptr;
   }
 
@@ -909,7 +892,7 @@ void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg)
 
   strcpy(filename, "");
 
-  if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save Configuration As:", FSEL_WFC))
+  if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save Configuration As:", SelectFileFlags::FSEL_WFC))
   {
     cfgSaveToFilename(wgui_cfg, filename);
     iniSetCurrentConfigurationFilename(wgui_ini, filename);
@@ -921,7 +904,7 @@ void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg)
 {
   char filename[CFG_FILENAME_LENGTH];
 
-  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open", FSEL_WFC))
+  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open", SelectFileFlags::FSEL_WFC))
   {
     cfgLoadFromFilename(wgui_cfg, filename, false);
     iniSetCurrentConfigurationFilename(wgui_ini, filename);
@@ -941,7 +924,7 @@ void wguiSaveStateFileAs(cfg *conf, HWND hwndDlg)
 
   strcpy(filename, "");
 
-  if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save State File As:", FSEL_FST))
+  if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save State File As:", SelectFileFlags::FSEL_FST))
   {
     fellowSaveState(filename);
     iniSetLastUsedStateFileDir(wgui_ini, wguiExtractPath(filename));
@@ -952,7 +935,7 @@ void wguiOpenStateFile(cfg *conf, HWND hwndDlg)
 {
   char filename[CFG_FILENAME_LENGTH];
 
-  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open State File", FSEL_FST))
+  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open State File", SelectFileFlags::FSEL_FST))
   {
     fellowLoadState(filename);
     iniSetLastUsedStateFileDir(wgui_ini, wguiExtractPath(filename));
@@ -972,7 +955,7 @@ void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf)
   /* set CPU type */
   for (int i = 0; i < NUMBER_OF_CPUS; i++)
     ccwButtonUncheck(hwndDlg, wgui_cpus_cci[i]);
-  ccwButtonSetCheck(hwndDlg, wgui_cpus_cci[cfgGetCPUType(conf)]);
+  ccwButtonSetCheck(hwndDlg, wgui_cpus_cci[(int)cfgGetCPUType(conf)]);
 
   /* Set CPU speed */
   ccwSliderSetRange(hwndDlg, IDC_SLIDER_CPU_SPEED, 0, 4);
@@ -1241,7 +1224,7 @@ void wguiInstallSoundConfig(HWND hwndDlg, cfg *conf)
   ccwButtonSetCheck(hwndDlg, wgui_sound_rates_cci[(int)cfgGetSoundRate(conf)]);
 
   /* set sound hardware notification */
-  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION, cfgGetSoundNotification(conf) == SOUND_DSOUND_NOTIFICATION);
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION, cfgGetSoundNotification(conf) == sound_notifications::SOUND_DSOUND_NOTIFICATION);
 
   /* Set sound channels */
   if (cfgGetSoundStereo(conf))
@@ -1256,7 +1239,7 @@ void wguiInstallSoundConfig(HWND hwndDlg, cfg *conf)
     ccwButtonSetCheck(hwndDlg, IDC_RADIO_SOUND_8BITS);
 
   /* Set sound filter */
-  ccwButtonSetCheck(hwndDlg, wgui_sound_filters_cci[cfgGetSoundFilter(conf)]);
+  ccwButtonSetCheck(hwndDlg, wgui_sound_filters_cci[(int)cfgGetSoundFilter(conf)]);
 
   /* Set sound WAV dump */
   ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_WAV, cfgGetSoundWAVDump(conf));
@@ -1304,9 +1287,9 @@ void wguiExtractSoundConfig(HWND hwndDlg, cfg *conf)
 
   /* get notify option */
   if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION))
-    cfgSetSoundNotification(conf, SOUND_DSOUND_NOTIFICATION);
+    cfgSetSoundNotification(conf, sound_notifications::SOUND_DSOUND_NOTIFICATION);
   else if (!ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION))
-    cfgSetSoundNotification(conf, SOUND_MMTIMER_NOTIFICATION);
+    cfgSetSoundNotification(conf, sound_notifications::SOUND_MMTIMER_NOTIFICATION);
 
   /* get slider of buffer length */
   cfgSetSoundBufferLength(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH));
@@ -1453,7 +1436,7 @@ HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, char *filename, rdb_status 
       filename,
       rdbStatus == rdb_status::RDB_FOUND
           ? " (RDB)"
-          : (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR || rdbStatus == RDB_FOUND_WITH_PARTITION_ERROR ? " (Invalid RDB)" : ""));
+          : (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR || rdbStatus == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR ? " (Invalid RDB)" : ""));
 
   TV_INSERTSTRUCT tvInsert = {};
   tvInsert.hParent = nullptr;
@@ -1729,11 +1712,11 @@ void wguiInstallDisplayScaleConfigInGUI(HWND hwndDlg, cfg *conf)
 
   switch (cfgGetDisplayScale(conf))
   {
-    case DISPLAYSCALE_AUTO: currentSelectionIndex = 0; break;
-    case DISPLAYSCALE_1X: currentSelectionIndex = 1; break;
-    case DISPLAYSCALE_2X: currentSelectionIndex = 2; break;
-    case DISPLAYSCALE_3X: currentSelectionIndex = 3; break;
-    case DISPLAYSCALE_4X: currentSelectionIndex = 4; break;
+    case DISPLAYSCALE::DISPLAYSCALE_AUTO: currentSelectionIndex = 0; break;
+    case DISPLAYSCALE::DISPLAYSCALE_1X: currentSelectionIndex = 1; break;
+    case DISPLAYSCALE::DISPLAYSCALE_2X: currentSelectionIndex = 2; break;
+    case DISPLAYSCALE::DISPLAYSCALE_3X: currentSelectionIndex = 3; break;
+    case DISPLAYSCALE::DISPLAYSCALE_4X: currentSelectionIndex = 4; break;
   }
 
   ComboBox_SetCurSel(displayScaleComboboxHWND, currentSelectionIndex);
@@ -1879,7 +1862,7 @@ void wguiInstallFullScreenButtonConfigInGUI(HWND hwndDlg, cfg *conf)
 
 void wguiInstallDisplayScaleStrategyConfigInGUI(HWND hwndDlg, cfg *conf)
 {
-  BOOLE isDisplayStrategySolid = cfgGetDisplayScaleStrategy(conf) == DISPLAYSCALE_STRATEGY_SOLID;
+  BOOLE isDisplayStrategySolid = cfgGetDisplayScaleStrategy(conf) == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID;
   ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINE_FILL_SOLID, isDisplayStrategySolid);
   if (isDisplayStrategySolid == FALSE)
   {
@@ -1984,7 +1967,9 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
   // get scaling
   wguiExtractDisplayScaleConfigFromGUI(hwndDlg, conf);
 
-  cfgSetDisplayScaleStrategy(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINE_FILL_SOLID)) ? DISPLAYSCALE_STRATEGY_SOLID : DISPLAYSCALE_STRATEGY_SCANLINES);
+  cfgSetDisplayScaleStrategy(
+      conf,
+      (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINE_FILL_SOLID)) ? DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID : DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES);
 
   // get height and width for full screen
 
@@ -1993,7 +1978,7 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
     unsigned int unscaled_width = (cfgGetClipRight(conf) - cfgGetClipLeft(conf)) * 2;
     unsigned int unscaled_height = (cfgGetClipBottom(conf) - cfgGetClipTop(conf)) * 2;
     unsigned int scale =
-        (cfgGetDisplayScale(conf) == DISPLAYSCALE_AUTO) ? wguiDecideScaleFromDesktop(unscaled_width, unscaled_height) : (unsigned int)cfgGetDisplayScale(conf);
+        (cfgGetDisplayScale(conf) == DISPLAYSCALE::DISPLAYSCALE_AUTO) ? wguiDecideScaleFromDesktop(unscaled_width, unscaled_height) : (unsigned int)cfgGetDisplayScale(conf);
     unsigned int width = unscaled_width * scale;
     unsigned int height = unscaled_height * scale;
     cfgSetScreenWidth(conf, width);
@@ -2200,12 +2185,12 @@ INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                 switch (cfgGetCPUType(cfgTemp))
                 {
-                  case 0: sprintf(strTemp, "68000"); break;
-                  case 1: sprintf(strTemp, "68010"); break;
-                  case 2: sprintf(strTemp, "68020"); break;
-                  case 3: sprintf(strTemp, "68030"); break;
-                  case 4: sprintf(strTemp, "68EC30"); break;
-                  case 9: sprintf(strTemp, "68EC20"); break;
+                  case cpu_integration_models::M68000: sprintf(strTemp, "68000"); break;
+                  case cpu_integration_models::M68010: sprintf(strTemp, "68010"); break;
+                  case cpu_integration_models::M68020: sprintf(strTemp, "68020"); break;
+                  case cpu_integration_models::M68030: sprintf(strTemp, "68030"); break;
+                  case cpu_integration_models::M68EC30: sprintf(strTemp, "68EC30"); break;
+                  case cpu_integration_models::M68EC20: sprintf(strTemp, "68EC20"); break;
                   default: sprintf(strTemp, "unknown model");
                 }
 
@@ -2271,7 +2256,7 @@ void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, int editIdentifier, uint32_t i
 {
   char filename[CFG_FILENAME_LENGTH];
 
-  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Diskimage", FSEL_ADF))
+  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Diskimage", SelectFileFlags::FSEL_ADF))
   {
     cfgSetDiskImage(conf, index, filename);
 
@@ -2431,7 +2416,7 @@ INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPar
           {
             char strFilename[CFG_FILENAME_LENGTH] = "";
 
-            if (wguiSaveFile(hwndDlg, strFilename, CFG_FILENAME_LENGTH, "Select disk image filename", FSEL_ADF))
+            if (wguiSaveFile(hwndDlg, strFilename, CFG_FILENAME_LENGTH, "Select disk image filename", SelectFileFlags::FSEL_ADF))
             {
               ccwEditSetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_FILENAME, strFilename);
             }
@@ -2462,7 +2447,7 @@ INT_PTR CALLBACK wguiMemoryDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
       if (HIWORD(wParam) == BN_CLICKED) switch (LOWORD(wParam))
         {
           case IDC_BUTTON_KICKSTART_FILEDIALOG:
-            if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select ROM File", FSEL_ROM))
+            if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select ROM File", SelectFileFlags::FSEL_ROM))
             {
               cfgSetKickImage(wgui_cfg, filename);
               iniSetLastUsedKickImageDir(wgui_ini, wguiExtractPath(filename));
@@ -2470,7 +2455,7 @@ INT_PTR CALLBACK wguiMemoryDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             }
             break;
           case IDC_BUTTON_KICKSTART_EXT_FILEDIALOG:
-            if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Extended ROM File", FSEL_ROM))
+            if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Extended ROM File", SelectFileFlags::FSEL_ROM))
             {
               cfgSetKickImageExtended(wgui_cfg, filename);
               iniSetLastUsedKickImageDir(wgui_ini, wguiExtractPath(filename));
@@ -2478,7 +2463,7 @@ INT_PTR CALLBACK wguiMemoryDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             }
             break;
           case IDC_BUTTON_KEYFILE_FILEDIALOG:
-            if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Keyfile", FSEL_KEY))
+            if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Keyfile", SelectFileFlags::FSEL_KEY))
             {
               cfgSetKey(wgui_cfg, filename);
               iniSetLastUsedKeyDir(wgui_ini, wguiExtractPath(filename));
@@ -2580,14 +2565,14 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
                 wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
                 wguiFreeGuiDrawModesLists();
 
-                if (displaydriver == DISPLAYDRIVER_DIRECT3D11)
+                if (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
                 {
                   if (!gfxDrvDXGIValidateRequirements())
                   {
                     _core.Log->AddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
-                    displaydriver = DISPLAYDRIVER_DIRECTDRAW;
-                    cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
-                    fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "DirectX 11 is required but could not be loaded, revert back to DirectDraw.");
+                    displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
+                    cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
+                    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "DirectX 11 is required but could not be loaded, revert back to DirectDraw.");
                   }
                 }
 
@@ -2595,9 +2580,9 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
                 if (!result)
                 {
                   _core.Log->AddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
-                  displaydriver = DISPLAYDRIVER_DIRECTDRAW;
-                  cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
-                  fellowShowRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver");
+                  displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
+                  cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
+                  fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver");
                 }
                 wguiConvertDrawModeListToGuiDrawModes();
                 wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
@@ -2891,7 +2876,7 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
           case IDCANCEL: EndDialog(hwndDlg, LOWORD(wParam)); return TRUE;
 
           case IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG:
-            if (wguiSaveFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile Name", FSEL_HDF))
+            if (wguiSaveFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile Name", SelectFileFlags::FSEL_HDF))
             {
               ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, wgui_current_hardfile_edit->filename);
               iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
@@ -2952,7 +2937,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
         switch (LOWORD(wParam))
         {
           case IDC_BUTTON_HARDFILE_ADD_FILEDIALOG:
-            if (wguiSelectFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile", FSEL_HDF))
+            if (wguiSelectFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile", SelectFileFlags::FSEL_HDF))
             {
               rdb_status rdbStatus = _core.HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
               if (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
@@ -3117,7 +3102,7 @@ INT_PTR CALLBACK wguiGameportDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
       wguiInstallGameportConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
-      if (wgui_action == WGUI_NO_ACTION)
+      if (wgui_action == wguiActions::WGUI_NO_ACTION)
       {
         HWND gpChoice[2];
 
@@ -3295,25 +3280,25 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
       return TRUE;
 
     case WM_COMMAND:
-      if (wgui_action == WGUI_NO_ACTION) switch (LOWORD(wParam))
+      if (wgui_action == wguiActions::WGUI_NO_ACTION) switch (LOWORD(wParam))
         {
           case IDC_START_EMULATION:
             wgui_emulation_state = TRUE;
-            wgui_action = WGUI_START_EMULATION;
+            wgui_action = wguiActions::WGUI_START_EMULATION;
             break;
           case IDCANCEL:
           case ID_FILE_QUIT:
-          case IDC_QUIT_EMULATOR: wgui_action = WGUI_QUIT_EMULATOR; break;
-          case ID_FILE_OPENCONFIGURATION: wgui_action = WGUI_OPEN_CONFIGURATION; break;
-          case ID_FILE_SAVECONFIGURATION: wgui_action = WGUI_SAVE_CONFIGURATION; break;
-          case ID_FILE_SAVECONFIGURATIONAS: wgui_action = WGUI_SAVE_CONFIGURATION_AS; break;
-          case ID_FILE_LOAD_STATE: wgui_action = WGUI_LOAD_STATE; break;
-          case ID_FILE_SAVE_STATE: wgui_action = WGUI_SAVE_STATE; break;
-          case ID_FILE_HISTORYCONFIGURATION0: wgui_action = WGUI_LOAD_HISTORY0; break;
-          case ID_FILE_HISTORYCONFIGURATION1: wgui_action = WGUI_LOAD_HISTORY1; break;
-          case ID_FILE_HISTORYCONFIGURATION2: wgui_action = WGUI_LOAD_HISTORY2; break;
-          case ID_FILE_HISTORYCONFIGURATION3: wgui_action = WGUI_LOAD_HISTORY3; break;
-          case ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS: wgui_action = WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS; break;
+          case IDC_QUIT_EMULATOR: wgui_action = wguiActions::WGUI_QUIT_EMULATOR; break;
+          case ID_FILE_OPENCONFIGURATION: wgui_action = wguiActions::WGUI_OPEN_CONFIGURATION; break;
+          case ID_FILE_SAVECONFIGURATION: wgui_action = wguiActions::WGUI_SAVE_CONFIGURATION; break;
+          case ID_FILE_SAVECONFIGURATIONAS: wgui_action = wguiActions::WGUI_SAVE_CONFIGURATION_AS; break;
+          case ID_FILE_LOAD_STATE: wgui_action = wguiActions::WGUI_LOAD_STATE; break;
+          case ID_FILE_SAVE_STATE: wgui_action = wguiActions::WGUI_SAVE_STATE; break;
+          case ID_FILE_HISTORYCONFIGURATION0: wgui_action = wguiActions::WGUI_LOAD_HISTORY0; break;
+          case ID_FILE_HISTORYCONFIGURATION1: wgui_action = wguiActions::WGUI_LOAD_HISTORY1; break;
+          case ID_FILE_HISTORYCONFIGURATION2: wgui_action = wguiActions::WGUI_LOAD_HISTORY2; break;
+          case ID_FILE_HISTORYCONFIGURATION3: wgui_action = wguiActions::WGUI_LOAD_HISTORY3; break;
+          case ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS: wgui_action = wguiActions::WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS; break;
           case IDC_CONFIGURATION:
           {
             cfg *configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
@@ -3339,11 +3324,11 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
             SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)power_led_off_bitmap);
             wgui_emulation_state = FALSE;
             break;
-          case ID_DEBUGGER_START: wgui_action = WGUI_DEBUGGER_START; break;
+          case ID_DEBUGGER_START: wgui_action = wguiActions::WGUI_DEBUGGER_START; break;
           case ID_HELP_ABOUT:
-            wgui_action = WGUI_ABOUT;
+            wgui_action = wguiActions::WGUI_ABOUT;
             wguiAbout(hwndDlg);
-            wgui_action = WGUI_NO_ACTION;
+            wgui_action = wguiActions::WGUI_NO_ACTION;
             break;
           default: break;
         }
@@ -3415,9 +3400,9 @@ void wguiShowRequester(const char *szMessage, FELLOW_REQUESTER_TYPE requesterTyp
 
   switch (requesterType)
   {
-    case FELLOW_REQUESTER_TYPE_INFO: uType = MB_ICONINFORMATION; break;
-    case FELLOW_REQUESTER_TYPE_WARN: uType = MB_ICONWARNING; break;
-    case FELLOW_REQUESTER_TYPE_ERROR: uType = MB_ICONERROR; break;
+    case FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_INFO: uType = MB_ICONINFORMATION; break;
+    case FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_WARN: uType = MB_ICONWARNING; break;
+    case FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR: uType = MB_ICONERROR; break;
   }
 
   wguiRequester(szMessage, uType);
@@ -3454,7 +3439,7 @@ BOOLE wguiEnter()
     MSG myMsg;
     BOOLE end_loop = FALSE;
 
-    wgui_action = (cfgGetUseGUI(wgui_cfg)) ? WGUI_NO_ACTION : WGUI_START_EMULATION;
+    wgui_action = (cfgGetUseGUI(wgui_cfg)) ? wguiActions::WGUI_NO_ACTION : wguiActions::WGUI_START_EMULATION;
 
     wgui_hDialog = CreateDialog(win_drv_hInstance, MAKEINTRESOURCE(IDD_MAIN), NULL, wguiDialogProc);
     SetWindowPos(wgui_hDialog, HWND_TOP, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), 0, 0, SWP_NOSIZE | SWP_ASYNCWINDOWPOS);
@@ -3478,7 +3463,7 @@ BOOLE wguiEnter()
       }
       switch (wgui_action)
       {
-        case WGUI_START_EMULATION:
+        case wguiActions::WGUI_START_EMULATION:
           wguiCheckMemorySettingsForChipset();
           if (wguiCheckEmulationNecessities() == TRUE)
           {
@@ -3491,9 +3476,9 @@ BOOLE wguiEnter()
             break;
           }
           MessageBox(wgui_hDialog, "Specified KickImage does not exist", "Configuration Error", 0);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_QUIT_EMULATOR:
+        case wguiActions::WGUI_QUIT_EMULATOR:
         {
           BOOLE bQuit = TRUE;
 
@@ -3510,30 +3495,30 @@ BOOLE wguiEnter()
             quit_emulator = TRUE;
           }
           else
-            wgui_action = WGUI_NO_ACTION;
+            wgui_action = wguiActions::WGUI_NO_ACTION;
         }
         break;
-        case WGUI_OPEN_CONFIGURATION:
+        case wguiActions::WGUI_OPEN_CONFIGURATION:
           wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
           cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
           wguiCheckMemorySettingsForChipset();
           wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_SAVE_CONFIGURATION:
+        case wguiActions::WGUI_SAVE_CONFIGURATION:
           wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
           cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
           cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_SAVE_CONFIGURATION_AS:
+        case wguiActions::WGUI_SAVE_CONFIGURATION_AS:
           wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
           wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
           cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
           wguiInsertCfgIntoHistory(iniGetCurrentConfigurationFilename(wgui_ini));
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_LOAD_HISTORY0:
+        case wguiActions::WGUI_LOAD_HISTORY0:
           if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0), false) == FALSE)
           {
             wguiDeleteCfgFromHistory(0);
@@ -3545,9 +3530,9 @@ BOOLE wguiEnter()
             wguiCheckMemorySettingsForChipset();
           }
           wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_LOAD_HISTORY1:
+        case wguiActions::WGUI_LOAD_HISTORY1:
           if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1), false) == FALSE)
           {
             wguiDeleteCfgFromHistory(1);
@@ -3560,9 +3545,9 @@ BOOLE wguiEnter()
             wguiPutCfgInHistoryOnTop(1);
           }
           wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_LOAD_HISTORY2:
+        case wguiActions::WGUI_LOAD_HISTORY2:
           if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2), false) == FALSE)
           {
             wguiDeleteCfgFromHistory(2);
@@ -3575,9 +3560,9 @@ BOOLE wguiEnter()
             wguiPutCfgInHistoryOnTop(2);
           }
           wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_LOAD_HISTORY3:
+        case wguiActions::WGUI_LOAD_HISTORY3:
           if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3), false) == FALSE)
           {
             wguiDeleteCfgFromHistory(3);
@@ -3590,17 +3575,17 @@ BOOLE wguiEnter()
             wguiPutCfgInHistoryOnTop(3);
           }
           wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
-        case WGUI_DEBUGGER_START:
+        case wguiActions::WGUI_DEBUGGER_START:
           end_loop = TRUE;
           wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
           cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
           fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
           debugger_start = TRUE;
-        case WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS:
+        case wguiActions::WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS:
           wguiToggleMenuPauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
-          wgui_action = WGUI_NO_ACTION;
+          wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
         default: break;
       }

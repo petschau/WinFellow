@@ -291,10 +291,10 @@
     <ClCompile Include="DXGI\GfxDrvDXGIOutputEnumerator.cpp">
       <Filter>DXGI</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\BitplaneDMA.c">
+    <ClCompile Include="graphics\BitplaneDMA.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\BitplaneDraw.c">
+    <ClCompile Include="graphics\BitplaneDraw.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics\CycleExactCopper.cpp">
@@ -303,13 +303,13 @@
     <ClCompile Include="graphics\CycleExactSprites.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\DDFStateMachine.c">
+    <ClCompile Include="graphics\DDFStateMachine.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\DIWXStateMachine.c">
+    <ClCompile Include="graphics\DIWXStateMachine.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\DIWYStateMachine.c">
+    <ClCompile Include="graphics\DIWYStateMachine.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics\Graphics.cpp">
@@ -324,10 +324,10 @@
     <ClCompile Include="graphics\Logger.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\PixelSerializer.c">
+    <ClCompile Include="graphics\PixelSerializer.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Planar2ChunkyDecoder.c">
+    <ClCompile Include="graphics\Planar2ChunkyDecoder.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
     <ClCompile Include="IPF\CapsPlug.cpp">

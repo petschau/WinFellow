@@ -174,7 +174,7 @@ void CycleExactSprites::NotifySprpthChanged(uint16_t data, unsigned int sprite_n
 
 void CycleExactSprites::NotifySprptlChanged(uint16_t data, unsigned int sprite_number)
 {
-  SpriteState[sprite_number].DMAState.state = SPRITE_DMA_STATE_READ_CONTROL;
+  SpriteState[sprite_number].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_READ_CONTROL;
 }
 
 /* SPRXPOS - $dff140 to $dff178 */
@@ -262,11 +262,11 @@ void CycleExactSprites::DMAReadControl(uint32_t spriteNo, uint32_t rasterY)
 
   if (IsFirstLine(spriteNo, rasterY))
   {
-    SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_DATA;
+    SpriteState[spriteNo].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_READ_DATA;
   }
   else
   {
-    SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE;
+    SpriteState[spriteNo].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE;
   }
 }
 
@@ -277,11 +277,11 @@ void CycleExactSprites::DMAWaitingForFirstLine(uint32_t spriteNo, uint32_t raste
     ReadDataWords(spriteNo);
     if (IsLastLine(spriteNo, rasterY))
     {
-      SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_CONTROL;
+      SpriteState[spriteNo].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_READ_CONTROL;
     }
     else
     {
-      SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_DATA;
+      SpriteState[spriteNo].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_READ_DATA;
     }
   }
 }
@@ -297,11 +297,11 @@ void CycleExactSprites::DMAReadData(uint32_t spriteNo, uint32_t rasterY)
     ReadControlWords(spriteNo);
     if (IsFirstLine(spriteNo, rasterY))
     {
-      SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_DATA;
+      SpriteState[spriteNo].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_READ_DATA;
     }
     else
     {
-      SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE;
+      SpriteState[spriteNo].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE;
     }
   }
 }
@@ -320,9 +320,9 @@ void CycleExactSprites::DMAHandler(uint32_t rasterY)
   {
     switch (SpriteState[spriteNo].DMAState.state)
     {
-      case SPRITE_DMA_STATE_READ_CONTROL: DMAReadControl(spriteNo, rasterY); break;
-      case SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE: DMAWaitingForFirstLine(spriteNo, rasterY); break;
-      case SPRITE_DMA_STATE_READ_DATA: DMAReadData(spriteNo, rasterY); break;
+      case SpriteDMAStates::SPRITE_DMA_STATE_READ_CONTROL: DMAReadControl(spriteNo, rasterY); break;
+      case SpriteDMAStates::SPRITE_DMA_STATE_WAITING_FOR_FIRST_LINE: DMAWaitingForFirstLine(spriteNo, rasterY); break;
+      case SpriteDMAStates::SPRITE_DMA_STATE_READ_DATA: DMAReadData(spriteNo, rasterY); break;
     }
     spriteNo++;
   }
@@ -343,7 +343,7 @@ void CycleExactSprites::EndOfFrame()
 {
   for (uint32_t spriteNo = 0; spriteNo < 8; ++spriteNo)
   {
-    SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_CONTROL;
+    SpriteState[spriteNo].DMAState.state = SpriteDMAStates::SPRITE_DMA_STATE_READ_CONTROL;
   }
 }
 

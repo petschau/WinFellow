@@ -39,7 +39,7 @@ void BitplaneDMA::Log(uint32_t line, uint32_t cylinder)
   if (GraphicsContext.Logger.IsLogEnabled())
   {
     char msg[256];
-    sprintf(msg, "BitplaneDMA %s\n", BPLDMA_StateNames[_state]);
+    sprintf(msg, "BitplaneDMA %s\n", BPLDMA_StateNames[(int)_state]);
     GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
@@ -95,7 +95,7 @@ void BitplaneDMA::SetState(BPLDMAStates newState, uint32_t arriveTime)
 void BitplaneDMA::SetStateNone()
 {
   _queue->Remove(this);
-  _state = BPL_DMA_STATE_NONE;
+  _state = BPLDMAStates::BPL_DMA_STATE_NONE;
   _arriveTime = GraphicsEventQueue::GRAPHICS_ARRIVE_TIME_NONE;
 }
 
@@ -107,11 +107,11 @@ void BitplaneDMA::Start(uint32_t arriveTime)
   {
     if (_core.RegisterUtility.IsLoresEnabled())
     {
-      SetState(BPL_DMA_STATE_FETCH_LORES, arriveTime + (7 * 2 + 1));
+      SetState(BPLDMAStates::BPL_DMA_STATE_FETCH_LORES, arriveTime + (7 * 2 + 1));
     }
     else
     {
-      SetState(BPL_DMA_STATE_FETCH_HIRES, arriveTime + (3 * 2 + 1));
+      SetState(BPLDMAStates::BPL_DMA_STATE_FETCH_HIRES, arriveTime + (3 * 2 + 1));
     }
   }
 }
@@ -169,8 +169,8 @@ void BitplaneDMA::Handler(uint32_t rasterY, uint32_t cylinder)
   {
     switch (_state)
     {
-      case BPL_DMA_STATE_FETCH_LORES: FetchLores(); break;
-      case BPL_DMA_STATE_FETCH_HIRES: FetchHires(); break;
+      case BPLDMAStates::BPL_DMA_STATE_FETCH_LORES: FetchLores(); break;
+      case BPLDMAStates::BPL_DMA_STATE_FETCH_HIRES: FetchHires(); break;
     }
     Restart(GraphicsContext.DDFStateMachine.CanRead());
   }
@@ -186,3 +186,5 @@ void BitplaneDMA::EndOfFrame()
 {
   SetStateNone();
 }
+
+BitplaneDMA::BitplaneDMA() : GraphicsEvent(), _stopDDF(false), _state(BPLDMAStates::BPL_DMA_STATE_NONE){};
