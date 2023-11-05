@@ -11,4 +11,4 @@ typedef int BOOLE;
 
 /* Filename length used throughout the code */
 
-#define CFG_FILENAME_LENGTH 256
+constexpr unsigned int CFG_FILENAME_LENGTH = 256;

@@ -27,11 +27,11 @@
 #include "Defs.h"
 #include "VirtualHost/Core.h"
 
-typedef union ByteLongArrayUnion_ {
+union ByteLongArrayUnion {
   uint8_t barray[1024];
   ByteWordUnion bwu[512];
   ByteLongUnion blu[256];
-} ByteLongArrayUnion;
+};
 
 class Planar2ChunkyDecoder
 {

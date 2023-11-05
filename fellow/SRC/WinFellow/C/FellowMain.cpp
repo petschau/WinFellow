@@ -97,7 +97,7 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode()
 /* The run-time log                                                           */
 /*============================================================================*/
 
-#define WRITE_LOG_BUF_SIZE 512
+constexpr size_t WRITE_LOG_BUF_SIZE = 512;
 
 void fellowShowRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 {

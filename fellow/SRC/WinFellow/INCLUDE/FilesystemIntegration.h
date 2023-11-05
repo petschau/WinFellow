@@ -3,8 +3,8 @@
 #include <string>
 #include "Defs.h"
 
-#define FFILESYS_MAX_DEVICES 20
-#define FFILESYS_MAX_VOLUMENAME 64
+constexpr unsigned int FFILESYS_MAX_DEVICES = 20;
+constexpr unsigned int FFILESYS_MAX_VOLUMENAME = 64;
 
 enum class ffilesys_status
 {
@@ -12,13 +12,13 @@ enum class ffilesys_status
   FFILESYS_INSERTED = 1
 };
 
-typedef struct
+struct ffilesys_dev
 {
   char volumename[FFILESYS_MAX_VOLUMENAME];
   char rootpath[CFG_FILENAME_LENGTH];
   BOOLE readonly;
   ffilesys_status status;
-} ffilesys_dev;
+};
 
 /* Configuring the filesys */
 

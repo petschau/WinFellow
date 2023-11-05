@@ -3,38 +3,38 @@
 #include "Defs.h"
 #include "Sprites.h"
 
-#define SPRITE_MAX_LIST_ITEMS 275
+constexpr unsigned int SPRITE_MAX_LIST_ITEMS = 275;
 
 class LineExactSprites;
 
 typedef void (LineExactSprites::*spr_register_func)(uint16_t data, uint32_t address);
 
-typedef struct
+struct spr_action_list_item
 {
   uint32_t raster_y;
   uint32_t raster_x;
   spr_register_func called_function;
   uint16_t data;
   uint32_t address;
-} spr_action_list_item;
+};
 
-typedef struct
+struct spr_action_list_master
 {
   uint32_t count;
   spr_action_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
-} spr_action_list_master;
+};
 
-typedef struct
+struct spr_merge_list_item
 {
   uint8_t sprite_data[16];
   uint32_t sprx;
-} spr_merge_list_item;
+};
 
-typedef struct
+struct spr_merge_list_master
 {
   uint32_t count;
   spr_merge_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
-} spr_merge_list_master;
+};
 
 class LineExactSprites : public Sprites
 {
@@ -99,10 +99,10 @@ private:
 
   uint8_t sprite[8][16];
 
-  typedef struct
+  struct sprite_ham_slot
   {
     spr_merge_list_master merge_list_master[8];
-  } sprite_ham_slot;
+  };
 
   sprite_ham_slot sprite_ham_slots[313];
   uint32_t sprite_ham_slot_next;

@@ -10,10 +10,10 @@
 #include "hardfile/HardfileFileSystemEntry.h"
 #include "hardfile/HardfileMountListEntry.h"
 
-#define FHFILE_MAX_DEVICES 20
-
 namespace fellow::hardfile
 {
+  constexpr unsigned int FHFILE_MAX_DEVICES = 20;
+
   class HardfileHandler : public Module::Hardfile::IHardfileHandler
   {
   private:

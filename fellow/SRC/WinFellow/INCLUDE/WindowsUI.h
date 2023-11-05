@@ -48,7 +48,7 @@ struct wgui_drawmode
 
 typedef std::list<wgui_drawmode> wgui_drawmode_list;
 
-typedef struct
+struct wgui_drawmodes
 {
   uint32_t numberof16bit;
   uint32_t numberof24bit;
@@ -59,13 +59,13 @@ typedef struct
   wgui_drawmode_list res16bit;
   wgui_drawmode_list res24bit;
   wgui_drawmode_list res32bit;
-} wgui_drawmodes;
+};
 
-typedef struct
+struct wgui_preset
 {
   char strPresetFilename[CFG_FILENAME_LENGTH];
   char strPresetDescription[CFG_FILENAME_LENGTH];
-} wgui_preset;
+};
 
 /*===========================================================================*/
 /* This is the generic interface that must be implemented to create a GUI    */

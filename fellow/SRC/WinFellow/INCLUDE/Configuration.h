@@ -12,7 +12,7 @@
 /* struct that holds a complete hardfile configuration                        */
 /*============================================================================*/
 
-typedef struct
+struct cfg_hardfile
 {
   char filename[CFG_FILENAME_LENGTH];
   BOOLE readonly;
@@ -21,18 +21,18 @@ typedef struct
   uint32_t surfaces;
   uint32_t reservedblocks;
   Module::Hardfile::rdb_status rdbstatus;
-} cfg_hardfile;
+};
 
 /*============================================================================*/
 /* struct that holds a complete filesystem configuration                      */
 /*============================================================================*/
 
-typedef struct
+struct cfg_filesys
 {
   char volumename[64];
   char rootpath[CFG_FILENAME_LENGTH];
   BOOLE readonly;
-} cfg_filesys;
+};
 
 enum class DISPLAYSCALE
 {
@@ -68,9 +68,9 @@ enum class GRAPHICSEMULATIONMODE
 /* when changed here.                                                         */
 /*============================================================================*/
 
-#define CONFIG_CURRENT_FILE_VERSION 3
+constexpr unsigned int CONFIG_CURRENT_FILE_VERSION = 3;
 
-typedef struct
+struct cfg
 {
 
   uint32_t m_configfileversion;
@@ -192,8 +192,7 @@ typedef struct
 
   BOOLE m_config_applied_once;
   BOOLE m_config_changed_since_save;
-
-} cfg;
+};
 
 /*============================================================================*/
 /* struct cfg property access functions                                       */
@@ -399,10 +398,10 @@ extern void cfgSynopsis(cfg *config);
 /* struct cfgManager                                                          */
 /*============================================================================*/
 
-typedef struct
+struct cfgManager
 {
   cfg *m_currentconfig;
-} cfgManager;
+};
 
 /*============================================================================*/
 /* struct cfgManager property access functions                                */
