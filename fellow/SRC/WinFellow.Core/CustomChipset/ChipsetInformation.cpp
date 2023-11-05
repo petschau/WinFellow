@@ -1,6 +1,6 @@
 /*=========================================================================*/
 /* Fellow                                                                  */
-/* chipset.cpp                                                             */
+/* ChipsetInformation.cpp                                                  */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -19,39 +19,62 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "Defs.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 
-chipset_information chipset;
-
-bool chipsetGetECS()
+namespace CustomChipset
 {
-  return chipset.ecs;
-}
-
-void chipsetUpdateAddressMasks()
-{
-  if (chipsetGetECS())
+  bool ChipsetInformation::GetIsEcs()
   {
-    chipset.ptr_mask = 0x1ffffe;
-    chipset.address_mask = 0x1fffff;
+    return _isEcs;
   }
-  else // OCS
+
+  void ChipsetInformation::UpdateAddressMasksFromConfiguration()
   {
-    chipset.ptr_mask = 0x7fffe;
-    chipset.address_mask = 0x7ffff;
+    if (GetIsEcs())
+    {
+      _pointerMask = 0x1ffffe;
+      _addressMask = 0x1fffff;
+    }
+    else // OCS
+    {
+      _pointerMask = 0x7fffe;
+      _addressMask = 0x7ffff;
+    }
   }
-}
 
-BOOLE chipsetSetECS(bool ecs)
-{
-  BOOLE needreset = (chipset.ecs != ecs);
-  chipset.ecs = ecs;
-  chipsetUpdateAddressMasks();
-  return needreset;
-}
+  bool ChipsetInformation::SetIsEcs(bool isEcs)
+  {
+    if (_isEcs == isEcs) return false;
 
-void chipsetStartup()
-{
-  chipsetSetECS(false);
+    _isEcs = isEcs;
+    UpdateAddressMasksFromConfiguration();
+    return true;
+  }
+
+  uint32_t ChipsetInformation::MaskAddress(uint32_t address)
+  {
+    return address & _addressMask;
+  }
+
+  uint32_t ChipsetInformation::MaskPointer(uint32_t pointer)
+  {
+    return pointer & _pointerMask;
+  }
+
+  uint32_t ChipsetInformation::ReplaceLowPointer(uint32_t originalPointer, uint16_t newLowPart)
+  {
+    return MaskPointer((originalPointer & 0xffff0000) | (((uint32_t)newLowPart) & 0xfffe));
+  }
+
+  uint32_t ChipsetInformation::ReplaceHighPointer(uint32_t originalPointer, uint16_t newHighPart)
+  {
+    return MaskPointer((originalPointer & 0xfffe) | (((uint32_t)newHighPart) << 16));
+  }
+
+  void ChipsetInformation::Startup()
+  {
+    _isEcs = false;
+    _isCycleExact = false;
+    UpdateAddressMasksFromConfiguration();
+  }
 }

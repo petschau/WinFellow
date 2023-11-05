@@ -125,6 +125,9 @@
     <ClInclude Include="DebugApi\MemorySystem.h">
       <Filter>DebugApi</Filter>
     </ClInclude>
+    <ClInclude Include="CustomChipset\ChipsetInformation.h">
+      <Filter>CustomChipset</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -156,6 +159,9 @@
     </ClCompile>
     <ClCompile Include="DebugApi\DebugVM.cpp">
       <Filter>DebugApi</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomChipset\ChipsetInformation.cpp">
+      <Filter>CustomChipset</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,8 +1,9 @@
 #include "CopperRegisters.h"
 #include "LegacyCopper.h"
 
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "MemoryInterface.h"
+#include "VirtualHost/Core.h"
 
 /*============================================================================*/
 /* Copper registers                                                           */
@@ -31,7 +32,7 @@ $dff080
 
 void wcop1lch(uint16_t data, uint32_t address)
 {
-  copper_registers.cop1lc = chipsetReplaceHighPtr(copper_registers.cop1lc, data);
+  copper_registers.cop1lc = _core.ChipsetInformation.ReplaceHighPointer(copper_registers.cop1lc, data);
   copper->NotifyCop1lcChanged();
 }
 
@@ -39,7 +40,7 @@ void wcop1lch(uint16_t data, uint32_t address)
 
 void wcop1lcl(uint16_t data, uint32_t address)
 {
-  copper_registers.cop1lc = chipsetReplaceLowPtr(copper_registers.cop1lc, data);
+  copper_registers.cop1lc = _core.ChipsetInformation.ReplaceLowPointer(copper_registers.cop1lc, data);
   copper->NotifyCop1lcChanged();
 }
 
@@ -53,14 +54,14 @@ $dff084
 
 void wcop2lch(uint16_t data, uint32_t address)
 {
-  copper_registers.cop2lc = chipsetReplaceHighPtr(copper_registers.cop2lc, data);
+  copper_registers.cop2lc = _core.ChipsetInformation.ReplaceHighPointer(copper_registers.cop2lc, data);
 }
 
 /* $dff082 */
 
 void wcop2lcl(uint16_t data, uint32_t address)
 {
-  copper_registers.cop2lc = chipsetReplaceLowPtr(copper_registers.cop2lc, data);
+  copper_registers.cop2lc = _core.ChipsetInformation.ReplaceLowPointer(copper_registers.cop2lc, data);
 }
 
 /*

@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CustomChipset\ChipsetInformation.h" />
     <ClInclude Include="CustomChipset\RegisterUtility.h" />
     <ClInclude Include="CustomChipset\Registers.h" />
     <ClInclude Include="CustomChipset\Sound\Sound.h" />
@@ -60,6 +61,7 @@
     <ClInclude Include="VirtualHost\Core.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CustomChipset\ChipsetInformation.cpp" />
     <ClCompile Include="CustomChipset\Registers.cpp" />
     <ClCompile Include="CustomChipset\RegisterUtility.cpp" />
     <ClCompile Include="DebugApi\DebugVM.cpp" />

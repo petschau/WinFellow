@@ -6,6 +6,7 @@ Core _core = Core();
 Core::Core()
   : Registers(),
     RegisterUtility(Registers),
+    ChipsetInformation(),
     Sound(nullptr),
     Uart(nullptr),
     RtcOkiMsm6242rs(nullptr),

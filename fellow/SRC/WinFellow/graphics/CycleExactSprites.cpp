@@ -24,7 +24,7 @@
 
 #include "Defs.h"
 
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "Renderer.h"
@@ -223,7 +223,7 @@ void CycleExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_
 uint16_t CycleExactSprites::ReadWord(uint32_t spriteNo)
 {
   uint16_t data = chipmemReadWord(sprite_registers.sprpt[spriteNo]);
-  sprite_registers.sprpt[spriteNo] = chipsetMaskPtr(sprite_registers.sprpt[spriteNo] + 2);
+  sprite_registers.sprpt[spriteNo] = _core.ChipsetInformation.MaskPointer(sprite_registers.sprpt[spriteNo] + 2);
   return data;
 }
 

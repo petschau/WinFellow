@@ -10,6 +10,7 @@
 #include "CustomChipset/Sound/Sound.h"
 #include "CustomChipset/Registers.h"
 #include "CustomChipset/RegisterUtility.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "IO/Uart.h"
 #include "IO/RtcOkiMsm6242rs.h"
 #include "DebugApi/DebugVM.h"
@@ -19,6 +20,7 @@ class Core
 public:
   CustomChipset::Registers Registers;
   CustomChipset::RegisterUtility RegisterUtility;
+  CustomChipset::ChipsetInformation ChipsetInformation;
   Sound *Sound;
   Uart *Uart;
   RtcOkiMsm6242rs *RtcOkiMsm6242rs;

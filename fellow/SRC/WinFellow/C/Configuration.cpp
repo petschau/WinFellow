@@ -34,7 +34,7 @@
 
 #include "Defs.h"
 #include "versioninfo.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "FloppyDisk.h"
 #include "MemoryInterface.h"
 #include "Gameports.h"
@@ -2434,7 +2434,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   /*==========================================================================*/
 
   blitterSetFast(cfgGetBlitterFast(config));
-  needreset |= chipsetSetECS(cfgGetECS(config));
+  needreset |= (_core.ChipsetInformation.SetIsEcs(cfgGetECS(config)) == true);
 
   /*==========================================================================*/
   /* Hardfile configuration                                                   */

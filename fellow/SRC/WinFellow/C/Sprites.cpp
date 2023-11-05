@@ -24,7 +24,7 @@
 
 #include "Defs.h"
 #include "FellowMain.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "MemoryInterface.h"
 #include "GraphicsPipeline.h"
 #include "Renderer.h"

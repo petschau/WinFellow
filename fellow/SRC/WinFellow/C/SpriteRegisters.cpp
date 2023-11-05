@@ -1,8 +1,9 @@
 #include "SpriteRegisters.h"
 #include "Sprites.h"
 #include "MemoryInterface.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "Renderer.h"
+#include "VirtualHost/Core.h"
 
 SpriteRegisters sprite_registers;
 
@@ -24,7 +25,7 @@ void wsprxpth(uint16_t data, uint32_t address)
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    sprite_registers.sprpt[sprite_number] = chipsetReplaceHighPtr(sprite_registers.sprpt[sprite_number], data);
+    sprite_registers.sprpt[sprite_number] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[sprite_number], data);
   }
   sprites->NotifySprpthChanged(data, sprite_number);
 }
@@ -34,7 +35,7 @@ void wsprxptl(uint16_t data, uint32_t address)
   unsigned int sprite_number = GetSpriteNumberForPointer(address);
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    sprite_registers.sprpt[sprite_number] = chipsetReplaceLowPtr(sprite_registers.sprpt[sprite_number], data);
+    sprite_registers.sprpt[sprite_number] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[sprite_number], data);
   }
   sprites->NotifySprptlChanged(data, sprite_number);
 }

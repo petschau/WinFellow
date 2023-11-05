@@ -1078,7 +1078,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="automation\Script.cpp" />
     <ClCompile Include="C\Blitter.cpp" />
     <ClCompile Include="C\BusScheduler.cpp" />
-    <ClCompile Include="C\chipset.cpp" />
     <ClCompile Include="C\ComplexInterfaceAdapter.cpp" />
     <ClCompile Include="C\Configuration.cpp" />
     <ClCompile Include="C\LegacyCopper.cpp" />
@@ -1226,7 +1225,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="GUI_versioninfo.h" />
     <ClInclude Include="INCLUDE\Blitter.h" />
     <ClInclude Include="INCLUDE\BusScheduler.h" />
-    <ClInclude Include="INCLUDE\chipset.h" />
     <ClInclude Include="INCLUDE\ComplexInterfaceAdapter.h" />
     <ClInclude Include="INCLUDE\Configuration.h" />
     <ClInclude Include="INCLUDE\LegacyCopper.h" />

@@ -28,7 +28,7 @@
 #include "Defs.h"
 #include "versioninfo.h"
 #include "FellowMain.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "Renderer.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
@@ -460,7 +460,7 @@ static void fellowModulesStartup(int argc, const char **argv)
   CoreFactory::CreateDebugVM();
   CoreFactory::CreateModules();
 
-  chipsetStartup();
+  _core.ChipsetInformation.Startup();
   timerStartup();
   _core.HardfileHandler->Startup();
   ffilesysStartup();

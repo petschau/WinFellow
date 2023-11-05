@@ -24,7 +24,7 @@
 
 #include "Defs.h"
 
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "MemoryInterface.h"
@@ -51,7 +51,7 @@ uint16_t BitplaneDMA::ReadWord(uint32_t address)
 
 void BitplaneDMA::IncreaseBplPt(uint32_t *bplpt, uint32_t size)
 {
-  *bplpt = chipsetMaskPtr((*bplpt) + size);
+  *bplpt = _core.ChipsetInformation.MaskPointer((*bplpt) + size);
 }
 
 uint16_t BitplaneDMA::GetHold(uint32_t bplNo, uint32_t bplsEnabled, uint32_t *bplpt)

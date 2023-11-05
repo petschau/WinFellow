@@ -52,7 +52,7 @@
 
 #include "Defs.h"
 #include "FellowMain.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "MemoryInterface.h"
 #include "FloppyDisk.h"
 #include "Renderer.h"
@@ -271,7 +271,7 @@ uint16_t rdskbytr(uint32_t address)
 
 void wdskpth(uint16_t data, uint32_t address)
 {
-  dskpt = chipsetReplaceHighPtr(dskpt, data);
+  dskpt = _core.ChipsetInformation.ReplaceHighPointer(dskpt, data);
 
 #ifdef FLOPPY_LOG
   floppyLogValue("dskpth", dskpt);
@@ -285,7 +285,7 @@ void wdskpth(uint16_t data, uint32_t address)
 
 void wdskptl(uint16_t data, uint32_t address)
 {
-  dskpt = chipsetReplaceLowPtr(dskpt, data);
+  dskpt = _core.ChipsetInformation.ReplaceLowPointer(dskpt, data);
 
 #ifdef FLOPPY_LOG
   floppyLogValue("dskptl", dskpt);
@@ -1579,18 +1579,18 @@ void floppyDMAReadInit(uint32_t drive)
 uint32_t floppyFindNextSync(uint32_t pos, int32_t length)
 {
   uint32_t offset = pos;
-  BOOLE was_sync = FALSE;
-  BOOLE is_sync = FALSE;
-  BOOLE past_sync = FALSE;
+  bool was_sync = false;
+  bool is_sync = false;
+  bool past_sync = false;
   while ((length > 0) && (!past_sync))
   {
     was_sync = is_sync;
     is_sync = (chipmemReadWord(offset) == 0x4489);
     past_sync = (was_sync && !is_sync);
     length -= 2;
-    offset = chipsetMaskPtr(offset + 2);
+    offset = _core.ChipsetInformation.MaskPointer(offset + 2);
   }
-  return chipsetMaskPtr(offset - pos - ((past_sync) ? 2 : 0));
+  return _core.ChipsetInformation.MaskPointer(offset - pos - ((past_sync) ? 2 : 0));
 }
 
 void floppyDMAWriteInit(int32_t drive)
@@ -1712,7 +1712,7 @@ void floppyReadWord(uint16_t word_under_head, BOOLE found_sync)
   if (floppyDMAChannelOn() && !floppy_DMA.wait_for_sync)
   {
     chipmemWriteWord(word_under_head, floppy_DMA.dskpt);
-    floppy_DMA.dskpt = chipsetMaskPtr(floppy_DMA.dskpt + 2);
+    floppy_DMA.dskpt = _core.ChipsetInformation.MaskPointer(floppy_DMA.dskpt + 2);
     floppy_DMA.wordsleft--;
     if (floppy_DMA.wordsleft == 0)
     {

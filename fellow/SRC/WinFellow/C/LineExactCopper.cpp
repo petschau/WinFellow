@@ -2,7 +2,7 @@
 #include "LineExactCopper.h"
 #include "BusScheduler.h"
 #include "Sprites.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "MemoryInterface.h"
 #include "Blitter.h"
 #include "VirtualHost/Core.h"
@@ -144,9 +144,9 @@ void LineExactCopper::EventHandler()
 
   // retrieve Copper command (two words)
   uint32_t bswapRegC = chipmemReadWord(copper_registers.copper_pc);
-  copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
+  copper_registers.copper_pc = _core.ChipsetInformation.MaskPointer(copper_registers.copper_pc + 2);
   uint32_t bswapRegD = chipmemReadWord(copper_registers.copper_pc);
-  copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
+  copper_registers.copper_pc = _core.ChipsetInformation.MaskPointer(copper_registers.copper_pc + 2);
 
   if (bswapRegC != 0xffff || bswapRegD != 0xfffe)
   {
@@ -172,7 +172,7 @@ void LineExactCopper::EventHandler()
       if (((bswapRegD & 0x8000) == 0x0) && blitterIsStarted())
       {
         // Copper waits until Blitter is finished
-        copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc - 4);
+        copper_registers.copper_pc = _core.ChipsetInformation.MaskPointer(copper_registers.copper_pc - 4);
         if ((blitterEvent.cycle + 4) <= bus.cycle)
         {
           InsertEvent(bus.cycle + 4);
@@ -436,7 +436,7 @@ void LineExactCopper::EventHandler()
           {
             // do skip
             // we have passed the line, set up next instruction immediately
-            copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
+            copper_registers.copper_pc = _core.ChipsetInformation.MaskPointer(copper_registers.copper_pc + 4);
             InsertEvent(bus.cycle + 4);
           }
           else if (*((uint8_t *)&maskedY) < (uint8_t)(bswapRegC >> 8))
@@ -459,7 +459,7 @@ void LineExactCopper::EventHandler()
             if (*((uint8_t *)&maskedX) >= (uint8_t)(bswapRegC & 0xff))
             {
               // position reached, set up next instruction immediately
-              copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
+              copper_registers.copper_pc = _core.ChipsetInformation.MaskPointer(copper_registers.copper_pc + 4);
             }
             InsertEvent(bus.cycle + 4);
           }

@@ -1,11 +1,12 @@
 #include "Defs.h"
 
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "BusScheduler.h"
 #include "MemoryInterface.h"
 #include "CopperRegisters.h"
 #include "CycleExactCopper.h"
 #include "GraphicsPipeline.h"
+#include "VirtualHost/Core.h"
 
 uint16_t CycleExactCopper::ReadWord()
 {
@@ -14,7 +15,7 @@ uint16_t CycleExactCopper::ReadWord()
 
 void CycleExactCopper::IncreasePtr()
 {
-  copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
+  copper_registers.copper_pc = _core.ChipsetInformation.MaskPointer(copper_registers.copper_pc + 2);
 }
 
 void CycleExactCopper::SetState(CopperStates newState, uint32_t cycle)

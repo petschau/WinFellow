@@ -16,7 +16,7 @@
 #include "Renderer.h"
 #include "BusScheduler.h"
 #include "CpuIntegration.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "interrupt.h"
 #include "VirtualHost/Core.h"
 
@@ -861,8 +861,8 @@ void blitterOperationLog()
 
 #define blitterReadWordEnabled(pt, dat, ascending)                                                                                                                            \
   dat = chipmemReadWord(pt);                                                                                                                                                  \
-  if (!ascending) pt = chipsetMaskPtr(pt - 2);                                                                                                                                \
-  if (ascending) pt = chipsetMaskPtr(pt + 2);
+  if (!ascending) pt = _core.ChipsetInformation.MaskPointer(pt - 2);                                                                                                          \
+  if (ascending) pt = _core.ChipsetInformation.MaskPointer(pt + 2);
 
 #define blitterWriteWordEnabled(pt, pt_tmp, dat, ascending)                                                                                                                   \
   if (pt_tmp != 0xffffffff)                                                                                                                                                   \
@@ -870,8 +870,8 @@ void blitterOperationLog()
     chipmemWriteWord(dat, pt_tmp);                                                                                                                                            \
   }                                                                                                                                                                           \
   pt_tmp = pt;                                                                                                                                                                \
-  if (!ascending) pt = chipsetMaskPtr(pt - 2);                                                                                                                                \
-  if (ascending) pt = chipsetMaskPtr(pt + 2);
+  if (!ascending) pt = _core.ChipsetInformation.MaskPointer(pt - 2);                                                                                                          \
+  if (ascending) pt = _core.ChipsetInformation.MaskPointer(pt + 2);
 
 #define blitterReadWordDisabled(dat, dat_preload) dat = dat_preload;
 
@@ -925,7 +925,7 @@ void blitterOperationLog()
 #define blitterMakeZeroFlag(dat, flag) flag |= dat;
 
 #define blitterModulo(pt, modul, enabled)                                                                                                                                     \
-  if (enabled) pt = chipsetMaskPtr(pt + modul);
+  if (enabled) pt = _core.ChipsetInformation.MaskPointer(pt + modul);
 
 #define blitterFillCarryReload(fill, dst, fc_original)                                                                                                                        \
   if (fill) dst = fc_original;
@@ -1118,7 +1118,7 @@ void blitterCopyABCD()
   else                                                                                                                                                                        \
   {                                                                                                                                                                           \
     a_shift = 0;                                                                                                                                                              \
-    cpt = chipsetMaskPtr(cpt + 2);                                                                                                                                            \
+    cpt = _core.ChipsetInformation.MaskPointer(cpt + 2);                                                                                                                      \
   }
 
 #define blitterLineDecreaseX(a_shift, cpt)                                                                                                                                    \
@@ -1126,14 +1126,14 @@ void blitterCopyABCD()
     if (a_shift == 0)                                                                                                                                                         \
     {                                                                                                                                                                         \
       a_shift = 16;                                                                                                                                                           \
-      cpt = chipsetMaskPtr(cpt - 2);                                                                                                                                          \
+      cpt = _core.ChipsetInformation.MaskPointer(cpt - 2);                                                                                                                    \
     }                                                                                                                                                                         \
     a_shift--;                                                                                                                                                                \
   }
 
-#define blitterLineIncreaseY(cpt, cmod) cpt = chipsetMaskPtr(cpt + cmod);
+#define blitterLineIncreaseY(cpt, cmod) cpt = _core.ChipsetInformation.MaskPointer(cpt + cmod);
 
-#define blitterLineDecreaseY(cpt, cmod) cpt = chipsetMaskPtr(cpt - cmod);
+#define blitterLineDecreaseY(cpt, cmod) cpt = _core.ChipsetInformation.MaskPointer(cpt - cmod);
 
 /*================================================*/
 /* blitterLineMode                                */
@@ -1496,7 +1496,7 @@ void wbltalwm(uint16_t data, uint32_t address)
 void wbltcpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcpt = chipsetReplaceHighPtr(blitter.bltcpt, data);
+  blitter.bltcpt = _core.ChipsetInformation.ReplaceHighPointer(blitter.bltcpt, data);
 }
 
 /*=========================================================*/
@@ -1512,7 +1512,7 @@ void wbltcpth(uint16_t data, uint32_t address)
 void wbltcptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltcpt = chipsetReplaceLowPtr(blitter.bltcpt, data);
+  blitter.bltcpt = _core.ChipsetInformation.ReplaceLowPointer(blitter.bltcpt, data);
 }
 
 /*======================================================*/
@@ -1528,7 +1528,7 @@ void wbltcptl(uint16_t data, uint32_t address)
 void wbltbpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltbpt = chipsetReplaceHighPtr(blitter.bltbpt, data);
+  blitter.bltbpt = _core.ChipsetInformation.ReplaceHighPointer(blitter.bltbpt, data);
 }
 
 /*=========================================================*/
@@ -1544,7 +1544,7 @@ void wbltbpth(uint16_t data, uint32_t address)
 void wbltbptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltbpt = chipsetReplaceLowPtr(blitter.bltbpt, data);
+  blitter.bltbpt = _core.ChipsetInformation.ReplaceLowPointer(blitter.bltbpt, data);
 }
 
 /*======================================================*/
@@ -1560,7 +1560,7 @@ void wbltbptl(uint16_t data, uint32_t address)
 void wbltapth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltapt = chipsetReplaceHighPtr(blitter.bltapt, data);
+  blitter.bltapt = _core.ChipsetInformation.ReplaceHighPointer(blitter.bltapt, data);
 }
 
 /*=========================================================*/
@@ -1576,7 +1576,7 @@ void wbltapth(uint16_t data, uint32_t address)
 void wbltaptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltapt = chipsetReplaceLowPtr(blitter.bltapt, data);
+  blitter.bltapt = _core.ChipsetInformation.ReplaceLowPointer(blitter.bltapt, data);
 }
 
 /*===========================================================*/
@@ -1592,7 +1592,7 @@ void wbltaptl(uint16_t data, uint32_t address)
 void wbltdpth(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltdpt = chipsetReplaceHighPtr(blitter.bltdpt, data);
+  blitter.bltdpt = _core.ChipsetInformation.ReplaceHighPointer(blitter.bltdpt, data);
 }
 
 /*==============================================================*/
@@ -1608,7 +1608,7 @@ void wbltdpth(uint16_t data, uint32_t address)
 void wbltdptl(uint16_t data, uint32_t address)
 {
   blitForceFinish();
-  blitter.bltdpt = chipsetReplaceLowPtr(blitter.bltdpt, data);
+  blitter.bltdpt = _core.ChipsetInformation.ReplaceLowPointer(blitter.bltdpt, data);
 }
 
 /*==============================================================*/
@@ -1899,7 +1899,7 @@ static void blitterIOHandlersInstall()
   memorySetIoWriteStub(0x70, wbltcdat);
   memorySetIoWriteStub(0x72, wbltbdat);
   memorySetIoWriteStub(0x74, wbltadat);
-  if (chipsetGetECS())
+  if (_core.ChipsetInformation.GetIsEcs())
   {
     memorySetIoWriteStub(0x5a, wbltcon0l);
     memorySetIoWriteStub(0x5c, wbltsizv);

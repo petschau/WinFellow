@@ -22,7 +22,7 @@
 /*=========================================================================*/
 #include "Defs.h"
 #include "FellowMain.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "Renderer.h"
 #include "MemoryInterface.h"
 #include "Keyboard.h"
@@ -226,10 +226,11 @@ uint16_t rvposr(uint32_t address)
 {
   uint32_t y = graphAdjustVPosY(busGetRasterY(), busGetRasterX());
 
-  if (chipsetGetECS())
+  if (_core.ChipsetInformation.GetIsEcs())
   {
     return (uint16_t)((lof | (y >> 8)) | 0x2000);
   }
+
   return (uint16_t)(lof | (y >> 8));
 }
 
@@ -551,7 +552,7 @@ void wbpl1pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl1pt = chipsetReplaceHighPtr(bpl1pt, data);
+  bpl1pt = _core.ChipsetInformation.ReplaceHighPointer(bpl1pt, data);
 
   //  _core.Log->AddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
@@ -565,7 +566,7 @@ void wbpl1ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl1pt = chipsetReplaceLowPtr(bpl1pt, data);
+  bpl1pt = _core.ChipsetInformation.ReplaceLowPointer(bpl1pt, data);
 
   //  _core.Log->AddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
@@ -579,7 +580,7 @@ void wbpl2pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl2pt = chipsetReplaceHighPtr(bpl2pt, data);
+  bpl2pt = _core.ChipsetInformation.ReplaceHighPointer(bpl2pt, data);
 }
 
 /*===========================================================================*/
@@ -591,7 +592,7 @@ void wbpl2ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl2pt = chipsetReplaceLowPtr(bpl2pt, data);
+  bpl2pt = _core.ChipsetInformation.ReplaceLowPointer(bpl2pt, data);
 }
 
 /*===========================================================================*/
@@ -602,7 +603,7 @@ void wbpl2ptl(uint16_t data, uint32_t address)
 void wbpl3pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-  bpl3pt = chipsetReplaceHighPtr(bpl3pt, data);
+  bpl3pt = _core.ChipsetInformation.ReplaceHighPointer(bpl3pt, data);
 }
 
 /*===========================================================================*/
@@ -614,7 +615,7 @@ void wbpl3ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl3pt = chipsetReplaceLowPtr(bpl3pt, data);
+  bpl3pt = _core.ChipsetInformation.ReplaceLowPointer(bpl3pt, data);
 }
 
 /*===========================================================================*/
@@ -626,7 +627,7 @@ void wbpl4pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl4pt = chipsetReplaceHighPtr(bpl4pt, data);
+  bpl4pt = _core.ChipsetInformation.ReplaceHighPointer(bpl4pt, data);
 }
 
 /*===========================================================================*/
@@ -638,7 +639,7 @@ void wbpl4ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl4pt = chipsetReplaceLowPtr(bpl4pt, data);
+  bpl4pt = _core.ChipsetInformation.ReplaceLowPointer(bpl4pt, data);
 }
 
 /*===========================================================================*/
@@ -650,7 +651,7 @@ void wbpl5pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl5pt = chipsetReplaceHighPtr(bpl5pt, data);
+  bpl5pt = _core.ChipsetInformation.ReplaceHighPointer(bpl5pt, data);
 }
 
 /*===========================================================================*/
@@ -662,7 +663,7 @@ void wbpl5ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl5pt = chipsetReplaceLowPtr(bpl5pt, data);
+  bpl5pt = _core.ChipsetInformation.ReplaceLowPointer(bpl5pt, data);
 }
 
 /*===========================================================================*/
@@ -674,7 +675,7 @@ void wbpl6pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl6pt = chipsetReplaceHighPtr(bpl6pt, data);
+  bpl6pt = _core.ChipsetInformation.ReplaceHighPointer(bpl6pt, data);
 }
 
 /*===========================================================================*/
@@ -686,7 +687,7 @@ void wbpl6ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
-  bpl6pt = chipsetReplaceLowPtr(bpl6pt, data);
+  bpl6pt = _core.ChipsetInformation.ReplaceLowPointer(bpl6pt, data);
 }
 
 /*===========================================================================*/
@@ -1060,12 +1061,12 @@ static __inline void graphDecodeModulo(int bitplanes, uint32_t bpl_length_in_byt
 {
   switch (bitplanes)
   {
-    case 6: bpl6pt = chipsetMaskPtr(bpl6pt + bpl_length_in_bytes + bpl2mod);
-    case 5: bpl5pt = chipsetMaskPtr(bpl5pt + bpl_length_in_bytes + bpl1mod);
-    case 4: bpl4pt = chipsetMaskPtr(bpl4pt + bpl_length_in_bytes + bpl2mod);
-    case 3: bpl3pt = chipsetMaskPtr(bpl3pt + bpl_length_in_bytes + bpl1mod);
-    case 2: bpl2pt = chipsetMaskPtr(bpl2pt + bpl_length_in_bytes + bpl2mod);
-    case 1: bpl1pt = chipsetMaskPtr(bpl1pt + bpl_length_in_bytes + bpl1mod);
+    case 6: bpl6pt = _core.ChipsetInformation.MaskPointer(bpl6pt + bpl_length_in_bytes + bpl2mod);
+    case 5: bpl5pt = _core.ChipsetInformation.MaskPointer(bpl5pt + bpl_length_in_bytes + bpl1mod);
+    case 4: bpl4pt = _core.ChipsetInformation.MaskPointer(bpl4pt + bpl_length_in_bytes + bpl2mod);
+    case 3: bpl3pt = _core.ChipsetInformation.MaskPointer(bpl3pt + bpl_length_in_bytes + bpl1mod);
+    case 2: bpl2pt = _core.ChipsetInformation.MaskPointer(bpl2pt + bpl_length_in_bytes + bpl2mod);
+    case 1: bpl1pt = _core.ChipsetInformation.MaskPointer(bpl1pt + bpl_length_in_bytes + bpl1mod);
   }
 }
 
@@ -1599,12 +1600,12 @@ void graphDecodeNOP()
   switch (_core.RegisterUtility.GetEnabledBitplaneCount())
   {
     case 0: break;
-    case 6: bpl6pt = chipsetMaskPtr(bpl6pt + (graph_DDF_word_count * 2) + bpl2mod);
-    case 5: bpl5pt = chipsetMaskPtr(bpl5pt + (graph_DDF_word_count * 2) + bpl1mod);
-    case 4: bpl4pt = chipsetMaskPtr(bpl4pt + (graph_DDF_word_count * 2) + bpl2mod);
-    case 3: bpl3pt = chipsetMaskPtr(bpl3pt + (graph_DDF_word_count * 2) + bpl1mod);
-    case 2: bpl2pt = chipsetMaskPtr(bpl2pt + (graph_DDF_word_count * 2) + bpl2mod);
-    case 1: bpl1pt = chipsetMaskPtr(bpl1pt + (graph_DDF_word_count * 2) + bpl1mod); break;
+    case 6: bpl6pt = _core.ChipsetInformation.MaskPointer(bpl6pt + (graph_DDF_word_count * 2) + bpl2mod);
+    case 5: bpl5pt = _core.ChipsetInformation.MaskPointer(bpl5pt + (graph_DDF_word_count * 2) + bpl1mod);
+    case 4: bpl4pt = _core.ChipsetInformation.MaskPointer(bpl4pt + (graph_DDF_word_count * 2) + bpl2mod);
+    case 3: bpl3pt = _core.ChipsetInformation.MaskPointer(bpl3pt + (graph_DDF_word_count * 2) + bpl1mod);
+    case 2: bpl2pt = _core.ChipsetInformation.MaskPointer(bpl2pt + (graph_DDF_word_count * 2) + bpl2mod);
+    case 1: bpl1pt = _core.ChipsetInformation.MaskPointer(bpl1pt + (graph_DDF_word_count * 2) + bpl1mod); break;
   }
 }
 

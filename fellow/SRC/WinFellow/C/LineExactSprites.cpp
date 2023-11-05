@@ -6,7 +6,7 @@
 #include "BusScheduler.h"
 #include "MemoryInterface.h"
 #include "Renderer.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "VirtualHost/Core.h"
 
 spr_register_func LineExactSprites::sprxptl_functions[8] = {
@@ -31,73 +31,73 @@ spr_register_func LineExactSprites::sprxpth_functions[8] = {
 
 void LineExactSprites::aspr0pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[0] = chipsetReplaceHighPtr(sprite_registers.sprpt[0], data);
+  sprite_registers.sprpt[0] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[0], data);
 }
 void LineExactSprites::aspr0ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[0] = chipsetReplaceLowPtr(sprite_registers.sprpt[0], data);
+  sprite_registers.sprpt[0] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[0], data);
 }
 
 void LineExactSprites::aspr1pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[1] = chipsetReplaceHighPtr(sprite_registers.sprpt[1], data);
+  sprite_registers.sprpt[1] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[1], data);
 }
 void LineExactSprites::aspr1ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[1] = chipsetReplaceLowPtr(sprite_registers.sprpt[1], data);
+  sprite_registers.sprpt[1] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[1], data);
 }
 
 void LineExactSprites::aspr2pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[2] = chipsetReplaceHighPtr(sprite_registers.sprpt[2], data);
+  sprite_registers.sprpt[2] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[2], data);
 }
 void LineExactSprites::aspr2ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[2] = chipsetReplaceLowPtr(sprite_registers.sprpt[2], data);
+  sprite_registers.sprpt[2] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[2], data);
 }
 
 void LineExactSprites::aspr3pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[3] = chipsetReplaceHighPtr(sprite_registers.sprpt[3], data);
+  sprite_registers.sprpt[3] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[3], data);
 }
 void LineExactSprites::aspr3ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[3] = chipsetReplaceLowPtr(sprite_registers.sprpt[3], data);
+  sprite_registers.sprpt[3] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[3], data);
 }
 
 void LineExactSprites::aspr4pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[4] = chipsetReplaceHighPtr(sprite_registers.sprpt[4], data);
+  sprite_registers.sprpt[4] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[4], data);
 }
 void LineExactSprites::aspr4ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[4] = chipsetReplaceLowPtr(sprite_registers.sprpt[4], data);
+  sprite_registers.sprpt[4] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[4], data);
 }
 
 void LineExactSprites::aspr5pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[5] = chipsetReplaceHighPtr(sprite_registers.sprpt[5], data);
+  sprite_registers.sprpt[5] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[5], data);
 }
 void LineExactSprites::aspr5ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[5] = chipsetReplaceLowPtr(sprite_registers.sprpt[5], data);
+  sprite_registers.sprpt[5] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[5], data);
 }
 void LineExactSprites::aspr6pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[6] = chipsetReplaceHighPtr(sprite_registers.sprpt[6], data);
+  sprite_registers.sprpt[6] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[6], data);
 }
 void LineExactSprites::aspr6ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[6] = chipsetReplaceLowPtr(sprite_registers.sprpt[6], data);
+  sprite_registers.sprpt[6] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[6], data);
 }
 
 void LineExactSprites::aspr7pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[7] = chipsetReplaceHighPtr(sprite_registers.sprpt[7], data);
+  sprite_registers.sprpt[7] = _core.ChipsetInformation.ReplaceHighPointer(sprite_registers.sprpt[7], data);
 }
 void LineExactSprites::aspr7ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[7] = chipsetReplaceLowPtr(sprite_registers.sprpt[7], data);
+  sprite_registers.sprpt[7] = _core.ChipsetInformation.ReplaceLowPointer(sprite_registers.sprpt[7], data);
 }
 
 void LineExactSprites::asprxpos(uint16_t data, uint32_t address)
@@ -1417,7 +1417,7 @@ void LineExactSprites::DMASpriteHandler()
             if ((local_spry < local_sprly) && (local_sprx > 40))
             {
               // point to next two data words
-              sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+              sprite_registers.sprpt[sprnr] = _core.ChipsetInformation.MaskPointer(sprite_registers.sprpt[sprnr] + 4);
             }
 
             sprite_state[sprnr] = 1;
@@ -1456,7 +1456,7 @@ void LineExactSprites::DMASpriteHandler()
           item->address = sprnr << 3;
 
           // point to next two data words
-          sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+          sprite_registers.sprpt[sprnr] = _core.ChipsetInformation.MaskPointer(sprite_registers.sprpt[sprnr] + 4);
 
           // we move to state 2 to wait for the last line sprly
           sprite_state[sprnr] = 2;
@@ -1515,7 +1515,7 @@ void LineExactSprites::DMASpriteHandler()
           if (local_spry < local_sprly)
           {
             // point to next two data words
-            sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+            sprite_registers.sprpt[sprnr] = _core.ChipsetInformation.MaskPointer(sprite_registers.sprpt[sprnr] + 4);
           }
 
           sprite_state[sprnr] = 1;
@@ -1540,7 +1540,7 @@ void LineExactSprites::DMASpriteHandler()
           item->address = sprnr << 3;
 
           // point to next two data words
-          sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+          sprite_registers.sprpt[sprnr] = _core.ChipsetInformation.MaskPointer(sprite_registers.sprpt[sprnr] + 4);
         }
 
         // handle writes to sprxptl and sprxpth
@@ -1588,7 +1588,7 @@ void LineExactSprites::DMASpriteHandler()
             if ((local_spry < local_sprly) && (local_sprx > 40))
             {
               // point to next two data words
-              sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+              sprite_registers.sprpt[sprnr] = _core.ChipsetInformation.MaskPointer(sprite_registers.sprpt[sprnr] + 4);
             }
 
             if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))

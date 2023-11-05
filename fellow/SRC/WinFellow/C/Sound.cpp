@@ -23,7 +23,7 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "MemoryInterface.h"
 #include "ComplexInterfaceAdapter.h"
 #include "GraphicsPipeline.h"
@@ -55,13 +55,13 @@ uint32_t Sound::GetChannelNumber(uint32_t address)
 void Sound::SetAudXpth(uint16_t data, uint32_t address)
 {
   uint32_t channel = GetChannelNumber(address);
-  _audpt[channel] = chipsetReplaceHighPtr(_audpt[channel], data);
+  _audpt[channel] = _core.ChipsetInformation.ReplaceHighPointer(_audpt[channel], data);
 }
 
 void Sound::SetAudXptl(uint16_t data, uint32_t address)
 {
   uint32_t channel = GetChannelNumber(address);
-  _audpt[channel] = chipsetReplaceLowPtr(_audpt[channel], data);
+  _audpt[channel] = _core.ChipsetInformation.ReplaceLowPointer(_audpt[channel], data);
 }
 
 // ==================
@@ -220,7 +220,7 @@ void Sound::State3(uint32_t channel)
     _audstate[channel] = 2;
     _auddatw[channel] = _volumes[_auddat[channel] & 0xff][_audvolw[channel]];
     _auddat[channel] = chipmemReadWord(_audptw[channel]);
-    _audptw[channel] = chipsetMaskPtr(_audptw[channel] + 2);
+    _audptw[channel] = _core.ChipsetInformation.MaskPointer(_audptw[channel] + 2);
     if (_audlenw[channel] != 1)
     {
       _audlenw[channel]--;
@@ -259,7 +259,7 @@ void Sound::State5(uint32_t channel)
   _audvolw[channel] = _audvol[channel];
   _audpercounter[channel] = 0;
   _auddat[channel] = chipmemReadWord(_audptw[channel]);
-  _audptw[channel] = chipsetMaskPtr(_audptw[channel] + 2);
+  _audptw[channel] = _core.ChipsetInformation.MaskPointer(_audptw[channel] + 2);
   _audstate[channel] = 2;
 
   if (_audlenw[channel] != 1)

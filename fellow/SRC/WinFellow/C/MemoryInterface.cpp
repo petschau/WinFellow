@@ -27,7 +27,7 @@
 
 #include "Defs.h"
 #include "FellowMain.h"
-#include "chipset.h"
+#include "CustomChipset/ChipsetInformation.h"
 #include "Renderer.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
@@ -650,37 +650,37 @@ uint8_t *memoryAddressToPtr(uint32_t address)
 
 uint8_t memoryChipReadByte(uint32_t address)
 {
-  uint8_t *p = memory_chip + chipmemMaskAddress(address);
+  uint8_t *p = memory_chip + _core.ChipsetInformation.MaskAddress(address);
   return memoryReadByteFromPointer(p);
 }
 
 uint16_t memoryChipReadWord(uint32_t address)
 {
-  uint8_t *p = memory_chip + chipmemMaskAddress(address);
+  uint8_t *p = memory_chip + _core.ChipsetInformation.MaskAddress(address);
   return memoryReadWordFromPointer(p);
 }
 
 uint32_t memoryChipReadLong(uint32_t address)
 {
-  uint8_t *p = memory_chip + chipmemMaskAddress(address);
+  uint8_t *p = memory_chip + _core.ChipsetInformation.MaskAddress(address);
   return memoryReadLongFromPointer(p);
 }
 
 void memoryChipWriteByte(uint8_t data, uint32_t address)
 {
-  uint8_t *p = memory_chip + chipmemMaskAddress(address);
+  uint8_t *p = memory_chip + _core.ChipsetInformation.MaskAddress(address);
   memoryWriteByteToPointer(data, p);
 }
 
 void memoryChipWriteWord(uint16_t data, uint32_t address)
 {
-  uint8_t *p = memory_chip + chipmemMaskAddress(address);
+  uint8_t *p = memory_chip + _core.ChipsetInformation.MaskAddress(address);
   memoryWriteWordToPointer(data, p);
 }
 
 void memoryChipWriteLong(uint32_t data, uint32_t address)
 {
-  uint8_t *p = memory_chip + chipmemMaskAddress(address);
+  uint8_t *p = memory_chip + _core.ChipsetInformation.MaskAddress(address);
   memoryWriteLongToPointer(data, p);
 }
 
@@ -725,7 +725,7 @@ void memoryOverlayWriteLong(uint32_t data, uint32_t address)
 uint32_t memoryChipGetLastBank()
 {
   uint32_t lastbank = memoryGetChipSize() >> 16;
-  if (chipsetGetECS())
+  if (_core.ChipsetInformation.GetIsEcs())
   {
     return (lastbank <= 32) ? lastbank : 32;
   }
@@ -779,7 +779,7 @@ void memoryChipMap(bool overlay)
     }
   }
 
-  if (!chipsetGetECS())
+  if (!_core.ChipsetInformation.GetIsEcs())
   {
     // OCS: Make 3 more copies of the chipram at $80000, $100000 and $180000
 
@@ -981,7 +981,7 @@ void memorySlowWriteLong(uint32_t data, uint32_t address)
 
 bool memorySlowMapAsChip()
 {
-  return chipsetGetECS() && memoryGetChipSize() == 0x80000 && memoryGetSlowSize() == 0x80000;
+  return _core.ChipsetInformation.GetIsEcs() && memoryGetChipSize() == 0x80000 && memoryGetSlowSize() == 0x80000;
 }
 
 void memorySlowClear()

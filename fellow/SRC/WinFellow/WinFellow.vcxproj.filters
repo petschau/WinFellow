@@ -147,9 +147,6 @@
     <ClCompile Include="C\BusScheduler.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\chipset.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="C\ComplexInterfaceAdapter.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -543,9 +540,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\BusScheduler.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\chipset.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\ComplexInterfaceAdapter.h">
