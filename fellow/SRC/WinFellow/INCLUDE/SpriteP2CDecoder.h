@@ -1,9 +1,9 @@
 #pragma once
 
-typedef union sprite_deco_ {
+union sprite_deco {
   uint8_t i8[8];
   uint32_t i32[2];
-} sprite_deco;
+};
 
 class SpriteP2CDecoder
 {

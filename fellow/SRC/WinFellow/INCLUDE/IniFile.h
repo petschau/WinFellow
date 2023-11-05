@@ -7,7 +7,7 @@
 /* struct that holds initialization data                                      */
 /*============================================================================*/
 
-typedef struct
+struct ini
 {
 
   char m_description[256];
@@ -51,8 +51,7 @@ typedef struct
   /* pause emulation when window loses focus                                  */
   /*==========================================================================*/
   BOOLE m_pauseemulationwhenwindowlosesfocus;
-
-} ini;
+};
 
 extern ini *wgui_ini;
 
@@ -99,11 +98,11 @@ extern BOOLE iniSaveOptions(ini *initdata, FILE *inifile);
 /* struct iniManager                                                          */
 /*============================================================================*/
 
-typedef struct
+struct iniManager
 {
   ini *m_current_ini;
   ini *m_default_ini;
-} iniManager;
+};
 
 /*============================================================================*/
 /* struct iniManager property access functions                                */

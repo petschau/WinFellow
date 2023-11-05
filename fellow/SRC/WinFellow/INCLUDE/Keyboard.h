@@ -56,22 +56,22 @@ typedef enum
   EVENT_DF3_INTO_DF0
 } kbd_event;
 
-#define KBDBUFFERLENGTH 512
-#define KBDBUFFERMASK 511
+constexpr unsigned int KBDBUFFERLENGTH = 512;
+constexpr unsigned int KBDBUFFERMASK = 511;
 
-typedef struct
+struct kbd_buffer_type
 {
   uint8_t buffer[KBDBUFFERLENGTH];
   uint32_t inpos;
   uint32_t outpos;
-} kbd_buffer_type;
+};
 
-typedef struct
+struct kbd_state_type
 {
   kbd_buffer_type scancodes;
   kbd_buffer_type eventsEOL;
   kbd_buffer_type eventsEOF;
-} kbd_state_type;
+};
 
 extern kbd_state_type kbd_state;
 

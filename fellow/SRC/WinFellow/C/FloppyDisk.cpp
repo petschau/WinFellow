@@ -77,17 +77,17 @@
 using namespace CustomChipset;
 using namespace Service;
 
-#define MFM_FILLB 0xaa
-#define MFM_FILLL 0xaaaaaaaa
-#define MFM_MASK 0x55555555
-#define FLOPPY_INSERTED_DELAY 150
+constexpr uint8_t MFM_FILLB = 0xaa;
+constexpr uint32_t MFM_FILLL = 0xaaaaaaaa;
+constexpr uint32_t MFM_MASK = 0x55555555;
+constexpr uint32_t FLOPPY_INSERTED_DELAY = 150;
 
 /* Andromeda Sequential assumes at least 640 bytes of gap */
 /* 640 bytes is exactly the amount of bytes left over if */
 /* the drive spins 5 times per second. */
 
-#define FLOPPY_GAP_BYTES 720
-#define FLOPPY_FAST_WORDS 32
+constexpr uint32_t FLOPPY_GAP_BYTES = 720;
+constexpr uint32_t FLOPPY_FAST_WORDS = 32;
 
 /*---------------*/
 /* Configuration */

@@ -29,15 +29,15 @@
 #include "CustomChipset/Registers.h"
 
 // Bitplane data types
-typedef union ByteLongUnion_ {
+union ByteLongUnion {
   uint32_t l;
   uint8_t b[4];
-} ByteLongUnion;
+};
 
-typedef union ByteWordUnion_ {
+union ByteWordUnion {
   uint16_t w;
   uint8_t b[2];
-} ByteWordUnion;
+};
 
 namespace CustomChipset
 {

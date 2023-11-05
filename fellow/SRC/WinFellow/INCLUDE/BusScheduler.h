@@ -26,35 +26,36 @@ extern void busLogCpuException(char *s);
 #endif
 
 typedef void (*busEventHandler)();
-typedef struct bus_event_struct
+
+struct bus_event
 {
-  struct bus_event_struct *next;
-  struct bus_event_struct *prev;
+  struct bus_event *next;
+  struct bus_event *prev;
   uint32_t cycle;
   uint32_t priority;
   busEventHandler handler;
-} bus_event;
+};
 
 extern void busInsertEventWithNullCheck(bus_event *ev);
 extern void busInsertEvent(bus_event *event);
 extern void busRemoveEvent(bus_event *event);
 
-typedef struct bus_screen_limits_
+struct bus_screen_limits
 {
   uint32_t cycles_in_this_line;
   uint32_t cycles_in_this_frame;
   uint32_t lines_in_this_frame;
   uint32_t max_cycles_in_line;
   uint32_t max_lines_in_frame;
-} bus_screen_limits;
+};
 
-typedef struct bus_state_
+struct bus_state
 {
   uint64_t frame_no;
   uint32_t cycle;
   bus_screen_limits *screen_limits;
   bus_event *events;
-} bus_state;
+};
 
 extern bus_state bus;
 
@@ -74,8 +75,7 @@ extern uint32_t busGetMaxLinesInFrame();
 
 extern void busSetScreenLimits(bool is_long_frame);
 
-// #define BUS_CYCLE_PER_FRAME (BUS_CYCLE_PER_LINE*BUS_LINES_PER_FRAME)
-#define BUS_CYCLE_DISABLE 0xffffffff
+constexpr uint32_t BUS_CYCLE_DISABLE = 0xffffffff;
 
 extern bus_event cpuEvent;
 extern bus_event copperEvent;

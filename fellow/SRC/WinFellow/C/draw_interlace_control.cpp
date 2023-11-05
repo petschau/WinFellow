@@ -27,13 +27,13 @@
 #include "draw_interlace_control.h"
 #include "VirtualHost/Core.h"
 
-typedef struct
+struct draw_interlace_status
 {
   bool frame_is_interlaced;
   bool frame_is_long;
   bool enable_deinterlace;
   bool use_interlaced_rendering;
-} draw_interlace_status;
+};
 
 draw_interlace_status interlace_status;
 

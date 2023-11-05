@@ -3,8 +3,8 @@
 #include "Keycode.h"
 #include "Keyboard.h"
 
-#define MAX_KEYS 256
-#define MAX_JOYKEY_VALUE 8
+constexpr unsigned int MAX_KEYS = 256;
+constexpr unsigned int MAX_JOYKEY_VALUE = 8;
 
 extern kbd_drv_pc_symbol kbddrv_DIK_to_symbol[MAX_KEYS];
 

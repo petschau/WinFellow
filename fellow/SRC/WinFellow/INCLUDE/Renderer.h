@@ -1,9 +1,6 @@
 #pragma once
 
-#ifndef GRAPH_H
 #include "GraphicsPipeline.h"
-#endif
-
 #include "Configuration.h"
 #include <map>
 #include <list>

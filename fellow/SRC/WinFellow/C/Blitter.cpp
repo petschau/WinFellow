@@ -29,7 +29,7 @@ using namespace CustomChipset;
 /* Blitter registers                                                          */
 /*============================================================================*/
 
-typedef struct blitter_state_
+struct blitter_state
 {
   // Actual registers
   uint32_t bltcon;
@@ -68,8 +68,7 @@ typedef struct blitter_state_
   BOOLE dma_pending;
   uint32_t cycle_length; // Estimate for how many cycles the started blit will take
   uint32_t cycle_free;   // How many of these cycles are free to use by the CPU
-
-} blitter_state;
+};
 
 blitter_state blitter;
 

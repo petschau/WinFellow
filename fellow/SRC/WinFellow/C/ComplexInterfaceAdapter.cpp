@@ -32,20 +32,20 @@
 #include "ComplexInterfaceAdapter.h"
 #include "interrupt.h"
 
-#define CIA_NO_EVENT 0
-#define CIAA_TA_TIMEOUT_EVENT 1
-#define CIAA_TB_TIMEOUT_EVENT 2
-#define CIAB_TA_TIMEOUT_EVENT 3
-#define CIAB_TB_TIMEOUT_EVENT 4
-#define CIA_RECHECK_IRQ_EVENT 5
+constexpr uint32_t CIA_NO_EVENT = 0;
+constexpr uint32_t CIAA_TA_TIMEOUT_EVENT = 1;
+constexpr uint32_t CIAA_TB_TIMEOUT_EVENT = 2;
+constexpr uint32_t CIAB_TA_TIMEOUT_EVENT = 3;
+constexpr uint32_t CIAB_TB_TIMEOUT_EVENT = 4;
+constexpr uint32_t CIA_RECHECK_IRQ_EVENT = 5;
 
-#define CIA_TA_IRQ 1
-#define CIA_TB_IRQ 2
-#define CIA_ALARM_IRQ 4
-#define CIA_KBD_IRQ 8
-#define CIA_FLAG_IRQ 16
+constexpr uint32_t CIA_TA_IRQ = 1;
+constexpr uint32_t CIA_TB_IRQ = 2;
+constexpr uint32_t CIA_ALARM_IRQ = 4;
+constexpr uint32_t CIA_KBD_IRQ = 8;
+constexpr uint32_t CIA_FLAG_IRQ = 16;
 
-#define CIA_BUS_CYCLE_RATIO 5
+constexpr uint32_t CIA_BUS_CYCLE_RATIO = 5;
 
 // #define CIA_LOGGING
 
@@ -60,7 +60,7 @@ uint32_t cia_next_event_type; /* What type of event */
 
 /* Cia registers, index 0 is Cia A, index 1 is Cia B */
 
-typedef struct cia_state_
+struct cia_state
 {
   uint32_t ta;
   uint32_t tb;
@@ -87,7 +87,7 @@ typedef struct cia_state_
   uint8_t ddra;
   uint8_t ddrb;
   uint8_t sp;
-} cia_state;
+};
 
 cia_state cia[2];
 

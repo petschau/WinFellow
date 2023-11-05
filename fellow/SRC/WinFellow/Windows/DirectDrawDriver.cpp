@@ -120,7 +120,7 @@ struct gfx_drv_ddraw_fullscreen_mode
   uint32_t pitch;
 };
 
-typedef struct
+struct gfx_drv_ddraw_device
 {
   LPGUID lpGUID;
   LPSTR lpDriverDescription;
@@ -145,7 +145,7 @@ typedef struct
   bool can_stretch_y;
   bool no_dd_hardware;
   bool windowed;
-} gfx_drv_ddraw_device;
+};
 
 gfx_drv_ddraw_device *gfx_drv_ddraw_device_current;
 felist *gfx_drv_ddraw_devices;

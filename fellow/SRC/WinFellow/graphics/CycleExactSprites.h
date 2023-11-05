@@ -36,19 +36,19 @@ enum class SpriteDMAStates
   SPRITE_DMA_STATE_DISABLED = 4
 };
 
-typedef union SpriteDecodedUnion_ {
+union SpriteDecodedUnion {
   uint8_t barray[16];
   ByteLongUnion blu[4];
-} SpriteDecodedUnion;
+};
 
-typedef struct SpriteDMAStateMachine_
+struct SpriteDMAStateMachine
 {
   SpriteDMAStates state;
   uint32_t y_first;
   uint32_t y_last;
-} SpriteDMAStateMachine;
+};
 
-typedef struct Sprite_
+struct Sprite
 {
   SpriteDMAStateMachine DMAState;
   bool armed;
@@ -58,7 +58,7 @@ typedef struct Sprite_
   SpriteDecodedUnion dat_decoded; // The armed image, decoded
   bool serializing;
   uint32_t pixels_output;
-} Sprite;
+};
 
 class CycleExactSprites : public Sprites
 {

@@ -1255,7 +1255,7 @@ static uae_u32 startup_handler()
   uaecptr pkt = m68k_dreg(regs, 3);
   uaecptr arg2 = get_long(pkt + dp_Arg2);
   int i;
-  size_t namelen, j;
+  uint32_t namelen, j;
   char *devname = bstr1(get_long(pkt + dp_Arg1) << 2);
   char *s;
   Unit *unit;
@@ -1358,7 +1358,7 @@ static uae_u32 startup_handler()
   put_long(unit->volume + 24, 0);
   put_long(unit->volume + 28, 0);                        /* lock list */
   put_long(unit->volume + 40, (unit->volume + 44) >> 2); /* Name */
-  namelen = strlen(unit->ui.volname);
+  namelen = (uint32_t)strlen(unit->ui.volname);
   put_byte(unit->volume + 44, (uint8_t)namelen);
   for (j = 0; j < namelen; j++)
     put_byte(unit->volume + 45 + j, unit->ui.volname[j]);

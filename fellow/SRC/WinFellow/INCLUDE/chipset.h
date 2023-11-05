@@ -1,11 +1,14 @@
 #pragma once
 
-typedef struct _chipset_information
+#include <cstdint>
+#include "Defs.h"
+
+struct chipset_information
 {
   bool ecs;
   uint32_t ptr_mask;
   uint32_t address_mask;
-} chipset_information;
+};
 
 extern chipset_information chipset;
 

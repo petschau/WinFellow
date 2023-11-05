@@ -30,7 +30,7 @@
 
 #include "Defs.h"
 
-#define FLOPPY_TRACKS 180
+constexpr unsigned int FLOPPY_TRACKS = 180;
 
 /* Status symbols */
 
@@ -56,16 +56,16 @@ enum class FLOPPY_ERROR_CODE
 
 /* Info about a track */
 
-typedef struct
+struct floppytrackinfostruct
 {
   uint32_t file_offset; /* Track starts at this offset in image file, used for writing back */
   uint32_t mfm_length;  /* Length of mfm data in bytes */
   uint8_t *mfm_data;    /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
-} floppytrackinfostruct;
+};
 
 /* Info about a drive */
 
-typedef struct
+struct floppyinfostruct
 {
   FILE *F;                                        /* Open file for disk image */
   uint32_t tracks;                                /* Number of tracks on drive */
@@ -96,11 +96,11 @@ typedef struct
   BOOLE flakey;      /* introduced for CAPS support */
   uint32_t *timebuf; /* dito */
 #endif
-} floppyinfostruct;
+};
 
 /* Info about a started disk transfer */
 
-typedef struct
+struct floppyDMAinfostruct
 {
   uint32_t dskpt;     /* Amiga memory pt */
   uint32_t wordsleft; /* Words left to transfer */
@@ -108,11 +108,11 @@ typedef struct
   BOOLE wait_for_sync;
   BOOLE sync_found;
   BOOLE dont_use_gap;
-} floppyDMAinfostruct;
+};
 
 /* Config */
 
-#define FLOPPY_WAIT_INITIAL 10
+constexpr unsigned int FLOPPY_WAIT_INITIAL = 10;
 
 extern floppyinfostruct floppy[4];
 extern floppyDMAinfostruct floppy_DMA;
