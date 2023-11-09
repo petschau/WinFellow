@@ -160,10 +160,7 @@ BOOLE cfgGetDiskFast(cfg *config)
 
 void cfgSetLastUsedDiskDir(cfg *config, const string &directory)
 {
-  if (!directory.empty())
-  {
-    strncpy(config->m_lastuseddiskdir, directory.c_str(), CFG_FILENAME_LENGTH);
-  }
+  strncpy(config->m_lastuseddiskdir, directory.c_str(), CFG_FILENAME_LENGTH);
 }
 
 const char *cfgGetLastUsedDiskDir(cfg *config)
