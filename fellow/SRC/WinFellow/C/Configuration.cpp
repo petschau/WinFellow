@@ -1503,13 +1503,21 @@ void cfgSynopsis(cfg *config)
 BOOLE cfgSetOption(cfg *config, const char *optionstr)
 {
   vector<string> option = cfgSplitString(optionstr, '=');
-  if (option.size() != 2)
+  if (option.size() < 1)
   {
     return FALSE;
   }
 
   string name = cfgGetLowercaseString(option[0]);
-  string value = option[1];
+  string value;
+  if (option.size() == 2)
+  {
+    value = option[1];
+  }
+  else
+  {
+    value = "";
+  }
 
   BOOLE result = TRUE;
 
