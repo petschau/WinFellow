@@ -403,7 +403,7 @@ BOOLE iniSetOption(ini *initdata, char *initoptionstr)
       {
         auto fileProperties = _core.FileInformation->GetFileProperties(value);
 
-        if (fileProperties != nullptr)
+        if (fileProperties == nullptr)
         {
           delete fileProperties;
 
