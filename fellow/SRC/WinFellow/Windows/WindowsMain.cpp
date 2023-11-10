@@ -35,6 +35,8 @@
 #include "KeyboardDriver.h"
 #include "GfxDrvCommon.h"
 #include "VirtualHost/Core.h"
+#include <shlobj.h>
+#include <shlwapi.h>
 
 #ifdef RETRO_PLATFORM
 #include "retroplatform.h"
@@ -487,17 +489,23 @@ int WINAPI WinMain(
 
 int winDrvDetectMemoryLeaks()
 {
-  char stOutputFileName[CFG_FILENAME_LENGTH];
-  char strLogFileName[CFG_FILENAME_LENGTH];
+  char strCrtMallocReportFileName[CFG_FILENAME_LENGTH];
+  char strRelativeFileName[CFG_FILENAME_LENGTH];
   SYSTEMTIME t;
 
   GetSystemTime(&t);
+  HRESULT hr;
+  wsprintfA(strRelativeFileName, "WinFellowCrtMallocReport_%s_%4d%02d%02d_%02d%02d%02d.log", FELLOWNUMERICVERSION, t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+  if (SUCCEEDED(hr = SHGetFolderPathAndSubDir(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, "WinFellow", strCrtMallocReportFileName)))
+  {
+    PathAppend(strCrtMallocReportFileName, TEXT(strRelativeFileName));
+  }
+  else
+  {
+    strcpy(strCrtMallocReportFileName, strRelativeFileName);
+  }
 
-  wsprintfA(strLogFileName, "WinFellowCrtMallocReport_%s_%4d%02d%02d_%02d%02d%02d.log", FELLOWNUMERICVERSION, t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
-
-  _core.Fileops->GetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
-
-  HANDLE hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+  HANDLE hLogFile = CreateFile(strCrtMallocReportFileName, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
   _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
   _CrtSetReportFile(_CRT_WARN, hLogFile);
@@ -505,7 +513,7 @@ int winDrvDetectMemoryLeaks()
   if (!_CrtDumpMemoryLeaks())
   {
     CloseHandle(hLogFile);
-    remove(stOutputFileName);
+    remove(strCrtMallocReportFileName);
   }
   else
     CloseHandle(hLogFile);
