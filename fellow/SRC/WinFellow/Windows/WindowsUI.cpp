@@ -379,6 +379,12 @@ wgui_drawmode *wguiGetUIDrawModeFromIndex(unsigned int index, wgui_drawmode_list
 
 void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[])
 {
+  if (pwgui_dm_match == nullptr)
+  {
+    char_buffer[0] = '\0';
+    return;
+  }
+
   wgui_drawmode_list &list = wguiGetFullScreenMatchingList(pwgui_dm_match->colorbits);
 
   // fullscreen
@@ -389,7 +395,7 @@ void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[])
   }
   else
   {
-    sprintf(char_buffer, "unknown screen area");
+    char_buffer[0] = '\0';
   }
 }
 

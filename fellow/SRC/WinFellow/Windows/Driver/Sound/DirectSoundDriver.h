@@ -21,7 +21,7 @@ private:
   HANDLE _notifications[3];
   HANDLE _dataAvailable;
   HANDLE _canAddData;
-  HANDLE _mutex;
+  HANDLE _mutex{};
   uint16_t *_pendingDataLeft;
   uint16_t *_pendingDataRight;
   uint32_t _pendingDataSampleCount;
