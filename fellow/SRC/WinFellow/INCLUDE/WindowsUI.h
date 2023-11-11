@@ -59,6 +59,11 @@ struct wgui_drawmodes
   wgui_drawmode_list res16bit;
   wgui_drawmode_list res24bit;
   wgui_drawmode_list res32bit;
+
+  bool HasFullscreenModes() const
+  {
+    return !res16bit.empty() || !res24bit.empty() || !res32bit.empty();
+  }
 };
 
 struct wgui_preset
