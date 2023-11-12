@@ -94,6 +94,10 @@ bool FileopsWin32::GetGenericFileName(char *szPath, const char *szSubDir, const 
   else
   {
     PathAppend(szPath, szSubDir);
+    if (!DirectoryExists(szPath))
+    {
+      CreateDirectory(szPath, nullptr);
+    }
     PathAppend(szPath, TEXT(filename));
     return TRUE;
   }
