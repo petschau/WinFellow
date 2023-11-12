@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.11 (2023/10/26)
+v0.5.11 (2023/11/12)
 \end_layout
 
 \begin_layout Author
@@ -289,6 +289,19 @@ Bug fixes:
 \begin_deeper
 \begin_layout Itemize
 improved logging in case of failure to initialize Direct3d graphics driver
+\end_layout
+
+\begin_layout Itemize
+fix several issues related to creating, loading, applying and saving configurati
+on files
+\end_layout
+
+\begin_layout Itemize
+fix potential memory leaks
+\end_layout
+
+\begin_layout Itemize
+implement more failure checks for Direct3D initialization
 \end_layout
 
 \end_deeper
