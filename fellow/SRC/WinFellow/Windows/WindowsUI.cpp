@@ -2321,6 +2321,7 @@ INT_PTR CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
           default: break;
         }
       break;
+    case WM_DESTROY: wguiExtractFloppyConfig(hwndDlg, wgui_cfg); break;
   }
   return FALSE;
 }
