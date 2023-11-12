@@ -198,6 +198,58 @@ bool gfxDrvRestart(DISPLAYDRIVER displaydriver)
   return gfxDrvStartup(displaydriver);
 }
 
+// Returns the actual display driver used, in case there was a problem with dxgi/direct 3d 11 and the fallback to direct draw was used instead
+DISPLAYDRIVER gfxDrvTryChangeDisplayDriver(DISPLAYDRIVER newDisplayDriver, bool showErrorMessageBoxes)
+{
+  if (newDisplayDriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11 && gfx_drv_use_dxgi) return DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11;
+  if (newDisplayDriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW && !gfx_drv_use_dxgi) return DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
+
+  DISPLAYDRIVER actualDisplayDriver = newDisplayDriver;
+
+  if (newDisplayDriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
+  {
+    if (!gfxDrvDXGIValidateRequirements())
+    {
+      _core.Log->AddLog("ERROR: Configuration specified Direct3D 11, but validation of host Direct3d 11 environment failed. Falling back to DirectDraw.\n");
+
+      if (showErrorMessageBoxes)
+      {
+        fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Direct3d 11 is required but could not be loaded, falling back to DirectDraw.");
+      }
+
+      actualDisplayDriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
+    }
+  }
+
+  bool result = gfxDrvRestart(actualDisplayDriver);
+
+  if (!result && actualDisplayDriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
+  {
+    _core.Log->AddLog(
+        "ERROR: Failed to restart graphics driver for Direct3d 11 even though host environment validation indicated it would be available. Falling back to DirectDraw.\n");
+
+    if (showErrorMessageBoxes)
+    {
+      fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failed to initialize Direct3d 11, falling back to DirectDraw.");
+    }
+
+    actualDisplayDriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
+    result = gfxDrvRestart(actualDisplayDriver);
+  }
+
+  if (!result)
+  {
+    _core.Log->AddLog("ERROR: Failed to restart graphics driver in DirectDraw mode.\n");
+
+    if (showErrorMessageBoxes)
+    {
+      fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver for DirectDraw.");
+    }
+  }
+
+  return actualDisplayDriver;
+}
+
 // Called when the application starts up
 bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
 {
