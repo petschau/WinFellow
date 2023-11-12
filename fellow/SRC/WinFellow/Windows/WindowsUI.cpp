@@ -379,6 +379,12 @@ wgui_drawmode *wguiGetUIDrawModeFromIndex(unsigned int index, wgui_drawmode_list
 
 void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[])
 {
+  if (pwgui_dm_match == nullptr)
+  {
+    char_buffer[0] = '\0';
+    return;
+  }
+
   wgui_drawmode_list &list = wguiGetFullScreenMatchingList(pwgui_dm_match->colorbits);
 
   // fullscreen
@@ -389,7 +395,7 @@ void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[])
   }
   else
   {
-    sprintf(char_buffer, "unknown screen area");
+    char_buffer[0] = '\0';
   }
 }
 
@@ -1826,14 +1832,19 @@ void wguiInstallColorBitsConfigInGUI(HWND hwndDlg, cfg *conf)
 
   ComboBox_Enable(colorBitsComboboxHWND, !isWindowed);
 
-  uint32_t colorbits_cursel = pwgui_dm_match->colorbits;
-  ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(colorbits_cursel));
+  if (pwgui_dm_match != nullptr)
+  {
+    uint32_t colorbits_cursel = pwgui_dm_match->colorbits;
+    ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(colorbits_cursel));
+  }
 }
 
 void wguiInstallFullScreenButtonConfigInGUI(HWND hwndDlg, cfg *conf)
 {
+  bool hasFullscreenModes = wgui_dm.HasFullscreenModes();
+
   // set fullscreen button check
-  if (cfgGetScreenWindowed(conf))
+  if (cfgGetScreenWindowed(conf) || !hasFullscreenModes)
   {
     // windowed
     ccwButtonUncheck(hwndDlg, IDC_CHECK_FULLSCREEN);
@@ -1850,7 +1861,7 @@ void wguiInstallFullScreenButtonConfigInGUI(HWND hwndDlg, cfg *conf)
     ccwButtonEnable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
   }
 
-  if (wguiGetDesktopBitsPerPixel() == 8 || (wgui_dm.numberof16bit == 0 && wgui_dm.numberof24bit == 0 && wgui_dm.numberof32bit == 0))
+  if (wguiGetDesktopBitsPerPixel() == 8 || !hasFullscreenModes)
   {
     ccwButtonDisable(hwndDlg, IDC_CHECK_FULLSCREEN);
   }
@@ -1872,16 +1883,21 @@ void wguiInstallDisplayScaleStrategyConfigInGUI(HWND hwndDlg, cfg *conf)
 
 void wguiInstallFullScreenResolutionConfigInGUI(HWND hwndDlg, cfg *conf)
 {
-  // add screen area
-  switch (pwgui_dm_match->colorbits)
+  bool hasFullscreenModes = wgui_dm.HasFullscreenModes();
+
+  if (hasFullscreenModes)
   {
-    case 16: ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wgui_dm.numberof16bit - 1)); break;
-    case 24: ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wgui_dm.numberof24bit - 1)); break;
-    case 32: ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wgui_dm.numberof32bit - 1)); break;
+    // add screen area
+    switch (pwgui_dm_match->colorbits)
+    {
+      case 16: ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wgui_dm.numberof16bit - 1)); break;
+      case 24: ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wgui_dm.numberof24bit - 1)); break;
+      case 32: ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wgui_dm.numberof32bit - 1)); break;
+    }
+    ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, pwgui_dm_match->id);
+    wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
   }
-  ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, pwgui_dm_match->id);
-  wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
-  ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, !cfgGetScreenWindowed(conf));
+  ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, !cfgGetScreenWindowed(conf) && hasFullscreenModes);
 }
 
 void wguiInstallDisplayDriverConfigInGUI(HWND hwndDlg, cfg *conf)
