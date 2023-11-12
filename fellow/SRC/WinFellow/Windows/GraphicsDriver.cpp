@@ -210,11 +210,11 @@ DISPLAYDRIVER gfxDrvTryChangeDisplayDriver(DISPLAYDRIVER newDisplayDriver, bool 
   {
     if (!gfxDrvDXGIValidateRequirements())
     {
-      _core.Log->AddLog("ERROR: Configuration specified Direct3D 11, but validation of host Direct3d 11 environment failed. Falling back to DirectDraw.\n");
+      _core.Log->AddLog("ERROR: Configuration specified Direct3D 11, but validation of host Direct3D 11 environment failed. Falling back to DirectDraw.\n");
 
       if (showErrorMessageBoxes)
       {
-        fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Direct3d 11 is required but could not be loaded, falling back to DirectDraw.");
+        fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Direct3D 11 is required but could not be loaded, falling back to DirectDraw.");
       }
 
       actualDisplayDriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
@@ -226,11 +226,11 @@ DISPLAYDRIVER gfxDrvTryChangeDisplayDriver(DISPLAYDRIVER newDisplayDriver, bool 
   if (!result && actualDisplayDriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
   {
     _core.Log->AddLog(
-        "ERROR: Failed to restart graphics driver for Direct3d 11 even though host environment validation indicated it would be available. Falling back to DirectDraw.\n");
+        "ERROR: Failed to restart graphics driver for Direct3D 11 even though host environment validation indicated it would be available. Falling back to DirectDraw.\n");
 
     if (showErrorMessageBoxes)
     {
-      fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failed to initialize Direct3d 11, falling back to DirectDraw.");
+      fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failed to initialize Direct3D 11, falling back to DirectDraw.");
     }
 
     actualDisplayDriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
