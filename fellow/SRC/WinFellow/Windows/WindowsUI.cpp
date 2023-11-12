@@ -889,38 +889,6 @@ void wguiSwapCfgsInHistory(uint32_t itemA, uint32_t itemB)
 }
 
 /*============================================================================*/
-/* Saves and loads configuration files (*.wfc)                                */
-/*============================================================================*/
-
-void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg)
-{
-  char filename[CFG_FILENAME_LENGTH];
-
-  strcpy(filename, "");
-
-  if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save Configuration As:", SelectFileFlags::FSEL_WFC))
-  {
-    cfgSaveToFilename(wgui_cfg, filename);
-    iniSetCurrentConfigurationFilename(wgui_ini, filename);
-    iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
-  }
-}
-
-void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg)
-{
-  char filename[CFG_FILENAME_LENGTH];
-
-  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open", SelectFileFlags::FSEL_WFC))
-  {
-    cfgLoadFromFilename(wgui_cfg, filename, false);
-    iniSetCurrentConfigurationFilename(wgui_ini, filename);
-    iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
-    wguiCheckMemorySettingsForChipset();
-    wguiInsertCfgIntoHistory(filename);
-  }
-}
-
-/*============================================================================*/
 /* Saves and loads state files (*.fst)                                        */
 /*============================================================================*/
 
@@ -2353,10 +2321,6 @@ INT_PTR CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
           default: break;
         }
       break;
-    case WM_DESTROY:
-      wguiExtractFloppyConfig(hwndDlg, wgui_cfg);
-      wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-      break;
   }
   return FALSE;
 }
@@ -2510,6 +2474,20 @@ uint32_t wguiGetNumberOfScreenAreas(uint32_t colorbits)
   return wgui_dm.numberof16bit;
 }
 
+void wguiHandleDisplayDriverChangedInConfigurationDialog(HWND hwndDlg, DISPLAYDRIVER newDisplayDriver)
+{
+  if (newDisplayDriver == cfgGetDisplayDriver(wgui_cfg)) return;
+
+  wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
+  wguiFreeGuiDrawModesLists();
+
+  DISPLAYDRIVER actualDisplayDriver = gfxDrvTryChangeDisplayDriver(newDisplayDriver, true);
+  cfgSetDisplayDriver(wgui_cfg, actualDisplayDriver);
+
+  wguiConvertDrawModeListToGuiDrawModes();
+  wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
+}
+
 INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   uint32_t comboboxIndexColorBits;
@@ -2574,36 +2552,8 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
           {
             case CBN_SELCHANGE:
               uint32_t comboboxIndexDisplayDriver = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
-              DISPLAYDRIVER displaydriver = wguiGetDisplayDriverFromComboboxIndex(comboboxIndexDisplayDriver);
-
-              if (displaydriver != cfgGetDisplayDriver(wgui_cfg))
-              {
-                wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
-                wguiFreeGuiDrawModesLists();
-
-                if (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
-                {
-                  if (!gfxDrvDXGIValidateRequirements())
-                  {
-                    _core.Log->AddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
-                    displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
-                    cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
-                    fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "DirectX 11 is required but could not be loaded, revert back to DirectDraw.");
-                  }
-                }
-
-                bool result = gfxDrvRestart(displaydriver);
-                if (!result)
-                {
-                  _core.Log->AddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
-                  displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
-                  cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
-                  fellowShowRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver");
-                }
-                wguiConvertDrawModeListToGuiDrawModes();
-                wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
-              }
-
+              DISPLAYDRIVER newDisplayDriver = wguiGetDisplayDriverFromComboboxIndex(comboboxIndexDisplayDriver);
+              wguiHandleDisplayDriverChangedInConfigurationDialog(hwndDlg, newDisplayDriver);
               break;
           }
           break;
@@ -3172,6 +3122,70 @@ INT_PTR CALLBACK wguiVariousDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 }
 
 /*============================================================================*/
+/* Saves and loads configuration files (*.wfc)                                */
+/*============================================================================*/
+
+void wguiSaveConfigurationFileAs(HWND hwndDlg)
+{
+  char filename[CFG_FILENAME_LENGTH];
+
+  strcpy(filename, "");
+
+  if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save Configuration As:", SelectFileFlags::FSEL_WFC))
+  {
+    cfgSaveToFilename(wgui_cfg, filename);
+    iniSetCurrentConfigurationFilename(wgui_ini, filename);
+    iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
+  }
+}
+
+void wguiUpdateStateAfterConfigurationChanges(HWND hwndDlg)
+{
+  wguiCheckMemorySettingsForChipset();
+  wguiInstallFloppyMain(hwndDlg, wgui_cfg);
+
+  DISPLAYDRIVER newDisplayDriver = cfgGetDisplayDriver(wgui_cfg);
+  DISPLAYDRIVER actualDisplayDriver = gfxDrvTryChangeDisplayDriver(newDisplayDriver, true);
+  if (newDisplayDriver != actualDisplayDriver)
+  {
+    cfgSetDisplayDriver(wgui_cfg, actualDisplayDriver);
+  }
+}
+
+void wguiHandleOpenConfigurationFile(HWND hwndDlg)
+{
+  char filename[CFG_FILENAME_LENGTH];
+
+  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open", SelectFileFlags::FSEL_WFC))
+  {
+    cfgLoadFromFilename(wgui_cfg, filename, false);
+
+    iniSetCurrentConfigurationFilename(wgui_ini, filename);
+    cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+
+    wguiUpdateStateAfterConfigurationChanges(hwndDlg);
+
+    iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
+    wguiInsertCfgIntoHistory(filename);
+  }
+}
+
+void wguiHandleLoadConfigurationFileFromHistory(HWND hwndDlg, uint32_t historyIndex)
+{
+  const char *filename = iniGetConfigurationHistoryFilename(wgui_ini, historyIndex);
+  if (cfgLoadFromFilename(wgui_cfg, filename, false) == false)
+  {
+    wguiDeleteCfgFromHistory(historyIndex);
+    return;
+  }
+
+  iniSetCurrentConfigurationFilename(wgui_ini, filename);
+  cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+
+  wguiUpdateStateAfterConfigurationChanges(hwndDlg);
+}
+
+/*============================================================================*/
 /* Creates the configuration dialog                                           */
 /* Does this by first initializing the array of PROPSHEETPAGE structs to      */
 /* describe each property sheet in the dialog.                                */
@@ -3215,6 +3229,26 @@ INT_PTR wguiConfigurationDialog()
   propertysheetheader.ppsp = propertysheets;
   propertysheetheader.pfnCallback = nullptr;
   return PropertySheet(&propertysheetheader);
+}
+
+void wguiHandleOpenConfigurationDialog()
+{
+  cfg *configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
+
+  INT_PTR result = wguiConfigurationDialog();
+  if (result >= 1)
+  {
+    cfgManagerFreeConfig(&cfg_manager, configbackup);
+    cfgSetConfigChangedSinceLastSave(wgui_cfg, TRUE);
+  }
+  else
+  { // discard changes, as user clicked cancel or error occurred
+    cfgManagerFreeConfig(&cfg_manager, wgui_cfg);
+    cfgManagerSetCurrentConfig(&cfg_manager, configbackup);
+    wgui_cfg = configbackup;
+  }
+
+  wguiUpdateStateAfterConfigurationChanges(wgui_hDialog);
 }
 
 void wguiSetCheckOfUseMultipleGraphicalBuffers(BOOLE useMultipleGraphicalBuffers)
@@ -3315,25 +3349,7 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
           case ID_FILE_HISTORYCONFIGURATION2: wgui_action = wguiActions::WGUI_LOAD_HISTORY2; break;
           case ID_FILE_HISTORYCONFIGURATION3: wgui_action = wguiActions::WGUI_LOAD_HISTORY3; break;
           case ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS: wgui_action = wguiActions::WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS; break;
-          case IDC_CONFIGURATION:
-          {
-            cfg *configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
-
-            INT_PTR result = wguiConfigurationDialog();
-            if (result >= 1)
-            {
-              cfgManagerFreeConfig(&cfg_manager, configbackup);
-              cfgSetConfigChangedSinceLastSave(wgui_cfg, TRUE);
-            }
-            else
-            { // discard changes, as user clicked cancel or error occurred
-              cfgManagerFreeConfig(&cfg_manager, wgui_cfg);
-              cfgManagerSetCurrentConfig(&cfg_manager, configbackup);
-              wgui_cfg = configbackup;
-            }
-
-            break;
-          }
+          case IDC_CONFIGURATION: wguiHandleOpenConfigurationDialog(); break;
           case IDC_HARD_RESET:
             fellowSetPreStartReset(TRUE);
             wguiLoadBitmaps();
@@ -3515,10 +3531,7 @@ BOOLE wguiEnter()
         }
         break;
         case wguiActions::WGUI_OPEN_CONFIGURATION:
-          wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
-          cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
-          wguiCheckMemorySettingsForChipset();
-          wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+          wguiHandleOpenConfigurationFile(wgui_hDialog);
           wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
         case wguiActions::WGUI_SAVE_CONFIGURATION:
@@ -3529,68 +3542,25 @@ BOOLE wguiEnter()
           break;
         case wguiActions::WGUI_SAVE_CONFIGURATION_AS:
           wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
-          wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
+          wguiSaveConfigurationFileAs(wgui_hDialog);
           cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
           wguiInsertCfgIntoHistory(iniGetCurrentConfigurationFilename(wgui_ini));
           wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
         case wguiActions::WGUI_LOAD_HISTORY0:
-          if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0), false) == FALSE)
-          {
-            wguiDeleteCfgFromHistory(0);
-          }
-          else
-          {
-            iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
-            cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
-            wguiCheckMemorySettingsForChipset();
-          }
-          wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+          wguiHandleLoadConfigurationFileFromHistory(wgui_hDialog, 0);
           wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
         case wguiActions::WGUI_LOAD_HISTORY1:
-          if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1), false) == FALSE)
-          {
-            wguiDeleteCfgFromHistory(1);
-          }
-          else
-          {
-            iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
-            cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
-            wguiCheckMemorySettingsForChipset();
-            wguiPutCfgInHistoryOnTop(1);
-          }
-          wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+          wguiHandleLoadConfigurationFileFromHistory(wgui_hDialog, 1);
           wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
         case wguiActions::WGUI_LOAD_HISTORY2:
-          if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2), false) == FALSE)
-          {
-            wguiDeleteCfgFromHistory(2);
-          }
-          else
-          {
-            iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
-            cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
-            wguiCheckMemorySettingsForChipset();
-            wguiPutCfgInHistoryOnTop(2);
-          }
-          wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+          wguiHandleLoadConfigurationFileFromHistory(wgui_hDialog, 2);
           wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
         case wguiActions::WGUI_LOAD_HISTORY3:
-          if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3), false) == FALSE)
-          {
-            wguiDeleteCfgFromHistory(3);
-          }
-          else
-          {
-            iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
-            cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
-            wguiCheckMemorySettingsForChipset();
-            wguiPutCfgInHistoryOnTop(3);
-          }
-          wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+          wguiHandleLoadConfigurationFileFromHistory(wgui_hDialog, 3);
           wgui_action = wguiActions::WGUI_NO_ACTION;
           break;
         case wguiActions::WGUI_DEBUGGER_START:

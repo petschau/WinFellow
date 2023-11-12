@@ -390,7 +390,7 @@ extern bool cfgGetMeasureSpeed(cfg *config);
 extern void cfgSetDefaults(cfg *config);
 extern BOOLE cfgSetOption(cfg *config, const char *optionstr);
 extern BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile);
-extern bool cfgLoadFromFilename(cfg *, const char *, const bool);
+extern bool cfgLoadFromFilename(cfg *config, const char *filename, const bool bIsPreset);
 extern BOOLE cfgSaveToFilename(cfg *config, const char *filename);
 extern void cfgSynopsis(cfg *config);
 
