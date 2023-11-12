@@ -50,8 +50,6 @@
 #include "RetroPlatform.h"
 #endif
 
-cfg *draw_config;
-
 /*============================================================================*/
 /* Mode list, nodes created by the graphics driver, and pointer to the mode   */
 /* that is current                                                            */
@@ -1018,7 +1016,7 @@ void drawHardReset()
 
 bool drawEmulationStart()
 {
-  uint32_t gfxModeNumberOfBuffers = (drawGetAllowMultipleBuffers() && !cfgGetDeinterlace(draw_config)) ? 3 : 1;
+  uint32_t gfxModeNumberOfBuffers = (drawGetAllowMultipleBuffers() && !drawGetDeinterlace()) ? 3 : 1;
 
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_skip = 0;
@@ -1036,8 +1034,6 @@ bool drawEmulationStart()
   }
 
   drawStatClear();
-
-  drawSetDeinterlace(cfgGetDeinterlace(draw_config));
 
   return true;
 }
@@ -1076,10 +1072,10 @@ void drawEmulationStop()
 
 BOOLE drawStartup()
 {
-  draw_config = cfgManagerGetCurrentConfig(&cfg_manager);
+  cfg *initialConfig = cfgManagerGetCurrentConfig(&cfg_manager);
 
   drawClearModeList();
-  if (!gfxDrvStartup(cfgGetDisplayDriver(draw_config)))
+  if (!gfxDrvStartup(cfgGetDisplayDriver(initialConfig)))
   {
     return FALSE;
   }
@@ -1109,7 +1105,7 @@ BOOLE drawStartup()
   drawSetFPSCounterEnabled(false);
   drawSetLEDsEnabled(false);
   drawSetAllowMultipleBuffers(FALSE);
-  drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(draw_config));
+  drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(initialConfig));
 
   drawInterlaceStartup();
 

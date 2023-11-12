@@ -101,3 +101,8 @@ void drawSetDeinterlace(bool deinterlace)
 {
   interlace_status.enable_deinterlace = deinterlace;
 }
+
+bool drawGetDeinterlace()
+{
+  return interlace_status.enable_deinterlace;
+}
