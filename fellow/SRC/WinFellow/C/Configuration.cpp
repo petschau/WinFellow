@@ -59,7 +59,6 @@
 
 using namespace std;
 using namespace Module::Hardfile;
-using namespace CustomChipset;
 
 ini *cfg_initdata; /* CONFIG copy of initialization data */
 
@@ -874,6 +873,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetDisplayScale(config, DISPLAYSCALE::DISPLAYSCALE_1X);
   cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
   cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_LINEEXACT);
+  // cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT);
   cfgSetClipLeft(config, 96);
   cfgSetClipTop(config, 26);
   cfgSetClipRight(config, 472);

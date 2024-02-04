@@ -57,10 +57,9 @@
 #include "FloppyDisk.h"
 #include "Renderer.h"
 #include "GraphicsPipeline.h"
-#include "ComplexInterfaceAdapter.h"
-#include "BusScheduler.h"
+#include "Cia.h"
 #include "CpuModule.h"
-#include "interrupt.h"
+#include "PaulaInterrupt.h"
 #include <sys/timeb.h>
 #include "xdms.h"
 #include "zlibwrap.h"
@@ -74,7 +73,6 @@
 #include "RetroPlatform.h"
 #endif
 
-using namespace CustomChipset;
 using namespace Service;
 
 constexpr uint8_t MFM_FILLB = 0xaa;
@@ -123,85 +121,6 @@ static uint8_t floppyBootBlockFFS[] = {
     0x61, 0x72, 0x79, 0x00, 0x65, 0x78, 0x70, 0x61, 0x6E, 0x73, 0x69, 0x6F, 0x6E, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x00, 0x00,
 };
 
-// #define FLOPPY_LOG
-#ifdef FLOPPY_LOG
-
-char floppylogfilename[MAX_PATH];
-FILE *floppylogfile = 0;
-
-void floppyLogClear()
-{
-  remove(floppylogfilename);
-}
-
-void floppyLog(char *msg)
-{
-  if (floppylogfile == 0)
-  {
-    floppylogfile = fopen(floppylogfilename, "a");
-    if (floppylogfile == 0) return;
-  }
-  fputs(msg, floppylogfile);
-}
-
-void floppyLogDMARead(uint32_t drive, uint32_t track, uint32_t side, uint32_t length, uint32_t ticks)
-{
-  char msg[256];
-  sprintf(
-      msg,
-      "DMA Read Started: FrameNo=%I64u Y=%.3u X=%.3u Drive=%u Track=%u Side=%u Pt=%.8X Length=%u Ticks=%u PC=%.6X\n",
-      busGetRasterFrameCount(),
-      busGetRasterY(),
-      busGetRasterX(),
-      drive,
-      track,
-      side,
-      dskpt,
-      length,
-      ticks,
-      cpuGetPC());
-  floppyLog(msg);
-}
-
-void floppyLogStep(uint32_t drive, uint32_t from, uint32_t to)
-{
-  char msg[256];
-  sprintf(
-      msg,
-      "Step: FrameNo=%I64u Y=%.3u X=%.3u Drive %u from track %u to %u PC=%.6X\n",
-      busGetRasterFrameCount(),
-      busGetRasterY(),
-      busGetRasterX(),
-      drive,
-      from,
-      to,
-      cpuGetPC());
-  floppyLog(msg);
-}
-
-void floppyLogValue(char *text, uint32_t v)
-{
-  char msg[256];
-  sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Value=%.8X PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), v, cpuGetPC());
-  floppyLog(msg);
-}
-
-void floppyLogValueWithTicks(char *text, uint32_t v, uint32_t ticks)
-{
-  char msg[256];
-  sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Value=%.8X Ticks=%.5u PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), v, ticks, cpuGetPC());
-  floppyLog(msg);
-}
-
-void floppyLogMessageWithTicks(char *text, uint32_t ticks)
-{
-  char msg[256];
-  sprintf(msg, "%s: FrameNo=%I64u Y=%.3u X=%.3u Ticks=%.5u PC=%.6X\n", text, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), ticks, cpuGetPC());
-  floppyLog(msg);
-}
-
-#endif
-
 /*=======================*/
 /* Register access stubs */
 /*=======================*/
@@ -231,13 +150,6 @@ void wadcon(uint16_t data, uint32_t address)
   {
     adcon = adcon & ~(data & 0x7fff);
   }
-#ifdef FLOPPY_LOG
-  {
-    char msg[256];
-    sprintf(msg, "adcon (wait for disksync %.4X is %s)", dsksync, (adcon & 0x0400) ? "enabled" : "disabled");
-    floppyLogValue(msg, adcon);
-  }
-#endif
 }
 
 /*----------*/
@@ -248,7 +160,7 @@ void wadcon(uint16_t data, uint32_t address)
 uint16_t rdskbytr(uint32_t address)
 {
   uint16_t tmp = (uint16_t)(floppy_DMA_started << 14);
-  uint32_t currentX = busGetRasterX();
+  uint32_t currentX = _core.Timekeeper->GetAgnusLineCycle();
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
   if (currentX < 114 && !dskbyt1_read)
@@ -272,10 +184,6 @@ uint16_t rdskbytr(uint32_t address)
 void wdskpth(uint16_t data, uint32_t address)
 {
   dskpt = chipsetReplaceHighPtr(dskpt, data);
-
-#ifdef FLOPPY_LOG
-  floppyLogValue("dskpth", dskpt);
-#endif
 }
 
 /*----------*/
@@ -286,10 +194,6 @@ void wdskpth(uint16_t data, uint32_t address)
 void wdskptl(uint16_t data, uint32_t address)
 {
   dskpt = chipsetReplaceLowPtr(dskpt, data);
-
-#ifdef FLOPPY_LOG
-  floppyLogValue("dskptl", dskpt);
-#endif
 }
 
 /*----------*/
@@ -300,10 +204,6 @@ void floppyClearDMAState();
 void wdsklen(uint16_t data, uint32_t address)
 {
   dsklen = data;
-
-#ifdef FLOPPY_LOG
-  floppyLogValue("dsklen", dsklen);
-#endif
 
   if (data & 0x8000)
   {
@@ -317,9 +217,6 @@ void wdsklen(uint16_t data, uint32_t address)
     // DMA is off
     if (floppy_DMA_started)
     {
-#ifdef FLOPPY_LOG
-      floppyLogValue("DMA was stopped with words left", floppy_DMA.wordsleft);
-#endif
       floppyClearDMAState();
     }
     diskDMAen = 0;
@@ -334,10 +231,6 @@ void wdsklen(uint16_t data, uint32_t address)
 void wdsksync(uint16_t data, uint32_t address)
 {
   dsksync = data;
-
-#ifdef FLOPPY_LOG
-  floppyLogValue("dsksync", dsksync);
-#endif
 }
 
 /*==================================*/
@@ -524,9 +417,6 @@ void floppyStepSet(BOOLE stp)
         {
           if (floppy[i].track < floppy[i].tracks + 3)
           {
-#ifdef FLOPPY_LOG
-            floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
-#endif
             floppy[i].track++;
 
 #ifdef RETRO_PLATFORM
@@ -538,9 +428,6 @@ void floppyStepSet(BOOLE stp)
         {
           if (floppy[i].track > 0)
           {
-#ifdef FLOPPY_LOG
-            floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
-#endif
             floppy[i].track--;
 
 #ifdef RETRO_PLATFORM
@@ -1561,10 +1448,6 @@ void floppyDMAReadInit(uint32_t drive)
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
 
-#ifdef FLOPPY_LOG
-  floppyLogDMARead(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft, floppy[drive].motor_ticks);
-#endif
-
   if (floppy_DMA.dont_use_gap && (floppy[drive].motor_ticks >= 11968))
   {
     floppy[drive].motor_ticks = 0;
@@ -1665,11 +1548,6 @@ void floppyDMAWrite()
   {
     floppy_DMA_started = FALSE;
 
-#ifdef FLOPPY_LOG
-    floppyLogMessageWithTicks(
-        ((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Write, irq not enabled)" : "DSKDONEIRQ (Write, irq enabled)", floppy[floppySelectedGet()].motor_ticks);
-#endif
-
     wintreq_direct(0x8002, 0xdff09c, true);
   }
 }
@@ -1685,11 +1563,6 @@ BOOLE floppyCheckSync(uint16_t word_under_head)
     BOOLE found_sync = !floppy_has_sync && word_is_sync;
     if (found_sync)
     {
-
-#ifdef FLOPPY_LOG
-      floppyLogMessageWithTicks(((intena & 0x5000) != 0x5000) ? "DSKSYNCIRQ, IRQ not enabled" : "DSKSYNCIRQ, IRQ enabled", floppy[floppySelectedGet()].motor_ticks);
-#endif
-
       wintreq_direct(0x9000, 0xdff09c, true);
     }
     floppy_has_sync = word_is_sync;
@@ -1716,12 +1589,6 @@ void floppyReadWord(uint16_t word_under_head, BOOLE found_sync)
     floppy_DMA.wordsleft--;
     if (floppy_DMA.wordsleft == 0)
     {
-
-#ifdef FLOPPY_LOG
-      floppyLogMessageWithTicks(
-          ((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", floppy[floppySelectedGet()].motor_ticks);
-#endif
-
       wintreq_direct(0x8002, 0xdff09c, true);
       floppy_DMA_started = FALSE;
     }
@@ -1808,12 +1675,6 @@ void floppyEndOfLine()
         word_under_head = (tmpb1 << 8) | tmpb2;
         found_sync |= floppyCheckSync(word_under_head);
       }
-#ifdef FLOPPY_LOG
-      else
-      {
-        floppyLogMessageWithTicks("Sync was found on byte boundary", floppy[sel_drv].motor_ticks);
-      }
-#endif
 
       prev_byte_under_head = word_under_head & 0xff;
       dskbyt_tmp = word_under_head;
@@ -1857,10 +1718,6 @@ void floppyStartup()
   floppyIORegistersClear();
   floppyClearDMAState();
   floppyDriveTableInit();
-#ifdef FLOPPY_LOG
-  GetGenericFileName(floppylogfilename, "WinFellow", "floppy.log");
-  floppyLogClear();
-#endif
 }
 
 void floppyShutdown()
@@ -1874,11 +1731,5 @@ void floppyShutdown()
   floppyTimeBufDataFree();
   _core.Log->AddLog("Unloading CAPS Image library...\n");
   capsShutdown();
-#endif
-#ifdef FLOPPY_LOG
-  if (floppylogfile != 0)
-  {
-    fclose(floppylogfile);
-  }
 #endif
 }

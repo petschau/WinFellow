@@ -25,12 +25,9 @@
 #include "Defs.h"
 
 #include "chipset.h"
-#include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "MemoryInterface.h"
 #include "Graphics.h"
-
-using namespace CustomChipset;
 
 static const char *BPLDMA_StateNames[3] = {"NONE", "FETCH_LORES", "FETCH_HIRES"};
 

@@ -26,8 +26,6 @@
 #include "GraphicsPipeline.h"
 #include "Graphics.h"
 
-using namespace CustomChipset;
-
 extern uint32_t graph_deco1[256][2];
 extern uint32_t graph_deco2[256][2];
 extern uint32_t graph_deco3[256][2];

@@ -24,7 +24,6 @@
 
 #include "Defs.h"
 
-#include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 
 #include "Graphics.h"
@@ -103,10 +102,11 @@ bool DIWYStateMachine::IsVisible()
 
 void DIWYStateMachine::ChangedValue()
 {
+  const auto currentAgnusLine = _core.Timekeeper->GetAgnusLine();
   switch (_state)
   {
-    case DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE: SetStateWaitingForStartLine(busGetRasterY()); break;
-    case DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE: SetStateWaitingForStopLine(busGetRasterY()); break;
+    case DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE: SetStateWaitingForStartLine(currentAgnusLine); break;
+    case DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE: SetStateWaitingForStopLine(currentAgnusLine); break;
   }
 }
 
@@ -155,7 +155,7 @@ void DIWYStateMachine::EmulationStop()
 void DIWYStateMachine::Startup()
 {
   _minValidY = 26;
-  _maxValidY = busGetLinesInThisFrame();
+  _maxValidY = _core.CurrentFrameParameters->LinesInFrame;
 }
 
 void DIWYStateMachine::Shutdown()

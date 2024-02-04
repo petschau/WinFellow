@@ -26,7 +26,6 @@
 #include "versioninfo.h"
 #include "WindowsUI.h"
 #include "WindowsDebugger.h"
-#include "BusScheduler.h"
 #include "WindowsMain.h"
 #include "FellowMain.h"
 #include "MouseDriver.h"

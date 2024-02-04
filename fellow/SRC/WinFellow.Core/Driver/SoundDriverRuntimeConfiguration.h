@@ -5,10 +5,10 @@
 
 struct SoundDriverRuntimeConfiguration
 {
-  CustomChipset::sound_emulations PlaybackMode;
-  CustomChipset::sound_rates PlaybackRate;
-  CustomChipset::sound_filters FilterMode;
-  CustomChipset::sound_notifications NotificationMode;
+  sound_emulations PlaybackMode;
+  sound_rates PlaybackRate;
+  sound_filters FilterMode;
+  sound_notifications NotificationMode;
   bool IsStereo;
   bool Is16Bits;
   int Volume;

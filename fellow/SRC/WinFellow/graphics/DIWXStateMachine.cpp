@@ -23,7 +23,7 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-
+#include "GraphicsPipeline.h"
 #include "Graphics.h"
 
 static const char *DIWXStateNames[2] = {"WAITING_FOR_START_POS", "WAITING_FOR_STOP_POS"};
@@ -68,7 +68,7 @@ void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(uint32_t rasterY, ui
   else
   {
     if (rasterY == 0)
-      outputLine = busGetLinesInThisFrame() - 1;
+      outputLine = _core.CurrentFrameParameters->LinesInFrame - 1;
     else
       outputLine = rasterY - 1;
   }
@@ -96,7 +96,7 @@ void DIWXStateMachine::SetStateWaitingForStopPos(uint32_t rasterY, uint32_t cyli
   if (GetStopPosition() > _maxValidX)
   {
     // Stop position will never be found, wait beyond end of frame (effectively disabled)
-    SetState(DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS, busGetCyclesInThisFrame() * 2 + 1);
+    SetState(DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS, _core.CurrentFrameParameters->CyclesInFrame * 2 + 1);
   }
   else if (GetStopPosition() <= cylinder)
   {
@@ -126,10 +126,12 @@ bool DIWXStateMachine::IsVisible()
 
 void DIWXStateMachine::ChangedValue()
 {
+  const auto currentAgnusLine = _core.Timekeeper->GetAgnusLine();
+  const auto currentAgnusLineCycle = _core.Timekeeper->GetAgnusLineCycle();
   switch (_state)
   {
-    case DIWXStates::DIWX_STATE_WAITING_FOR_START_POS: SetStateWaitingForStartPos(busGetRasterY(), busGetRasterX() * 2); break;
-    case DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS: SetStateWaitingForStopPos(busGetRasterY(), busGetRasterX() * 2); break;
+    case DIWXStates::DIWX_STATE_WAITING_FOR_START_POS: SetStateWaitingForStartPos(currentAgnusLine, currentAgnusLineCycle * 2); break;
+    case DIWXStates::DIWX_STATE_WAITING_FOR_STOP_POS: SetStateWaitingForStopPos(currentAgnusLine, currentAgnusLineCycle * 2); break;
   }
 }
 

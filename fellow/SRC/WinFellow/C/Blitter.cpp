@@ -14,13 +14,10 @@
 #include "MemoryInterface.h"
 #include "GraphicsPipeline.h"
 #include "Renderer.h"
-#include "BusScheduler.h"
 #include "CpuIntegration.h"
 #include "chipset.h"
-#include "interrupt.h"
+#include "PaulaInterrupt.h"
 #include "VirtualHost/Core.h"
-
-using namespace CustomChipset;
 
 // #define BLIT_VERIFY_MINTERMS
 // #define BLIT_OPERATION_LOG
@@ -170,19 +167,15 @@ BOOLE blitterIsDescending()
 
 void blitterRemoveEvent()
 {
-  if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
-  {
-    busRemoveEvent(&blitterEvent);
-    blitterEvent.cycle = BUS_CYCLE_DISABLE;
-  }
+  _core.Scheduler->DisableEvent(_core.Events->blitterEvent);
 }
 
 void blitterInsertEvent(uint32_t cycle)
 {
-  if (cycle != BUS_CYCLE_DISABLE)
+  if (cycle != SchedulerEvent::EventDisableCycle)
   {
-    blitterEvent.cycle = cycle;
-    busInsertEvent(&blitterEvent);
+    _core.Events->blitterEvent.cycle = cycle;
+    _core.Scheduler->InsertEvent(&_core.Events->blitterEvent);
   }
 }
 
@@ -1376,7 +1369,7 @@ void blitInitiate()
   blitter.started = TRUE;
   blitSetBlitterBusy();
   wintreq_direct(0x0040, 0xdff09c, true);
-  blitterInsertEvent(cycle_length + bus.cycle);
+  blitterInsertEvent(cycle_length + _core.Timekeeper->GetFrameCycle());
 }
 
 // Handles a blitter event.
@@ -1384,7 +1377,9 @@ void blitInitiate()
 // Event has already been popped.
 void blitFinishBlit()
 {
-  blitterEvent.cycle = BUS_CYCLE_DISABLE;
+  _core.DebugLog->Log(DebugLogKind::EventHandler, _core.Events->blitterEvent.Name);
+
+  _core.Events->blitterEvent.Disable();
   blitter.dma_pending = FALSE;
   blitter.started = FALSE;
   cpuIntegrationSetChipSlowdown(1);
@@ -1949,85 +1944,14 @@ void blitterHardReset()
   blitterIORegistersClear();
 }
 
-void blitterEndOfFrame()
-{
-  if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
-  {
-    int32_t cycle = blitterEvent.cycle -= busGetCyclesInThisFrame();
-    blitterRemoveEvent();
-    blitterInsertEvent(cycle);
-  }
-}
+// void blitterEndOfFrame()
+//{
+//   //_core.Scheduler->RebaseForNewFrame(&_core.Events->blitterEvent);
+// }
 
 /*===========================================================================*/
 /* Called on emulator start / stop                                           */
 /*===========================================================================*/
-
-void blitterSaveState(FILE *F)
-{
-  fwrite(&blitter.bltcon, sizeof(blitter.bltcon), 1, F);
-  fwrite(&blitter.bltafwm, sizeof(blitter.bltafwm), 1, F);
-  fwrite(&blitter.bltalwm, sizeof(blitter.bltalwm), 1, F);
-  fwrite(&blitter.bltapt, sizeof(blitter.bltapt), 1, F);
-  fwrite(&blitter.bltbpt, sizeof(blitter.bltbpt), 1, F);
-  fwrite(&blitter.bltcpt, sizeof(blitter.bltcpt), 1, F);
-  fwrite(&blitter.bltdpt, sizeof(blitter.bltdpt), 1, F);
-  fwrite(&blitter.bltamod, sizeof(blitter.bltamod), 1, F);
-  fwrite(&blitter.bltbmod, sizeof(blitter.bltbmod), 1, F);
-  fwrite(&blitter.bltcmod, sizeof(blitter.bltcmod), 1, F);
-  fwrite(&blitter.bltdmod, sizeof(blitter.bltdmod), 1, F);
-  fwrite(&blitter.bltadat, sizeof(blitter.bltadat), 1, F);
-  fwrite(&blitter.bltbdat, sizeof(blitter.bltbdat), 1, F);
-  fwrite(&blitter.bltbdat_original, sizeof(blitter.bltbdat_original), 1, F);
-  fwrite(&blitter.bltcdat, sizeof(blitter.bltcdat), 1, F);
-  fwrite(&blitter.bltzero, sizeof(blitter.bltzero), 1, F);
-
-  fwrite(&blitter.height, sizeof(blitter.height), 1, F);
-  fwrite(&blitter.width, sizeof(blitter.width), 1, F);
-
-  fwrite(&blitter.a_shift_asc, sizeof(blitter.a_shift_asc), 1, F);
-  fwrite(&blitter.a_shift_desc, sizeof(blitter.a_shift_desc), 1, F);
-  fwrite(&blitter.b_shift_asc, sizeof(blitter.b_shift_asc), 1, F);
-  fwrite(&blitter.b_shift_desc, sizeof(blitter.b_shift_desc), 1, F);
-
-  fwrite(&blitter.started, sizeof(blitter.started), 1, F);
-  fwrite(&blitter.dma_pending, sizeof(blitter.dma_pending), 1, F);
-  fwrite(&blitter.cycle_length, sizeof(blitter.cycle_length), 1, F);
-  fwrite(&blitter.cycle_free, sizeof(blitter.cycle_free), 1, F);
-}
-
-void blitterLoadState(FILE *F)
-{
-  fread(&blitter.bltcon, sizeof(blitter.bltcon), 1, F);
-  fread(&blitter.bltafwm, sizeof(blitter.bltafwm), 1, F);
-  fread(&blitter.bltalwm, sizeof(blitter.bltalwm), 1, F);
-  fread(&blitter.bltapt, sizeof(blitter.bltapt), 1, F);
-  fread(&blitter.bltbpt, sizeof(blitter.bltbpt), 1, F);
-  fread(&blitter.bltcpt, sizeof(blitter.bltcpt), 1, F);
-  fread(&blitter.bltdpt, sizeof(blitter.bltdpt), 1, F);
-  fread(&blitter.bltamod, sizeof(blitter.bltamod), 1, F);
-  fread(&blitter.bltbmod, sizeof(blitter.bltbmod), 1, F);
-  fread(&blitter.bltcmod, sizeof(blitter.bltcmod), 1, F);
-  fread(&blitter.bltdmod, sizeof(blitter.bltdmod), 1, F);
-  fread(&blitter.bltadat, sizeof(blitter.bltadat), 1, F);
-  fread(&blitter.bltbdat, sizeof(blitter.bltbdat), 1, F);
-  fread(&blitter.bltbdat_original, sizeof(blitter.bltbdat_original), 1, F);
-  fread(&blitter.bltcdat, sizeof(blitter.bltcdat), 1, F);
-  fread(&blitter.bltzero, sizeof(blitter.bltzero), 1, F);
-
-  fread(&blitter.height, sizeof(blitter.height), 1, F);
-  fread(&blitter.width, sizeof(blitter.width), 1, F);
-
-  fread(&blitter.a_shift_asc, sizeof(blitter.a_shift_asc), 1, F);
-  fread(&blitter.a_shift_desc, sizeof(blitter.a_shift_desc), 1, F);
-  fread(&blitter.b_shift_asc, sizeof(blitter.b_shift_asc), 1, F);
-  fread(&blitter.b_shift_desc, sizeof(blitter.b_shift_desc), 1, F);
-
-  fread(&blitter.started, sizeof(blitter.started), 1, F);
-  fread(&blitter.dma_pending, sizeof(blitter.dma_pending), 1, F);
-  fread(&blitter.cycle_length, sizeof(blitter.cycle_length), 1, F);
-  fread(&blitter.cycle_free, sizeof(blitter.cycle_free), 1, F);
-}
 
 void blitterEmulationStart()
 {
@@ -2104,3 +2028,14 @@ void blitterStartup()
 void blitterShutdown()
 {
 }
+
+void Blitter::InitializeBlitterEvent()
+{
+  _blitterEvent.Initialize(blitFinishBlit, "Blitter");
+}
+
+Blitter::Blitter(SchedulerEvent &blitterEvent) : _blitterEvent(blitterEvent)
+{
+}
+
+Blitter::~Blitter() = default;

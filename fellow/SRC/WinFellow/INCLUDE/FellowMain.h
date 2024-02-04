@@ -16,8 +16,6 @@ enum class FELLOW_REQUESTER_TYPE
   FELLOW_REQUESTER_TYPE_ERROR = 3
 };
 
-extern BOOLE fellow_request_emulation_stop;
-
 extern void fellowRun();
 extern void fellowStepOne();
 extern void fellowStepOver();
@@ -27,8 +25,6 @@ extern void fellowNastyExit();
 extern char *fellowGetVersionString();
 extern void fellowSetPreStartReset(bool reset);
 extern bool fellowGetPreStartReset();
-extern BOOLE fellowSaveState(char *filename);
-extern BOOLE fellowLoadState(char *filename);
 extern void fellowSoftReset();
 extern void fellowHardReset();
 extern bool fellowEmulationStart();

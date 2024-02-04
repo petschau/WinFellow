@@ -1,11 +1,20 @@
 #pragma once
 
-#include "LegacyCopper.h"
+#include "CustomChipset/Copper/ICopper.h"
+#include "Scheduler/Scheduler.h"
+#include "CustomChipset/Copper/CopperRegisters.h"
 
-class LineExactCopper : public Copper
+class LineExactCopper : public ICopper
 {
 private:
   static uint32_t cycletable[16];
+
+  Scheduler &_scheduler;
+  SchedulerEvent &_copperEvent;
+  SchedulerEvent &_cpuEvent;
+  FrameParameters &_currentFrameParameters;
+  Timekeeper &_timekeeper;
+  CopperRegisters &_copperRegisters;
 
   /*============================================================================*/
   /* Translation table for raster ypos to cycle translation                     */
@@ -24,11 +33,19 @@ public:
   virtual void Load(uint32_t new_copper_pc);
   virtual void EventHandler();
 
+  void InitializeCopperEvent() override;
+
   virtual void EndOfFrame();
   virtual void HardReset();
   virtual void EmulationStart();
   virtual void EmulationStop();
 
-  LineExactCopper();
+  LineExactCopper(
+      Scheduler &scheduler,
+      SchedulerEvent &copperEvent,
+      SchedulerEvent &cpuEvent,
+      FrameParameters &currentFrameParameters,
+      Timekeeper &timekeeper,
+      CopperRegisters &copperRegisters);
   virtual ~LineExactCopper();
 };

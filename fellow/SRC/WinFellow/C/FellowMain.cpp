@@ -38,18 +38,15 @@
 #include "Keyboard.h"
 #include "GraphicsPipeline.h"
 #include "Module/Hardfile/IHardfileHandler.h"
-#include "BusScheduler.h"
-#include "LegacyCopper.h"
-#include "ComplexInterfaceAdapter.h"
+#include "Cia.h"
 #include "Blitter.h"
-#include "Sprites.h"
 #include "Timers.h"
 #include "Configuration.h"
 #include "WindowsUI.h"
 #include "FilesystemIntegration.h"
 #include "IniFile.h"
 #include "SystemInformation.h"
-#include "interrupt.h"
+#include "PaulaInterrupt.h"
 #include "RetroPlatform.h"
 
 #include "graphics/Graphics.h"
@@ -57,8 +54,6 @@
 
 #include "VirtualHost/Core.h"
 #include "VirtualHost/CoreFactory.h"
-
-BOOLE fellow_request_emulation_stop;
 
 /*============================================================================*/
 /* Perform reset before starting emulation flag                               */
@@ -157,23 +152,26 @@ static void fellowRuntimeErrorCheck()
 
 void fellowSoftReset()
 {
+  _core.Scheduler->SoftReset();
+
   memorySoftReset();
   interruptSoftReset();
   _core.HardfileHandler->HardReset();
-  spriteHardReset();
+  _core.CurrentSprites->HardReset();
   drawHardReset();
   kbdHardReset();
   gameportHardReset();
-  busSoftReset();
+  // busSoftReset();
   _core.Sound->HardReset();
   blitterHardReset();
-  copperHardReset();
+  _core.CurrentCopper->HardReset();
   floppyHardReset();
   ciaHardReset();
   graphHardReset();
   ffilesysHardReset();
   memoryHardResetPost();
   fellowSetPreStartReset(false);
+
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.SoftReset();
 }
 
@@ -183,17 +181,21 @@ void fellowSoftReset()
 
 void fellowHardReset()
 {
+  _core.Agnus->HardReset();
+  _core.Timekeeper->HardReset(*_core.CurrentFrameParameters);
+  _core.Scheduler->HardReset();
+
   memoryHardReset();
   interruptHardReset();
   _core.HardfileHandler->HardReset();
-  spriteHardReset();
+  _core.CurrentSprites->HardReset();
   drawHardReset();
   kbdHardReset();
   gameportHardReset();
-  busHardReset();
+  // busHardReset();
   _core.Sound->HardReset();
   blitterHardReset();
-  copperHardReset();
+  _core.CurrentCopper->HardReset();
   floppyHardReset();
   ciaHardReset();
   graphHardReset();
@@ -201,7 +203,8 @@ void fellowHardReset()
   memoryHardResetPost();
   cpuIntegrationHardReset();
   fellowSetPreStartReset(false);
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.HardReset();
+
+  // if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.HardReset();
 }
 
 /*============================================================================*/
@@ -211,12 +214,12 @@ void fellowHardReset()
 
 void fellowRequestEmulationStop()
 {
-  fellow_request_emulation_stop = TRUE;
+  _core.Scheduler->RequestEmulationStop();
 }
 
 void fellowRequestEmulationStopClear()
 {
-  fellow_request_emulation_stop = FALSE;
+  _core.Scheduler->ClearRequestEmulationStop();
 }
 
 /*============================================================================*/
@@ -225,15 +228,21 @@ void fellowRequestEmulationStopClear()
 
 bool fellowEmulationStart()
 {
+  bool cycleAccuracy = drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT;
+  _core.ConfigureAccuracy(cycleAccuracy);
+
   fellowRequestEmulationStopClear();
   iniEmulationStart();
   memoryEmulationStart();
   interruptEmulationStart();
   ciaEmulationStart();
   cpuIntegrationEmulationStart();
-  spriteEmulationStart();
+
+  _core.CurrentSprites->EmulationStart();
+
   blitterEmulationStart();
-  copperEmulationStart();
+
+  _core.CurrentCopper->EmulationStart();
 
   if (!drawEmulationStart())
   {
@@ -250,14 +259,16 @@ bool fellowEmulationStart()
 
   graphEmulationStart();
   _core.Sound->EmulationStart();
-  busEmulationStart();
+  // busEmulationStart();
   floppyEmulationStart();
   ffilesysEmulationStart();
   timerEmulationStart();
+
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.EmulationStart();
 #endif
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.EmulationStart();
+
+  if (cycleAccuracy) GraphicsContext.EmulationStart();
 
   _core.Uart->EmulationStart();
   _core.HardfileHandler->EmulationStart();
@@ -278,14 +289,14 @@ void fellowEmulationStop()
   timerEmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
-  busEmulationStop();
+  // busEmulationStop();
   _core.Sound->EmulationStop();
   gameportEmulationStop();
   kbdEmulationStop();
   drawEmulationStop();
-  copperEmulationStop();
+  _core.CurrentCopper->EmulationStop();
   blitterEmulationStop();
-  spriteEmulationStop();
+  _core.CurrentSprites->EmulationStop();
   graphEmulationStop();
   cpuIntegrationEmulationStop();
   ciaEmulationStop();
@@ -305,16 +316,16 @@ void fellowEmulationStop()
 
 void fellowRun()
 {
-  if (fellowGetPreStartReset()) fellowHardReset();
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR) busRun();
+  if (fellowGetPreStartReset())
+  {
+    fellowHardReset();
+  }
+
+  _core.Scheduler->Run();
+
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
-
-/*============================================================================*/
-/* Steps one CPU instruction                                                  */
-/*============================================================================*/
 
 void fellowStepOne()
 {
@@ -323,18 +334,12 @@ void fellowStepOne()
   {
     fellowHardReset();
   }
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
-  {
-    busDebugStepOneInstruction();
-  }
+
+  _core.Scheduler->DebugStepOneInstruction();
+
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
-
-/*============================================================================*/
-/* Steps over a CPU instruction                                               */
-/*============================================================================*/
 
 void fellowStepOver()
 {
@@ -349,32 +354,25 @@ void fellowStepOver()
     fellowHardReset();
   }
 
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
-  {
-    uint32_t current_pc = cpuGetPC();
-    uint32_t over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
-    while ((cpuGetPC() != over_pc) && !fellow_request_emulation_stop)
-    {
-      busDebugStepOneInstruction();
-    }
-  }
+  uint32_t current_pc = cpuGetPC();
+  uint32_t overPc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
+
+  _core.Scheduler->DebugStepUntilPc(overPc);
+
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
 
-/*============================================================================*/
-/* Run until we crash or is exited in debug-mode                              */
-/*============================================================================*/
-
 void fellowRunDebug(uint32_t breakpoint)
 {
   fellowRequestEmulationStopClear();
-  if (fellowGetPreStartReset()) fellowHardReset();
-  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR)
-    while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
-      busDebugStepOneInstruction();
+  if (fellowGetPreStartReset())
+  {
+    fellowHardReset();
+  }
+
+  _core.Scheduler->DebugStepUntilPc(breakpoint);
+
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
@@ -405,48 +403,6 @@ static void fellowDrawFailed()
 }
 
 /*============================================================================*/
-/* Save statefile                                                             */
-/*============================================================================*/
-
-BOOLE fellowSaveState(char *filename)
-{
-  FILE *F = fopen(filename, "wb");
-
-  if (F == nullptr) return FALSE;
-
-  cpuIntegrationSaveState(F);
-  memorySaveState(F);
-  copperSaveState(F);
-  busSaveState(F);
-  blitterSaveState(F);
-  ciaSaveState(F);
-
-  fclose(F);
-  return TRUE;
-}
-
-/*============================================================================*/
-/* Load statefile                                                             */
-/*============================================================================*/
-
-BOOLE fellowLoadState(char *filename)
-{
-  FILE *F = fopen(filename, "rb");
-
-  if (F == nullptr) return FALSE;
-
-  cpuIntegrationLoadState(F);
-  memoryLoadState(F);
-  copperLoadState(F);
-  busLoadState(F);
-  blitterLoadState(F);
-  ciaLoadState(F);
-
-  fclose(F);
-  return TRUE;
-}
-
-/*============================================================================*/
 /* Inititalize all modules in the emulator, called on startup                 */
 /*============================================================================*/
 
@@ -464,16 +420,14 @@ static void fellowModulesStartup(int argc, const char **argv)
   timerStartup();
   _core.HardfileHandler->Startup();
   ffilesysStartup();
-  spriteStartup();
   iniStartup();
   kbdStartup();
   cfgStartup(argc, argv);
   if (!drawStartup()) fellowDrawFailed();
   gameportStartup();
-  busStartup();
+  // busStartup();
   _core.Sound->Startup();
   blitterStartup();
-  copperStartup();
   floppyStartup();
   ciaStartup();
   memoryStartup();
@@ -481,10 +435,13 @@ static void fellowModulesStartup(int argc, const char **argv)
   graphStartup();
   cpuIntegrationStartup();
   wguiStartup();
+
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Startup();
 #endif
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Startup();
+
+  // TODO: Deal with this
+  // if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT) GraphicsContext.Startup();
 
   automator.Startup();
 }
@@ -507,16 +464,15 @@ static void fellowModulesShutdown()
   memoryShutdown();
   ciaShutdown();
   floppyShutdown();
-  copperShutdown();
+
   blitterShutdown();
   _core.Sound->Shutdown();
-  busShutdown();
+  // busShutdown();
   gameportShutdown();
   drawShutdown();
   cfgShutdown();
   kbdShutdown();
   iniShutdown();
-  spriteShutdown();
   ffilesysShutdown();
   _core.HardfileHandler->Shutdown();
   timerShutdown();

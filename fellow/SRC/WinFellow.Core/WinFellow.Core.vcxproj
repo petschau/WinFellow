@@ -27,11 +27,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="chipset.h" />
+    <ClInclude Include="Cpu\ICpu.h" />
+    <ClInclude Include="CustomChipset\Copper\CopperRegisters.h" />
+    <ClInclude Include="CustomChipset\Copper\ICopper.h" />
+    <ClInclude Include="CustomChipset\GraphLine.h" />
+    <ClInclude Include="CustomChipset\IAgnus.h" />
+    <ClInclude Include="CustomChipset\IBlitter.h" />
+    <ClInclude Include="CustomChipset\IPaula.h" />
     <ClInclude Include="CustomChipset\RegisterUtility.h" />
     <ClInclude Include="CustomChipset\Registers.h" />
     <ClInclude Include="CustomChipset\Sound\Sound.h" />
     <ClInclude Include="CustomChipset\Sound\SoundConfiguration.h" />
     <ClInclude Include="CustomChipset\Sound\WavFileWriter.h" />
+    <ClInclude Include="CustomChipset\Sprite\CycleExactSprites.h" />
+    <ClInclude Include="CustomChipset\Sprite\ISprites.h" />
+    <ClInclude Include="CustomChipset\Sprite\LineExactSprites.h" />
+    <ClInclude Include="CustomChipset\Sprite\SpriteRegisters.h" />
+    <ClInclude Include="DebugApi\DebugLog.h" />
     <ClInclude Include="DebugApi\DebugVM.h" />
     <ClInclude Include="DebugApi\IM68K.h" />
     <ClInclude Include="DebugApi\IMemorySystem.h" />
@@ -41,8 +54,10 @@
     <ClInclude Include="Driver\Drivers.h" />
     <ClInclude Include="Driver\ISoundDriver.h" />
     <ClInclude Include="Driver\SoundDriverRuntimeConfiguration.h" />
+    <ClInclude Include="IO\ICia.h" />
     <ClInclude Include="IO\RtcOkiMsm6242rs.h" />
     <ClInclude Include="IO\Uart.h" />
+    <ClInclude Include="Memory\IMemory.h" />
     <ClInclude Include="Module\Hardfile\HardfileConfiguration.h" />
     <ClInclude Include="Module\Hardfile\HardfileGeometry.h" />
     <ClInclude Include="Module\Hardfile\HardfilePartition.h" />
@@ -50,6 +65,12 @@
     <ClInclude Include="Module\Hardfile\RdbStatus.h" />
     <ClInclude Include="NullDriver\Sound\NullSound.h" />
     <ClInclude Include="Portable.h" />
+    <ClInclude Include="Scheduler\FrameParameters.h" />
+    <ClInclude Include="Scheduler\Scheduler.h" />
+    <ClInclude Include="Scheduler\SchedulerEvent.h" />
+    <ClInclude Include="Scheduler\SchedulerEvents.h" />
+    <ClInclude Include="Scheduler\SchedulerQueue.h" />
+    <ClInclude Include="Scheduler\Timekeeper.h" />
     <ClInclude Include="Service\FileInformation.h" />
     <ClInclude Include="Service\IFileops.h" />
     <ClInclude Include="Service\IFileInformation.h" />
@@ -60,13 +81,22 @@
     <ClInclude Include="VirtualHost\Core.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="chipset.cpp" />
+    <ClCompile Include="CustomChipset\Copper\CopperRegisters.cpp" />
+    <ClCompile Include="CustomChipset\GraphLine.cpp" />
     <ClCompile Include="CustomChipset\Registers.cpp" />
     <ClCompile Include="CustomChipset\RegisterUtility.cpp" />
+    <ClCompile Include="CustomChipset\Sprite\SpriteRegisters.cpp" />
+    <ClCompile Include="DebugApi\DebugLog.cpp" />
     <ClCompile Include="DebugApi\DebugVM.cpp" />
     <ClCompile Include="IO\RtcOkiMsm6242rs.cpp" />
     <ClCompile Include="Module\Hardfile\HardfileConfiguration.cpp" />
     <ClCompile Include="Module\Hardfile\HardfileGeometry.cpp" />
     <ClCompile Include="NullDriver\Sound\NullSound.cpp" />
+    <ClCompile Include="Scheduler\Scheduler.cpp" />
+    <ClCompile Include="Scheduler\SchedulerEvent.cpp" />
+    <ClCompile Include="Scheduler\SchedulerQueue.cpp" />
+    <ClCompile Include="Scheduler\Timekeeper.cpp" />
     <ClCompile Include="Service\FileInformation.cpp" />
     <ClCompile Include="Service\Log.cpp" />
     <ClCompile Include="VirtualHost\Core.cpp" />

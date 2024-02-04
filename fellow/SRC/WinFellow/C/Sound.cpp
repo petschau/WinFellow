@@ -25,12 +25,10 @@
 #include "Defs.h"
 #include "chipset.h"
 #include "MemoryInterface.h"
-#include "ComplexInterfaceAdapter.h"
+#include "Cia.h"
 #include "GraphicsPipeline.h"
-#include "interrupt.h"
+#include "PaulaInterrupt.h"
 #include "VirtualHost/Core.h"
-
-using namespace CustomChipset;
 
 // ==================
 // AUDXPT
@@ -801,17 +799,10 @@ void Sound::Startup()
   SetBufferLength(40);
   IORegistersClear();
   SetDeviceFound(_core.Drivers.SoundDriver->IsInitialized());
-  _wavFileWriter.Startup();
-
-  if (GetEmulation() == sound_emulations::SOUND_PLAY && !GetDeviceFound())
-  {
-    SetEmulation(sound_emulations::SOUND_EMULATE);
-  }
 }
 
 void Sound::Shutdown()
 {
-  _wavFileWriter.Shutdown();
 }
 
 Sound::Sound()

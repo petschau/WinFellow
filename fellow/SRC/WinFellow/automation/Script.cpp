@@ -1,8 +1,8 @@
 #include "Defs.h"
 #include "Script.h"
-#include "BusScheduler.h"
 #include "Keyboard.h"
 #include "Gameports.h"
+#include "VirtualHost/Core.h"
 
 using namespace std;
 
@@ -82,7 +82,7 @@ void Script::RecordKey(uint8_t keyCode)
 {
   char parameters[32];
   sprintf(parameters, "%u", (uint32_t)keyCode);
-  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), KeyCommand, parameters);
+  _lines.emplace_back(_core.Timekeeper->GetFrameNumber(), _core.Timekeeper->GetAgnusLine(), KeyCommand, parameters);
 }
 
 void Script::RecordMouse(gameport_inputs mousedev, int32_t x, int32_t y, BOOLE button1, BOOLE button2, BOOLE button3)
@@ -90,7 +90,7 @@ void Script::RecordMouse(gameport_inputs mousedev, int32_t x, int32_t y, BOOLE b
   uint32_t port = (mousedev == GP_MOUSE0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %d %d %u %u %u", port, x, y, button1, button2, button3);
-  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), MouseCommand, parameters);
+  _lines.emplace_back(_core.Timekeeper->GetFrameNumber(), _core.Timekeeper->GetAgnusLine(), MouseCommand, parameters);
 }
 
 void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
@@ -98,7 +98,7 @@ void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE 
   uint32_t port = (joydev == GP_JOYKEY0 || joydev == GP_ANALOG0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %u %u %u %u %u %u", port, left, up, right, down, button1, button2);
-  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), JoystickCommand, parameters);
+  _lines.emplace_back(_core.Timekeeper->GetFrameNumber(), _core.Timekeeper->GetAgnusLine(), JoystickCommand, parameters);
 }
 
 string Script::GetStringForAction(kbd_event action)
@@ -143,7 +143,7 @@ void Script::RecordEmulatorAction(kbd_event action)
     return;
   }
 
-  _lines.emplace_back(busGetRasterFrameCount(), busGetRasterY(), EmulatorActionCommand, actionString);
+  _lines.emplace_back(_core.Timekeeper->GetFrameNumber(), _core.Timekeeper->GetAgnusLine(), EmulatorActionCommand, actionString);
 }
 
 void Script::Load(const string &filename)

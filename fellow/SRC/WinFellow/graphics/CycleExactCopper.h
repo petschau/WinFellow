@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Defs.h"
-#include "LegacyCopper.h"
+#include "CustomChipset/Copper/ICopper.h"
+#include "Scheduler/Scheduler.h"
+#include "DebugApi/DebugLog.h"
 
 enum class CopperStates
 {
@@ -11,9 +12,17 @@ enum class CopperStates
   COPPER_STATE_TRANSFER_SECOND_WORD = 3
 };
 
-class CycleExactCopper : public Copper
+class CycleExactCopper : public ICopper
 {
 private:
+  Scheduler &_scheduler;
+  SchedulerEvent &_copperEvent;
+  SchedulerEvent &_cpuEvent;
+  FrameParameters &_currentFrameParameters;
+  Timekeeper &_timekeeper;
+  CopperRegisters &_copperRegisters;
+  DebugLog &_debugLog;
+
   CopperStates _state;
   uint16_t _first;
   uint16_t _second;
@@ -43,11 +52,20 @@ public:
   virtual void Load(uint32_t new_copper_pc);
   virtual void EventHandler();
 
+  void InitializeCopperEvent() override;
+
   virtual void EndOfFrame();
   virtual void HardReset();
   virtual void EmulationStart();
   virtual void EmulationStop();
 
-  CycleExactCopper();
+  CycleExactCopper(
+      Scheduler &scheduler,
+      SchedulerEvent &copperEvent,
+      SchedulerEvent &cpuEvent,
+      FrameParameters &currentFrameParameters,
+      Timekeeper &timekeeper,
+      CopperRegisters &copperRegisters,
+      DebugLog &debugLog);
   virtual ~CycleExactCopper();
 };

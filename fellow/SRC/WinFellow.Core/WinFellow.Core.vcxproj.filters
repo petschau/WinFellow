@@ -34,6 +34,21 @@
     <Filter Include="DebugApi">
       <UniqueIdentifier>{82fb5aee-8c48-4c42-8bdd-d9dc76624636}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scheduler">
+      <UniqueIdentifier>{77dc2736-5149-4f72-b2e4-3a3370a74a62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cpu">
+      <UniqueIdentifier>{caa01b03-2b51-46db-8cb0-8f40a475b78b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{374dce98-a5ed-47aa-9829-a7befa5e1250}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CustomChipset\Copper">
+      <UniqueIdentifier>{ad376a76-fa7b-4b65-949a-caa6e327228a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CustomChipset\Sprite">
+      <UniqueIdentifier>{3539e3bd-a7d5-43e2-aac2-6bade4096b9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomChipset\Registers.h">
@@ -125,6 +140,67 @@
     <ClInclude Include="DebugApi\MemorySystem.h">
       <Filter>DebugApi</Filter>
     </ClInclude>
+    <ClInclude Include="Scheduler\SchedulerEvent.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\SchedulerQueue.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\Scheduler.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\Timekeeper.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Cpu\ICpu.h">
+      <Filter>Cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\SchedulerEvents.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\FrameParameters.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\IAgnus.h">
+      <Filter>CustomChipset</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\ICia.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\IBlitter.h">
+      <Filter>CustomChipset</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\IPaula.h">
+      <Filter>CustomChipset</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\IMemory.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Copper\CopperRegisters.h">
+      <Filter>CustomChipset\Copper</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Copper\ICopper.h">
+      <Filter>CustomChipset\Copper</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Sprite\ISprites.h">
+      <Filter>CustomChipset\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Sprite\LineExactSprites.h">
+      <Filter>CustomChipset\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\GraphLine.h">
+      <Filter>CustomChipset</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Sprite\CycleExactSprites.h">
+      <Filter>CustomChipset\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomChipset\Sprite\SpriteRegisters.h">
+      <Filter>CustomChipset\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="chipset.h" />
+    <ClInclude Include="DebugApi\DebugLog.h">
+      <Filter>DebugApi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -155,6 +231,31 @@
       <Filter>Module\Hardfile</Filter>
     </ClCompile>
     <ClCompile Include="DebugApi\DebugVM.cpp">
+      <Filter>DebugApi</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\SchedulerEvent.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\SchedulerQueue.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\Scheduler.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\Timekeeper.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomChipset\Copper\CopperRegisters.cpp">
+      <Filter>CustomChipset\Copper</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomChipset\GraphLine.cpp">
+      <Filter>CustomChipset</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomChipset\Sprite\SpriteRegisters.cpp">
+      <Filter>CustomChipset\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="chipset.cpp" />
+    <ClCompile Include="DebugApi\DebugLog.cpp">
       <Filter>DebugApi</Filter>
     </ClCompile>
   </ItemGroup>

@@ -21,7 +21,6 @@
 
 #include "Defs.h"
 #include "FellowMain.h"
-#include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "Renderer.h"
 #include "draw_interlace_control.h"
@@ -64,7 +63,6 @@ void drawDecideInterlaceStatusForNextFrame()
   }
 
   interlace_status.frame_is_long = ((lof & 0x8000) == 0x8000);
-  busSetScreenLimits(interlace_status.frame_is_long);
 
   bool use_interlaced_rendering = drawDecideUseInterlacedRendering();
   if (use_interlaced_rendering != interlace_status.use_interlaced_rendering)
@@ -80,8 +78,6 @@ void drawDecideInterlaceStatusForNextFrame()
     interlace_status.use_interlaced_rendering = use_interlaced_rendering;
     drawReinitializeRendering();
   }
-
-  //    _core.Log->AddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
 }
 
 void drawInterlaceStartup()

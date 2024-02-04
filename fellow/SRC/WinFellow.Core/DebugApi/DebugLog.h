@@ -1,0 +1,45 @@
+#pragma once
+
+#include <string>
+#include <vector>
+
+#include "Scheduler/Timekeeper.h"
+#include "Service/IFileops.h"
+
+enum class DebugLogKind
+{
+  EventHandler,
+  CPU
+};
+
+struct DebugLogEntry
+{
+  DebugLogKind Kind;
+  uint64_t FrameNumber;
+  uint32_t AgnusLine;
+  uint32_t AgnusLineCycle;
+  std::string Message;
+};
+
+class DebugLog
+{
+private:
+  const Timekeeper &_timekeeper;
+  Service::IFileops &_fileops;
+  std::string _filename;
+  std::vector<DebugLogEntry> _entries;
+
+  const char *GetKindText(DebugLogKind kind) const;
+
+public:
+  bool _enabled = false;
+
+  void Log(DebugLogKind logKind, const char *message);
+  void Log(DebugLogKind logKind, const std::string message);
+  void Flush();
+
+  DebugLog(const Timekeeper &timekeeper, Service::IFileops &fileops);
+};
+
+#define DEBUGLOG(kind, message)                                                                                                                                               \
+  if (_core.DebugLog->_enabled) _core.DebugLog->Log(kind, message);

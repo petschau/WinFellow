@@ -31,7 +31,7 @@ Tuesday, September 19, 2000: nova
 #include "KeyboardDriver.h"
 #include "Gameports.h"
 #include "GraphicsPipeline.h"
-#include "ComplexInterfaceAdapter.h"
+#include "Cia.h"
 #include "Renderer.h"
 #include "FloppyDisk.h"
 #include "VirtualHost/Core.h"

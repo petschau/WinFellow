@@ -97,7 +97,6 @@
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 
-#include "BusScheduler.h"
 #include "CpuIntegration.h"
 #include "GfxDrvCommon.h"
 #include "GfxDrvDXGI.h"
@@ -353,7 +352,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
           lOriginalSpeed = RP.GetCPUSpeed();
           cpuIntegrationSetSpeed(0);
           cpuIntegrationCalculateMultiplier();
-          busDetermineCpuInstructionEventHandler();
+          _core.Cpu->SetCpuInstructionHandlerFromConfig();
           fellowRequestEmulationStop();
         }
         else
@@ -364,7 +363,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
               lOriginalSpeed);
           cpuIntegrationSetSpeed(lOriginalSpeed);
           cpuIntegrationCalculateMultiplier();
-          busDetermineCpuInstructionEventHandler();
+          _core.Cpu->SetCpuInstructionHandlerFromConfig();
           fellowRequestEmulationStop();
         }
       }
