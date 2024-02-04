@@ -25,8 +25,6 @@ private:
   void InstallIOHandlers();
 
   void ClearState();
-  void LoadState(FILE *F);
-  void SaveState(FILE *F);
 
   void OpenOutputFile();
   void CloseOutputFile();
@@ -50,7 +48,7 @@ public:
   void NotifyInterruptRequestBitsChanged(uint16_t intreq);
 
   void EndOfLine();
-  void EndOfFrame();
+  void RebaseTransmitReceiveDoneTimes(uint32_t cyclesInEndedFrame);
 
   void EmulationStart();
   void EmulationStop();

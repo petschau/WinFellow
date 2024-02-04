@@ -35,13 +35,13 @@ class Sound
 private:
   WavFileWriter _wavFileWriter;
 
-  CustomChipset::sound_emulations _emulation;
-  CustomChipset::sound_rates _rate;
+  sound_emulations _emulation;
+  sound_rates _rate;
   bool _isStereo;
   bool _is16Bits;
   bool _wavCapture;
-  CustomChipset::sound_filters _filter;
-  CustomChipset::sound_notifications _notification;
+  sound_filters _filter;
+  sound_notifications _notification;
   int _volume;
   bool _deviceFound;
 
@@ -122,7 +122,7 @@ private:
   uint32_t ChannelUpdate(uint32_t channel, int16_t *bufferLeft, int16_t *bufferRight, uint32_t count, bool halfscale, bool odd);
   void FrequencyHandler();
 
-  CustomChipset::sound_rates GetRate();
+  sound_rates GetRate();
   uint32_t GetRateReal();
   uint32_t GetBufferLength();
   int GetVolume();
@@ -150,19 +150,19 @@ private:
   void CopyBufferOverrunToCurrentBuffer(uint32_t availableSamples, uint32_t previousBuffer);
 
 public:
-  void SetEmulation(CustomChipset::sound_emulations emulation);
-  CustomChipset::sound_emulations GetEmulation();
+  void SetEmulation(sound_emulations emulation);
+  sound_emulations GetEmulation();
   void SetIsStereo(bool isStereo);
   bool GetIsStereo();
   void SetIs16Bits(bool is16Bits);
   bool GetIs16Bits();
-  void SetFilter(CustomChipset::sound_filters filter);
-  CustomChipset::sound_filters GetFilter();
+  void SetFilter(sound_filters filter);
+  sound_filters GetFilter();
   void SetWAVDump(bool wavCapture);
   bool GetWAVDump();
-  void SetNotification(CustomChipset::sound_notifications notification);
-  CustomChipset::sound_notifications GetNotification();
-  void SetRate(CustomChipset::sound_rates rate);
+  void SetNotification(sound_notifications notification);
+  sound_notifications GetNotification();
+  void SetRate(sound_rates rate);
   void SetBufferLength(uint32_t ms);
 
   void ChannelKill(uint32_t channel);

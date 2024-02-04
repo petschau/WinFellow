@@ -34,8 +34,7 @@
 #include "Module/Hardfile/IHardfileHandler.h"
 #include "GraphicsPipeline.h"
 #include "FloppyDisk.h"
-#include "LegacyCopper.h"
-#include "ComplexInterfaceAdapter.h"
+#include "Cia.h"
 #include "Blitter.h"
 #include "MemoryInterface.h"
 #include "WindowsUI.h"
@@ -163,13 +162,29 @@ void memoryWriteLongToPointer(uint32_t data, uint8_t *address)
 Chip read register functions
 ----------------------------*/
 
-// To simulate noise, return 0 and -1 every second time.
-// Why? Bugged demos test write-only registers for various bit-values
-// and to break out of loops, both 0 and 1 values must be returned.
+uint8_t memoryGetRandomByte()
+{
+  return rand() & 0xff;
+}
+
+uint16_t memoryGetRandomWord()
+{
+  return (uint16_t)(((rand() & 0xff) << 8) | (rand() & 0xff));
+}
+
+uint32_t memoryGetRandomLong()
+{
+  return (((uint32_t)memoryGetRandomWord()) << 16) | (uint32_t)memoryGetRandomWord();
+}
+
+// Unimplemented register handler
+// Programs sometimes incorrectly test unimplemented or write-only registers for bit-values
+// Many real-world programs does not hang because of this, as the expected value is apparently eventually seen
+// Approximated here with random values.
 
 uint16_t rdefault(uint32_t address)
 {
-  return (uint16_t)(rand() % 65536);
+  return memoryGetRandomWord();
 }
 
 void wdefault(uint16_t data, uint32_t address)
@@ -259,7 +274,7 @@ uint8_t memoryUnmappedReadByte(uint32_t address)
 
   do
   {
-    val = rand() % 256;
+    val = memoryGetRandomByte();
   } while (val == 0 || val == memory_previous_unmapped_byte);
 
   memory_previous_unmapped_byte = val;
@@ -275,7 +290,7 @@ uint16_t memoryUnmappedReadWord(uint32_t address)
 
   do
   {
-    val = rand() % 65536;
+    val = memoryGetRandomWord();
   } while (val == 0 || val == memory_previous_unmapped_word);
 
   memory_previous_unmapped_word = val;
@@ -291,7 +306,7 @@ uint32_t memoryUnmappedReadLong(uint32_t address)
 
   do
   {
-    val = rand();
+    val = memoryGetRandomLong();
   } while (val == 0 || val == memory_previous_unmapped_long);
 
   memory_previous_unmapped_long = val;
@@ -2237,50 +2252,6 @@ void memoryBankSettingsClear()
 /* Generic init */
 /*==============*/
 
-void memorySaveState(FILE *F)
-{
-  fwrite(&memory_chipsize, sizeof(memory_chipsize), 1, F);
-  fwrite(&memory_slowsize, sizeof(memory_slowsize), 1, F);
-  fwrite(&memory_fastsize, sizeof(memory_fastsize), 1, F);
-
-  if (memory_chipsize > 0)
-  {
-    fwrite(&memory_chip[0], sizeof(uint8_t), memory_chipsize, F);
-  }
-
-  if (memory_slowsize > 0)
-  {
-    fwrite(&memory_slow[0], sizeof(uint8_t), memory_slowsize, F);
-  }
-
-  if (memory_fastsize > 0)
-  {
-    fwrite(memory_fast, sizeof(uint8_t), memory_fastsize, F);
-  }
-}
-
-void memoryLoadState(FILE *F)
-{
-  fread(&memory_chipsize, sizeof(memory_chipsize), 1, F);
-  fread(&memory_slowsize, sizeof(memory_slowsize), 1, F);
-  fread(&memory_fastsize, sizeof(memory_fastsize), 1, F);
-
-  if (memory_chipsize > 0)
-  {
-    fread(&memory_chip[0], sizeof(uint8_t), memory_chipsize, F);
-  }
-
-  if (memory_slowsize > 0)
-  {
-    fread(&memory_slow[0], sizeof(uint8_t), memory_slowsize, F);
-  }
-
-  if (memory_fastsize > 0)
-  {
-    fread(memory_fast, sizeof(uint8_t), memory_fastsize, F);
-  }
-}
-
 void memoryEmulationStart()
 {
   memoryIoClear();
@@ -2355,4 +2326,14 @@ void memoryShutdown()
   memoryFastFree();
   memoryKickExtendedFree();
   memoryKickA1000BootstrapFree();
+}
+
+void Memory::SetIoWriteStub(uint32_t index, memoryIoWriteFunc iowritefunction)
+{
+  memorySetIoWriteStub(index, iowritefunction);
+}
+
+void Memory::SetIoReadStub(uint32_t index, memoryIoReadFunc ioreadfunction)
+{
+  memorySetIoReadStub(index, ioreadfunction);
 }

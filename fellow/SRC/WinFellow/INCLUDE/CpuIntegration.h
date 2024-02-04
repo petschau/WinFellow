@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include "Defs.h"
+
 enum class cpu_integration_models
 {
   M68000 = 0,
@@ -33,8 +36,6 @@ extern uint32_t cpuIntegrationGetChipSlowdown();
 extern jmp_buf cpu_integration_exception_buffer;
 
 // Fellow limecycle events
-extern void cpuIntegrationSaveState(FILE *F);
-extern void cpuIntegrationLoadState(FILE *F);
 extern void cpuIntegrationEmulationStart();
 extern void cpuIntegrationEmulationStop();
 extern void cpuIntegrationHardReset();

@@ -18,12 +18,12 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 #include "Defs.h"
-#include "BusScheduler.h"
 #include "MemoryInterface.h"
-#include "ComplexInterfaceAdapter.h"
+#include "Cia.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
 #include "VirtualHost/Core.h"
+#include "PaulaInterrupt.h"
 
 /** @file
  *  Chipset side of interrupt control
@@ -36,7 +36,7 @@
  *    interrupts.
  * 2. If one is found, to emulate the chipset latency before actually sending the desired interrupt level
  *    to the CPU, the interrupt event is used (bus.c), scheduled to fire some cycles from now.
- * 3. The interrupt event fires, calls interruptHandleEvent() which will set the new
+ * 3. The interrupt event fires, calls HandleInterruptEvent() which will set the new
  *    interrupt level in the cpu using cpuSetIrqLevel(). The rest in the hands of the
  *    cpu module.
  * 4. cpuSetIrqLevel() will set an internal flag, record the new interrupt level,
@@ -175,7 +175,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
     return;
   }
 
-  if (interruptEvent.cycle != BUS_CYCLE_DISABLE)
+  if (_core.Events->interruptEvent.IsEnabled())
   {
     // Waiting for a delayed IRQ
     if (delayIRQ)
@@ -186,8 +186,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
     else
     {
       // Cancel wait, evaluate irq immediately
-      busRemoveEvent(&interruptEvent);
-      interruptEvent.cycle = BUS_CYCLE_DISABLE;
+      _core.Scheduler->DisableEvent(_core.Events->interruptEvent);
     }
   }
 
@@ -208,8 +207,8 @@ void interruptRaisePendingInternal(bool delayIRQ)
       {
         if (delayIRQ && !cpuGetStop())
         {
-          interruptEvent.cycle = busGetCycle() + interruptGetScheduleLatency();
-          busInsertEvent(&interruptEvent);
+          _core.Events->interruptEvent.cycle = _core.Timekeeper->GetFrameCycle() + interruptGetScheduleLatency();
+          _core.Scheduler->InsertEvent(&_core.Events->interruptEvent);
           return;
         }
 
@@ -228,15 +227,6 @@ void interruptRaisePendingInternal(bool delayIRQ)
 
 void interruptRaisePending()
 {
-  interruptRaisePendingInternal(false);
-}
-
-/*=====================================================
-  Used to introduce a slight delay for hardware irqs
-  =====================================================*/
-void interruptHandleEvent()
-{
-  interruptEvent.cycle = BUS_CYCLE_DISABLE;
   interruptRaisePendingInternal(false);
 }
 
@@ -356,3 +346,22 @@ void interruptStartup()
 void interruptShutdown()
 {
 }
+
+void Paula::InitializeInterruptEvent()
+{
+  _interruptEvent.Initialize([this]() { this->HandleInterruptEvent(); }, "Interrupt");
+}
+
+void Paula::HandleInterruptEvent()
+{
+  _core.DebugLog->Log(DebugLogKind::EventHandler, _interruptEvent.Name);
+
+  _interruptEvent.Disable();
+  interruptRaisePendingInternal(false);
+}
+
+Paula::Paula(SchedulerEvent &interruptEvent) : _interruptEvent(interruptEvent)
+{
+}
+
+Paula::~Paula() = default;

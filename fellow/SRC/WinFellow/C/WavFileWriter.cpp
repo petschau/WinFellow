@@ -28,7 +28,6 @@
 #include "VirtualHost/Core.h"
 
 using namespace std;
-using namespace CustomChipset;
 using namespace Service;
 
 void WavFileWriter::Mono8BitsAdd(int16_t *left, int16_t *right, uint32_t sampleCount)
@@ -206,7 +205,7 @@ void WavFileWriter::EmulationStop()
   }
 }
 
-void WavFileWriter::Startup()
+WavFileWriter::WavFileWriter()
 {
   _serial = 0;
   _rate = (sound_rates)9999;
@@ -216,15 +215,7 @@ void WavFileWriter::Startup()
   _fileLength = 0;
 }
 
-void WavFileWriter::Shutdown()
-{
-  if (_wavFile != nullptr) fclose(_wavFile);
-}
-
-WavFileWriter::WavFileWriter()
-{
-}
-
 WavFileWriter::~WavFileWriter()
 {
+  if (_wavFile != nullptr) fclose(_wavFile);
 }

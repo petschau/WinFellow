@@ -1,8 +1,8 @@
 #include "Defs.h"
 #include "Automator.h"
-#include "BusScheduler.h"
 #include "GraphicsDriver.h"
-#
+#include "VirtualHost/Core.h"
+
 Automator automator;
 
 void Automator::TakeSnapshot()
@@ -17,7 +17,7 @@ void Automator::TakeSnapshot()
     _snapshotCounter = 0;
     _snapshotsTaken++;
     char filename[CFG_FILENAME_LENGTH];
-    sprintf(filename, "%s\\Snap%.4d_%I64d.bmp", SnapshotDirectory.c_str(), _snapshotsTaken, busGetRasterFrameCount() + 1);
+    sprintf(filename, "%s\\Snap%.4d_%I64d.bmp", SnapshotDirectory.c_str(), _snapshotsTaken, _core.Timekeeper->GetFrameNumber() + 1);
     gfxDrvSaveScreenshot(false, filename);
   }
 }
@@ -58,8 +58,8 @@ void Automator::EndOfLine()
 {
   if (!RecordScript)
   {
-    uint64_t frameNumber = busGetRasterFrameCount();
-    uint32_t line = busGetRasterY();
+    uint64_t frameNumber = _core.Timekeeper->GetFrameNumber();
+    uint32_t line = _core.Timekeeper->GetAgnusLine();
     _script.ExecuteUntil(frameNumber, line);
   }
 }

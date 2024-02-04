@@ -2,6 +2,7 @@
 
 #include "Defs.h"
 #include "GraphicsEvent.h"
+#include "VirtualHost/Core.h"
 
 class GraphicsEventQueue
 {
@@ -15,7 +16,7 @@ public:
 
   static uint32_t GetCylindersPerLine()
   {
-    return busGetCyclesInThisLine() * 2;
+    return _core.CurrentFrameParameters->GetAgnusCyclesInLine(_core.Timekeeper->GetAgnusLine()) * 2;
   }
 
   void Clear();

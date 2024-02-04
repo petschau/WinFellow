@@ -27,7 +27,7 @@
 #include "GraphicsPipeline.h"
 #include "Renderer.h"
 #include "draw_interlace_control.h"
-#include "LineExactSprites.h"
+#include "VirtualHost/Core.h"
 
 /*============================================================================*/
 /* Dual playfield translation table                                           */
@@ -797,7 +797,7 @@ static void drawLineHAM2x1_16Bit(graph_line *linedescription, uint32_t nextlineo
     drawSetPixel2x1_16Bit(framebuffer++, drawMake32BitColorFrom16Bit(hampixel));
   }
 
-  line_exact_sprites->MergeHAM2x1x16((uint32_t *)draw_buffer_current_ptr_local, linedescription);
+  _core.LineExactSprites->MergeHAM2x1x16((uint32_t *)draw_buffer_current_ptr_local, linedescription);
 
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
@@ -841,7 +841,7 @@ static void drawLineHAM2x2_16Bit(graph_line *linedescription, uint32_t nextlineo
     drawSetPixel2x2_16Bit(framebuffer++, nextlineoffset1, drawMake32BitColorFrom16Bit(hampixel));
   }
 
-  line_exact_sprites->MergeHAM2x2x16((uint32_t *)draw_buffer_current_ptr_local, linedescription, nextlineoffset1);
+  _core.LineExactSprites->MergeHAM2x2x16((uint32_t *)draw_buffer_current_ptr_local, linedescription, nextlineoffset1);
 
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
@@ -885,7 +885,7 @@ static void drawLineHAM4x2_16Bit(graph_line *linedescription, uint32_t nextlineo
     drawSetPixel4x2_16Bit(framebuffer++, nextlineoffset1, drawMake64BitColorFrom16Bit(hampixel));
   }
 
-  line_exact_sprites->MergeHAM4x2x16((uint64_t *)draw_buffer_current_ptr_local, linedescription, nextlineoffset1);
+  _core.LineExactSprites->MergeHAM4x2x16((uint64_t *)draw_buffer_current_ptr_local, linedescription, nextlineoffset1);
 
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
@@ -931,7 +931,7 @@ static void drawLineHAM4x4_16Bit(graph_line *linedescription, uint32_t nextlineo
     drawSetPixel4x4_16Bit(framebuffer++, nextlineoffset1, nextlineoffset2, nextlineoffset3, drawMake64BitColorFrom16Bit(hampixel));
   }
 
-  line_exact_sprites->MergeHAM4x4x16((uint64_t *)draw_buffer_current_ptr_local, linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
+  _core.LineExactSprites->MergeHAM4x4x16((uint64_t *)draw_buffer_current_ptr_local, linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
 
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
@@ -1769,7 +1769,7 @@ static void drawLineHAM2x1_24Bit(graph_line *linedescription, uint32_t nextlineo
     framebuffer += 6;
   }
 
-  line_exact_sprites->MergeHAM2x1x24(draw_buffer_current_ptr_local, linedescription);
+  _core.LineExactSprites->MergeHAM2x1x24(draw_buffer_current_ptr_local, linedescription);
 
   draw_buffer_info.current_ptr = framebuffer;
 
@@ -1813,7 +1813,7 @@ static void drawLineHAM2x2_24Bit(graph_line *linedescription, uint32_t nextlineo
     framebuffer += 6;
   }
 
-  line_exact_sprites->MergeHAM2x2x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset);
+  _core.LineExactSprites->MergeHAM2x2x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset);
 
   draw_buffer_info.current_ptr = framebuffer;
 
@@ -1857,7 +1857,7 @@ static void drawLineHAM4x2_24Bit(graph_line *linedescription, uint32_t nextlineo
     framebuffer += 12;
   }
 
-  line_exact_sprites->MergeHAM4x2x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset);
+  _core.LineExactSprites->MergeHAM4x2x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset);
 
   draw_buffer_info.current_ptr = framebuffer;
 
@@ -1903,7 +1903,7 @@ static void drawLineHAM4x4_24Bit(graph_line *linedescription, uint32_t nextlineo
     framebuffer += 12;
   }
 
-  line_exact_sprites->MergeHAM4x4x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset, nextlineoffset2, nextlineoffset3);
+  _core.LineExactSprites->MergeHAM4x4x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset, nextlineoffset2, nextlineoffset3);
 
   draw_buffer_info.current_ptr = framebuffer;
 
@@ -2720,7 +2720,7 @@ static void drawLineHAM2x1_32Bit(graph_line *linedescription, uint32_t nextlineo
     drawSetPixel2x1_32Bit(framebuffer++, drawMake64BitColorFrom32Bit(hampixel));
   }
 
-  line_exact_sprites->MergeHAM2x1x32((uint64_t *)draw_buffer_current_ptr_local, linedescription);
+  _core.LineExactSprites->MergeHAM2x1x32((uint64_t *)draw_buffer_current_ptr_local, linedescription);
 
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
@@ -2764,7 +2764,7 @@ static void drawLineHAM2x2_32Bit(graph_line *linedescription, uint32_t nextlineo
     drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, drawMake64BitColorFrom32Bit(hampixel));
   }
 
-  line_exact_sprites->MergeHAM2x2x32(reinterpret_cast<uint64_t *>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
+  _core.LineExactSprites->MergeHAM2x2x32(reinterpret_cast<uint64_t *>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
 
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
@@ -2809,7 +2809,7 @@ static void drawLineHAM4x2_32Bit(graph_line *linedescription, uint32_t nextlineo
     framebuffer += 2;
   }
 
-  line_exact_sprites->MergeHAM4x2x32(reinterpret_cast<uint64_t *>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
+  _core.LineExactSprites->MergeHAM4x2x32(reinterpret_cast<uint64_t *>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
 
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
@@ -2856,7 +2856,7 @@ static void drawLineHAM4x4_32Bit(graph_line *linedescription, uint32_t nextlineo
     framebuffer += 2;
   }
 
-  line_exact_sprites->MergeHAM4x4x32(reinterpret_cast<uint64_t *>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
+  _core.LineExactSprites->MergeHAM4x4x32(reinterpret_cast<uint64_t *>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
   draw_buffer_info.current_ptr = (uint8_t *)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE

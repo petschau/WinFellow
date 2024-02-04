@@ -23,11 +23,8 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "Graphics.h"
-
-using namespace CustomChipset;
 
 static const char *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH", "WAITING_FOR_NEXT_FETCH"};
 
@@ -125,17 +122,18 @@ bool DDFStateMachine::CanRead()
 
 void DDFStateMachine::ChangedValue()
 {
-  uint32_t rasterY = busGetRasterY();
+  uint32_t rasterY = _core.Timekeeper->GetAgnusLine();
   if (rasterY < 0x1a)
   {
     SetState(DDFStates::DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition() * 2));
     return;
   }
 
+  const auto agnusLineCycle = _core.Timekeeper->GetAgnusLineCycle();
   switch (_state)
   {
-    case DDFStates::DDF_STATE_WAITING_FOR_FIRST_FETCH: SetStateWaitingForFirstFetch(busGetRasterY(), busGetRasterX() * 2); break;
-    case DDFStates::DDF_STATE_WAITING_FOR_NEXT_FETCH: SetStateWaitingForNextFetch(busGetRasterY(), busGetRasterX() * 2); break;
+    case DDFStates::DDF_STATE_WAITING_FOR_FIRST_FETCH: SetStateWaitingForFirstFetch(rasterY, agnusLineCycle * 2); break;
+    case DDFStates::DDF_STATE_WAITING_FOR_NEXT_FETCH: SetStateWaitingForNextFetch(rasterY, agnusLineCycle * 2); break;
   }
 }
 

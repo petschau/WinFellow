@@ -1,9 +1,7 @@
-#include "SpriteRegisters.h"
+#include "CustomChipset/Sprite/LineExactSprites.h"
 #include "SpriteP2CDecoder.h"
 #include "SpriteMerger.h"
-#include "LineExactSprites.h"
 #include "FellowMain.h"
-#include "BusScheduler.h"
 #include "MemoryInterface.h"
 #include "Renderer.h"
 #include "chipset.h"
@@ -31,73 +29,73 @@ spr_register_func LineExactSprites::sprxpth_functions[8] = {
 
 void LineExactSprites::aspr0pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[0] = chipsetReplaceHighPtr(sprite_registers.sprpt[0], data);
+  _spriteRegisters.sprpt[0] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[0], data);
 }
 void LineExactSprites::aspr0ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[0] = chipsetReplaceLowPtr(sprite_registers.sprpt[0], data);
+  _spriteRegisters.sprpt[0] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[0], data);
 }
 
 void LineExactSprites::aspr1pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[1] = chipsetReplaceHighPtr(sprite_registers.sprpt[1], data);
+  _spriteRegisters.sprpt[1] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[1], data);
 }
 void LineExactSprites::aspr1ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[1] = chipsetReplaceLowPtr(sprite_registers.sprpt[1], data);
+  _spriteRegisters.sprpt[1] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[1], data);
 }
 
 void LineExactSprites::aspr2pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[2] = chipsetReplaceHighPtr(sprite_registers.sprpt[2], data);
+  _spriteRegisters.sprpt[2] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[2], data);
 }
 void LineExactSprites::aspr2ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[2] = chipsetReplaceLowPtr(sprite_registers.sprpt[2], data);
+  _spriteRegisters.sprpt[2] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[2], data);
 }
 
 void LineExactSprites::aspr3pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[3] = chipsetReplaceHighPtr(sprite_registers.sprpt[3], data);
+  _spriteRegisters.sprpt[3] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[3], data);
 }
 void LineExactSprites::aspr3ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[3] = chipsetReplaceLowPtr(sprite_registers.sprpt[3], data);
+  _spriteRegisters.sprpt[3] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[3], data);
 }
 
 void LineExactSprites::aspr4pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[4] = chipsetReplaceHighPtr(sprite_registers.sprpt[4], data);
+  _spriteRegisters.sprpt[4] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[4], data);
 }
 void LineExactSprites::aspr4ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[4] = chipsetReplaceLowPtr(sprite_registers.sprpt[4], data);
+  _spriteRegisters.sprpt[4] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[4], data);
 }
 
 void LineExactSprites::aspr5pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[5] = chipsetReplaceHighPtr(sprite_registers.sprpt[5], data);
+  _spriteRegisters.sprpt[5] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[5], data);
 }
 void LineExactSprites::aspr5ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[5] = chipsetReplaceLowPtr(sprite_registers.sprpt[5], data);
+  _spriteRegisters.sprpt[5] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[5], data);
 }
 void LineExactSprites::aspr6pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[6] = chipsetReplaceHighPtr(sprite_registers.sprpt[6], data);
+  _spriteRegisters.sprpt[6] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[6], data);
 }
 void LineExactSprites::aspr6ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[6] = chipsetReplaceLowPtr(sprite_registers.sprpt[6], data);
+  _spriteRegisters.sprpt[6] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[6], data);
 }
 
 void LineExactSprites::aspr7pth(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[7] = chipsetReplaceHighPtr(sprite_registers.sprpt[7], data);
+  _spriteRegisters.sprpt[7] = chipsetReplaceHighPtr(_spriteRegisters.sprpt[7], data);
 }
 void LineExactSprites::aspr7ptl(uint16_t data, uint32_t address)
 {
-  sprite_registers.sprpt[7] = chipsetReplaceLowPtr(sprite_registers.sprpt[7], data);
+  _spriteRegisters.sprpt[7] = chipsetReplaceLowPtr(_spriteRegisters.sprpt[7], data);
 }
 
 void LineExactSprites::asprxpos(uint16_t data, uint32_t address)
@@ -1063,7 +1061,7 @@ void LineExactSprites::MergeHAM4x4x32(uint64_t *frameptr, graph_line *linedescri
 
 void LineExactSprites::BuildItem(spr_action_list_item **item)
 {
-  uint32_t currentX = busGetRasterX();
+  uint32_t currentX = _timekeeper.GetAgnusLineCycle();
   if (currentX >= 18)
   {
     // Petter has put an delay in the Copper calls of 16 cycles, we need to compensate for that
@@ -1091,7 +1089,7 @@ void LineExactSprites::BuildItem(spr_action_list_item **item)
       (*item)->raster_x = 4;
     }
   }
-  (*item)->raster_y = busGetRasterY();
+  (*item)->raster_y = _timekeeper.GetAgnusLine();
 }
 
 bool LineExactSprites::HasSpritesOnLine()
@@ -1114,8 +1112,8 @@ void LineExactSprites::NotifySprpthChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
-        busGetRasterY(),
-        2 * (busGetRasterX() - 16),
+        _timekeeper.GetAgnusLine(),
+        2 * (_timekeeper.GetAgnusLineCycle() - 16),
         sprite_number,
         (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
         chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
@@ -1139,8 +1137,8 @@ void LineExactSprites::NotifySprptlChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
-        busGetRasterY(),
-        2 * (busGetRasterX() - 16),
+        _timekeeper.GetAgnusLine(),
+        2 * (_timekeeper.GetAgnusLineCycle() - 16),
         sprite_number,
         (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
         chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
@@ -1167,8 +1165,8 @@ void LineExactSprites::NotifySprposChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n",
-        busGetRasterY(),
-        2 * (busGetRasterX() - 16),
+        _timekeeper.GetAgnusLine(),
+        2 * (_timekeeper.GetAgnusLineCycle() - 16),
         sprite_number,
         sprx_debug[sprite_number],
         sprly_debug[sprite_number]);
@@ -1195,8 +1193,8 @@ void LineExactSprites::NotifySprctlChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n",
-        busGetRasterY(),
-        2 * (busGetRasterX() - 16),
+        _timekeeper.GetAgnusLine(),
+        2 * (_timekeeper.GetAgnusLineCycle() - 16),
         sprite_number,
         sprx_debug[sprite_number],
         spry_debug[sprite_number],
@@ -1218,7 +1216,7 @@ void LineExactSprites::NotifySprdataChanged(uint16_t data, unsigned int sprite_n
   // for debugging only
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", _timekeeper.GetAgnusLine(), 2 * (_timekeeper.GetAgnusLineCycle() - 16), sprite_number);
     _core.Log->AddLog2(buffer);
   }
 }
@@ -1234,7 +1232,7 @@ void LineExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_n
   // for debugging only
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", _timekeeper.GetAgnusLine(), 2 * (_timekeeper.GetAgnusLineCycle() - 16), sprite_number);
     _core.Log->AddLog2(buffer);
   }
 }
@@ -1252,7 +1250,7 @@ void LineExactSprites::Log()
         s,
         "%u %u, sprite %u fy %u ly %u x %u state %u att %u atto %u pt %.6X\n",
         draw_frame_count,
-        busGetRasterY(),
+        _timekeeper.GetAgnusLine(),
         no,
         spry[no],
         sprly[no],
@@ -1260,7 +1258,7 @@ void LineExactSprites::Log()
         sprite_state[no],
         spratt[no & 6],
         spratt[no | 1],
-        sprite_registers.sprpt[no]);
+        _spriteRegisters.sprpt[no]);
     _core.Log->AddLog(s);
   }
 }
@@ -1361,7 +1359,7 @@ void LineExactSprites::DMASpriteHandler()
   uint32_t local_data_ctl;
   uint32_t local_data_pos;
   uint32_t i, count;
-  uint32_t currentY = busGetRasterY();
+  uint32_t currentY = _timekeeper.GetAgnusLine();
 
   sprites_online = false;
   uint32_t sprnr = 0;
@@ -1384,12 +1382,12 @@ void LineExactSprites::DMASpriteHandler()
             (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
 
             // data from sprxpos
-            local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+            local_data_pos = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
             local_spry = ((local_data_pos & 0xff00) >> 8);
             local_sprx = ((local_data_pos & 0xff) << 1);
 
             // data from sprxctl
-            local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+            local_data_ctl = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
             local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
             local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
             local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
@@ -1402,7 +1400,7 @@ void LineExactSprites::DMASpriteHandler()
               item->raster_x = dma_action_item->raster_x;
               item->raster_y = dma_action_item->raster_y;
               item->called_function = &LineExactSprites::asprxpos;
-              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+              item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
               item->address = sprnr << 3;
 
               // insert a write to sprxctl at time raster_x
@@ -1410,14 +1408,14 @@ void LineExactSprites::DMASpriteHandler()
               item->raster_x = dma_action_item->raster_x;
               item->raster_y = dma_action_item->raster_y;
               item->called_function = &LineExactSprites::asprxctl;
-              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+              item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
               item->address = sprnr << 3;
             }
 
             if ((local_spry < local_sprly) && (local_sprx > 40))
             {
               // point to next two data words
-              sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+              _spriteRegisters.sprpt[sprnr] = chipsetMaskPtr(_spriteRegisters.sprpt[sprnr] + 4);
             }
 
             sprite_state[sprnr] = 1;
@@ -1444,7 +1442,7 @@ void LineExactSprites::DMASpriteHandler()
           item->raster_x = 60;
           item->raster_y = currentY;
           item->called_function = &LineExactSprites::asprxdatb;
-          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
           item->address = sprnr << 3;
 
           // insert a write to sprxdata
@@ -1452,11 +1450,11 @@ void LineExactSprites::DMASpriteHandler()
           item->raster_x = 61;
           item->raster_y = currentY;
           item->called_function = &LineExactSprites::asprxdata;
-          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
           item->address = sprnr << 3;
 
           // point to next two data words
-          sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+          _spriteRegisters.sprpt[sprnr] = chipsetMaskPtr(_spriteRegisters.sprpt[sprnr] + 4);
 
           // we move to state 2 to wait for the last line sprly
           sprite_state[sprnr] = 2;
@@ -1490,9 +1488,9 @@ void LineExactSprites::DMASpriteHandler()
         if (currentY >= sprly[sprnr])
         {
           // we interpret the next two data words as the next two control words
-          local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          local_data_ctl = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
           local_spry = ((local_data_ctl & 0xff00) >> 8);
-          local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          local_data_pos = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
           local_spry = (local_spry & 0x0ff) | ((local_data_pos & 0x4) << 6);
           local_sprly = ((local_data_pos & 0xff00) >> 8) | ((local_data_pos & 0x2) << 7);
 
@@ -1501,7 +1499,7 @@ void LineExactSprites::DMASpriteHandler()
           item->raster_x = 0;
           item->raster_y = currentY;
           item->called_function = &LineExactSprites::asprxpos;
-          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
           item->address = sprnr << 3;
 
           // insert a write to sprxctl at time raster_x
@@ -1509,13 +1507,13 @@ void LineExactSprites::DMASpriteHandler()
           item->raster_x = 1;
           item->raster_y = currentY;
           item->called_function = &LineExactSprites::asprxctl;
-          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
           item->address = sprnr << 3;
 
           if (local_spry < local_sprly)
           {
             // point to next two data words
-            sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+            _spriteRegisters.sprpt[sprnr] = chipsetMaskPtr(_spriteRegisters.sprpt[sprnr] + 4);
           }
 
           sprite_state[sprnr] = 1;
@@ -1528,7 +1526,7 @@ void LineExactSprites::DMASpriteHandler()
           item->raster_x = 60;
           item->raster_y = currentY;
           item->called_function = &LineExactSprites::asprxdatb;
-          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
           item->address = sprnr << 3;
 
           // insert a write to sprxdata
@@ -1536,11 +1534,11 @@ void LineExactSprites::DMASpriteHandler()
           item->raster_x = 61;
           item->raster_y = currentY;
           item->called_function = &LineExactSprites::asprxdata;
-          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
           item->address = sprnr << 3;
 
           // point to next two data words
-          sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+          _spriteRegisters.sprpt[sprnr] = chipsetMaskPtr(_spriteRegisters.sprpt[sprnr] + 4);
         }
 
         // handle writes to sprxptl and sprxpth
@@ -1556,12 +1554,12 @@ void LineExactSprites::DMASpriteHandler()
             (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
 
             // data from sprxpos
-            local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+            local_data_pos = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
             local_spry = ((local_data_pos & 0xff00) >> 8);
             local_sprx = ((local_data_pos & 0xff) << 1);
 
             // data from sprxctl
-            local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+            local_data_ctl = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
             local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
             local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
             local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
@@ -1573,7 +1571,7 @@ void LineExactSprites::DMASpriteHandler()
               item->raster_x = dma_action_item->raster_x;
               item->raster_y = dma_action_item->raster_y;
               item->called_function = &LineExactSprites::asprxpos;
-              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+              item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr]);
               item->address = sprnr << 3;
 
               // insert a write to sprxctl at time raster_x
@@ -1581,14 +1579,14 @@ void LineExactSprites::DMASpriteHandler()
               item->raster_x = dma_action_item->raster_x + 1;
               item->raster_y = dma_action_item->raster_y;
               item->called_function = &LineExactSprites::asprxctl;
-              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+              item->data = chipmemReadWord(_spriteRegisters.sprpt[sprnr] + 2);
               item->address = sprnr << 3;
             }
 
             if ((local_spry < local_sprly) && (local_sprx > 40))
             {
               // point to next two data words
-              sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+              _spriteRegisters.sprpt[sprnr] = chipsetMaskPtr(_spriteRegisters.sprpt[sprnr] + 4);
             }
 
             if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
@@ -1676,7 +1674,7 @@ void LineExactSprites::ProcessActionList()
               // for debugging only
               if (output_action_sprite_log == TRUE)
               {
-                sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, busGetRasterY(), sprx[sprnr]);
+                sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, _timekeeper.GetAgnusLine(), sprx[sprnr]);
                 _core.Log->AddLog2(buffer);
               }
             }
@@ -1728,7 +1726,7 @@ void LineExactSprites::ProcessActionList()
         // for debugging only
         if (output_action_sprite_log == TRUE)
         {
-          sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, busGetRasterY(), sprx[sprnr]);
+          sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, _timekeeper.GetAgnusLine(), sprx[sprnr]);
           _core.Log->AddLog2(buffer);
         }
       }
@@ -2474,6 +2472,7 @@ void LineExactSprites::EndOfFrame()
 
 void LineExactSprites::EmulationStart()
 {
+  _core.SpriteRegisters->EmulationStart(false);
 }
 
 /*===========================================================================*/
@@ -2484,8 +2483,18 @@ void LineExactSprites::EmulationStop()
 {
 }
 
-LineExactSprites::LineExactSprites() : Sprites(), sprite_to_block(0), output_sprite_log(FALSE), output_action_sprite_log(FALSE), sprite_ham_slot_next(0)
+LineExactSprites::LineExactSprites(Timekeeper &timekeeper, SpriteRegisters &spriteRegisters)
+  : ISprites(),
+    _timekeeper(timekeeper),
+    _spriteRegisters(spriteRegisters),
+    sprite_to_block(0),
+    output_sprite_log(FALSE),
+    output_action_sprite_log(FALSE),
+    sprite_ham_slot_next(0)
 {
+  SpriteP2CDecoder::Initialize();
+  SpriteMerger::Initialize();
+
   for (int i = 0; i < 8; i++)
   {
     sprite_state[i] = 0;
@@ -2495,6 +2504,7 @@ LineExactSprites::LineExactSprites() : Sprites(), sprite_to_block(0), output_spr
     ActionListClear(&spr_dma_action_list[i]);
     MergeListClear(&spr_merge_list[i]);
   }
+
   ClearState();
 }
 

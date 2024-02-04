@@ -1,7 +1,10 @@
 #pragma once
 
 #include "Defs.h"
-#include "Sprites.h"
+#include "CustomChipset/Sprite/ISprites.h"
+#include "CustomChipset/GraphLine.h"
+#include "Scheduler/Timekeeper.h"
+#include "CustomChipset/Sprite/SpriteRegisters.h"
 
 constexpr unsigned int SPRITE_MAX_LIST_ITEMS = 275;
 
@@ -36,9 +39,12 @@ struct spr_merge_list_master
   spr_merge_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
 };
 
-class LineExactSprites : public Sprites
+class LineExactSprites : public ISprites
 {
 private:
+  Timekeeper &_timekeeper;
+  SpriteRegisters &_spriteRegisters;
+
   void aspr0pth(uint16_t data, uint32_t address);
   void aspr0ptl(uint16_t data, uint32_t address);
   void aspr1pth(uint16_t data, uint32_t address);
@@ -184,6 +190,6 @@ public:
   virtual void EmulationStart();
   virtual void EmulationStop();
 
-  LineExactSprites();
+  LineExactSprites(Timekeeper &timekeeper, SpriteRegisters &spriteRegisters);
   virtual ~LineExactSprites();
 };

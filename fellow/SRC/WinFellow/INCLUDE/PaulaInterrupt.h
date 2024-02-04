@@ -1,8 +1,12 @@
 #pragma once
 
+#include <cstdint>
+#include "Defs.h"
+#include "CustomChipset/IPaula.h"
+#include "Scheduler/SchedulerEvent.h"
+
 extern uint16_t intena;
 
-void interruptHandleEvent();
 void interruptRaisePending();
 const char *interruptGetInterruptName(uint32_t interrupt_number);
 BOOLE interruptIsRequested(uint16_t bitmask);
@@ -17,3 +21,17 @@ void interruptEmulationStart();
 void interruptEmulationStop();
 void interruptStartup();
 void interruptShutdown();
+
+class Paula : public IPaula
+{
+private:
+  SchedulerEvent &_interruptEvent;
+
+  void HandleInterruptEvent();
+
+public:
+  void InitializeInterruptEvent() override;
+
+  Paula(SchedulerEvent &interruptEvent);
+  virtual ~Paula();
+};

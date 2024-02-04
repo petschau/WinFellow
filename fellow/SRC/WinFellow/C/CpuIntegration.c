@@ -22,16 +22,19 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#include <string>
+
 #include "Defs.h"
 #include "FellowMain.h"
 #include "MemoryInterface.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
 #include "CpuModule_Internal.h"
-#include "BusScheduler.h"
-#include "interrupt.h"
+#include "PaulaInterrupt.h"
 
 #include "VirtualHost/Core.h"
+
+using namespace std;
 
 jmp_buf cpu_integration_exception_buffer;
 uint32_t cpu_integration_chip_interrupt_number;
@@ -154,7 +157,7 @@ void cpuIntegrationSetIrqLevel(uint32_t new_interrupt_level, uint32_t chip_inter
 {
   if (cpuSetIrqLevel(new_interrupt_level))
   {
-    cpuEvent.cycle = busGetCycle();
+    _core.Events->cpuEvent.cycle = _core.Timekeeper->GetFrameCycle();
   }
   cpuIntegrationSetChipInterruptNumber(chip_interrupt_number);
 }
@@ -198,7 +201,7 @@ void cpuInstructionLogOpen()
 
 void cpuIntegrationPrintBusCycle()
 {
-  fprintf(CPUINSTRUCTIONLOG, "%I64u:%.5u ", bus.frame_no, bus.cycle);
+  fprintf(CPUINSTRUCTIONLOG, "%I64u:%.5u ", _core.Timekeeper->GetFrameNumber(), _core.Timekeeper->GetFrameCycle());
 }
 
 void cpuIntegrationInstructionLogging()
@@ -258,23 +261,43 @@ void cpuIntegrationInterruptLogging(uint32_t level, uint32_t vector_address)
 
 #endif
 
+string cpuDisassembleCurrentPC()
+{
+  char saddress[256], sdata[256], sinstruction[256], soperands[256];
+
+  saddress[0] = '\0';
+  sdata[0] = '\0';
+  sinstruction[0] = '\0';
+  soperands[0] = '\0';
+
+  cpuDisOpcode(cpuGetPC(), saddress, sdata, sinstruction, soperands);
+
+  return string(saddress) + " " + sdata + " " + sinstruction + " " + soperands;
+}
+
 void cpuIntegrationExecuteInstructionEventHandler68000Fast()
 {
+  DEBUGLOG(DebugLogKind::EventHandler, "68000 Fast");
+  DEBUGLOG(DebugLogKind::CPU, cpuDisassembleCurrentPC());
+
   uint32_t cycles = cpuExecuteInstruction();
 
   if (cpuGetStop())
   {
-    cpuEvent.cycle = BUS_CYCLE_DISABLE;
+    _core.Events->cpuEvent.Disable();
   }
   else
   {
-    cpuEvent.cycle += ((cycles * cpuIntegrationGetChipSlowdown()) >> 1) + cpuIntegrationGetChipCycles();
+    _core.Events->cpuEvent.cycle += ((cycles * cpuIntegrationGetChipSlowdown()) >> 1) + cpuIntegrationGetChipCycles();
   }
+
   cpuIntegrationSetChipCycles(0);
 }
 
 void cpuIntegrationExecuteInstructionEventHandler68000General()
 {
+  _core.DebugLog->Log(DebugLogKind::EventHandler, "68000 General");
+
   uint32_t cycles = 0;
   uint32_t time_used = 0;
 
@@ -287,17 +310,20 @@ void cpuIntegrationExecuteInstructionEventHandler68000General()
 
   if (cpuGetStop())
   {
-    cpuEvent.cycle = BUS_CYCLE_DISABLE;
+    _core.Events->cpuEvent.Disable();
   }
   else
   {
-    cpuEvent.cycle += (time_used >> 12);
+    _core.Events->cpuEvent.cycle += (time_used >> 12);
   }
+
   cpuIntegrationSetChipCycles(0);
 }
 
 void cpuIntegrationExecuteInstructionEventHandler68020()
 {
+  _core.DebugLog->Log(DebugLogKind::EventHandler, "68020");
+
   uint32_t time_used = 0;
   do
   {
@@ -307,12 +333,13 @@ void cpuIntegrationExecuteInstructionEventHandler68020()
 
   if (cpuGetStop())
   {
-    cpuEvent.cycle = BUS_CYCLE_DISABLE;
+    _core.Events->cpuEvent.Disable();
   }
   else
   {
-    cpuEvent.cycle += (time_used >> 12);
+    _core.Events->cpuEvent.cycle += (time_used >> 12);
   }
+
   cpuIntegrationSetChipCycles(0);
 }
 
@@ -337,22 +364,6 @@ void cpuIntegrationSetDefaultConfig()
 /*=========================*/
 /* Fellow lifecycle events */
 /*=========================*/
-
-void cpuIntegrationSaveState(FILE *F)
-{
-  cpuSaveState(F);
-
-  fwrite(&cpu_integration_chip_slowdown, sizeof(cpu_integration_chip_slowdown), 1, F);
-  // Everything else is configuration options which will be set when the associated config-file is loaded.
-}
-
-void cpuIntegrationLoadState(FILE *F)
-{
-  cpuLoadState(F);
-
-  fread(&cpu_integration_chip_slowdown, sizeof(cpu_integration_chip_slowdown), 1, F);
-  // Everything else is configuration options which will be set when the associated config-file is loaded.
-}
 
 void cpuIntegrationEmulationStart()
 {

@@ -1,7 +1,6 @@
 #include "IO/Uart.h"
-#include "BusScheduler.h"
 #include "MemoryInterface.h"
-#include "interrupt.h"
+#include "PaulaInterrupt.h"
 #include "VirtualHost/Core.h"
 
 /* SERDATR 0xdff018 */
@@ -67,7 +66,7 @@ void Uart::CopyTransmitBufferToShiftRegister()
     _transmitShiftRegister = _transmitBuffer;
     _transmitShiftRegisterEmpty = false;
     _transmitBufferEmpty = true;
-    _transmitDoneTime = GetTransmitDoneTime() + busGetCycle();
+    _transmitDoneTime = GetTransmitDoneTime() + _core.Timekeeper->GetFrameCycle();
 
     wintreq_direct(0x8001, 0xdff09c, true); // TBE interrupt
 
@@ -111,43 +110,13 @@ void Uart::ClearState()
   _transmitShiftRegister = 0;
   _transmitBufferEmpty = true;
   _transmitShiftRegisterEmpty = true;
-  _transmitDoneTime = BUS_CYCLE_DISABLE;
+  _transmitDoneTime = SchedulerEvent::EventDisableCycle;
 
   _receiveBuffer = 0;
   _receiveShiftRegister = 0;
   _receiveBufferFull = false;
   _receiveBufferOverrun = false;
-  _receiveDoneTime = BUS_CYCLE_DISABLE;
-}
-
-void Uart::LoadState(FILE *F)
-{
-  fread(&_serper, sizeof(_serper), 1, F);
-  fread(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
-  fread(&_transmitShiftRegister, sizeof(_transmitShiftRegister), 1, F);
-  fread(&_transmitDoneTime, sizeof(_transmitDoneTime), 1, F);
-  fread(&_transmitBufferEmpty, sizeof(_transmitBufferEmpty), 1, F);
-  fread(&_transmitShiftRegisterEmpty, sizeof(_transmitShiftRegisterEmpty), 1, F);
-  fread(&_receiveBuffer, sizeof(_receiveBuffer), 1, F);
-  fread(&_receiveShiftRegister, sizeof(_receiveShiftRegister), 1, F);
-  fread(&_receiveDoneTime, sizeof(_receiveDoneTime), 1, F);
-  fread(&_receiveBufferFull, sizeof(_receiveBufferFull), 1, F);
-  fread(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
-}
-
-void Uart::SaveState(FILE *F)
-{
-  fwrite(&_serper, sizeof(_serper), 1, F);
-  fwrite(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
-  fwrite(&_transmitShiftRegister, sizeof(_transmitShiftRegister), 1, F);
-  fwrite(&_transmitDoneTime, sizeof(_transmitDoneTime), 1, F);
-  fwrite(&_transmitBufferEmpty, sizeof(_transmitBufferEmpty), 1, F);
-  fwrite(&_transmitShiftRegisterEmpty, sizeof(_transmitShiftRegisterEmpty), 1, F);
-  fwrite(&_receiveBuffer, sizeof(_receiveBuffer), 1, F);
-  fwrite(&_receiveShiftRegister, sizeof(_receiveShiftRegister), 1, F);
-  fwrite(&_receiveDoneTime, sizeof(_receiveDoneTime), 1, F);
-  fwrite(&_receiveBufferFull, sizeof(_receiveBufferFull), 1, F);
-  fwrite(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
+  _receiveDoneTime = SchedulerEvent::EventDisableCycle;
 }
 
 bool Uart::Is8BitMode()
@@ -181,10 +150,10 @@ void Uart::EndOfLine()
 {
   // (Put this in an event with an exact time-stamp)
 
-  if (_transmitDoneTime <= busGetCycle())
+  if (_transmitDoneTime <= _core.Timekeeper->GetFrameCycle())
   {
     _transmitShiftRegisterEmpty = true;
-    _transmitDoneTime = BUS_CYCLE_DISABLE;
+    _transmitDoneTime = SchedulerEvent::EventDisableCycle;
 
     if (!_transmitBufferEmpty)
     {
@@ -192,9 +161,9 @@ void Uart::EndOfLine()
     }
   }
 
-  if (_receiveDoneTime <= busGetCycle())
+  if (_receiveDoneTime <= _core.Timekeeper->GetFrameCycle())
   {
-    _receiveDoneTime = BUS_CYCLE_DISABLE;
+    _receiveDoneTime = SchedulerEvent::EventDisableCycle;
 
     if (!_receiveBufferFull)
     {
@@ -207,19 +176,19 @@ void Uart::EndOfLine()
   }
 }
 
-void Uart::EndOfFrame()
+void Uart::RebaseTransmitReceiveDoneTimes(uint32_t cyclesInEndedFrame)
 {
-  if (_transmitDoneTime != BUS_CYCLE_DISABLE)
+  if (_transmitDoneTime != SchedulerEvent::EventDisableCycle)
   {
-    _transmitDoneTime -= busGetCyclesInThisFrame();
+    _transmitDoneTime -= _core.CurrentFrameParameters->CyclesInFrame;
     if ((int)_transmitDoneTime < 0)
     {
       _transmitDoneTime = 0;
     }
   }
-  if (_receiveDoneTime != BUS_CYCLE_DISABLE)
+  if (_receiveDoneTime != SchedulerEvent::EventDisableCycle)
   {
-    _receiveDoneTime -= busGetCyclesInThisFrame();
+    _receiveDoneTime -= _core.CurrentFrameParameters->CyclesInFrame;
     if ((int)_receiveDoneTime < 0)
     {
       _receiveDoneTime = 0;

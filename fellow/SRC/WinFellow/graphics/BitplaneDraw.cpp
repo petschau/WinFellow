@@ -24,13 +24,10 @@
 
 #include "Defs.h"
 
-#include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "Renderer.h"
 #include "MemoryInterface.h"
 #include "Graphics.h"
-
-using namespace CustomChipset;
 
 extern uint8_t draw_dual_translate[2][256][256];
 extern uint32_t draw_HAM_modify_table[4][2];

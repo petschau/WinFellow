@@ -23,20 +23,15 @@
 /*=========================================================================*/
 
 #include "Defs.h"
+#include "CustomChipset/Sprite/CycleExactSprites.h"
+#include "MemoryInterface.h"
 
 #include "chipset.h"
-#include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "Renderer.h"
-#include "MemoryInterface.h"
-#include "SpriteRegisters.h"
 #include "SpriteP2CDecoder.h"
 #include "SpriteMerger.h"
-#include "CycleExactSprites.h"
-#include "VirtualHost/Core.h"
 #include "Graphics.h"
-
-using namespace CustomChipset;
 
 bool CycleExactSprites::Is16Color(uint32_t spriteNo)
 {
@@ -56,12 +51,12 @@ void CycleExactSprites::Arm(uint32_t sprite_number)
   }
   SpriteState[sprite_number].armed = true;
   SpriteState[sprite_number].pixels_output = 0;
-  SpriteState[sprite_number].dat_hold[0].w = sprite_registers.sprdata[sprite_number];
-  SpriteState[sprite_number].dat_hold[1].w = sprite_registers.sprdatb[sprite_number];
+  SpriteState[sprite_number].dat_hold[0].w = _spriteRegisters.sprdata[sprite_number];
+  SpriteState[sprite_number].dat_hold[1].w = _spriteRegisters.sprdatb[sprite_number];
   if (is16Color)
   {
-    SpriteState[sprite_number].dat_hold[2].w = sprite_registers.sprdata[sprite_number - 1];
-    SpriteState[sprite_number].dat_hold[3].w = sprite_registers.sprdatb[sprite_number - 1];
+    SpriteState[sprite_number].dat_hold[2].w = _spriteRegisters.sprdata[sprite_number - 1];
+    SpriteState[sprite_number].dat_hold[3].w = _spriteRegisters.sprdatb[sprite_number - 1];
     SpriteP2CDecoder::Decode16(
         &(SpriteState[sprite_number].dat_decoded.blu[0].l),
         SpriteState[sprite_number].dat_hold[2].w,
@@ -103,7 +98,7 @@ void CycleExactSprites::MergeHam(uint32_t spriteNo, uint32_t source_pixel_index,
 
 void CycleExactSprites::Merge(uint32_t spriteNo, uint32_t source_pixel_index, uint32_t pixel_index, uint32_t pixel_count)
 {
-  if (_core.RegisterUtility.IsLoresEnabled())
+  if (_registerUtility.IsLoresEnabled())
   {
     MergeLores(spriteNo, source_pixel_index, pixel_index, pixel_count);
   }
@@ -143,7 +138,7 @@ void CycleExactSprites::OutputSprite(uint32_t spriteNo, uint32_t startCylinder, 
         pixel_count = pixelsLeft;
       }
 
-      if (_core.RegisterUtility.IsHiresEnabled())
+      if (_registerUtility.IsHiresEnabled())
       {
         pixel_index = pixel_index * 2; // Hires coordinates
       }
@@ -222,8 +217,8 @@ void CycleExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_
 
 uint16_t CycleExactSprites::ReadWord(uint32_t spriteNo)
 {
-  uint16_t data = chipmemReadWord(sprite_registers.sprpt[spriteNo]);
-  sprite_registers.sprpt[spriteNo] = chipsetMaskPtr(sprite_registers.sprpt[spriteNo] + 2);
+  uint16_t data = chipmemReadWord(_spriteRegisters.sprpt[spriteNo]);
+  _spriteRegisters.sprpt[spriteNo] = chipsetMaskPtr(_spriteRegisters.sprpt[spriteNo] + 2);
   return data;
 }
 
@@ -231,14 +226,14 @@ void CycleExactSprites::ReadControlWords(uint32_t spriteNo)
 {
   uint16_t pos = ReadWord(spriteNo);
   uint16_t ctl = ReadWord(spriteNo);
-  wsprxpos(pos, 0x140 + spriteNo * 8);
-  wsprxctl(ctl, 0x142 + spriteNo * 8);
+  SpriteRegisters::wsprxpos(pos, 0x140 + spriteNo * 8);
+  SpriteRegisters::wsprxctl(ctl, 0x142 + spriteNo * 8);
 }
 
 void CycleExactSprites::ReadDataWords(uint32_t spriteNo)
 {
-  wsprxdatb(ReadWord(spriteNo), 0x146 + spriteNo * 8);
-  wsprxdata(ReadWord(spriteNo), 0x144 + spriteNo * 8);
+  SpriteRegisters::wsprxdatb(ReadWord(spriteNo), 0x146 + spriteNo * 8);
+  SpriteRegisters::wsprxdata(ReadWord(spriteNo), 0x144 + spriteNo * 8);
 }
 
 bool CycleExactSprites::IsFirstLine(uint32_t spriteNo, uint32_t rasterY)
@@ -358,17 +353,19 @@ void CycleExactSprites::HardReset()
 
 void CycleExactSprites::EmulationStart()
 {
-  ClearState(); // ??????
+  ClearState();
+  _spriteRegisters.EmulationStart(true);
 }
 
 void CycleExactSprites::EmulationStop()
 {
 }
 
-CycleExactSprites::CycleExactSprites() : Sprites()
+CycleExactSprites::CycleExactSprites(SpriteRegisters &spriteRegisters, RegisterUtility &registerUtility)
+  : ISprites(), _spriteRegisters(spriteRegisters), _registerUtility(registerUtility)
 {
+  SpriteP2CDecoder::Initialize();
+  SpriteMerger::Initialize();
 }
 
-CycleExactSprites::~CycleExactSprites()
-{
-}
+CycleExactSprites::~CycleExactSprites() = default;

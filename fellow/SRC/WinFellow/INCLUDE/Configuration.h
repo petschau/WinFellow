@@ -136,14 +136,14 @@ struct cfg
   /* Sound configuration                                                      */
   /*==========================================================================*/
 
-  CustomChipset::sound_emulations m_soundemulation;
-  CustomChipset::sound_rates m_soundrate;
+  sound_emulations m_soundemulation;
+  sound_rates m_soundrate;
   bool m_soundstereo;
   bool m_sound16bits;
-  CustomChipset::sound_filters m_soundfilter;
+  sound_filters m_soundfilter;
   uint32_t m_soundvolume;
   BOOLE m_soundWAVdump;
-  CustomChipset::sound_notifications m_notification;
+  sound_notifications m_notification;
   uint32_t m_bufferlength;
 
   /*==========================================================================*/
@@ -296,22 +296,22 @@ extern GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationMode(cfg *config);
 /* Sound configuration property access                                        */
 /*============================================================================*/
 
-extern void cfgSetSoundEmulation(cfg *config, CustomChipset::sound_emulations soundemulation);
-extern CustomChipset::sound_emulations cfgGetSoundEmulation(cfg *config);
-extern void cfgSetSoundRate(cfg *config, CustomChipset::sound_rates soundrate);
-extern CustomChipset::sound_rates cfgGetSoundRate(cfg *config);
+extern void cfgSetSoundEmulation(cfg *config, sound_emulations soundemulation);
+extern sound_emulations cfgGetSoundEmulation(cfg *config);
+extern void cfgSetSoundRate(cfg *config, sound_rates soundrate);
+extern sound_rates cfgGetSoundRate(cfg *config);
 extern void cfgSetSoundStereo(cfg *config, bool soundstereo);
 extern bool cfgGetSoundStereo(cfg *config);
 extern void cfgSetSound16Bits(cfg *config, bool soundbit);
 extern bool cfgGetSound16Bits(cfg *config);
-extern void cfgSetSoundFilter(cfg *config, CustomChipset::sound_filters soundfilter);
-extern CustomChipset::sound_filters cfgGetSoundFilter(cfg *config);
+extern void cfgSetSoundFilter(cfg *config, sound_filters soundfilter);
+extern sound_filters cfgGetSoundFilter(cfg *config);
 extern void cfgSetSoundVolume(cfg *config, const uint32_t soundvolume);
 extern uint32_t cfgGetSoundVolume(cfg *config);
 extern void cfgSetSoundWAVDump(cfg *config, BOOLE soundWAVdump);
 extern BOOLE cfgGetSoundWAVDump(cfg *config);
-extern void cfgSetSoundNotification(cfg *config, CustomChipset::sound_notifications soundnotification);
-extern CustomChipset::sound_notifications cfgGetSoundNotification(cfg *config);
+extern void cfgSetSoundNotification(cfg *config, sound_notifications soundnotification);
+extern sound_notifications cfgGetSoundNotification(cfg *config);
 extern void cfgSetSoundBufferLength(cfg *config, uint32_t buffer_length);
 extern uint32_t cfgGetSoundBufferLength(cfg *config);
 

@@ -1,7 +1,6 @@
 #include "Defs.h"
 
 #include "Graphics.h"
-#include "BusScheduler.h"
 
 void GraphicsEventQueue::Clear()
 {

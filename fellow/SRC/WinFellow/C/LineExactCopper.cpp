@@ -1,7 +1,4 @@
-#include "CopperRegisters.h"
 #include "LineExactCopper.h"
-#include "BusScheduler.h"
-#include "Sprites.h"
 #include "chipset.h"
 #include "MemoryInterface.h"
 #include "Blitter.h"
@@ -11,70 +8,79 @@ uint32_t LineExactCopper::cycletable[16] = {4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 
 
 void LineExactCopper::YTableInit()
 {
-  int ex = 16;
+  const int ex = 16;
+  const uint32_t cyclesInLine = 227;
 
   for (int i = 0; i < 512; i++)
   {
-    ytable[i] = i * busGetCyclesInThisLine() + ex;
+    ytable[i] = i * cyclesInLine + ex;
   }
 }
 
 void LineExactCopper::RemoveEvent()
 {
-  if (copperEvent.cycle != BUS_CYCLE_DISABLE)
+  if (_copperEvent.IsEnabled())
   {
-    busRemoveEvent(&copperEvent);
-    copperEvent.cycle = BUS_CYCLE_DISABLE;
+    _scheduler.RemoveEvent(&_copperEvent);
+    _copperEvent.Disable();
   }
 }
 
 void LineExactCopper::InsertEvent(uint32_t cycle)
 {
-  if (cycle != BUS_CYCLE_DISABLE)
+  if (cycle != SchedulerEvent::EventDisableCycle)
   {
-    copperEvent.cycle = cycle;
-    busInsertEvent(&copperEvent);
+    _copperEvent.cycle = cycle;
+    _scheduler.InsertEvent(&_copperEvent);
   }
+}
+
+void LineExactCopper::InitializeCopperEvent()
+{
+  _copperEvent.Initialize([this]() { this->EventHandler(); }, "Line exact copper");
 }
 
 void LineExactCopper::Load(uint32_t new_copper_pc)
 {
-  copper_registers.copper_pc = new_copper_pc;
+  _copperRegisters.copper_pc = new_copper_pc;
 
-  if (copper_registers.copper_dma == true)
+  if (_copperRegisters.copper_dma == true)
   {
     RemoveEvent();
-    InsertEvent(bus.cycle + 4);
+    InsertEvent(_timekeeper.GetFrameCycle() + 4);
   }
   else
   {
     // DMA is off
-    if (copper_registers.copper_suspended_wait == BUS_CYCLE_DISABLE)
+    if (_copperRegisters.copper_suspended_wait == SchedulerEvent::EventDisableCycle)
     {
-      copper_registers.copper_suspended_wait = busGetCycle();
+      _copperRegisters.copper_suspended_wait = _timekeeper.GetFrameCycle();
     }
   }
 }
 
 uint32_t LineExactCopper::GetCheckedWaitCycle(uint32_t waitCycle)
 {
-  if (waitCycle <= bus.cycle)
+  const auto currentFrameCycle = _timekeeper.GetFrameCycle();
+
+  if (waitCycle <= currentFrameCycle)
   {
     // Do not ever go back in time
-    waitCycle = bus.cycle + 4;
+    waitCycle = currentFrameCycle + 4;
     //_core.Log->AddLog("Warning: Copper went back in time.\n");
   }
+
   return waitCycle;
 }
 
-/*-------------------------------------------------------------------------------
-; Called by wdmacon every time that register is written
-; This routine takes action when the copper DMA state is changed
-;--------------------------------------------------------------------------*/
+//---------------------------------------------------------------
+// Called by wdmacon every time that register is written
+// This routine takes action when the copper DMA state is changed
+//---------------------------------------------------------------
 
 void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
 {
-  if (copper_registers.copper_dma == new_dma_enable_state)
+  if (_copperRegisters.copper_dma == new_dma_enable_state)
   {
     return;
   }
@@ -85,7 +91,7 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     // here copper DMA is being turned off
     // record which cycle the copper was waiting for
     // remove copper from the event list
-    copper_registers.copper_suspended_wait = copperEvent.cycle;
+    _copperRegisters.copper_suspended_wait = _copperEvent.cycle;
     RemoveEvent();
   }
   else
@@ -94,32 +100,36 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     // reactivate the cycle the copper was waiting for the last time it was on.
     // if we have passed it in the mean-time, execute immediately.
     RemoveEvent();
-    if (copper_registers.copper_suspended_wait != BUS_CYCLE_DISABLE)
+
+    if (_copperRegisters.copper_suspended_wait != SchedulerEvent::EventDisableCycle)
     {
       // dma not hanging
-      if (copper_registers.copper_suspended_wait <= bus.cycle)
+      const auto currentFrameCycle = _timekeeper.GetFrameCycle();
+
+      if (_copperRegisters.copper_suspended_wait <= currentFrameCycle)
       {
-        InsertEvent(bus.cycle + 4);
+        InsertEvent(currentFrameCycle + 4);
       }
       else
       {
-        InsertEvent(copper_registers.copper_suspended_wait);
+        InsertEvent(_copperRegisters.copper_suspended_wait);
       }
     }
     else
     {
-      InsertEvent(copper_registers.copper_suspended_wait);
+      InsertEvent(_copperRegisters.copper_suspended_wait);
     }
   }
-  copper_registers.copper_dma = new_dma_enable_state;
+
+  _copperRegisters.copper_dma = new_dma_enable_state;
 }
 
 void LineExactCopper::NotifyCop1lcChanged()
 {
   // Have been hanging since end of frame
-  if (copper_registers.copper_dma == false && copper_registers.copper_suspended_wait == 40)
+  if (_copperRegisters.copper_dma == false && _copperRegisters.copper_suspended_wait == 40)
   {
-    copper_registers.copper_pc = copper_registers.cop1lc;
+    _copperRegisters.copper_pc = _copperRegisters.cop1lc;
   }
 }
 
@@ -129,24 +139,27 @@ void LineExactCopper::NotifyCop1lcChanged()
 
 void LineExactCopper::EventHandler()
 {
+  _core.DebugLog->Log(DebugLogKind::EventHandler, _copperEvent.Name);
+
   bool correctLine;
   uint32_t maskedY;
   uint32_t maskedX;
   uint32_t waitY;
-  uint32_t currentY = busGetRasterY();
-  uint32_t currentX = busGetRasterX();
+  const auto currentY = _timekeeper.GetAgnusLine();
+  const auto currentX = _timekeeper.GetAgnusLineCycle();
+  const auto currentFrameCycle = _timekeeper.GetFrameCycle();
 
-  copperEvent.cycle = BUS_CYCLE_DISABLE;
-  if (cpuEvent.cycle != BUS_CYCLE_DISABLE)
+  _copperEvent.Disable();
+  if (_cpuEvent.IsEnabled())
   {
-    cpuEvent.cycle += 2;
+    _cpuEvent.cycle += 2;
   }
 
   // retrieve Copper command (two words)
-  uint32_t bswapRegC = chipmemReadWord(copper_registers.copper_pc);
-  copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
-  uint32_t bswapRegD = chipmemReadWord(copper_registers.copper_pc);
-  copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
+  uint32_t bswapRegC = chipmemReadWord(_copperRegisters.copper_pc);
+  _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 2);
+  uint32_t bswapRegD = chipmemReadWord(_copperRegisters.copper_pc);
+  _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 2);
 
   if (bswapRegC != 0xffff || bswapRegD != 0xfffe)
   {
@@ -157,10 +170,10 @@ void LineExactCopper::EventHandler()
       bswapRegC &= 0x1fe;
 
       // check if access to $40 - $7f (if so, Copper is using Blitter)
-      if ((bswapRegC >= 0x80) || ((bswapRegC >= 0x40) && ((copper_registers.copcon & 0xffff) != 0x0)))
+      if ((bswapRegC >= 0x80) || ((bswapRegC >= 0x40) && ((_copperRegisters.copcon & 0xffff) != 0x0)))
       {
         // move data to Blitter register
-        InsertEvent(cycletable[(_core.Registers.BplCon0 >> 12) & 0xf] + bus.cycle);
+        InsertEvent(cycletable[(_core.Registers.BplCon0 >> 12) & 0xf] + currentFrameCycle);
         memory_iobank_write[bswapRegC >> 1]((uint16_t)bswapRegD, bswapRegC);
       }
     }
@@ -172,14 +185,14 @@ void LineExactCopper::EventHandler()
       if (((bswapRegD & 0x8000) == 0x0) && blitterIsStarted())
       {
         // Copper waits until Blitter is finished
-        copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc - 4);
-        if ((blitterEvent.cycle + 4) <= bus.cycle)
+        _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc - 4);
+        if ((_core.Events->blitterEvent.cycle + 4) <= currentFrameCycle)
         {
-          InsertEvent(bus.cycle + 4);
+          InsertEvent(currentFrameCycle + 4);
         }
         else
         {
-          InsertEvent(blitterEvent.cycle + 4);
+          InsertEvent(_core.Events->blitterEvent.cycle + 4);
         }
       }
       else
@@ -221,7 +234,7 @@ void LineExactCopper::EventHandler()
             {
               // ctrueexit
               // Here we must do a new copper access immediately (in 4 cycles)
-              InsertEvent(bus.cycle + 4);
+              InsertEvent(currentFrameCycle + 4);
             }
             else
             {
@@ -231,7 +244,7 @@ void LineExactCopper::EventHandler()
                 // line is 256-313, wrong to not wait
                 // ctrueexit
                 // Here we must do a new copper access immediately (in 4 cycles)
-                InsertEvent(bus.cycle + 4);
+                InsertEvent(currentFrameCycle + 4);
               }
               else
               {
@@ -246,7 +259,7 @@ void LineExactCopper::EventHandler()
                 *((uint8_t *)&maskedY) &= (bswapRegD >> 8);
                 // mask them into vertical position
                 *((uint8_t *)&maskedY) |= (bswapRegC >> 8);
-                maskedY *= busGetCyclesInThisLine();
+                maskedY *= _currentFrameParameters.LongLineCycles;
                 bswapRegC &= 0xfe;
                 bswapRegD &= 0xfe;
 
@@ -254,10 +267,10 @@ void LineExactCopper::EventHandler()
                 // mask in horizontal
                 bswapRegC |= maskedX;
                 bswapRegC = bswapRegC + maskedY + 4;
-                if (bswapRegC <= bus.cycle)
+                if (bswapRegC <= currentFrameCycle)
                 {
                   // fix
-                  bswapRegC = bus.cycle + 4;
+                  bswapRegC = currentFrameCycle + 4;
                 }
                 InsertEvent(bswapRegC);
               }
@@ -372,7 +385,7 @@ void LineExactCopper::EventHandler()
               {
                 // ctrueexit
                 // Here we must do a new copper access immediately (in 4 cycles)
-                InsertEvent(bus.cycle + 4);
+                InsertEvent(currentFrameCycle + 4);
               }
               else
               {
@@ -382,7 +395,7 @@ void LineExactCopper::EventHandler()
                   // line is 256-313, wrong to not wait
                   // ctrueexit
                   // Here we must do a new copper access immediately (in 4 cycles)
-                  InsertEvent(bus.cycle + 4);
+                  InsertEvent(currentFrameCycle + 4);
                 }
                 else
                 {
@@ -397,7 +410,7 @@ void LineExactCopper::EventHandler()
                   *((uint8_t *)&maskedY) &= (bswapRegD >> 8);
                   // mask them into vertical position
                   *((uint8_t *)&maskedY) |= (bswapRegC >> 8);
-                  maskedY *= busGetCyclesInThisLine();
+                  maskedY *= _currentFrameParameters.LongLineCycles;
                   bswapRegC &= 0xfe;
                   bswapRegD &= 0xfe;
 
@@ -405,10 +418,10 @@ void LineExactCopper::EventHandler()
                   // mask in horizontal
                   bswapRegC |= maskedX;
                   bswapRegC = bswapRegC + maskedY + 4;
-                  if (bswapRegC <= bus.cycle)
+                  if (bswapRegC <= currentFrameCycle)
                   {
                     // fix
-                    bswapRegC = bus.cycle + 4;
+                    bswapRegC = currentFrameCycle + 4;
                   }
                   InsertEvent(GetCheckedWaitCycle(bswapRegC));
                 }
@@ -436,13 +449,13 @@ void LineExactCopper::EventHandler()
           {
             // do skip
             // we have passed the line, set up next instruction immediately
-            copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
-            InsertEvent(bus.cycle + 4);
+            _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 4);
+            InsertEvent(currentFrameCycle + 4);
           }
           else if (*((uint8_t *)&maskedY) < (uint8_t)(bswapRegC >> 8))
           {
             // above line, don't skip
-            InsertEvent(bus.cycle + 4);
+            InsertEvent(currentFrameCycle + 4);
           }
           else
           {
@@ -459,9 +472,9 @@ void LineExactCopper::EventHandler()
             if (*((uint8_t *)&maskedX) >= (uint8_t)(bswapRegC & 0xff))
             {
               // position reached, set up next instruction immediately
-              copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
+              _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 4);
             }
-            InsertEvent(bus.cycle + 4);
+            InsertEvent(currentFrameCycle + 4);
           }
         }
       }
@@ -471,9 +484,9 @@ void LineExactCopper::EventHandler()
 
 void LineExactCopper::EndOfFrame()
 {
-  copper_registers.copper_pc = copper_registers.cop1lc;
-  copper_registers.copper_suspended_wait = 40;
-  if (copper_registers.copper_dma == true)
+  _copperRegisters.copper_pc = _copperRegisters.cop1lc;
+  _copperRegisters.copper_suspended_wait = 40;
+  if (_copperRegisters.copper_dma == true)
   {
     RemoveEvent();
     InsertEvent(40);
@@ -482,17 +495,32 @@ void LineExactCopper::EndOfFrame()
 
 void LineExactCopper::HardReset()
 {
+  _copperRegisters.ClearState();
 }
 
 void LineExactCopper::EmulationStart()
 {
+  _copperRegisters.InstallIOHandlers();
 }
 
 void LineExactCopper::EmulationStop()
 {
 }
 
-LineExactCopper::LineExactCopper() : Copper()
+LineExactCopper::LineExactCopper(
+    Scheduler &scheduler,
+    SchedulerEvent &copperEvent,
+    SchedulerEvent &cpuEvent,
+    FrameParameters &currentFrameParameters,
+    Timekeeper &timekeeper,
+    CopperRegisters &copperRegisters)
+  : ICopper(),
+    _scheduler(scheduler),
+    _copperEvent(copperEvent),
+    _cpuEvent(cpuEvent),
+    _currentFrameParameters(currentFrameParameters),
+    _timekeeper(timekeeper),
+    _copperRegisters(copperRegisters)
 {
   YTableInit();
 }

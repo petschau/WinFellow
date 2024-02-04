@@ -27,7 +27,6 @@
 
 #include "Defs.h"
 #include "FellowMain.h"
-#include "BusScheduler.h"
 #include "Renderer.h"
 #include "MemoryInterface.h"
 #include "GraphicsPipeline.h"
@@ -35,8 +34,6 @@
 #include "FellowList.h"
 #include "Timers.h"
 #include "FpsFont.h"
-#include "LegacyCopper.h"
-#include "Sprites.h"
 #include "Configuration.h"
 
 #include "draw_pixelrenderers.h"
@@ -626,11 +623,11 @@ void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode)
 
   draw_graphicsemulationmode = graphicsemulationmode;
 
-  if (oldgraphicsemulationmode != draw_graphicsemulationmode)
-  {
-    spriteInitializeFromEmulationMode();
-    copperInitializeFromEmulationMode();
-  }
+  // if (oldgraphicsemulationmode != draw_graphicsemulationmode)
+  //{
+  //   spriteInitializeFromEmulationMode();
+  //   // copperInitializeFromEmulationMode();
+  // }
 }
 
 GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode()
