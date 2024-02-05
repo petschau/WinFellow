@@ -4,7 +4,7 @@
 
 #include "FrameParameters.h"
 
-class Timekeeper
+class Clocks
 {
 private:
   FrameParameters _frameParameters;

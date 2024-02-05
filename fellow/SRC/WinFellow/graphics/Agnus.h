@@ -2,7 +2,7 @@
 
 #include "CustomChipset/IAgnus.h"
 #include "Scheduler/SchedulerEvent.h"
-#include "Scheduler/Timekeeper.h"
+#include "Scheduler/Clocks.h"
 #include "Scheduler/FrameParameters.h"
 
 class Agnus : public IAgnus
@@ -10,7 +10,7 @@ class Agnus : public IAgnus
 private:
   SchedulerEvent &_eolEvent;
   SchedulerEvent &_eofEvent;
-  Timekeeper &_timekeeper;
+  Clocks &_clocks;
 
   FrameParameters _palLongFrameParameters{};
   FrameParameters _palShortFrameParameters{};
@@ -31,6 +31,6 @@ public:
 
   void HardReset() override;
 
-  Agnus(SchedulerEvent &eolEvent, SchedulerEvent &eofEvent, Timekeeper &timekeeper, FrameParameters &currentFrameParameters);
+  Agnus(SchedulerEvent &eolEvent, SchedulerEvent &eofEvent, Clocks &clocks, FrameParameters &currentFrameParameters);
   virtual ~Agnus();
 };

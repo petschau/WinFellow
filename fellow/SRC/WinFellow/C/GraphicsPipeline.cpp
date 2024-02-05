@@ -216,7 +216,7 @@ uint32_t graphAdjustVPosY(uint32_t y, uint32_t x)
 
 uint16_t rvposr(uint32_t address)
 {
-  uint32_t y = graphAdjustVPosY(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+  uint32_t y = graphAdjustVPosY(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   if (chipsetGetECS())
   {
@@ -231,8 +231,8 @@ uint16_t rvposr(uint32_t address)
 
 uint16_t rvhposr(uint32_t address)
 {
-  uint32_t x = _core.Timekeeper->GetAgnusLineCycle();
-  uint32_t y = graphAdjustVPosY(_core.Timekeeper->GetAgnusLine(), x);
+  uint32_t x = _core.Clocks->GetAgnusLineCycle();
+  uint32_t y = graphAdjustVPosY(_core.Clocks->GetAgnusLine(), x);
   return (uint16_t)(x | ((y & 0xFF) << 8));
 }
 
@@ -268,7 +268,7 @@ void wdiwstrt(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     uint32_t diwstrt_old = diwstrt;
     diwstrt = data;
     if (diwstrt_old != diwstrt)
@@ -300,7 +300,7 @@ void wdiwstop(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     uint32_t diwstop_old = diwstop;
     diwstop = data;
     if (diwstop_old != diwstop)
@@ -348,7 +348,7 @@ void wddfstrt(uint16_t data, uint32_t address)
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     ddfstrt_old = ddfstrt;
   }
 
@@ -385,7 +385,7 @@ void wddfstop(uint16_t data, uint32_t address)
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     ddfstop_old = ddfstop;
   }
 
@@ -439,7 +439,7 @@ void wdmacon(uint16_t data, uint32_t address)
           if (blitterGetFreeCycles() == 0)
           {
             // below delays CPU additionally cycles
-            cpuIntegrationSetChipCycles(cpuIntegrationGetChipCycles() + (_core.Events->blitterEvent.cycle - _core.Timekeeper->GetFrameCycle()));
+            cpuIntegrationSetChipCycles(cpuIntegrationGetChipCycles() + (_core.Events->blitterEvent.cycle - _core.Clocks->GetFrameCycle()));
           }
         }
       }
@@ -540,7 +540,7 @@ void wdmacon(uint16_t data, uint32_t address)
 void wbpl1pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl1pt = chipsetReplaceHighPtr(bpl1pt, data);
 }
@@ -553,7 +553,7 @@ void wbpl1pth(uint16_t data, uint32_t address)
 void wbpl1ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl1pt = chipsetReplaceLowPtr(bpl1pt, data);
 }
@@ -566,7 +566,7 @@ void wbpl1ptl(uint16_t data, uint32_t address)
 void wbpl2pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl2pt = chipsetReplaceHighPtr(bpl2pt, data);
 }
@@ -579,7 +579,7 @@ void wbpl2pth(uint16_t data, uint32_t address)
 void wbpl2ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl2pt = chipsetReplaceLowPtr(bpl2pt, data);
 }
@@ -592,7 +592,7 @@ void wbpl2ptl(uint16_t data, uint32_t address)
 void wbpl3pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
   bpl3pt = chipsetReplaceHighPtr(bpl3pt, data);
 }
 
@@ -604,7 +604,7 @@ void wbpl3pth(uint16_t data, uint32_t address)
 void wbpl3ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl3pt = chipsetReplaceLowPtr(bpl3pt, data);
 }
@@ -617,7 +617,7 @@ void wbpl3ptl(uint16_t data, uint32_t address)
 void wbpl4pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl4pt = chipsetReplaceHighPtr(bpl4pt, data);
 }
@@ -630,7 +630,7 @@ void wbpl4pth(uint16_t data, uint32_t address)
 void wbpl4ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl4pt = chipsetReplaceLowPtr(bpl4pt, data);
 }
@@ -643,7 +643,7 @@ void wbpl4ptl(uint16_t data, uint32_t address)
 void wbpl5pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl5pt = chipsetReplaceHighPtr(bpl5pt, data);
 }
@@ -656,7 +656,7 @@ void wbpl5pth(uint16_t data, uint32_t address)
 void wbpl5ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl5pt = chipsetReplaceLowPtr(bpl5pt, data);
 }
@@ -669,7 +669,7 @@ void wbpl5ptl(uint16_t data, uint32_t address)
 void wbpl6pth(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl6pt = chipsetReplaceHighPtr(bpl6pt, data);
 }
@@ -682,7 +682,7 @@ void wbpl6pth(uint16_t data, uint32_t address)
 void wbpl6ptl(uint16_t data, uint32_t address)
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
 
   bpl6pt = chipsetReplaceLowPtr(bpl6pt, data);
 }
@@ -697,7 +697,7 @@ void wbplcon0(uint16_t data, uint32_t address)
   {
     if (_core.Registers.BplCon0 != data)
     {
-      GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+      GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     }
   }
 
@@ -773,7 +773,7 @@ void wbplcon1(uint16_t data, uint32_t address)
   {
     if (bplcon1 != (data & 0xff))
     {
-      GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+      GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     }
   }
 
@@ -843,7 +843,7 @@ void wbpl1mod(uint16_t data, uint32_t address)
   {
     if (bpl1mod != new_value)
     {
-      GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+      GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     }
   }
   bpl1mod = new_value;
@@ -861,7 +861,7 @@ void wbpl2mod(uint16_t data, uint32_t address)
   {
     if (bpl2mod != new_value)
     {
-      GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+      GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     }
   }
   bpl2mod = new_value;
@@ -880,7 +880,7 @@ void wcolor(uint16_t data, uint32_t address)
   {
     if (graph_color[color_index] != (data & 0x0fff))
     {
-      GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+      GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     }
   }
 
@@ -1567,7 +1567,7 @@ void graphCalculateWindowHires()
 
 void graphPlayfieldOnOff()
 {
-  uint32_t currentY = _core.Timekeeper->GetAgnusLine();
+  uint32_t currentY = _core.Clocks->GetAgnusLine();
   if (graph_playfield_on != 0)
   {
     // Playfield on, check if top has moved below graph_raster_y
@@ -2155,14 +2155,14 @@ void graphEndOfLine()
 {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE::GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(_core.Timekeeper->GetAgnusLine(), _core.Timekeeper->GetAgnusLineCycle());
+    GraphicsContext.Commit(_core.Clocks->GetAgnusLine(), _core.Clocks->GetAgnusLineCycle());
     return;
   }
 
   // skip this frame?
   if (draw_frame_skip == 0)
   {
-    uint32_t currentY = _core.Timekeeper->GetAgnusLine();
+    uint32_t currentY = _core.Clocks->GetAgnusLine();
     // update diw state
     graphPlayfieldOnOff();
 

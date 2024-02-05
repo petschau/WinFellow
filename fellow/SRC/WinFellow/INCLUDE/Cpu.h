@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Cpu/ICpu.h"
-#include "Scheduler/Timekeeper.h"
+#include "Scheduler/Clocks.h"
 
 class Cpu : public ICpu
 {
 private:
   SchedulerEvent &_cpuEvent;
-  Timekeeper &_timekeeper;
+  Clocks &_clocks;
 
   void MasterEventLoopWrapper(std::function<void()> innerMasterEventLoop);
   SchedulerEventHandler GetInstructionEventHandler();
@@ -19,5 +19,5 @@ public:
 
   uint32_t GetPc() override;
 
-  Cpu(SchedulerEvent &cpuEvent, Timekeeper &timekeeper);
+  Cpu(SchedulerEvent &cpuEvent, Clocks &clocks);
 };

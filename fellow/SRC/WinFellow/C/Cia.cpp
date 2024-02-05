@@ -104,19 +104,19 @@ BOOLE ciaIsSoundFilterEnabled()
 
 uint32_t ciaUnstabilizeValue(uint32_t value, uint32_t remainder)
 {
-  return (value * CIA_BUS_CYCLE_RATIO) + _core.Timekeeper->GetFrameCycle() + remainder;
+  return (value * CIA_BUS_CYCLE_RATIO) + _core.Clocks->GetFrameCycle() + remainder;
 }
 
 /* Translate cycles until timeout from current sof -> timer value */
 
 uint32_t ciaStabilizeValue(uint32_t value)
 {
-  return (value - _core.Timekeeper->GetFrameCycle()) / CIA_BUS_CYCLE_RATIO;
+  return (value - _core.Clocks->GetFrameCycle()) / CIA_BUS_CYCLE_RATIO;
 }
 
 uint32_t ciaStabilizeValueRemainder(uint32_t value)
 {
-  return (value - _core.Timekeeper->GetFrameCycle()) % CIA_BUS_CYCLE_RATIO;
+  return (value - _core.Clocks->GetFrameCycle()) % CIA_BUS_CYCLE_RATIO;
 }
 
 uint32_t ciaGetTimerValue(uint32_t value)
@@ -387,7 +387,7 @@ void ciaHandleEvent()
 void ciaRecheckIRQ()
 {
   cia_recheck_irq = true;
-  cia_recheck_irq_time = _core.Timekeeper->GetFrameCycle() + 10;
+  cia_recheck_irq_time = _core.Clocks->GetFrameCycle() + 10;
   ciaSetupNextEvent();
 }
 

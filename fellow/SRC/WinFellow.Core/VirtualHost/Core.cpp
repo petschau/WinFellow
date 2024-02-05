@@ -10,7 +10,7 @@ Core::Core()
     Sound(nullptr),
     Uart(nullptr),
     RtcOkiMsm6242rs(nullptr),
-    Timekeeper(nullptr),
+    Clocks(nullptr),
     Events(nullptr),
     Scheduler(nullptr),
     Cpu(nullptr),

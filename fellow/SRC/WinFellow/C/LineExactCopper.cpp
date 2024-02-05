@@ -47,21 +47,21 @@ void LineExactCopper::Load(uint32_t new_copper_pc)
   if (_copperRegisters.copper_dma == true)
   {
     RemoveEvent();
-    InsertEvent(_timekeeper.GetFrameCycle() + 4);
+    InsertEvent(_clocks.GetFrameCycle() + 4);
   }
   else
   {
     // DMA is off
     if (_copperRegisters.copper_suspended_wait == SchedulerEvent::EventDisableCycle)
     {
-      _copperRegisters.copper_suspended_wait = _timekeeper.GetFrameCycle();
+      _copperRegisters.copper_suspended_wait = _clocks.GetFrameCycle();
     }
   }
 }
 
 uint32_t LineExactCopper::GetCheckedWaitCycle(uint32_t waitCycle)
 {
-  const auto currentFrameCycle = _timekeeper.GetFrameCycle();
+  const auto currentFrameCycle = _clocks.GetFrameCycle();
 
   if (waitCycle <= currentFrameCycle)
   {
@@ -104,7 +104,7 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     if (_copperRegisters.copper_suspended_wait != SchedulerEvent::EventDisableCycle)
     {
       // dma not hanging
-      const auto currentFrameCycle = _timekeeper.GetFrameCycle();
+      const auto currentFrameCycle = _clocks.GetFrameCycle();
 
       if (_copperRegisters.copper_suspended_wait <= currentFrameCycle)
       {
@@ -145,9 +145,9 @@ void LineExactCopper::EventHandler()
   uint32_t maskedY;
   uint32_t maskedX;
   uint32_t waitY;
-  const auto currentY = _timekeeper.GetAgnusLine();
-  const auto currentX = _timekeeper.GetAgnusLineCycle();
-  const auto currentFrameCycle = _timekeeper.GetFrameCycle();
+  const auto currentY = _clocks.GetAgnusLine();
+  const auto currentX = _clocks.GetAgnusLineCycle();
+  const auto currentFrameCycle = _clocks.GetFrameCycle();
 
   _copperEvent.Disable();
   if (_cpuEvent.IsEnabled())
@@ -512,14 +512,14 @@ LineExactCopper::LineExactCopper(
     SchedulerEvent &copperEvent,
     SchedulerEvent &cpuEvent,
     FrameParameters &currentFrameParameters,
-    Timekeeper &timekeeper,
+    Clocks &clocks,
     CopperRegisters &copperRegisters)
   : ICopper(),
     _scheduler(scheduler),
     _copperEvent(copperEvent),
     _cpuEvent(cpuEvent),
     _currentFrameParameters(currentFrameParameters),
-    _timekeeper(timekeeper),
+    _clocks(clocks),
     _copperRegisters(copperRegisters)
 {
   YTableInit();

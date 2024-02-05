@@ -17,11 +17,11 @@ void Logger::Log(uint32_t line, uint32_t cylinder, const char *message)
     fprintf(
         _logfile,
         "Frame %.16I64X Line %.3X Cylinder %.3X (%.3X,%.3X): %s",
-        _core.Timekeeper->GetFrameNumber(),
+        _core.Clocks->GetFrameNumber(),
         line,
         cylinder,
-        _core.Timekeeper->GetAgnusLine(),
-        _core.Timekeeper->GetAgnusLineCycle(),
+        _core.Clocks->GetAgnusLine(),
+        _core.Clocks->GetAgnusLineCycle(),
         message);
   }
 }

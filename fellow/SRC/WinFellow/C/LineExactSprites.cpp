@@ -1061,7 +1061,7 @@ void LineExactSprites::MergeHAM4x4x32(uint64_t *frameptr, graph_line *linedescri
 
 void LineExactSprites::BuildItem(spr_action_list_item **item)
 {
-  uint32_t currentX = _timekeeper.GetAgnusLineCycle();
+  uint32_t currentX = _clocks.GetAgnusLineCycle();
   if (currentX >= 18)
   {
     // Petter has put an delay in the Copper calls of 16 cycles, we need to compensate for that
@@ -1089,7 +1089,7 @@ void LineExactSprites::BuildItem(spr_action_list_item **item)
       (*item)->raster_x = 4;
     }
   }
-  (*item)->raster_y = _timekeeper.GetAgnusLine();
+  (*item)->raster_y = _clocks.GetAgnusLine();
 }
 
 bool LineExactSprites::HasSpritesOnLine()
@@ -1112,8 +1112,8 @@ void LineExactSprites::NotifySprpthChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
-        _timekeeper.GetAgnusLine(),
-        2 * (_timekeeper.GetAgnusLineCycle() - 16),
+        _clocks.GetAgnusLine(),
+        2 * (_clocks.GetAgnusLineCycle() - 16),
         sprite_number,
         (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
         chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
@@ -1137,8 +1137,8 @@ void LineExactSprites::NotifySprptlChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
-        _timekeeper.GetAgnusLine(),
-        2 * (_timekeeper.GetAgnusLineCycle() - 16),
+        _clocks.GetAgnusLine(),
+        2 * (_clocks.GetAgnusLineCycle() - 16),
         sprite_number,
         (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
         chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
@@ -1165,8 +1165,8 @@ void LineExactSprites::NotifySprposChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n",
-        _timekeeper.GetAgnusLine(),
-        2 * (_timekeeper.GetAgnusLineCycle() - 16),
+        _clocks.GetAgnusLine(),
+        2 * (_clocks.GetAgnusLineCycle() - 16),
         sprite_number,
         sprx_debug[sprite_number],
         sprly_debug[sprite_number]);
@@ -1193,8 +1193,8 @@ void LineExactSprites::NotifySprctlChanged(uint16_t data, unsigned int sprite_nu
     sprintf(
         buffer,
         "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n",
-        _timekeeper.GetAgnusLine(),
-        2 * (_timekeeper.GetAgnusLineCycle() - 16),
+        _clocks.GetAgnusLine(),
+        2 * (_clocks.GetAgnusLineCycle() - 16),
         sprite_number,
         sprx_debug[sprite_number],
         spry_debug[sprite_number],
@@ -1216,7 +1216,7 @@ void LineExactSprites::NotifySprdataChanged(uint16_t data, unsigned int sprite_n
   // for debugging only
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", _timekeeper.GetAgnusLine(), 2 * (_timekeeper.GetAgnusLineCycle() - 16), sprite_number);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", _clocks.GetAgnusLine(), 2 * (_clocks.GetAgnusLineCycle() - 16), sprite_number);
     _core.Log->AddLog2(buffer);
   }
 }
@@ -1232,7 +1232,7 @@ void LineExactSprites::NotifySprdatbChanged(uint16_t data, unsigned int sprite_n
   // for debugging only
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", _timekeeper.GetAgnusLine(), 2 * (_timekeeper.GetAgnusLineCycle() - 16), sprite_number);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", _clocks.GetAgnusLine(), 2 * (_clocks.GetAgnusLineCycle() - 16), sprite_number);
     _core.Log->AddLog2(buffer);
   }
 }
@@ -1250,7 +1250,7 @@ void LineExactSprites::Log()
         s,
         "%u %u, sprite %u fy %u ly %u x %u state %u att %u atto %u pt %.6X\n",
         draw_frame_count,
-        _timekeeper.GetAgnusLine(),
+        _clocks.GetAgnusLine(),
         no,
         spry[no],
         sprly[no],
@@ -1359,7 +1359,7 @@ void LineExactSprites::DMASpriteHandler()
   uint32_t local_data_ctl;
   uint32_t local_data_pos;
   uint32_t i, count;
-  uint32_t currentY = _timekeeper.GetAgnusLine();
+  uint32_t currentY = _clocks.GetAgnusLine();
 
   sprites_online = false;
   uint32_t sprnr = 0;
@@ -1674,7 +1674,7 @@ void LineExactSprites::ProcessActionList()
               // for debugging only
               if (output_action_sprite_log == TRUE)
               {
-                sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, _timekeeper.GetAgnusLine(), sprx[sprnr]);
+                sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, _clocks.GetAgnusLine(), sprx[sprnr]);
                 _core.Log->AddLog2(buffer);
               }
             }
@@ -1726,7 +1726,7 @@ void LineExactSprites::ProcessActionList()
         // for debugging only
         if (output_action_sprite_log == TRUE)
         {
-          sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, _timekeeper.GetAgnusLine(), sprx[sprnr]);
+          sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, _clocks.GetAgnusLine(), sprx[sprnr]);
           _core.Log->AddLog2(buffer);
         }
       }
@@ -2483,9 +2483,9 @@ void LineExactSprites::EmulationStop()
 {
 }
 
-LineExactSprites::LineExactSprites(Timekeeper &timekeeper, SpriteRegisters &spriteRegisters)
+LineExactSprites::LineExactSprites(Clocks &clocks, SpriteRegisters &spriteRegisters)
   : ISprites(),
-    _timekeeper(timekeeper),
+    _clocks(clocks),
     _spriteRegisters(spriteRegisters),
     sprite_to_block(0),
     output_sprite_log(FALSE),

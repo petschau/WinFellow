@@ -1,38 +1,38 @@
-#include "Timekeeper.h"
+#include "Clocks.h"
 
 #include <cassert>
 
-uint64_t Timekeeper::GetFrameNumber() const
+uint64_t Clocks::GetFrameNumber() const
 {
   return _frameNumber;
 }
 
-uint32_t Timekeeper::GetFrameCycle() const
+uint32_t Clocks::GetFrameCycle() const
 {
   return _frameCycle;
 }
 
-uint32_t Timekeeper::GetAgnusLine() const
+uint32_t Clocks::GetAgnusLine() const
 {
   return _agnusLine;
 }
 
-uint32_t Timekeeper::GetAgnusLineCycle() const
+uint32_t Clocks::GetAgnusLineCycle() const
 {
   return _agnusLineCycle;
 }
 
-uint32_t Timekeeper::GetDeniseLineCycle() const
+uint32_t Clocks::GetDeniseLineCycle() const
 {
   return _deniseLineCycle;
 }
 
-uint32_t Timekeeper::GetCycleFrom280ns(uint32_t cycle280ns)
+uint32_t Clocks::GetCycleFrom280ns(uint32_t cycle280ns)
 {
   return cycle280ns;
 }
 
-void Timekeeper::SetFrameCycle(uint32_t newCycle)
+void Clocks::SetFrameCycle(uint32_t newCycle)
 {
   uint32_t previousCycle = _frameCycle;
 
@@ -44,7 +44,7 @@ void Timekeeper::SetFrameCycle(uint32_t newCycle)
   _deniseLineCycle = newCycle % _frameParameters.LongLineCycles;
 }
 
-void Timekeeper::Clear(const FrameParameters &frameParameters)
+void Clocks::Clear(const FrameParameters &frameParameters)
 {
   _frameParameters = frameParameters;
   _frameCycle = 0;
@@ -53,7 +53,7 @@ void Timekeeper::Clear(const FrameParameters &frameParameters)
   _deniseLineCycle = 0;
 }
 
-void Timekeeper::NewFrame(const FrameParameters &frameParameters)
+void Clocks::NewFrame(const FrameParameters &frameParameters)
 {
   _frameParameters = frameParameters;
   _frameNumber++;
@@ -63,7 +63,7 @@ void Timekeeper::NewFrame(const FrameParameters &frameParameters)
   _deniseLineCycle = 0;
 }
 
-void Timekeeper::HardReset(const FrameParameters &frameParameters)
+void Clocks::HardReset(const FrameParameters &frameParameters)
 {
   NewFrame(frameParameters);
 }

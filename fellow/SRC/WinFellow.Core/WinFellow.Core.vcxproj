@@ -70,7 +70,7 @@
     <ClInclude Include="Scheduler\SchedulerEvent.h" />
     <ClInclude Include="Scheduler\SchedulerEvents.h" />
     <ClInclude Include="Scheduler\SchedulerQueue.h" />
-    <ClInclude Include="Scheduler\Timekeeper.h" />
+    <ClInclude Include="Scheduler\Clocks.h" />
     <ClInclude Include="Service\FileInformation.h" />
     <ClInclude Include="Service\IFileops.h" />
     <ClInclude Include="Service\IFileInformation.h" />
@@ -96,7 +96,7 @@
     <ClCompile Include="Scheduler\Scheduler.cpp" />
     <ClCompile Include="Scheduler\SchedulerEvent.cpp" />
     <ClCompile Include="Scheduler\SchedulerQueue.cpp" />
-    <ClCompile Include="Scheduler\Timekeeper.cpp" />
+    <ClCompile Include="Scheduler\Clocks.cpp" />
     <ClCompile Include="Service\FileInformation.cpp" />
     <ClCompile Include="Service\Log.cpp" />
     <ClCompile Include="VirtualHost\Core.cpp" />

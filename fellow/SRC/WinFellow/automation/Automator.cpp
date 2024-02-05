@@ -17,7 +17,7 @@ void Automator::TakeSnapshot()
     _snapshotCounter = 0;
     _snapshotsTaken++;
     char filename[CFG_FILENAME_LENGTH];
-    sprintf(filename, "%s\\Snap%.4d_%I64d.bmp", SnapshotDirectory.c_str(), _snapshotsTaken, _core.Timekeeper->GetFrameNumber() + 1);
+    sprintf(filename, "%s\\Snap%.4d_%I64d.bmp", SnapshotDirectory.c_str(), _snapshotsTaken, _core.Clocks->GetFrameNumber() + 1);
     gfxDrvSaveScreenshot(false, filename);
   }
 }
@@ -58,8 +58,8 @@ void Automator::EndOfLine()
 {
   if (!RecordScript)
   {
-    uint64_t frameNumber = _core.Timekeeper->GetFrameNumber();
-    uint32_t line = _core.Timekeeper->GetAgnusLine();
+    uint64_t frameNumber = _core.Clocks->GetFrameNumber();
+    uint32_t line = _core.Clocks->GetAgnusLine();
     _script.ExecuteUntil(frameNumber, line);
   }
 }

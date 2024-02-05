@@ -1369,7 +1369,7 @@ void blitInitiate()
   blitter.started = TRUE;
   blitSetBlitterBusy();
   wintreq_direct(0x0040, 0xdff09c, true);
-  blitterInsertEvent(cycle_length + _core.Timekeeper->GetFrameCycle());
+  blitterInsertEvent(cycle_length + _core.Clocks->GetFrameCycle());
 }
 
 // Handles a blitter event.

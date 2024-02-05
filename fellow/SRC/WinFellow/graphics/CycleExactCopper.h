@@ -19,7 +19,7 @@ private:
   SchedulerEvent &_copperEvent;
   SchedulerEvent &_cpuEvent;
   FrameParameters &_currentFrameParameters;
-  Timekeeper &_timekeeper;
+  Clocks &_clocks;
   CopperRegisters &_copperRegisters;
   DebugLog &_debugLog;
 
@@ -64,7 +64,7 @@ public:
       SchedulerEvent &copperEvent,
       SchedulerEvent &cpuEvent,
       FrameParameters &currentFrameParameters,
-      Timekeeper &timekeeper,
+      Clocks &clocks,
       CopperRegisters &copperRegisters,
       DebugLog &debugLog);
   virtual ~CycleExactCopper();

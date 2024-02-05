@@ -207,7 +207,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
       {
         if (delayIRQ && !cpuGetStop())
         {
-          _core.Events->interruptEvent.cycle = _core.Timekeeper->GetFrameCycle() + interruptGetScheduleLatency();
+          _core.Events->interruptEvent.cycle = _core.Clocks->GetFrameCycle() + interruptGetScheduleLatency();
           _core.Scheduler->InsertEvent(&_core.Events->interruptEvent);
           return;
         }

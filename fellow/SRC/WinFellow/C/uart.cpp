@@ -66,7 +66,7 @@ void Uart::CopyTransmitBufferToShiftRegister()
     _transmitShiftRegister = _transmitBuffer;
     _transmitShiftRegisterEmpty = false;
     _transmitBufferEmpty = true;
-    _transmitDoneTime = GetTransmitDoneTime() + _core.Timekeeper->GetFrameCycle();
+    _transmitDoneTime = GetTransmitDoneTime() + _core.Clocks->GetFrameCycle();
 
     wintreq_direct(0x8001, 0xdff09c, true); // TBE interrupt
 
@@ -150,7 +150,7 @@ void Uart::EndOfLine()
 {
   // (Put this in an event with an exact time-stamp)
 
-  if (_transmitDoneTime <= _core.Timekeeper->GetFrameCycle())
+  if (_transmitDoneTime <= _core.Clocks->GetFrameCycle())
   {
     _transmitShiftRegisterEmpty = true;
     _transmitDoneTime = SchedulerEvent::EventDisableCycle;
@@ -161,7 +161,7 @@ void Uart::EndOfLine()
     }
   }
 
-  if (_receiveDoneTime <= _core.Timekeeper->GetFrameCycle())
+  if (_receiveDoneTime <= _core.Clocks->GetFrameCycle())
   {
     _receiveDoneTime = SchedulerEvent::EventDisableCycle;
 

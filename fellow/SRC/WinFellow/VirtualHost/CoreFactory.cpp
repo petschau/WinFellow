@@ -65,27 +65,27 @@ void CoreFactory::DestroyServices()
 void CoreFactory::CreateModules()
 {
   _core.Events = new SchedulerEvents();
-  _core.Timekeeper = new Timekeeper();
+  _core.Clocks = new Clocks();
   _core.CurrentFrameParameters = new FrameParameters();
-  _core.DebugLog = new DebugLog(*_core.Timekeeper, *_core.Fileops);
+  _core.DebugLog = new DebugLog(*_core.Clocks, *_core.Fileops);
 
   _core.Cia = new Cia(_core.Events->ciaEvent);
-  _core.Agnus = new Agnus(_core.Events->eolEvent, _core.Events->eofEvent, *_core.Timekeeper, *_core.CurrentFrameParameters);
-  _core.Cpu = new Cpu(_core.Events->cpuEvent, *_core.Timekeeper);
+  _core.Agnus = new Agnus(_core.Events->eolEvent, _core.Events->eofEvent, *_core.Clocks, *_core.CurrentFrameParameters);
+  _core.Cpu = new Cpu(_core.Events->cpuEvent, *_core.Clocks);
   _core.Blitter = new Blitter(_core.Events->blitterEvent);
   _core.Paula = new Paula(_core.Events->interruptEvent);
   _core.Memory = new Memory();
 
-  _core.Scheduler = new Scheduler(*_core.Timekeeper, *_core.Events, *_core.CurrentFrameParameters);
+  _core.Scheduler = new Scheduler(*_core.Clocks, *_core.Events, *_core.CurrentFrameParameters);
 
   _core.CopperRegisters = new CopperRegisters(*_core.Memory);
   _core.LineExactCopper =
-      new LineExactCopper(*_core.Scheduler, _core.Events->copperEvent, _core.Events->cpuEvent, *_core.CurrentFrameParameters, *_core.Timekeeper, *_core.CopperRegisters);
+      new LineExactCopper(*_core.Scheduler, _core.Events->copperEvent, _core.Events->cpuEvent, *_core.CurrentFrameParameters, *_core.Clocks, *_core.CopperRegisters);
   _core.CycleExactCopper = new CycleExactCopper(
-      *_core.Scheduler, _core.Events->copperEvent, _core.Events->cpuEvent, *_core.CurrentFrameParameters, *_core.Timekeeper, *_core.CopperRegisters, *_core.DebugLog);
+      *_core.Scheduler, _core.Events->copperEvent, _core.Events->cpuEvent, *_core.CurrentFrameParameters, *_core.Clocks, *_core.CopperRegisters, *_core.DebugLog);
 
   _core.SpriteRegisters = new SpriteRegisters(*_core.Memory);
-  _core.LineExactSprites = new LineExactSprites(*_core.Timekeeper, *_core.SpriteRegisters);
+  _core.LineExactSprites = new LineExactSprites(*_core.Clocks, *_core.SpriteRegisters);
   _core.CycleExactSprites = new CycleExactSprites(*_core.SpriteRegisters, _core.RegisterUtility);
 
   _core.Sound = new Sound();
@@ -151,8 +151,8 @@ void CoreFactory::DestroyModules()
   delete _core.CurrentFrameParameters;
   _core.CurrentFrameParameters = nullptr;
 
-  delete _core.Timekeeper;
-  _core.Timekeeper = nullptr;
+  delete _core.Clocks;
+  _core.Clocks = nullptr;
 
   delete _core.Events;
   _core.Events = nullptr;

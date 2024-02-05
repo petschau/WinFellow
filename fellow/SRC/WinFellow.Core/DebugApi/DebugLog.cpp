@@ -9,9 +9,9 @@ void DebugLog::Log(DebugLogKind kind, const char *message)
 
   _entries.emplace_back(DebugLogEntry{
       .Kind = kind,
-      .FrameNumber = _timekeeper.GetFrameNumber(),
-      .AgnusLine = _timekeeper.GetAgnusLine(),
-      .AgnusLineCycle = _timekeeper.GetAgnusLineCycle(),
+      .FrameNumber = _clocks.GetFrameNumber(),
+      .AgnusLine = _clocks.GetAgnusLine(),
+      .AgnusLineCycle = _clocks.GetAgnusLineCycle(),
       .Message = message});
 }
 
@@ -21,9 +21,9 @@ void DebugLog::Log(DebugLogKind kind, const string message)
 
   _entries.emplace_back(DebugLogEntry{
       .Kind = kind,
-      .FrameNumber = _timekeeper.GetFrameNumber(),
-      .AgnusLine = _timekeeper.GetAgnusLine(),
-      .AgnusLineCycle = _timekeeper.GetAgnusLineCycle(),
+      .FrameNumber = _clocks.GetFrameNumber(),
+      .AgnusLine = _clocks.GetAgnusLine(),
+      .AgnusLineCycle = _clocks.GetAgnusLineCycle(),
       .Message = message});
 }
 
@@ -58,7 +58,7 @@ void DebugLog::Flush()
   _entries.clear();
 }
 
-DebugLog::DebugLog(const Timekeeper &timekeeper, IFileops &fileops) : _timekeeper(timekeeper), _fileops(fileops), _filename()
+DebugLog::DebugLog(const Clocks &clocks, IFileops &fileops) : _clocks(clocks), _fileops(fileops), _filename()
 {
   char filename[256];
   _fileops.GetGenericFileName(filename, "WinFellow", "Debug.log");
