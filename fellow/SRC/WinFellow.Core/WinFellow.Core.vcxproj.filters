@@ -149,7 +149,7 @@
     <ClInclude Include="Scheduler\Scheduler.h">
       <Filter>Scheduler</Filter>
     </ClInclude>
-    <ClInclude Include="Scheduler\Timekeeper.h">
+    <ClInclude Include="Scheduler\Clocks.h">
       <Filter>Scheduler</Filter>
     </ClInclude>
     <ClInclude Include="Cpu\ICpu.h">
@@ -242,7 +242,7 @@
     <ClCompile Include="Scheduler\Scheduler.cpp">
       <Filter>Scheduler</Filter>
     </ClCompile>
-    <ClCompile Include="Scheduler\Timekeeper.cpp">
+    <ClCompile Include="Scheduler\Clocks.cpp">
       <Filter>Scheduler</Filter>
     </ClCompile>
     <ClCompile Include="CustomChipset\Copper\CopperRegisters.cpp">

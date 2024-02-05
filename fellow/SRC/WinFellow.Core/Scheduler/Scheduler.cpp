@@ -35,7 +35,7 @@
 void Scheduler::InsertEvent(SchedulerEvent *ev)
 {
   assert(((int)ev->cycle) >= 0);
-  assert(ev->cycle >= _timekeeper.GetFrameCycle());
+  assert(ev->cycle >= _clocks.GetFrameCycle());
 
   _queue.InsertEvent(ev);
 }
@@ -48,7 +48,7 @@ void Scheduler::RemoveEvent(SchedulerEvent *ev)
 void Scheduler::NewFrame(const FrameParameters &newFrameParameters)
 {
   uint32_t cyclesInEndedFrame = _currentFrameParameters.CyclesInFrame;
-  _timekeeper.NewFrame(newFrameParameters);
+  _clocks.NewFrame(newFrameParameters);
   _queue.RebaseEvents(cyclesInEndedFrame);
 }
 
@@ -65,9 +65,9 @@ void Scheduler::ClearRequestEmulationStop()
 void Scheduler::HandleNextEvent()
 {
   SchedulerEvent *e = _queue.PopEvent();
-  _timekeeper.SetFrameCycle(e->cycle);
+  _clocks.SetFrameCycle(e->cycle);
 
-  assert(_timekeeper.GetAgnusLine() < _currentFrameParameters.LinesInFrame || e == &_events.eofEvent);
+  assert(_clocks.GetAgnusLine() < _currentFrameParameters.LinesInFrame || e == &_events.eofEvent);
 
   e->handler();
 }
@@ -122,7 +122,7 @@ void Scheduler::MasterEventLoop_InstructionsUntilChipAndThenChipUntilNextInstruc
   {
     while (_queue.GetNextEventCycle() >= _events.cpuEvent.cycle)
     {
-      _timekeeper.SetFrameCycle(_events.cpuEvent.cycle);
+      _clocks.SetFrameCycle(_events.cpuEvent.cycle);
       _events.cpuEvent.handler();
     }
     do
@@ -139,7 +139,7 @@ void Scheduler::MasterEventLoop_DebugStepOneInstruction()
   {
     if (_queue.GetNextEventCycle() >= _events.cpuEvent.cycle)
     {
-      _timekeeper.SetFrameCycle(_events.cpuEvent.cycle);
+      _clocks.SetFrameCycle(_events.cpuEvent.cycle);
       _events.cpuEvent.handler();
       return;
     }
@@ -158,7 +158,7 @@ void Scheduler::MasterEventLoop_DebugStepUntilPc(uint32_t overPc)
   {
     if (_queue.GetNextEventCycle() >= _events.cpuEvent.cycle)
     {
-      _timekeeper.SetFrameCycle(_events.cpuEvent.cycle);
+      _clocks.SetFrameCycle(_events.cpuEvent.cycle);
       _events.cpuEvent.handler();
 
       if (_core.Cpu->GetPc() == overPc) return;
@@ -183,7 +183,7 @@ void Scheduler::ClearQueue()
 void Scheduler::InitializeQueue()
 {
   _queue.Clear();
-  _timekeeper.Clear(_currentFrameParameters);
+  _clocks.Clear(_currentFrameParameters);
 
   _core.Cpu->InitializeCpuEvent();
   _core.Agnus->InitializeEndOfLineEvent();
@@ -204,7 +204,7 @@ void Scheduler::InitializeQueue()
   _events.eofEvent.cycle = _currentFrameParameters.CyclesInFrame;
   _queue.InsertEventWithNullCheck(&_events.eofEvent);
 
-  _events.eolEvent.cycle = _currentFrameParameters.GetAgnusCyclesInLine(_timekeeper.GetAgnusLine()) - 1;
+  _events.eolEvent.cycle = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine()) - 1;
   _queue.InsertEvent(&_events.eolEvent);
 }
 
@@ -237,7 +237,7 @@ void Scheduler::Shutdown()
 {
 }
 
-Scheduler::Scheduler(Timekeeper &timekeeper, SchedulerEvents &events, FrameParameters &currentFrameParameters)
-  : _timekeeper(timekeeper), _events(events), _currentFrameParameters(currentFrameParameters)
+Scheduler::Scheduler(Clocks &clocks, SchedulerEvents &events, FrameParameters &currentFrameParameters)
+  : _clocks(clocks), _events(events), _currentFrameParameters(currentFrameParameters)
 {
 }

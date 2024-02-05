@@ -23,7 +23,7 @@ void Cpu::MasterEventLoopWrapper(std::function<void()> innerMasterEventLoop)
     {
       // Returned out of an CPU exception that failed in the middle of an instruction.
       // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
-      _cpuEvent.cycle = _timekeeper.GetFrameCycle() + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+      _cpuEvent.cycle = _clocks.GetFrameCycle() + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
       cpuIntegrationSetChipCycles(0);
     }
   }
@@ -65,6 +65,6 @@ uint32_t Cpu::GetPc()
   return cpuGetPC();
 }
 
-Cpu::Cpu(SchedulerEvent &cpuEvent, Timekeeper &timekeeper) : _cpuEvent(cpuEvent), _timekeeper(timekeeper)
+Cpu::Cpu(SchedulerEvent &cpuEvent, Clocks &clocks) : _cpuEvent(cpuEvent), _clocks(clocks)
 {
 }

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "Timekeeper.h"
+#include "Clocks.h"
 #include "SchedulerEvents.h"
 #include "SchedulerQueue.h"
 #include "FrameParameters.h"
@@ -18,7 +18,7 @@ class Scheduler
 private:
   typedef void (Scheduler::*ChipBusRunHandlerFunc)();
 
-  Timekeeper &_timekeeper;
+  Clocks &_clocks;
   SchedulerEvents &_events;
   FrameParameters &_currentFrameParameters;
 
@@ -65,5 +65,5 @@ public:
   void Startup();
   void Shutdown();
 
-  Scheduler(Timekeeper &timekeeper, SchedulerEvents &events, FrameParameters &currentFrameParameters);
+  Scheduler(Clocks &clocks, SchedulerEvents &events, FrameParameters &currentFrameParameters);
 };

@@ -182,7 +182,7 @@ void fellowSoftReset()
 void fellowHardReset()
 {
   _core.Agnus->HardReset();
-  _core.Timekeeper->HardReset(*_core.CurrentFrameParameters);
+  _core.Clocks->HardReset(*_core.CurrentFrameParameters);
   _core.Scheduler->HardReset();
 
   memoryHardReset();

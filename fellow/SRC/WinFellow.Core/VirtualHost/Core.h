@@ -13,7 +13,7 @@
 #include "IO/Uart.h"
 #include "IO/RtcOkiMsm6242rs.h"
 #include "Scheduler/Scheduler.h"
-#include "Scheduler/Timekeeper.h"
+#include "Scheduler/Clocks.h"
 #include "Cpu/ICpu.h"
 #include "CustomChipset/IAgnus.h"
 #include "CustomChipset/Copper/ICopper.h"
@@ -45,7 +45,7 @@ public:
   Sound *Sound;
   Uart *Uart;
   RtcOkiMsm6242rs *RtcOkiMsm6242rs;
-  Timekeeper *Timekeeper;
+  Clocks *Clocks;
   SchedulerEvents *Events;
   Scheduler *Scheduler;
   ICpu *Cpu;

@@ -18,7 +18,7 @@ void CycleExactCopper::IncreasePtr()
 
 void CycleExactCopper::SetState(CopperStates newState, uint32_t cycle)
 {
-  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_timekeeper.GetAgnusLineCycle());
+  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLineCycle());
   if ((cycle % currentLineCycleCount) & 1)
   {
     cycle++;
@@ -38,8 +38,8 @@ void CycleExactCopper::Load(uint32_t new_copper_ptr)
   _copperRegisters.copper_pc = new_copper_ptr;
 
   _skip_next = false;
-  uint32_t start_cycle = _timekeeper.GetFrameCycle() + 6;
-  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_timekeeper.GetAgnusLine());
+  uint32_t start_cycle = _clocks.GetFrameCycle() + 6;
+  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
   if ((start_cycle % currentLineCycleCount) & 1)
   {
     start_cycle++;
@@ -68,7 +68,7 @@ void CycleExactCopper::Move()
 
   if (IsRegisterAllowed(regno))
   {
-    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _timekeeper.GetFrameCycle() + 2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _clocks.GetFrameCycle() + 2);
     if (!_skip_next)
     {
       memory_iobank_write[regno >> 1](value, regno);
@@ -90,8 +90,8 @@ void CycleExactCopper::Wait()
   uint32_t vp = (uint32_t)(_first >> 8);
   uint32_t hp = (uint32_t)(_first & 0xfe);
 
-  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_timekeeper.GetAgnusLine());
-  const auto currentCycle = _timekeeper.GetFrameCycle();
+  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
+  const auto currentCycle = _clocks.GetFrameCycle();
   uint32_t test_cycle = currentCycle + 2;
   uint32_t rasterY = test_cycle / currentLineCycleCount;
   uint32_t rasterX = test_cycle % currentLineCycleCount;
@@ -107,7 +107,7 @@ void CycleExactCopper::Wait()
   if ((rasterY & ve) > (vp & ve))
   {
     _skip_next = false;
-    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _timekeeper.GetFrameCycle() + 2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _clocks.GetFrameCycle() + 2);
     return;
   }
 
@@ -171,10 +171,10 @@ void CycleExactCopper::Skip()
   uint32_t vp = (uint32_t)(_first >> 8);
   uint32_t hp = (uint32_t)(_first & 0xfe);
 
-  const auto cyclesInCurrentLine = _currentFrameParameters.GetAgnusCyclesInLine(_timekeeper.GetAgnusLine());
-  const auto currentFrameCycle = _timekeeper.GetFrameCycle();
-  uint32_t rasterY = _timekeeper.GetAgnusLine();
-  uint32_t rasterX = _timekeeper.GetAgnusLineCycle();
+  const auto cyclesInCurrentLine = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
+  const auto currentFrameCycle = _clocks.GetFrameCycle();
+  uint32_t rasterY = _clocks.GetAgnusLine();
+  uint32_t rasterX = _clocks.GetAgnusLineCycle();
 
   if (rasterX & 1)
   {
@@ -200,7 +200,7 @@ void CycleExactCopper::ReadFirstWord()
   _first = ReadWord();
   IncreasePtr();
   CopperStates next_state = (IsMove()) ? CopperStates::COPPER_STATE_TRANSFER_SECOND_WORD : CopperStates::COPPER_STATE_READ_SECOND_WORD;
-  SetState(next_state, _timekeeper.GetFrameCycle() + 2);
+  SetState(next_state, _clocks.GetFrameCycle() + 2);
 }
 
 void CycleExactCopper::ReadSecondWord()
@@ -229,9 +229,9 @@ void CycleExactCopper::EventHandler()
 {
   _debugLog.Log(DebugLogKind::EventHandler, _copperEvent.Name);
 
-  if (_timekeeper.GetAgnusLineCycle() == 0xe2)
+  if (_clocks.GetAgnusLineCycle() == 0xe2)
   {
-    SetState(_state, _timekeeper.GetFrameCycle() + 1);
+    SetState(_state, _clocks.GetFrameCycle() + 1);
     return;
   }
 
@@ -267,7 +267,7 @@ void CycleExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     if (_copperEvent.IsEnabled())
     {
       // dma not hanging
-      const auto currentFrameCycle = _timekeeper.GetFrameCycle();
+      const auto currentFrameCycle = _clocks.GetFrameCycle();
       if (_copperEvent.cycle <= currentFrameCycle)
       {
         _copperEvent.cycle = currentFrameCycle + 2;
@@ -319,14 +319,14 @@ CycleExactCopper::CycleExactCopper(
     SchedulerEvent &copperEvent,
     SchedulerEvent &cpuEvent,
     FrameParameters &currentFrameParameters,
-    Timekeeper &timekeeper,
+    Clocks &clocks,
     CopperRegisters &copperRegisters,
     DebugLog &debugLog)
   : _scheduler(scheduler),
     _copperEvent(copperEvent),
     _cpuEvent(cpuEvent),
     _currentFrameParameters(currentFrameParameters),
-    _timekeeper(timekeeper),
+    _clocks(clocks),
     _copperRegisters(copperRegisters),
     _debugLog(debugLog),
     _skip_next(false)

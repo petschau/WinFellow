@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Scheduler/Timekeeper.h"
+#include "Scheduler/Clocks.h"
 #include "Service/IFileops.h"
 
 enum class DebugLogKind
@@ -24,7 +24,7 @@ struct DebugLogEntry
 class DebugLog
 {
 private:
-  const Timekeeper &_timekeeper;
+  const Clocks &_clocks;
   Service::IFileops &_fileops;
   std::string _filename;
   std::vector<DebugLogEntry> _entries;
@@ -38,7 +38,7 @@ public:
   void Log(DebugLogKind logKind, const std::string message);
   void Flush();
 
-  DebugLog(const Timekeeper &timekeeper, Service::IFileops &fileops);
+  DebugLog(const Clocks &clocks, Service::IFileops &fileops);
 };
 
 #define DEBUGLOG(kind, message)                                                                                                                                               \

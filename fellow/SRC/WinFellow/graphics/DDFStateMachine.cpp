@@ -122,14 +122,14 @@ bool DDFStateMachine::CanRead()
 
 void DDFStateMachine::ChangedValue()
 {
-  uint32_t rasterY = _core.Timekeeper->GetAgnusLine();
+  uint32_t rasterY = _core.Clocks->GetAgnusLine();
   if (rasterY < 0x1a)
   {
     SetState(DDFStates::DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition() * 2));
     return;
   }
 
-  const auto agnusLineCycle = _core.Timekeeper->GetAgnusLineCycle();
+  const auto agnusLineCycle = _core.Clocks->GetAgnusLineCycle();
   switch (_state)
   {
     case DDFStates::DDF_STATE_WAITING_FOR_FIRST_FETCH: SetStateWaitingForFirstFetch(rasterY, agnusLineCycle * 2); break;
