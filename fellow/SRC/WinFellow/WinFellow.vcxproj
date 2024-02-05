@@ -483,9 +483,11 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="c\Cpu.cpp" />
     <ClCompile Include="C\WavFileWriter.cpp" />
     <ClCompile Include="DebugApi\M68K.cpp" />
     <ClCompile Include="DebugApi\MemorySystem.cpp" />
+    <ClCompile Include="graphics\Agnus.cpp" />
     <ClCompile Include="VirtualHost\CoreFactory.cpp" />
     <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
     <ClCompile Include="Windows\Service\FileopsWin32.cpp" />
@@ -1077,12 +1079,9 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="automation\Automator.cpp" />
     <ClCompile Include="automation\Script.cpp" />
     <ClCompile Include="C\Blitter.cpp" />
-    <ClCompile Include="C\BusScheduler.cpp" />
-    <ClCompile Include="C\chipset.cpp" />
-    <ClCompile Include="C\ComplexInterfaceAdapter.cpp" />
+    <ClCompile Include="C\BusScheduler_obsolete.cpp" />
+    <ClCompile Include="C\Cia.cpp" />
     <ClCompile Include="C\Configuration.cpp" />
-    <ClCompile Include="C\LegacyCopper.cpp" />
-    <ClCompile Include="C\CopperRegisters.cpp" />
     <ClCompile Include="C\CpuIntegration.c" />
     <ClCompile Include="C\CpuModule.c" />
     <ClCompile Include="C\CpuModule_Disassembler.c" />
@@ -1103,7 +1102,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\MemoryInterface.cpp" />
     <ClCompile Include="C\Gameports.cpp" />
     <ClCompile Include="C\GraphicsPipeline.cpp" />
-    <ClCompile Include="C\interrupt.c" />
+    <ClCompile Include="C\PaulaInterrupt.cpp" />
     <ClCompile Include="C\Keyboard.cpp" />
     <ClCompile Include="C\LineExactCopper.cpp" />
     <ClCompile Include="C\LineExactSprites.cpp" />
@@ -1111,10 +1110,8 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="C\modrip.c" />
     <ClCompile Include="C\rtc.cpp" />
     <ClCompile Include="C\Sound.cpp" />
-    <ClCompile Include="C\Sprites.cpp" />
     <ClCompile Include="C\SpriteMerger.cpp" />
     <ClCompile Include="C\SpriteP2CDecoder.cpp" />
-    <ClCompile Include="C\SpriteRegisters.cpp" />
     <ClCompile Include="C\uart.cpp" />
     <ClCompile Include="C\xdmswrap.c" />
     <ClCompile Include="C\zlibwrap.c" />
@@ -1170,6 +1167,8 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="Windows\WindowsMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="graphics\Agnus.h" />
+    <ClInclude Include="Include\Cpu.h" />
     <ClInclude Include="VirtualHost\CoreFactory.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h" />
@@ -1212,7 +1211,6 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="graphics\BitplaneDMA.h" />
     <ClInclude Include="graphics\BitplaneDraw.h" />
     <ClInclude Include="graphics\CycleExactCopper.h" />
-    <ClInclude Include="graphics\CycleExactSprites.h" />
     <ClInclude Include="graphics\DDFStateMachine.h" />
     <ClInclude Include="graphics\DIWXStateMachine.h" />
     <ClInclude Include="graphics\DIWYStateMachine.h" />
@@ -1225,12 +1223,9 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="gui_general.h" />
     <ClInclude Include="GUI_versioninfo.h" />
     <ClInclude Include="INCLUDE\Blitter.h" />
-    <ClInclude Include="INCLUDE\BusScheduler.h" />
-    <ClInclude Include="INCLUDE\chipset.h" />
-    <ClInclude Include="INCLUDE\ComplexInterfaceAdapter.h" />
+    <ClInclude Include="INCLUDE\BusScheduler_obsolete.h" />
+    <ClInclude Include="INCLUDE\Cia.h" />
     <ClInclude Include="INCLUDE\Configuration.h" />
-    <ClInclude Include="INCLUDE\LegacyCopper.h" />
-    <ClInclude Include="INCLUDE\CopperRegisters.h" />
     <ClInclude Include="INCLUDE\CpuIntegration.h" />
     <ClInclude Include="INCLUDE\CpuModule.h" />
     <ClInclude Include="INCLUDE\CpuModule_Code.h" />
@@ -1253,21 +1248,18 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="INCLUDE\GraphicsDriver.h" />
     <ClInclude Include="INCLUDE\GraphicsPipeline.h" />
     <ClInclude Include="INCLUDE\IniFile.h" />
-    <ClInclude Include="INCLUDE\interrupt.h" />
+    <ClInclude Include="INCLUDE\PaulaInterrupt.h" />
     <ClInclude Include="INCLUDE\JoystickDriver.h" />
     <ClInclude Include="INCLUDE\Keyboard.h" />
     <ClInclude Include="INCLUDE\KeyboardDriver.h" />
     <ClInclude Include="INCLUDE\Keycode.h" />
     <ClInclude Include="INCLUDE\LineExactCopper.h" />
-    <ClInclude Include="INCLUDE\LineExactSprites.h" />
     <ClInclude Include="INCLUDE\FellowList.h" />
     <ClInclude Include="INCLUDE\modrip.h" />
     <ClInclude Include="INCLUDE\MouseDriver.h" />
     <ClInclude Include="INCLUDE\rtc.h" />
-    <ClInclude Include="INCLUDE\Sprites.h" />
     <ClInclude Include="INCLUDE\SpriteMerger.h" />
     <ClInclude Include="INCLUDE\SpriteP2CDecoder.h" />
-    <ClInclude Include="INCLUDE\SpriteRegisters.h" />
     <ClInclude Include="INCLUDE\Timers.h" />
     <ClInclude Include="INCLUDE\WindowsUI.h" />
     <ClInclude Include="INCLUDE\zlibwrap.h" />

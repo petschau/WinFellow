@@ -39,29 +39,26 @@ union ByteWordUnion {
   uint8_t b[2];
 };
 
-namespace CustomChipset
+class RegisterUtility
 {
-  class RegisterUtility
-  {
-  private:
-    const Registers &_registers;
+private:
+  const Registers &_registers;
 
-  public:
-    bool IsLoresEnabled() const;
-    bool IsHiresEnabled() const;
-    bool IsDualPlayfieldEnabled() const;
-    bool IsHAMEnabled() const;
-    bool IsInterlaceEnabled() const;
-    unsigned int GetEnabledBitplaneCount() const;
+public:
+  bool IsLoresEnabled() const;
+  bool IsHiresEnabled() const;
+  bool IsDualPlayfieldEnabled() const;
+  bool IsHAMEnabled() const;
+  bool IsInterlaceEnabled() const;
+  unsigned int GetEnabledBitplaneCount() const;
 
-    bool IsPlayfield1PriorityEnabled() const;
-    bool IsPlayfield2PriorityEnabled() const;
+  bool IsPlayfield1PriorityEnabled() const;
+  bool IsPlayfield2PriorityEnabled() const;
 
-    bool IsMasterDMAEnabled() const;
-    bool IsMasterDMAAndBitplaneDMAEnabled() const;
-    bool IsDiskDMAEnabled() const;
-    bool IsBlitterPriorityEnabled() const;
+  bool IsMasterDMAEnabled() const;
+  bool IsMasterDMAAndBitplaneDMAEnabled() const;
+  bool IsDiskDMAEnabled() const;
+  bool IsBlitterPriorityEnabled() const;
 
-    RegisterUtility(const Registers &registers);
-  };
-}
+  RegisterUtility(const Registers &registers);
+};

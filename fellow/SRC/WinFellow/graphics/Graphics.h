@@ -7,7 +7,7 @@
 #include "BitplaneDMA.h"
 #include "PixelSerializer.h"
 #include "BitplaneDraw.h"
-#include "CycleExactSprites.h"
+#include "CustomChipset/Sprite/CycleExactSprites.h"
 #include "DIWXStateMachine.h"
 #include "DIWYStateMachine.h"
 #include "DDFStateMachine.h"

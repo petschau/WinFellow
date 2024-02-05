@@ -1,8 +1,6 @@
 #include "catch/catch_amalgamated.hpp"
 #include "VirtualHost/Core.h"
 
-using namespace CustomChipset;
-
 TEST_CASE("CustomChipset::RegisterUtility.GetEnabledBitplaneCount() should return the number of enabled bitplanes")
 {
   Core _core = Core();

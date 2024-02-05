@@ -23,13 +23,10 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "BusScheduler.h"
 #include "GraphicsPipeline.h"
 #include "Renderer.h"
 #include "MemoryInterface.h"
 #include "Graphics.h"
-
-using namespace CustomChipset;
 
 extern uint8_t draw_dual_translate[2][256][256];
 
@@ -138,7 +135,7 @@ uint32_t PixelSerializer::GetOutputLine(uint32_t rasterY, uint32_t cylinder)
 {
   if (cylinder <= LAST_CYLINDER)
   {
-    if (rasterY == 0) return busGetLinesInThisFrame() - 1;
+    if (rasterY == 0) return _core.CurrentFrameParameters->LinesInFrame - 1;
     return rasterY - 1;
   }
   return rasterY;
@@ -189,7 +186,7 @@ void PixelSerializer::OutputCylindersUntil(uint32_t rasterY, uint32_t cylinder)
   SerializeBatch(cylinderCount);
   if (GraphicsContext.DIWYStateMachine.IsVisible() && _activated)
   {
-    cycle_exact_sprites->OutputSprites(_lastCylinderOutput + 1, cylinderCount);
+    _core.CycleExactSprites->OutputSprites(_lastCylinderOutput + 1, cylinderCount);
   }
   GraphicsContext.BitplaneDraw.DrawBatch(outputLine, _lastCylinderOutput + 1);
 
@@ -218,7 +215,7 @@ void PixelSerializer::Handler(uint32_t rasterY, uint32_t cylinder)
   _newLine = true;
   _activated = false;
 
-  if (line == busGetLinesInThisFrame() - 1)
+  if (line == _core.CurrentFrameParameters->LinesInFrame - 1)
   {
     drawEndOfFrame();
     EventSetup(MakeArriveTime(0x19, LAST_CYLINDER));

@@ -144,22 +144,13 @@
     <ClCompile Include="C\Blitter.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\BusScheduler.cpp">
+    <ClCompile Include="C\BusScheduler_obsolete.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\chipset.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C\ComplexInterfaceAdapter.cpp">
+    <ClCompile Include="C\Cia.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\Configuration.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C\LegacyCopper.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C\CopperRegisters.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\CpuIntegration.c">
@@ -222,7 +213,7 @@
     <ClCompile Include="C\GraphicsPipeline.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\interrupt.c">
+    <ClCompile Include="C\PaulaInterrupt.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\Keyboard.cpp">
@@ -246,16 +237,10 @@
     <ClCompile Include="C\Sound.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="C\Sprites.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="C\SpriteMerger.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\SpriteP2CDecoder.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C\SpriteRegisters.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="C\uart.cpp">
@@ -456,6 +441,12 @@
     <ClCompile Include="DebugApi\MemorySystem.cpp">
       <Filter>DebugApi</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\Agnus.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="c\Cpu.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xdms\include\cdata.h">
@@ -542,22 +533,13 @@
     <ClInclude Include="INCLUDE\Blitter.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\BusScheduler.h">
+    <ClInclude Include="INCLUDE\BusScheduler_obsolete.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\chipset.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\ComplexInterfaceAdapter.h">
+    <ClInclude Include="INCLUDE\Cia.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\Configuration.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\LegacyCopper.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\CopperRegisters.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\CpuIntegration.h">
@@ -626,7 +608,7 @@
     <ClInclude Include="INCLUDE\IniFile.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\interrupt.h">
+    <ClInclude Include="INCLUDE\PaulaInterrupt.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\JoystickDriver.h">
@@ -644,9 +626,6 @@
     <ClInclude Include="INCLUDE\LineExactCopper.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\LineExactSprites.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\FellowList.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -659,16 +638,10 @@
     <ClInclude Include="INCLUDE\rtc.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INCLUDE\Sprites.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="INCLUDE\SpriteMerger.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\SpriteP2CDecoder.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="INCLUDE\SpriteRegisters.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="INCLUDE\Timers.h">
@@ -711,9 +684,6 @@
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics\CycleExactCopper.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="graphics\CycleExactSprites.h">
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics\DDFStateMachine.h">
@@ -844,6 +814,12 @@
     </ClInclude>
     <ClInclude Include="Windows\Service\RetroPlatformWrapper.h">
       <Filter>Windows\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Agnus.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Cpu.h">
+      <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

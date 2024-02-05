@@ -4,6 +4,9 @@
 #include <cstdint>
 #include "Defs.h"
 
+#include "CustomChipset/IBlitter.h"
+#include "Scheduler/SchedulerEvent.h"
+
 /*===========================================================================*/
 /* Blitter-properties                                                        */
 /*===========================================================================*/
@@ -23,8 +26,6 @@ extern BOOLE blitterIsStarted();
 /* Declare C blitter functions                                               */
 /*===========================================================================*/
 
-extern void blitterSaveState(FILE *F);
-extern void blitterLoadState(FILE *F);
 void blitterEndOfFrame();
 void blitterEmulationStart();
 void blitterEmulationStop();
@@ -35,3 +36,15 @@ void blitterLineMode();
 void blitFinishBlit();
 void blitForceFinish();
 void blitterCopy();
+
+class Blitter : public IBlitter
+{
+private:
+  SchedulerEvent &_blitterEvent;
+
+public:
+  void InitializeBlitterEvent() override;
+
+  Blitter(SchedulerEvent &blitterEvent);
+  virtual ~Blitter();
+};

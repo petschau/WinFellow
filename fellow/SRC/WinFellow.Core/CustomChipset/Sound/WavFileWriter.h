@@ -10,7 +10,7 @@ private:
   FILE *_wavFile;
   char _filename[256];
   uint32_t _serial;
-  CustomChipset::sound_rates _rate;
+  sound_rates _rate;
   uint32_t _rateReal;
   bool _isStereo;
   bool _is16Bits;
@@ -23,14 +23,12 @@ private:
   void Stereo16BitsAdd(int16_t *left, int16_t *right, uint32_t sampleCount);
   void HeaderWrite();
   void LengthUpdate();
-  void FileInit(CustomChipset::sound_rates rate, bool is16Bits, bool isStereo, uint32_t sampleRate);
+  void FileInit(sound_rates rate, bool is16Bits, bool isStereo, uint32_t sampleRate);
 
 public:
   void Play(int16_t *left, int16_t *right, uint32_t sampleCount);
-  void EmulationStart(CustomChipset::sound_rates rate, bool is16Bits, bool isStereo, uint32_t sampleRate);
+  void EmulationStart(sound_rates rate, bool is16Bits, bool isStereo, uint32_t sampleRate);
   void EmulationStop();
-  void Startup();
-  void Shutdown();
 
   WavFileWriter();
   ~WavFileWriter();

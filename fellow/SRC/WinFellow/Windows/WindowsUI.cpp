@@ -71,7 +71,6 @@
 #include "versioninfo.h"
 
 using namespace Module::Hardfile;
-using namespace CustomChipset;
 
 HWND wgui_hDialog; /* Handle of the main dialog box */
 cfg *wgui_cfg;     /* GUI copy of configuration */
@@ -886,34 +885,6 @@ void wguiSwapCfgsInHistory(uint32_t itemA, uint32_t itemB)
   iniSetConfigurationHistoryFilename(wgui_ini, itemA, iniGetConfigurationHistoryFilename(wgui_ini, itemB));
   iniSetConfigurationHistoryFilename(wgui_ini, itemB, cfgfilename);
   wguiInstallHistoryIntoMenu();
-}
-
-/*============================================================================*/
-/* Saves and loads state files (*.fst)                                        */
-/*============================================================================*/
-
-void wguiSaveStateFileAs(cfg *conf, HWND hwndDlg)
-{
-  char filename[CFG_FILENAME_LENGTH];
-
-  strcpy(filename, "");
-
-  if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save State File As:", SelectFileFlags::FSEL_FST))
-  {
-    fellowSaveState(filename);
-    iniSetLastUsedStateFileDir(wgui_ini, wguiExtractPath(filename));
-  }
-}
-
-void wguiOpenStateFile(cfg *conf, HWND hwndDlg)
-{
-  char filename[CFG_FILENAME_LENGTH];
-
-  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open State File", SelectFileFlags::FSEL_FST))
-  {
-    fellowLoadState(filename);
-    iniSetLastUsedStateFileDir(wgui_ini, wguiExtractPath(filename));
-  }
 }
 
 /*============================================================================*/

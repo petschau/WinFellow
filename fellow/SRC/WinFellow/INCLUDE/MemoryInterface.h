@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Defs.h"
+#include "Memory/IMemory.h"
 
 /* Access for chipset emulation that already have validated addresses */
 
@@ -29,9 +30,6 @@ extern void memoryChipWriteWord(uint16_t data, uint32_t address);
 extern void memoryWriteLongToPointer(uint32_t data, uint8_t *address);
 
 /* IO Bank functions */
-
-typedef uint16_t (*memoryIoReadFunc)(uint32_t address);
-typedef void (*memoryIoWriteFunc)(uint16_t data, uint32_t address);
 
 extern void memorySetIoReadStub(uint32_t index, memoryIoReadFunc ioreadfunction);
 extern void memorySetIoWriteStub(uint32_t index, memoryIoWriteFunc iowritefunction);
@@ -63,8 +61,6 @@ extern void memoryDmemClear();
 
 /* Module management functions */
 
-extern void memorySaveState(FILE *F);
-extern void memoryLoadState(FILE *F);
 extern void memorySoftReset();
 extern void memoryHardReset();
 extern void memoryHardResetPost();
@@ -166,3 +162,10 @@ extern uint32_t potgor;
 
 extern uint32_t memory_fault_address;
 extern BOOLE memory_fault_read;
+
+class Memory : public IMemory
+{
+public:
+  void SetIoWriteStub(uint32_t index, memoryIoWriteFunc iowritefunction) override;
+  void SetIoReadStub(uint32_t index, memoryIoReadFunc ioreadfunction) override;
+};

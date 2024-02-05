@@ -71,8 +71,6 @@ extern uint32_t cpuGetIrqLevel();
 extern uint32_t cpuExecuteInstruction();
 extern uint32_t cpuDisOpcode(uint32_t disasm_pc, char *saddress, char *sdata, char *sinstruction, char *soperands);
 
-extern void cpuSaveState(FILE *F);
-extern void cpuLoadState(FILE *F);
 extern void cpuHardReset();
 extern void cpuStartup();
 

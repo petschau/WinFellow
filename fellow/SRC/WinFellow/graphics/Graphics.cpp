@@ -1,7 +1,5 @@
 #include "Graphics.h"
 
-#include "BusScheduler.h"
-
 Graphics GraphicsContext;
 
 void Graphics::Commit(uint32_t untilRasterY, uint32_t untilRasterX)

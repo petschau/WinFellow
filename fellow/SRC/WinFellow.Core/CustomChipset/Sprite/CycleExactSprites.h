@@ -25,8 +25,9 @@
 /*=========================================================================*/
 
 #include "Defs.h"
-#include "Sprites.h"
-#include "VirtualHost/Core.h"
+#include "CustomChipset/Sprite/ISprites.h"
+#include "CustomChipset/Sprite/SpriteRegisters.h"
+#include "CustomChipset/RegisterUtility.h"
 
 enum class SpriteDMAStates
 {
@@ -60,9 +61,12 @@ struct Sprite
   uint32_t pixels_output;
 };
 
-class CycleExactSprites : public Sprites
+class CycleExactSprites : public ISprites
 {
 private:
+  SpriteRegisters &_spriteRegisters;
+  RegisterUtility &_registerUtility;
+
   Sprite SpriteState[8];
 
   void Arm(uint32_t spriteNo);
@@ -105,6 +109,6 @@ public:
   virtual void EmulationStart();
   virtual void EmulationStop();
 
-  CycleExactSprites();
+  CycleExactSprites(SpriteRegisters &spriteRegisters, RegisterUtility &registerUtility);
   virtual ~CycleExactSprites();
 };

@@ -355,7 +355,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       if (GetOutputWindowed())
       {
         _displaychange = (wParam != _current_draw_mode->bits);
-        fellow_request_emulation_stop = TRUE;
+        _core.Scheduler->RequestEmulationStop();
       }
       break;
     case WM_DIACQUIRE: /* Re-evaluate the active status of DI-devices */
@@ -561,7 +561,7 @@ void GfxDrvCommon::SetPauseEmulationWhenWindowLosesFocus(bool pause)
 
 void GfxDrvCommon::Flip()
 {
-  if (_core.Sound->GetEmulation() == CustomChipset::sound_emulations::SOUND_PLAY)
+  if (_core.Sound->GetEmulation() == sound_emulations::SOUND_PLAY)
   {
     MaybeDelayFlip();
   }

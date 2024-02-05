@@ -34,8 +34,6 @@
 #include "WindowsMain.h"
 #include "VirtualHost/Core.h"
 
-using namespace CustomChipset;
-
 const char *DirectSoundDriver::DSoundErrorString(HRESULT hResult)
 {
   switch (hResult)
