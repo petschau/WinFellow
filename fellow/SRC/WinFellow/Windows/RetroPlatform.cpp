@@ -724,7 +724,7 @@ bool RetroPlatform::ConnectInputDeviceToPort(const uint32_t lGameport, const uin
       {
         _core.Log->AddLog(
             " RetroPlatform controlled joystick device connect to "
-            "gameport %l, leaving control up to host.\n",
+            "gameport %u, leaving control up to host.\n",
             lGameport);
 
         if (lGameport == 0)
