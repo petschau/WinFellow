@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.11 (2024/03/20)
+v0.5.11 (2024/03/21)
 \end_layout
 
 \begin_layout Author
@@ -302,6 +302,10 @@ fix potential memory leaks
 
 \begin_layout Itemize
 implement more failure checks for Direct3D initialization
+\end_layout
+
+\begin_layout Itemize
+fix crash to desktop when using an emulated joystick in Amiga Forever
 \end_layout
 
 \end_deeper
