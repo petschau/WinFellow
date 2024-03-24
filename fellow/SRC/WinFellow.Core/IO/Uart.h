@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
+#include "Scheduler/MasterTimestamp.h"
 
 class Uart
 {
@@ -12,13 +14,13 @@ private:
 
   uint16_t _transmitBuffer;
   uint16_t _transmitShiftRegister;
-  uint32_t _transmitDoneTime;
+  MasterTimestamp _transmitDoneTime;
   bool _transmitBufferEmpty;
   bool _transmitShiftRegisterEmpty;
 
   uint16_t _receiveBuffer;
   uint16_t _receiveShiftRegister;
-  uint32_t _receiveDoneTime;
+  MasterTimestamp _receiveDoneTime;
   bool _receiveBufferFull;
   bool _receiveBufferOverrun;
 
@@ -34,7 +36,7 @@ private:
 
   void CopyReceiveShiftRegisterToBuffer();
   void CopyTransmitBufferToShiftRegister();
-  uint32_t GetTransmitDoneTime();
+  ChipTimeOffset GetTransmitDoneTime();
 
 public:
   static void wserper(uint16_t data, uint32_t address);
@@ -48,7 +50,7 @@ public:
   void NotifyInterruptRequestBitsChanged(uint16_t intreq);
 
   void EndOfLine();
-  void RebaseTransmitReceiveDoneTimes(uint32_t cyclesInEndedFrame);
+  void RebaseTransmitReceiveDoneTimes(const MasterTimeOffset cyclesInEndedFrame);
 
   void EmulationStart();
   void EmulationStop();

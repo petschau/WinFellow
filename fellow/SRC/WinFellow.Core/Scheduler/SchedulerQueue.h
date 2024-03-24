@@ -14,8 +14,8 @@ public:
   void RemoveEvent(SchedulerEvent *ev);
   SchedulerEvent *PopEvent();
   SchedulerEvent *PeekNextEvent() const;
-  uint32_t GetNextEventCycle() const;
-  void RebaseEvents(uint32_t cycleOffset);
+  MasterTimestamp GetNextEventCycle() const;
+  void RebaseEvents(MasterTimeOffset offset);
 
   SchedulerQueue();
 };

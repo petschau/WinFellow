@@ -201,6 +201,24 @@
     <ClInclude Include="DebugApi\DebugLog.h">
       <Filter>DebugApi</Filter>
     </ClInclude>
+    <ClInclude Include="Scheduler\ChipTimestamp.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\MasterTimestamp.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\MasterTimeOffset.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\ChipTimeOffset.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="ClockConstants.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\CiaTimeoffset.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomChipset\Registers.cpp">
@@ -257,6 +275,21 @@
     <ClCompile Include="chipset.cpp" />
     <ClCompile Include="DebugApi\DebugLog.cpp">
       <Filter>DebugApi</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\ChipTimestamp.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\MasterTimestamp.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\MasterTimeOffset.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\ChipTimeOffset.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\CiaTimeOffset.cpp">
+      <Filter>Scheduler</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

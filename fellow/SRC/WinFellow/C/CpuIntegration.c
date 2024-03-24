@@ -157,7 +157,7 @@ void cpuIntegrationSetIrqLevel(uint32_t new_interrupt_level, uint32_t chip_inter
 {
   if (cpuSetIrqLevel(new_interrupt_level))
   {
-    _core.Events->cpuEvent.cycle = _core.Clocks->GetFrameCycle();
+    _core.Events->cpuEvent.cycle = _core.Clocks->GetFrameMasterCycle();
   }
   cpuIntegrationSetChipInterruptNumber(chip_interrupt_number);
 }
@@ -201,7 +201,7 @@ void cpuInstructionLogOpen()
 
 void cpuIntegrationPrintBusCycle()
 {
-  fprintf(CPUINSTRUCTIONLOG, "%I64u:%.5u ", _core.Clocks->GetFrameNumber(), _core.Clocks->GetFrameCycle());
+  fprintf(CPUINSTRUCTIONLOG, "%I64u:%.5u ", _core.Clocks->GetFrameNumber(), _core.Clocks->GetFrameMasterCycle());
 }
 
 void cpuIntegrationInstructionLogging()

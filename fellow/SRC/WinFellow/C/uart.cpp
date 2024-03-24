@@ -51,12 +51,12 @@ void Uart::WriteSerperRegister(uint16_t data)
   _serper = data;
 }
 
-uint32_t Uart::GetTransmitDoneTime()
+ChipTimeOffset Uart::GetTransmitDoneTime()
 {
   int bitsToTransfer = 2 + (Is8BitMode() ? 8 : 9);
-  uint32_t cyclesPerBit = GetBitPeriod() + 1;
+  uint32_t chipCyclesPerBit = GetBitPeriod() + 1;
 
-  return cyclesPerBit * bitsToTransfer;
+  return ChipTimeOffset(chipCyclesPerBit * bitsToTransfer);
 }
 
 void Uart::CopyTransmitBufferToShiftRegister()
@@ -66,7 +66,7 @@ void Uart::CopyTransmitBufferToShiftRegister()
     _transmitShiftRegister = _transmitBuffer;
     _transmitShiftRegisterEmpty = false;
     _transmitBufferEmpty = true;
-    _transmitDoneTime = GetTransmitDoneTime() + _core.Clocks->GetFrameCycle();
+    _transmitDoneTime = _core.Clocks->GetMasterTime() + MasterTimeOffset::FromChipTimeOffset(GetTransmitDoneTime());
 
     wintreq_direct(0x8001, 0xdff09c, true); // TBE interrupt
 
@@ -148,9 +148,7 @@ void Uart::CloseOutputFile()
 
 void Uart::EndOfLine()
 {
-  // (Put this in an event with an exact time-stamp)
-
-  if (_transmitDoneTime <= _core.Clocks->GetFrameCycle())
+  if (_transmitDoneTime <= _core.Clocks->GetMasterTime())
   {
     _transmitShiftRegisterEmpty = true;
     _transmitDoneTime = SchedulerEvent::EventDisableCycle;
@@ -161,7 +159,7 @@ void Uart::EndOfLine()
     }
   }
 
-  if (_receiveDoneTime <= _core.Clocks->GetFrameCycle())
+  if (_receiveDoneTime <= _core.Clocks->GetMasterTime())
   {
     _receiveDoneTime = SchedulerEvent::EventDisableCycle;
 
@@ -176,22 +174,22 @@ void Uart::EndOfLine()
   }
 }
 
-void Uart::RebaseTransmitReceiveDoneTimes(uint32_t cyclesInEndedFrame)
+void Uart::RebaseTransmitReceiveDoneTimes(const MasterTimeOffset cyclesInEndedFrame)
 {
   if (_transmitDoneTime != SchedulerEvent::EventDisableCycle)
   {
     _transmitDoneTime -= _core.CurrentFrameParameters->CyclesInFrame;
-    if ((int)_transmitDoneTime < 0)
+    if ((int)_transmitDoneTime.Cycle < 0)
     {
-      _transmitDoneTime = 0;
+      _transmitDoneTime = MasterTimestamp{.Cycle = 0};
     }
   }
   if (_receiveDoneTime != SchedulerEvent::EventDisableCycle)
   {
     _receiveDoneTime -= _core.CurrentFrameParameters->CyclesInFrame;
-    if ((int)_receiveDoneTime < 0)
+    if ((int)_receiveDoneTime.Cycle < 0)
     {
-      _receiveDoneTime = 0;
+      _receiveDoneTime = MasterTimestamp{.Cycle = 0};
     }
   }
 }

@@ -32,7 +32,7 @@ void Agnus::EndOfLine()
   /* and updates the graphics emulation for a new line            */
   /*==============================================================*/
   graphEndOfLine();
-  _core.CurrentSprites->EndOfLine(_clocks.GetAgnusLine());
+  _core.CurrentSprites->EndOfLine(_clocks.GetChipLine());
 
   /*==============================================================*/
   /* Update the CIA B event counter                               */
@@ -62,7 +62,7 @@ void Agnus::EndOfLine()
   // Set up the next end of line event
   //==============================================================
 
-  _eolEvent.cycle += _core.CurrentFrameParameters->GetAgnusCyclesInLine(_core.Clocks->GetAgnusLine() + 1);
+  _eolEvent.cycle += MasterTimeOffset{.Offset = _core.CurrentFrameParameters->GetAgnusCyclesInLine(_core.Clocks->GetChipLine() + 1)};
   _core.Scheduler->InsertEvent(&_eolEvent);
 }
 
@@ -93,7 +93,7 @@ void Agnus::EndOfFrame()
   kbdEventEOFHandler();
 
   // Switch scheduler and clocks frame/cycle origin
-  const uint32_t cyclesInEndedFrame = _core.CurrentFrameParameters->CyclesInFrame;
+  const auto cyclesInEndedFrame = _core.CurrentFrameParameters->CyclesInFrame;
 
   drawDecideInterlaceStatusForNextFrame();
   _core.Agnus->SetFrameParameters(drawGetFrameIsLong());
@@ -104,7 +104,8 @@ void Agnus::EndOfFrame()
   if (_core.Events->cpuEvent.IsEnabled())
   {
     _core.Events->cpuEvent.cycle -= cyclesInEndedFrame;
-    assert((int32_t)_core.Events->cpuEvent.cycle >= 0);
+
+    assert(_core.Events->cpuEvent.cycle.IsEnabledAndValid());
   }
 
   // Restart copper
@@ -128,32 +129,32 @@ void Agnus::EndOfFrame()
 
   automator.EndOfFrame();
 
-  _eofEvent.cycle = _core.CurrentFrameParameters->CyclesInFrame;
+  _eofEvent.cycle = MasterTimestamp{.Cycle = _core.CurrentFrameParameters->CyclesInFrame.Offset};
   _core.Scheduler->InsertEvent(&_eofEvent);
 }
 
 void Agnus::InitializePalLongFrameParameters()
 {
   _palLongFrameParameters = {
-      .HorisontalBlankStart = Clocks::GetCycleFrom280ns(9),
-      .HorisontalBlankEnd = Clocks::GetCycleFrom280ns(44),
+      .HorisontalBlankStart = MasterTimeOffset::FromChipTimeOffset(9),
+      .HorisontalBlankEnd = MasterTimeOffset::FromChipTimeOffset(44),
       .VerticalBlankEnd = 26,
-      .ShortLineCycles = Clocks::GetCycleFrom280ns(227),
-      .LongLineCycles = Clocks::GetCycleFrom280ns(227),
+      .ShortLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
+      .LongLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
       .LinesInFrame = 313,
-      .CyclesInFrame = 313 * Clocks::GetCycleFrom280ns(227)};
+      .CyclesInFrame = MasterTimeOffset::FromChipTimeOffset(313*227)};
 }
 
 void Agnus::InitializePalShortFrameParameters()
 {
   _palShortFrameParameters = {
-      .HorisontalBlankStart = Clocks::GetCycleFrom280ns(9),
-      .HorisontalBlankEnd = Clocks::GetCycleFrom280ns(44),
+      .HorisontalBlankStart = MasterTimeOffset::FromChipTimeOffset(9),
+      .HorisontalBlankEnd = MasterTimeOffset::FromChipTimeOffset(44),
       .VerticalBlankEnd = 26,
-      .ShortLineCycles = Clocks::GetCycleFrom280ns(227),
-      .LongLineCycles = Clocks::GetCycleFrom280ns(227),
+      .ShortLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
+      .LongLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
       .LinesInFrame = 312,
-      .CyclesInFrame = 312 * Clocks::GetCycleFrom280ns(227)};
+      .CyclesInFrame = MasterTimeOffset::FromChipTimeOffset(312*227)};
 }
 
 void Agnus::InitializePredefinedFrameParameters()

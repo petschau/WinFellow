@@ -23,7 +23,7 @@ void Cpu::MasterEventLoopWrapper(std::function<void()> innerMasterEventLoop)
     {
       // Returned out of an CPU exception that failed in the middle of an instruction.
       // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
-      _cpuEvent.cycle = _clocks.GetFrameCycle() + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+      _cpuEvent.cycle = MasterTimestamp{.Cycle = _clocks.GetMasterTime().Cycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed())};
       cpuIntegrationSetChipCycles(0);
     }
   }

@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chipset.h" />
+    <ClInclude Include="ClockConstants.h" />
     <ClInclude Include="Cpu\ICpu.h" />
     <ClInclude Include="CustomChipset\Copper\CopperRegisters.h" />
     <ClInclude Include="CustomChipset\Copper\ICopper.h" />
@@ -65,7 +66,12 @@
     <ClInclude Include="Module\Hardfile\RdbStatus.h" />
     <ClInclude Include="NullDriver\Sound\NullSound.h" />
     <ClInclude Include="Portable.h" />
+    <ClInclude Include="Scheduler\ChipTimeOffset.h" />
+    <ClInclude Include="Scheduler\ChipTimestamp.h" />
+    <ClInclude Include="Scheduler\CiaTimeoffset.h" />
     <ClInclude Include="Scheduler\FrameParameters.h" />
+    <ClInclude Include="Scheduler\MasterTimeOffset.h" />
+    <ClInclude Include="Scheduler\MasterTimestamp.h" />
     <ClInclude Include="Scheduler\Scheduler.h" />
     <ClInclude Include="Scheduler\SchedulerEvent.h" />
     <ClInclude Include="Scheduler\SchedulerEvents.h" />
@@ -93,6 +99,11 @@
     <ClCompile Include="Module\Hardfile\HardfileConfiguration.cpp" />
     <ClCompile Include="Module\Hardfile\HardfileGeometry.cpp" />
     <ClCompile Include="NullDriver\Sound\NullSound.cpp" />
+    <ClCompile Include="Scheduler\ChipTimeOffset.cpp" />
+    <ClCompile Include="Scheduler\ChipTimestamp.cpp" />
+    <ClCompile Include="Scheduler\CiaTimeOffset.cpp" />
+    <ClCompile Include="Scheduler\MasterTimeOffset.cpp" />
+    <ClCompile Include="Scheduler\MasterTimestamp.cpp" />
     <ClCompile Include="Scheduler\Scheduler.cpp" />
     <ClCompile Include="Scheduler\SchedulerEvent.cpp" />
     <ClCompile Include="Scheduler\SchedulerQueue.cpp" />

@@ -16,8 +16,7 @@ struct DebugLogEntry
 {
   DebugLogKind Kind;
   uint64_t FrameNumber;
-  uint32_t AgnusLine;
-  uint32_t AgnusLineCycle;
+  ChipTimestamp ChipTime;
   std::string Message;
 };
 

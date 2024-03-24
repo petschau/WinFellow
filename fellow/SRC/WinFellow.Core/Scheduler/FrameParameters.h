@@ -1,16 +1,18 @@
 #pragma once
 
 #include <cstdint>
+#include "MasterTimestamp.h"
 
+// Cycle unit is shres (35ns)
 struct FrameParameters
 {
-  uint32_t HorisontalBlankStart;
-  uint32_t HorisontalBlankEnd;
+  MasterTimeOffset HorisontalBlankStart;
+  MasterTimeOffset HorisontalBlankEnd;
   uint32_t VerticalBlankEnd;
-  uint32_t ShortLineCycles;
-  uint32_t LongLineCycles;
+  MasterTimeOffset ShortLineCycles;
+  MasterTimeOffset LongLineCycles;
   uint32_t LinesInFrame;
-  uint32_t CyclesInFrame;
+  MasterTimeOffset CyclesInFrame;
 
   uint32_t GetAgnusCyclesInLine(unsigned int line)
   {

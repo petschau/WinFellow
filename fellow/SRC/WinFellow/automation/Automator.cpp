@@ -59,7 +59,7 @@ void Automator::EndOfLine()
   if (!RecordScript)
   {
     uint64_t frameNumber = _core.Clocks->GetFrameNumber();
-    uint32_t line = _core.Clocks->GetAgnusLine();
+    uint32_t line = _core.Clocks->GetChipLine();
     _script.ExecuteUntil(frameNumber, line);
   }
 }

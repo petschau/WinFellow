@@ -46,8 +46,6 @@ constexpr uint32_t CIA_ALARM_IRQ = 4;
 constexpr uint32_t CIA_KBD_IRQ = 8;
 constexpr uint32_t CIA_FLAG_IRQ = 16;
 
-constexpr uint32_t CIA_BUS_CYCLE_RATIO = 5;
-
 // #define CIA_LOGGING
 
 #ifdef CIA_LOGGING
@@ -63,14 +61,14 @@ uint32_t cia_next_event_type; /* What type of event */
 
 struct cia_state
 {
-  uint32_t ta;
-  uint32_t tb;
-  uint32_t ta_rem; /* Preserves remainder when downsizing from bus cycles */
-  uint32_t tb_rem;
-  uint32_t talatch;
-  uint32_t tblatch;
-  int32_t taleft;
-  int32_t tbleft;
+  CiaTimeOffset ta;
+  CiaTimeOffset tb;
+  MasterTimeOffset ta_rem; // Preserves remainder when downsizing from master time
+  MasterTimeOffset tb_rem;
+  CiaTimeOffset talatch;
+  CiaTimeOffset tblatch;
+  MasterTimestamp taleft;
+  MasterTimestamp tbleft;
   uint32_t evalarm;
   uint32_t evlatch;
   uint32_t evlatching;
@@ -100,33 +98,32 @@ BOOLE ciaIsSoundFilterEnabled()
   return (cia[0].pra & 2) == 2;
 }
 
-/* Translate timer -> cycles until timeout from current sof, start of frame */
-
-uint32_t ciaUnstabilizeValue(uint32_t value, uint32_t remainder)
+// Translate timer expiration to master timestamp
+MasterTimestamp ciaUnstabilizeValue(CiaTimeOffset value, MasterTimeOffset remainder)
 {
-  return (value * CIA_BUS_CYCLE_RATIO) + _core.Clocks->GetFrameCycle() + remainder;
+  return _core.Clocks->GetMasterTime() + MasterTimeOffset::FromCiaTimeOffset(value) + remainder;
 }
 
 /* Translate cycles until timeout from current sof -> timer value */
 
-uint32_t ciaStabilizeValue(uint32_t value)
+CiaTimeOffset ciaStabilizeValue(MasterTimestamp value)
 {
-  return (value - _core.Clocks->GetFrameCycle()) / CIA_BUS_CYCLE_RATIO;
+  return (value - _core.Clocks->GetMasterTime()).ToCiaTimeOffset();
 }
 
-uint32_t ciaStabilizeValueRemainder(uint32_t value)
+MasterTimeOffset ciaStabilizeValueRemainder(MasterTimestamp value)
 {
-  return (value - _core.Clocks->GetFrameCycle()) % CIA_BUS_CYCLE_RATIO;
+  return (value - _core.Clocks->GetMasterTime()).GetCiaTimeRemainder();
 }
 
-uint32_t ciaGetTimerValue(uint32_t value)
+CiaTimeOffset ciaGetTimerValue(CiaTimeOffset value)
 {
-  if (value == 0)
+  if (value.Offset == 0)
   {
 #ifdef CIA_LOGGING
     Service->Log.AddLogDebug("CIA Warning timer latch is zero. PC %X", cpuGetOriginalPC());
 #endif
-    return 1; // Avoid getting stuck on zero timeout.
+    return CiaTimeOffset{.Offset = 1}; // Avoid getting stuck on zero timeout.
   }
   return value;
 }
@@ -238,7 +235,7 @@ void ciaHandleTBTimeout(uint32_t i)
   }
   else if (!(cia[i].crb & 0x40)) /* Continuous mode, no attach */
   {
-    cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, 0);
+    cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, MasterTimeOffset::FromValue(0));
   }
 
   ciaRaiseIRQ(i, CIA_TB_IRQ); /* Raise irq */
@@ -253,12 +250,13 @@ void ciaHandleTATimeout(uint32_t i)
   cia[i].ta = ciaGetTimerValue(cia[i].talatch); /* Reload from latch */
   if ((cia[i].crb & 0x41) == 0x41)
   { /* Timer B attached and started */
-    cia[i].tb = (cia[i].tb - 1) & 0xffff;
-    if (cia[i].tb == 0)
+    cia[i].tb = (cia[i].tb - CiaTimeOffset::FromValue(1)).MaskTo16Bits();
+    if (cia[i].tb.IsZero())
     {
       ciaHandleTBTimeout(i);
     }
   }
+
   if (cia[i].cra & 8) /* One Shot Mode */
   {
     cia[i].cra &= 0xfe; /* Stop timer */
@@ -266,7 +264,7 @@ void ciaHandleTATimeout(uint32_t i)
   }
   else /* Continuous mode */
   {
-    cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, 0);
+    cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, MasterTimeOffset::FromValue(0));
   }
 
 #ifdef CIA_LOGGING
@@ -287,7 +285,7 @@ void ciaUpdateEventCounter(uint32_t i)
 }
 
 // Called from the eof-handler to rebase the timer arrival cycle
-void ciaUpdateTimersEOF(uint32_t cyclesInEndedFrame)
+void ciaUpdateTimersEOF(const MasterTimeOffset cyclesInEndedFrame)
 {
   for (int i = 0; i < 2; i++)
   {
@@ -296,6 +294,7 @@ void ciaUpdateTimersEOF(uint32_t cyclesInEndedFrame)
       cia[i].taleft -= cyclesInEndedFrame;
       assert((int32_t)cia[i].taleft >= 0);
     }
+
     if (cia[i].tbleft >= 0)
     {
       cia[i].tbleft -= cyclesInEndedFrame;
@@ -384,10 +383,13 @@ void ciaHandleEvent()
   ciaSetupNextEvent();
 }
 
+// Called when any Cia irq bits in Paula is cleared
+// This sets up a wait for 2 Cia cycles
+// Then the Paula bits are set again if Cia has active irq bits set internally
 void ciaRecheckIRQ()
 {
   cia_recheck_irq = true;
-  cia_recheck_irq_time = _core.Clocks->GetFrameCycle() + 10;
+  cia_recheck_irq_time = _core.Clocks->GetFrameMasterCycle() + 2 * Cia::CiaMasterCycleRatio;
   ciaSetupNextEvent();
 }
 

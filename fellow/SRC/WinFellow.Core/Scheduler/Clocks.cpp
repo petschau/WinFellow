@@ -7,19 +7,29 @@ uint64_t Clocks::GetFrameNumber() const
   return _frameNumber;
 }
 
-uint32_t Clocks::GetFrameCycle() const
+MasterTimestamp Clocks::GetMasterTime() const
 {
-  return _frameCycle;
+  return _masterTime;
 }
 
-uint32_t Clocks::GetAgnusLine() const
+//uint32_t Clocks::GetChipCycleFrin() const
+//{
+//  return _frameMasterCycle >> MasterCycleFrom280nsShift;
+//}
+
+ChipTimestamp Clocks::GetChipTime() const
 {
-  return _agnusLine;
+  return _chipTime;
 }
 
-uint32_t Clocks::GetAgnusLineCycle() const
+uint32_t Clocks::GetChipLine() const
 {
-  return _agnusLineCycle;
+  return _chipTime.Line;
+}
+
+uint32_t Clocks::GetChipCycle() const
+{
+  return _chipTime.Cycle;
 }
 
 uint32_t Clocks::GetDeniseLineCycle() const
@@ -27,29 +37,37 @@ uint32_t Clocks::GetDeniseLineCycle() const
   return _deniseLineCycle;
 }
 
-uint32_t Clocks::GetCycleFrom280ns(uint32_t cycle280ns)
+//constexpr uint32_t Clocks::GetCycleFrom280ns(uint32_t cycle280ns)
+//{
+//  return cycle280ns;
+//}
+
+constexpr uint32_t Clocks::ToMasterCycleCount(uint32_t chipCycles)
 {
-  return cycle280ns;
+  return chipCycles << MasterCycleFromChipCycleShift;
 }
 
-void Clocks::SetFrameCycle(uint32_t newCycle)
+//uint32_t Clocks::GetMasterCycleTotalFrom280ns(uint32_t cycle280ns)
+//{
+//  return (cycle280ns + 1) << MasterCycleFrom280nsShift;
+//}
+
+void Clocks::SetMasterTime(MasterTimestamp newMasterTime)
 {
-  uint32_t previousCycle = _frameCycle;
+  MasterTimestamp previousMasterTime = _masterTime;
 
-  assert(previousCycle <= newCycle);
+  assert(previousMasterTime <= newMasterTime);
 
-  _frameCycle = newCycle;
-  _agnusLine = newCycle / _frameParameters.LongLineCycles;
-  _agnusLineCycle = newCycle % _frameParameters.LongLineCycles;
-  _deniseLineCycle = newCycle % _frameParameters.LongLineCycles;
+  _masterTime = newMasterTime;
+  _chipTime = ChipTimestamp::FromMasterTime(newMasterTime, _frameParameters);
+  _deniseLineCycle = newMasterTime.Cycle % _frameParameters.LongLineCycles;
 }
 
 void Clocks::Clear(const FrameParameters &frameParameters)
 {
   _frameParameters = frameParameters;
-  _frameCycle = 0;
-  _agnusLine = 0;
-  _agnusLineCycle = 0;
+  _masterTime.Clear();
+  _chipTime.Clear();
   _deniseLineCycle = 0;
 }
 
@@ -57,9 +75,8 @@ void Clocks::NewFrame(const FrameParameters &frameParameters)
 {
   _frameParameters = frameParameters;
   _frameNumber++;
-  _frameCycle = 0;
-  _agnusLine = 0;
-  _agnusLineCycle = 0;
+  _masterTime.Clear();
+  _chipTime.Clear();
   _deniseLineCycle = 0;
 }
 

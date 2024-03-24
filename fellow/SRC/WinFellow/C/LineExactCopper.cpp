@@ -47,27 +47,26 @@ void LineExactCopper::Load(uint32_t new_copper_pc)
   if (_copperRegisters.copper_dma == true)
   {
     RemoveEvent();
-    InsertEvent(_clocks.GetFrameCycle() + 4);
+    InsertEvent(_clocks.GetFrameMasterCycle() + Clocks::ToMasterCycleFrom280ns(4));
   }
   else
   {
     // DMA is off
     if (_copperRegisters.copper_suspended_wait == SchedulerEvent::EventDisableCycle)
     {
-      _copperRegisters.copper_suspended_wait = _clocks.GetFrameCycle();
+      _copperRegisters.copper_suspended_wait = _clocks.GetFrameMasterCycle();
     }
   }
 }
 
 uint32_t LineExactCopper::GetCheckedWaitCycle(uint32_t waitCycle)
 {
-  const auto currentFrameCycle = _clocks.GetFrameCycle();
+  const auto currentFrame280nsCycle = _clocks.GetFrame280nsCycle();
 
-  if (waitCycle <= currentFrameCycle)
+  if (waitCycle <= currentFrame280nsCycle)
   {
     // Do not ever go back in time
-    waitCycle = currentFrameCycle + 4;
-    //_core.Log->AddLog("Warning: Copper went back in time.\n");
+    waitCycle = currentFrame280nsCycle + 4;
   }
 
   return waitCycle;
@@ -103,21 +102,17 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
 
     if (_copperRegisters.copper_suspended_wait != SchedulerEvent::EventDisableCycle)
     {
-      // dma not hanging
-      const auto currentFrameCycle = _clocks.GetFrameCycle();
+      const auto currentFrameMasterCycle = _clocks.GetFrameMasterCycle();
+      auto nextCopperMasterCycle = _copperRegisters.copper_suspended_wait;
 
-      if (_copperRegisters.copper_suspended_wait <= currentFrameCycle)
+      if (nextCopperMasterCycle <= currentFrameMasterCycle)
       {
-        InsertEvent(currentFrameCycle + 4);
+        nextCopperMasterCycle = currentFrameMasterCycle + Clocks::ToMasterCycleFrom280ns(4);
       }
-      else
-      {
-        InsertEvent(_copperRegisters.copper_suspended_wait);
-      }
-    }
-    else
-    {
-      InsertEvent(_copperRegisters.copper_suspended_wait);
+
+      InsertEvent(nextCopperMasterCycle);
+
+      _copperRegisters.copper_suspended_wait = SchedulerEvent::EventDisableCycle;
     }
   }
 
@@ -127,7 +122,7 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
 void LineExactCopper::NotifyCop1lcChanged()
 {
   // Have been hanging since end of frame
-  if (_copperRegisters.copper_dma == false && _copperRegisters.copper_suspended_wait == 40)
+  if (_copperRegisters.copper_dma == false && _copperRegisters.copper_suspended_wait == CopperFrameStartMasterCycleDelay)
   {
     _copperRegisters.copper_pc = _copperRegisters.cop1lc;
   }
@@ -485,11 +480,11 @@ void LineExactCopper::EventHandler()
 void LineExactCopper::EndOfFrame()
 {
   _copperRegisters.copper_pc = _copperRegisters.cop1lc;
-  _copperRegisters.copper_suspended_wait = 40;
+  _copperRegisters.copper_suspended_wait = CopperFrameStartMasterCycleDelay;
   if (_copperRegisters.copper_dma == true)
   {
     RemoveEvent();
-    InsertEvent(40);
+    InsertEvent(CopperFrameStartMasterCycleDelay);
   }
 }
 

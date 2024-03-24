@@ -34,8 +34,8 @@
 
 void Scheduler::InsertEvent(SchedulerEvent *ev)
 {
-  assert(((int)ev->cycle) >= 0);
-  assert(ev->cycle >= _clocks.GetFrameCycle());
+  assert(ev->cycle.IsEnabledAndValid());
+  assert(ev->cycle.IsNowOrLater(_clocks.GetMasterTime()));
 
   _queue.InsertEvent(ev);
 }
@@ -47,7 +47,7 @@ void Scheduler::RemoveEvent(SchedulerEvent *ev)
 
 void Scheduler::NewFrame(const FrameParameters &newFrameParameters)
 {
-  uint32_t cyclesInEndedFrame = _currentFrameParameters.CyclesInFrame;
+  const auto cyclesInEndedFrame = MasterTimeOffset{.Offset = _currentFrameParameters.CyclesInFrame};
   _clocks.NewFrame(newFrameParameters);
   _queue.RebaseEvents(cyclesInEndedFrame);
 }
@@ -65,9 +65,9 @@ void Scheduler::ClearRequestEmulationStop()
 void Scheduler::HandleNextEvent()
 {
   SchedulerEvent *e = _queue.PopEvent();
-  _clocks.SetFrameCycle(e->cycle);
+  _clocks.SetMasterTime(e->cycle);
 
-  assert(_clocks.GetAgnusLine() < _currentFrameParameters.LinesInFrame || e == &_events.eofEvent);
+  assert(_clocks.GetChipLine() < _currentFrameParameters.LinesInFrame || e == &_events.eofEvent);
 
   e->handler();
 }
@@ -122,7 +122,7 @@ void Scheduler::MasterEventLoop_InstructionsUntilChipAndThenChipUntilNextInstruc
   {
     while (_queue.GetNextEventCycle() >= _events.cpuEvent.cycle)
     {
-      _clocks.SetFrameCycle(_events.cpuEvent.cycle);
+      _clocks.SetMasterTime(_events.cpuEvent.cycle);
       _events.cpuEvent.handler();
     }
     do
@@ -139,7 +139,7 @@ void Scheduler::MasterEventLoop_DebugStepOneInstruction()
   {
     if (_queue.GetNextEventCycle() >= _events.cpuEvent.cycle)
     {
-      _clocks.SetFrameCycle(_events.cpuEvent.cycle);
+      _clocks.SetMasterTime(_events.cpuEvent.cycle);
       _events.cpuEvent.handler();
       return;
     }
@@ -158,7 +158,7 @@ void Scheduler::MasterEventLoop_DebugStepUntilPc(uint32_t overPc)
   {
     if (_queue.GetNextEventCycle() >= _events.cpuEvent.cycle)
     {
-      _clocks.SetFrameCycle(_events.cpuEvent.cycle);
+      _clocks.SetMasterTime(_events.cpuEvent.cycle);
       _events.cpuEvent.handler();
 
       if (_core.Cpu->GetPc() == overPc) return;
@@ -201,10 +201,10 @@ void Scheduler::InitializeQueue()
   // bitplaneDMAEvent.Initialize(BitplaneDMA::HandleEvent, "Bitplane DMA");
   // spriteDMAEvent.Initialize(SpriteDMA::HandleEvent, "Sprite DMA");
 
-  _events.eofEvent.cycle = _currentFrameParameters.CyclesInFrame;
+  _events.eofEvent.cycle = MasterTimestamp{.Cycle = _currentFrameParameters.CyclesInFrame};
   _queue.InsertEventWithNullCheck(&_events.eofEvent);
 
-  _events.eolEvent.cycle = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine()) - 1;
+  _events.eolEvent.cycle = MasterTimestamp{.Cycle = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetChipLine()) - 1};
   _queue.InsertEvent(&_events.eolEvent);
 }
 

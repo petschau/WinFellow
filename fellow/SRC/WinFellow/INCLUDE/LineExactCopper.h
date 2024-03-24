@@ -9,6 +9,8 @@ class LineExactCopper : public ICopper
 private:
   static uint32_t cycletable[16];
 
+  const MasterTimeOffset CopperFrameStartDelay = MasterTimeOffset::FromChipTimeOffset(40);
+
   Scheduler &_scheduler;
   SchedulerEvent &_copperEvent;
   SchedulerEvent &_cpuEvent;

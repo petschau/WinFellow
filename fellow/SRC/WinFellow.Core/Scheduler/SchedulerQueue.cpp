@@ -6,7 +6,7 @@ void SchedulerQueue::Clear()
   _events = nullptr;
 }
 
-uint32_t SchedulerQueue::GetNextEventCycle() const
+MasterTimestamp SchedulerQueue::GetNextEventCycle() const
 {
   return _events->cycle;
 }
@@ -51,7 +51,7 @@ void SchedulerQueue::InsertEventWithNullCheck(SchedulerEvent *ev)
 {
   if (_events == nullptr)
   {
-    assert(((int)ev->cycle) >= 0);
+    assert(ev->cycle.IsEnabledAndValid());
 
     ev->prev = ev->next = nullptr;
     _events = ev;
@@ -107,13 +107,13 @@ SchedulerEvent *SchedulerQueue::PopEvent()
   return tmp;
 }
 
-void SchedulerQueue::RebaseEvents(uint32_t cycleOffset)
+void SchedulerQueue::RebaseEvents(MasterTimeOffset offset)
 {
   for (SchedulerEvent *ev = _events; ev != nullptr; ev = ev->next)
   {
-    ev->cycle -= cycleOffset;
+    ev->cycle -= offset;
 
-    assert((int32_t)ev->cycle >= 0);
+    assert(ev->cycle.IsEnabledAndValid());
   }
 }
 

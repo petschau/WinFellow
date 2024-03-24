@@ -101,7 +101,7 @@ uint32_t interruptGetPendingCpuLevel()
 
 unsigned int interruptGetScheduleLatency()
 {
-  return 10;
+  return Clocks::ToMasterCycleFrom280ns(10);
 }
 
 unsigned int interruptGetCpuLevel(int interrupt_number)
@@ -207,7 +207,7 @@ void interruptRaisePendingInternal(bool delayIRQ)
       {
         if (delayIRQ && !cpuGetStop())
         {
-          _core.Events->interruptEvent.cycle = _core.Clocks->GetFrameCycle() + interruptGetScheduleLatency();
+          _core.Events->interruptEvent.cycle = _core.Clocks->GetFrameMasterCycle() + interruptGetScheduleLatency();
           _core.Scheduler->InsertEvent(&_core.Events->interruptEvent);
           return;
         }

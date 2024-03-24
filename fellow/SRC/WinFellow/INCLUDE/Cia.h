@@ -6,6 +6,8 @@
 #include "Defs.h"
 #include "IO/ICia.h"
 #include "Scheduler/SchedulerEvent.h"
+#include "Scheduler/CiaTimeOffset.h"
+#include "Scheduler/MasterTimeOffset.h"
 
 extern void ciaHardReset();
 extern void ciaEmulationStart();
@@ -18,7 +20,7 @@ extern void ciaRaiseIndexIRQ();                    /* For the floppy loader */
 extern void ciaRaiseIRQ(uint32_t i, uint32_t req); /* For kbd.c */
 extern void ciaWritesp(uint32_t i, uint8_t data);  /* For kbd.c */
 extern void ciaUpdateEventCounter(uint32_t);
-extern void ciaUpdateTimersEOF(uint32_t cyclesInEndedFrame);
+extern void ciaUpdateTimersEOF(const MasterTimeOffset cyclesInEndedFrame);
 extern void ciaUpdateIRQ(uint32_t i);
 extern void ciaRecheckIRQ();
 extern BOOLE ciaIsSoundFilterEnabled();

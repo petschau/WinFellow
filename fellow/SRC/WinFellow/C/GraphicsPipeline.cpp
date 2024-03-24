@@ -439,7 +439,7 @@ void wdmacon(uint16_t data, uint32_t address)
           if (blitterGetFreeCycles() == 0)
           {
             // below delays CPU additionally cycles
-            cpuIntegrationSetChipCycles(cpuIntegrationGetChipCycles() + (_core.Events->blitterEvent.cycle - _core.Clocks->GetFrameCycle()));
+            cpuIntegrationSetChipCycles(cpuIntegrationGetChipCycles() + (_core.Events->blitterEvent.cycle - _core.Clocks->GetFrameMasterCycle()));
           }
         }
       }

@@ -5,6 +5,7 @@
 #include "CustomChipset/Copper/CopperRegisters.h"
 #include "CycleExactCopper.h"
 #include "GraphicsPipeline.h"
+#include <cassert>
 
 uint16_t CycleExactCopper::ReadWord()
 {
@@ -16,13 +17,17 @@ void CycleExactCopper::IncreasePtr()
   _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 2);
 }
 
-void CycleExactCopper::SetState(CopperStates newState, uint32_t cycle)
+void CycleExactCopper::SetState(CopperStates newState, uint32_t chipLine, uint32_t chipLineCycle)
 {
-  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLineCycle());
-  if ((cycle % currentLineCycleCount) & 1)
-  {
-    cycle++;
-  }
+  const auto chipLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(chipLine);
+
+  assert(chipLineCycle & 1 == 0);
+  assert(chipLineCycle < chipLineCycleCount);
+
+  //if ((chipLineCycle % chipLineCycleCount) & 1)
+  //{
+  //  chipLineCycle++;
+  //}
 
   _scheduler.RemoveEvent(&_copperEvent);
   _state = newState;
@@ -38,14 +43,14 @@ void CycleExactCopper::Load(uint32_t new_copper_ptr)
   _copperRegisters.copper_pc = new_copper_ptr;
 
   _skip_next = false;
-  uint32_t start_cycle = _clocks.GetFrameCycle() + 6;
-  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
-  if ((start_cycle % currentLineCycleCount) & 1)
+  uint32_t startChipCycle = _clocks.GetAgnusLineCycle() + 6;
+  const auto currentLineChipCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
+  if ((startChipCycle % currentLineChipCycleCount) & 1)
   {
-    start_cycle++;
+    startChipCycle++;
   }
 
-  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, start_cycle);
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, Clocks::ToMasterCycleFrom280ns(startChipCycle));
 }
 
 void CycleExactCopper::SetStateNone()
@@ -68,7 +73,7 @@ void CycleExactCopper::Move()
 
   if (IsRegisterAllowed(regno))
   {
-    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _clocks.GetFrameCycle() + 2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _clocks.GetFrameMasterCycle() + Clocks::ToMasterCycleFrom280ns(2));
     if (!_skip_next)
     {
       memory_iobank_write[regno >> 1](value, regno);
@@ -90,20 +95,25 @@ void CycleExactCopper::Wait()
   uint32_t vp = (uint32_t)(_first >> 8);
   uint32_t hp = (uint32_t)(_first & 0xfe);
 
-  const auto currentLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
-  const auto currentCycle = _clocks.GetFrameCycle();
-  uint32_t test_cycle = currentCycle + 2;
-  uint32_t rasterY = test_cycle / currentLineCycleCount;
-  uint32_t rasterX = test_cycle % currentLineCycleCount;
+  const auto currentLineChipCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
+  //const auto currentChipCycle = _clocks.GetAgnusChipFrameCycle();
+  //uint32_t test_cycle = currentCycle + 2;
+  //uint32_t rasterY = test_cycle / currentLineCycleCount;
+  //uint32_t rasterX = test_cycle % currentLineCycleCount;
+
+  uint32_t rasterY = _clocks.GetAgnusLine();
+  uint32_t rasterX = _clocks.GetAgnusLineCycle();
 
   if (rasterX & 1)
   {
     rasterX++;
   }
 
+  // (rasterY, rasterX) is the starting point, the first possible compare
+
   _skip_next = false;
 
-  // Is the vertical position already larger?
+  // Does the current rasterY already compare as larger?
   if ((rasterY & ve) > (vp & ve))
   {
     _skip_next = false;
@@ -267,10 +277,10 @@ void CycleExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     if (_copperEvent.IsEnabled())
     {
       // dma not hanging
-      const auto currentFrameCycle = _clocks.GetFrameCycle();
+      const auto currentFrameCycle = _clocks.GetFrameMasterCycle();
       if (_copperEvent.cycle <= currentFrameCycle)
       {
-        _copperEvent.cycle = currentFrameCycle + 2;
+        _copperEvent.cycle = currentFrameCycle + Clocks::ToMasterCycleFrom280ns(2);
         _scheduler.InsertEvent(&_copperEvent);
       }
       else

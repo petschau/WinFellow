@@ -3,15 +3,17 @@
 #include <cstdint>
 #include <functional>
 
+#include "MasterTimestamp.h"
+
 typedef std::function<void()> SchedulerEventHandler;
 
 struct SchedulerEvent
 {
-  static constexpr uint32_t EventDisableCycle = 0xffffffff;
+  static constexpr MasterTimestamp EventDisableCycle{.Cycle = 0xffffffff};
 
   SchedulerEvent *next;
   SchedulerEvent *prev;
-  uint32_t cycle;
+  MasterTimestamp cycle;
   SchedulerEventHandler handler;
   const char *Name;
 

@@ -10,8 +10,7 @@ void DebugLog::Log(DebugLogKind kind, const char *message)
   _entries.emplace_back(DebugLogEntry{
       .Kind = kind,
       .FrameNumber = _clocks.GetFrameNumber(),
-      .AgnusLine = _clocks.GetAgnusLine(),
-      .AgnusLineCycle = _clocks.GetAgnusLineCycle(),
+      .ChipTime = _clocks.GetChipTime(),
       .Message = message});
 }
 
@@ -22,8 +21,7 @@ void DebugLog::Log(DebugLogKind kind, const string message)
   _entries.emplace_back(DebugLogEntry{
       .Kind = kind,
       .FrameNumber = _clocks.GetFrameNumber(),
-      .AgnusLine = _clocks.GetAgnusLine(),
-      .AgnusLineCycle = _clocks.GetAgnusLineCycle(),
+      .ChipTime = _clocks.GetChipTime(), 
       .Message = message});
 }
 
@@ -50,7 +48,7 @@ void DebugLog::Flush()
 
   for (const DebugLogEntry &entry : _entries)
   {
-    fprintf(F, "%s: %s (%I64d, %d, %d)\n", GetKindText(entry.Kind), entry.Message.c_str(), entry.FrameNumber, entry.AgnusLine, entry.AgnusLineCycle);
+    fprintf(F, "%s: %s (%I64d, %u, %u)\n", GetKindText(entry.Kind), entry.Message.c_str(), entry.FrameNumber, entry.ChipTime.Line, entry.ChipTime.Cycle);
   }
 
   fclose(F);
