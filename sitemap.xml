@@ -2,55 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://petschau.github.io/WinFellow/about/</loc>
+    <loc>http://localhost:1313/WinFellow/about/</loc>
     <lastmod>2016-01-12T06:43:18+01:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/team/</loc>
+    <loc>http://localhost:1313/WinFellow/team/</loc>
     <lastmod>2023-09-04T05:43:18+01:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/contact/</loc>
+    <loc>http://localhost:1313/WinFellow/contact/</loc>
     <lastmod>2019-06-26T05:45:18+01:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/contributing/</loc>
+    <loc>http://localhost:1313/WinFellow/contributing/</loc>
     <lastmod>2019-06-26T05:45:18+01:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/tags/news/</loc>
+    <loc>http://localhost:1313/WinFellow/tags/news/</loc>
+    <lastmod>2024-03-28T05:49:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/WinFellow/post/</loc>
+    <lastmod>2024-03-28T05:49:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/WinFellow/tags/releases/</loc>
+    <lastmod>2024-03-28T05:49:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/WinFellow/tags/</loc>
+    <lastmod>2024-03-28T05:49:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/WinFellow/</loc>
+    <lastmod>2024-03-28T05:49:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/WinFellow/post/2024-03-28-winfellow-v0.5.11-released/</loc>
+    <lastmod>2024-03-28T05:49:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/WinFellow/post/2023-10-04-winfellow-v0.5.10-released/</loc>
     <lastmod>2023-10-04T05:49:00+00:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/</loc>
-    <lastmod>2023-10-04T05:49:00+00:00</lastmod>
-  </url><url>
-    <loc>https://petschau.github.io/WinFellow/tags/releases/</loc>
-    <lastmod>2023-10-04T05:49:00+00:00</lastmod>
-  </url><url>
-    <loc>https://petschau.github.io/WinFellow/tags/</loc>
-    <lastmod>2023-10-04T05:49:00+00:00</lastmod>
-  </url><url>
-    <loc>https://petschau.github.io/WinFellow/</loc>
-    <lastmod>2023-10-04T05:49:00+00:00</lastmod>
-  </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/2023-10-04-winfellow-v0.5.10-released/</loc>
-    <lastmod>2023-10-04T05:49:00+00:00</lastmod>
-  </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</loc>
+    <loc>http://localhost:1313/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</loc>
     <lastmod>2023-09-04T05:49:00+00:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</loc>
+    <loc>http://localhost:1313/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</loc>
     <lastmod>2019-07-12T05:49:00+00:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</loc>
+    <loc>http://localhost:1313/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</loc>
     <lastmod>2018-01-02T16:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</loc>
+    <loc>http://localhost:1313/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</loc>
     <lastmod>2017-11-12T14:23:00+00:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</loc>
+    <loc>http://localhost:1313/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</loc>
     <lastmod>2017-03-11T18:15:00+00:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/tags/github/</loc>
+    <loc>http://localhost:1313/WinFellow/tags/github/</loc>
     <lastmod>2016-01-12T06:43:18+01:00</lastmod>
   </url><url>
-    <loc>https://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</loc>
+    <loc>http://localhost:1313/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</loc>
     <lastmod>2016-01-12T06:43:18+01:00</lastmod>
   </url>
 </urlset>

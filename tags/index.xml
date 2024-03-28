@@ -2,37 +2,32 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on WinFellow - Amiga Emulator for Windows</title>
-    <link>https://petschau.github.io/WinFellow/tags/</link>
+    <link>http://localhost:1313/WinFellow/tags/</link>
     <description>Recent content in Tags on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 04 Oct 2023 05:49:00 +0000</lastBuildDate><atom:link href="https://petschau.github.io/WinFellow/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Mar 2024 05:49:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/WinFellow/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>News</title>
-      <link>https://petschau.github.io/WinFellow/tags/news/</link>
-      <pubDate>Wed, 04 Oct 2023 05:49:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/tags/news/</guid>
+      <link>http://localhost:1313/WinFellow/tags/news/</link>
+      <pubDate>Thu, 28 Mar 2024 05:49:00 +0000</pubDate>
+      <guid>http://localhost:1313/WinFellow/tags/news/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Releases</title>
-      <link>https://petschau.github.io/WinFellow/tags/releases/</link>
-      <pubDate>Wed, 04 Oct 2023 05:49:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/tags/releases/</guid>
+      <link>http://localhost:1313/WinFellow/tags/releases/</link>
+      <pubDate>Thu, 28 Mar 2024 05:49:00 +0000</pubDate>
+      <guid>http://localhost:1313/WinFellow/tags/releases/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>GitHub</title>
-      <link>https://petschau.github.io/WinFellow/tags/github/</link>
+      <link>http://localhost:1313/WinFellow/tags/github/</link>
       <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/tags/github/</guid>
+      <guid>http://localhost:1313/WinFellow/tags/github/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

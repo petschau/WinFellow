@@ -2,90 +2,67 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>News on WinFellow - Amiga Emulator for Windows</title>
-    <link>https://petschau.github.io/WinFellow/tags/news/</link>
+    <link>http://localhost:1313/WinFellow/tags/news/</link>
     <description>Recent content in News on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 04 Oct 2023 05:49:00 +0000</lastBuildDate><atom:link href="https://petschau.github.io/WinFellow/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Mar 2024 05:49:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/WinFellow/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WinFellow v0.5.11 released</title>
+      <link>http://localhost:1313/WinFellow/post/2024-03-28-winfellow-v0.5.11-released/</link>
+      <pubDate>Thu, 28 Mar 2024 05:49:00 +0000</pubDate>
+      <guid>http://localhost:1313/WinFellow/post/2024-03-28-winfellow-v0.5.11-released/</guid>
+      <description>There is a new public release of WinFellow v0.5.11 in the GitHub releases section; it had been published earlier as release candidate 1.&#xA;Compared to the earlier version 0.5.10, the following changes are included in this build:&#xA;New features&#xA;the default display driver was changed from DirectDraw to Direct3D 11, where supported implemented support for keyboard-initiated reset in Amiga Forever Bug Fixes&#xA;improved logging in case of failure to initialize Direct3d graphics driver fix several issues related to creating, loading, applying and saving configuration files fix potential memory leaks implement more failure checks for Direct3D initialization fix crash to desktop when using an emulated joystick in Amiga Forever Maintenance updates</description>
+    </item>
     <item>
       <title>WinFellow v0.5.10 released</title>
-      <link>https://petschau.github.io/WinFellow/post/2023-10-04-winfellow-v0.5.10-released/</link>
+      <link>http://localhost:1313/WinFellow/post/2023-10-04-winfellow-v0.5.10-released/</link>
       <pubDate>Wed, 04 Oct 2023 05:49:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/post/2023-10-04-winfellow-v0.5.10-released/</guid>
-      <description>There is a new public release of WinFellow v0.5.10 in the GitHub releases section; it had been published earlier as release candidate 1.
-Compared to the earlier version 0.5.9, the following changes are included in this build:
-New features
-a native ARM64 build of WinFellow is now provided as part of the release zip archive Bug Fixes
-Thanks to the availability of Toni Wilen&amp;rsquo;s cputester, the following mostly CPU related issues from the basic tests could be addressed: Removed address register as byte source operand in move.</description>
+      <guid>http://localhost:1313/WinFellow/post/2023-10-04-winfellow-v0.5.10-released/</guid>
+      <description>There is a new public release of WinFellow v0.5.10 in the GitHub releases section; it had been published earlier as release candidate 1.&#xA;Compared to the earlier version 0.5.9, the following changes are included in this build:&#xA;New features&#xA;a native ARM64 build of WinFellow is now provided as part of the release zip archive Bug Fixes&#xA;Thanks to the availability of Toni Wilen&amp;rsquo;s cputester, the following mostly CPU related issues from the basic tests could be addressed: Removed address register as byte source operand in move.</description>
     </item>
-    
     <item>
       <title>WinFellow v0.5.9 released</title>
-      <link>https://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</link>
+      <link>http://localhost:1313/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</link>
       <pubDate>Mon, 04 Sep 2023 05:49:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</guid>
-      <description>There is a new public release of WinFellow v0.5.9 in the GitHub releases section; it had been published earlier as release candidate 1.
-Compared to the earlier version 0.5.8, the following changes are included in this build:
-System requirement changes
-support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</description>
+      <guid>http://localhost:1313/WinFellow/post/2023-09-04-winfellow-v0.5.9-released/</guid>
+      <description>There is a new public release of WinFellow v0.5.9 in the GitHub releases section; it had been published earlier as release candidate 1.&#xA;Compared to the earlier version 0.5.8, the following changes are included in this build:&#xA;System requirement changes&#xA;support for Windows XP and Vista has been removed; version 0.5.8 will be the last WinFellow release to support Windows XP or Windows Vista. This enables us to take advantage of enhancements in the toolset used during development and testing.</description>
     </item>
-    
     <item>
       <title>WinFellow v0.5.8 released</title>
-      <link>https://petschau.github.io/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</link>
+      <link>http://localhost:1313/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</link>
       <pubDate>Fri, 12 Jul 2019 05:49:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</guid>
-      <description>There is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.
-Compared to the earlier version 0.5.7, the following changes are included in this build:
-New features
-support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &amp;ldquo;plain&amp;rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used Bug fixes</description>
+      <guid>http://localhost:1313/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</guid>
+      <description>There is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.&#xA;Compared to the earlier version 0.5.7, the following changes are included in this build:&#xA;New features&#xA;support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &amp;ldquo;plain&amp;rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used Bug fixes</description>
     </item>
-    
     <item>
       <title>WinFellow v0.5.7 released</title>
-      <link>https://petschau.github.io/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</link>
+      <link>http://localhost:1313/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</link>
       <pubDate>Tue, 02 Jan 2018 16:00:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</guid>
-      <description>Bug fixes:
-floppy code was updated to use a track limit &amp;gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94 fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported CPU instruction fixes: fixed a signed bug in 64-bit division minor timing adjustment for btst CIA event counter changes according to documentation the project files were updated to Visual Studio 2017 Please see the included file ChangeLog.</description>
+      <guid>http://localhost:1313/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</guid>
+      <description>Bug fixes:&#xA;floppy code was updated to use a track limit &amp;gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94 fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported CPU instruction fixes: fixed a signed bug in 64-bit division minor timing adjustment for btst CIA event counter changes according to documentation the project files were updated to Visual Studio 2017 Please see the included file ChangeLog.</description>
     </item>
-    
     <item>
       <title>WinFellow v0.5.6 released</title>
-      <link>https://petschau.github.io/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</link>
+      <link>http://localhost:1313/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</link>
       <pubDate>Sun, 12 Nov 2017 14:23:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</guid>
-      <description>New features:
-Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag Bug Fixes:
-improve support for IPF images (align disk words to sync if sync is found on an odd boundary) Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</description>
+      <guid>http://localhost:1313/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</guid>
+      <description>New features:&#xA;Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag Bug Fixes:&#xA;improve support for IPF images (align disk words to sync if sync is found on an odd boundary) Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</description>
     </item>
-    
     <item>
       <title>WinFellow v0.5.4 released</title>
-      <link>https://petschau.github.io/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</link>
+      <link>http://localhost:1313/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</link>
       <pubDate>Sat, 11 Mar 2017 18:15:00 +0000</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</guid>
-      <description>New features:
-re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed on Windows Vista, the platform update KB971644 should be installed, as it contains required updates to DirectX the graphics card has to provide hardware acceleration for Direct3D ability to save screenshots to the pictures folder (hit &amp;lt; Print Screen &amp;gt; to trigger) support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated Bug Fixes:</description>
+      <guid>http://localhost:1313/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</guid>
+      <description>New features:&#xA;re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed on Windows Vista, the platform update KB971644 should be installed, as it contains required updates to DirectX the graphics card has to provide hardware acceleration for Direct3D ability to save screenshots to the pictures folder (hit &amp;lt; Print Screen &amp;gt; to trigger) support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated Bug Fixes:</description>
     </item>
-    
     <item>
       <title>WinFellow has a new home</title>
-      <link>https://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</link>
+      <link>http://localhost:1313/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</link>
       <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
-      
-      <guid>https://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</guid>
-      <description>WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.
-Downloads for older releases are still available at SourceForge for reference; for future news and updates, please visit us here.
-The GitHub source code repository is available here.
-Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section.</description>
+      <guid>http://localhost:1313/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</guid>
+      <description>WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.&#xA;Downloads for older releases are still available at SourceForge for reference; for future news and updates, please visit us here.&#xA;The GitHub source code repository is available here.&#xA;Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section.</description>
     </item>
-    
   </channel>
 </rss>
