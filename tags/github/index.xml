@@ -6,18 +6,14 @@
     <description>Recent content in GitHub on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate><atom:link href="https://petschau.github.io/WinFellow/tags/github/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate>
+    <atom:link href="https://petschau.github.io/WinFellow/tags/github/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>WinFellow has a new home</title>
       <link>https://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</link>
       <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
-      
       <guid>https://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</guid>
-      <description>WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.
-Downloads for older releases are still available at SourceForge for reference; for future news and updates, please visit us here.
-The GitHub source code repository is available here.
-Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section.</description>
+      <description>WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.&#xA;Downloads for older releases are still available at SourceForge for reference; for future news and updates, please visit us here.&#xA;The GitHub source code repository is available here.&#xA;Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section.</description>
     </item>
-    
   </channel>
 </rss>
