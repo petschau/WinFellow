@@ -21,19 +21,12 @@ public:
   uint64_t GetFrameNumber() const;
 
   MasterTimestamp GetMasterTime() const;
-  //uint32_t GetFrame280nsCycle() const;
-
   ChipTimestamp GetChipTime() const;
-  uint32_t GetChipLine() const;
-  uint32_t GetChipCycle() const;
 
   uint32_t GetDeniseLineCycle() const;
 
-//  constexpr static uint32_t GetCycleFrom280ns(uint32_t cycle280ns);
-  constexpr static uint32_t ToMasterCycleCount(uint32_t chipCycles);
-  constexpr static MasterTimestamp ToMasterTime(ChipTimestamp chipTime);
-
-  //static uint32_t GetMasterCycleTotalFrom280ns(uint32_t cycle280ns);
+  constexpr static MasterTimeOffset ToMasterTimeOffset(const ChipTimeOffset chipTimeOffset);
+  MasterTimestamp ToMasterTime(const ChipTimestamp chipTime) const;
 
   void SetMasterTime(MasterTimestamp newMasterTime);
 

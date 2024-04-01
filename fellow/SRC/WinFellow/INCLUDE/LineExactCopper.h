@@ -9,7 +9,10 @@ class LineExactCopper : public ICopper
 private:
   static uint32_t cycletable[16];
 
-  const MasterTimeOffset CopperFrameStartDelay = MasterTimeOffset::FromChipTimeOffset(40);
+  const MasterTimeOffset FrameStartDelay = MasterTimeOffset::FromChipTimeOffset(ChipTimeOffset{.Offset = 40});
+  const ChipTimeOffset LoadStartDelay = ChipTimeOffset{.Offset = 4};
+  const ChipTimeOffset InstructionInterval = ChipTimeOffset{.Offset = 4};
+  const MasterTimeOffset CopperCycleCpuDelay = MasterTimeOffset::FromChipTimeOffset(ChipTimeOffset{.Offset = 2});
 
   Scheduler &_scheduler;
   SchedulerEvent &_copperEvent;
@@ -25,9 +28,11 @@ private:
   uint32_t ytable[512];
 
   void YTableInit();
-  uint32_t GetCheckedWaitCycle(uint32_t waitCycle);
+  ChipTimestamp GetCheckedWaitTime(ChipTimestamp waitTimestamp);
   void RemoveEvent();
-  void InsertEvent(uint32_t cycle);
+  void InsertEvent(MasterTimestamp timestamp);
+
+  ChipTimestamp MakeTimestamp(const ChipTimestamp timestamp, const ChipTimeOffset offset) const;
 
 public:
   virtual void NotifyDMAEnableChanged(bool new_dma_enable_state);
@@ -43,11 +48,6 @@ public:
   virtual void EmulationStop();
 
   LineExactCopper(
-      Scheduler &scheduler,
-      SchedulerEvent &copperEvent,
-      SchedulerEvent &cpuEvent,
-      FrameParameters &currentFrameParameters,
-      Clocks &clocks,
-      CopperRegisters &copperRegisters);
+      Scheduler &scheduler, SchedulerEvent &copperEvent, SchedulerEvent &cpuEvent, FrameParameters &currentFrameParameters, Clocks &clocks, CopperRegisters &copperRegisters);
   virtual ~LineExactCopper();
 };

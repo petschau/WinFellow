@@ -1,4 +1,5 @@
 #include "Clocks.h"
+#include "ClockConstants.h"
 
 #include <cassert>
 
@@ -12,24 +13,9 @@ MasterTimestamp Clocks::GetMasterTime() const
   return _masterTime;
 }
 
-//uint32_t Clocks::GetChipCycleFrin() const
-//{
-//  return _frameMasterCycle >> MasterCycleFrom280nsShift;
-//}
-
 ChipTimestamp Clocks::GetChipTime() const
 {
   return _chipTime;
-}
-
-uint32_t Clocks::GetChipLine() const
-{
-  return _chipTime.Line;
-}
-
-uint32_t Clocks::GetChipCycle() const
-{
-  return _chipTime.Cycle;
 }
 
 uint32_t Clocks::GetDeniseLineCycle() const
@@ -37,20 +23,15 @@ uint32_t Clocks::GetDeniseLineCycle() const
   return _deniseLineCycle;
 }
 
-//constexpr uint32_t Clocks::GetCycleFrom280ns(uint32_t cycle280ns)
-//{
-//  return cycle280ns;
-//}
-
-constexpr uint32_t Clocks::ToMasterCycleCount(uint32_t chipCycles)
+MasterTimestamp Clocks::ToMasterTime(const ChipTimestamp chipTimestamp) const
 {
-  return chipCycles << MasterCycleFromChipCycleShift;
+  return MasterTimestamp{.Cycle = chipTimestamp.Line * _frameParameters.LongLineMasterCycles.Offset + chipTimestamp.Cycle * ClockConstants::MasterTimeCyclesInChipTimeCycle};
 }
 
-//uint32_t Clocks::GetMasterCycleTotalFrom280ns(uint32_t cycle280ns)
-//{
-//  return (cycle280ns + 1) << MasterCycleFrom280nsShift;
-//}
+constexpr MasterTimeOffset Clocks::ToMasterTimeOffset(const ChipTimeOffset chipTimeOffset)
+{
+  return MasterTimeOffset{.Offset = chipTimeOffset.Offset * ClockConstants::MasterTimeCyclesInChipTimeCycle};
+}
 
 void Clocks::SetMasterTime(MasterTimestamp newMasterTime)
 {
@@ -60,7 +41,7 @@ void Clocks::SetMasterTime(MasterTimestamp newMasterTime)
 
   _masterTime = newMasterTime;
   _chipTime = ChipTimestamp::FromMasterTime(newMasterTime, _frameParameters);
-  _deniseLineCycle = newMasterTime.Cycle % _frameParameters.LongLineCycles;
+  _deniseLineCycle = newMasterTime.Cycle % _frameParameters.LongLineMasterCycles.Offset;
 }
 
 void Clocks::Clear(const FrameParameters &frameParameters)

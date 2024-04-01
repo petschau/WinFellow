@@ -9,13 +9,13 @@ struct FrameParameters
   MasterTimeOffset HorisontalBlankStart;
   MasterTimeOffset HorisontalBlankEnd;
   uint32_t VerticalBlankEnd;
-  MasterTimeOffset ShortLineCycles;
-  MasterTimeOffset LongLineCycles;
+
+  MasterTimeOffset ShortLineMasterCycles;
+  MasterTimeOffset LongLineMasterCycles;
+
+  ChipTimeOffset ShortLineChipCycles;
+  ChipTimeOffset LongLineChipCycles;
+
   uint32_t LinesInFrame;
   MasterTimeOffset CyclesInFrame;
-
-  uint32_t GetAgnusCyclesInLine(unsigned int line)
-  {
-    return LongLineCycles;
-  }
 };

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "Scheduler/MasterTimestamp.h"
 #include "Memory/IMemory.h"
 
 class CopperRegisters
@@ -15,9 +16,8 @@ public:
   uint32_t cop1lc;
   uint32_t cop2lc;
   uint32_t copper_pc;
-  bool copper_dma;                /* Mirrors DMACON */
-  uint32_t copper_suspended_wait; /* Position the copper should have been waiting for */
-                                  /* if copper DMA had been turned on */
+  bool copper_dma;                       // Mirrors DMACON
+  MasterTimestamp copper_suspended_wait; // Position the copper should have been waiting for or woken up at if copper DMA had been on
 
   static void wcopcon(uint16_t data, uint32_t address);
   static void wcop1lch(uint16_t data, uint32_t address);

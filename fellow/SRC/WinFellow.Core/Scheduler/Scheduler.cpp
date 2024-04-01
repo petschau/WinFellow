@@ -47,7 +47,7 @@ void Scheduler::RemoveEvent(SchedulerEvent *ev)
 
 void Scheduler::NewFrame(const FrameParameters &newFrameParameters)
 {
-  const auto cyclesInEndedFrame = MasterTimeOffset{.Offset = _currentFrameParameters.CyclesInFrame};
+  const auto cyclesInEndedFrame = _currentFrameParameters.CyclesInFrame;
   _clocks.NewFrame(newFrameParameters);
   _queue.RebaseEvents(cyclesInEndedFrame);
 }
@@ -67,7 +67,7 @@ void Scheduler::HandleNextEvent()
   SchedulerEvent *e = _queue.PopEvent();
   _clocks.SetMasterTime(e->cycle);
 
-  assert(_clocks.GetChipLine() < _currentFrameParameters.LinesInFrame || e == &_events.eofEvent);
+  assert(_clocks.GetChipTime().Line < _currentFrameParameters.LinesInFrame || e == &_events.eofEvent);
 
   e->handler();
 }
@@ -201,10 +201,10 @@ void Scheduler::InitializeQueue()
   // bitplaneDMAEvent.Initialize(BitplaneDMA::HandleEvent, "Bitplane DMA");
   // spriteDMAEvent.Initialize(SpriteDMA::HandleEvent, "Sprite DMA");
 
-  _events.eofEvent.cycle = MasterTimestamp{.Cycle = _currentFrameParameters.CyclesInFrame};
+  _events.eofEvent.cycle = MasterTimestamp{.Cycle = _currentFrameParameters.CyclesInFrame.Offset};
   _queue.InsertEventWithNullCheck(&_events.eofEvent);
 
-  _events.eolEvent.cycle = MasterTimestamp{.Cycle = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetChipLine()) - 1};
+  _events.eolEvent.cycle = MasterTimestamp{.Cycle = _currentFrameParameters.LongLineMasterCycles.Offset - 1};
   _queue.InsertEvent(&_events.eolEvent);
 }
 

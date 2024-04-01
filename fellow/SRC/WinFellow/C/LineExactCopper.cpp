@@ -17,6 +17,11 @@ void LineExactCopper::YTableInit()
   }
 }
 
+ChipTimestamp LineExactCopper::MakeTimestamp(const ChipTimestamp timestamp, const ChipTimeOffset offset) const
+{
+  return ChipTimestamp::FromOriginAndOffset(timestamp, offset, _currentFrameParameters);
+}
+
 void LineExactCopper::RemoveEvent()
 {
   if (_copperEvent.IsEnabled())
@@ -26,11 +31,11 @@ void LineExactCopper::RemoveEvent()
   }
 }
 
-void LineExactCopper::InsertEvent(uint32_t cycle)
+void LineExactCopper::InsertEvent(MasterTimestamp timestamp)
 {
-  if (cycle != SchedulerEvent::EventDisableCycle)
+  if (timestamp != SchedulerEvent::EventDisableCycle)
   {
-    _copperEvent.cycle = cycle;
+    _copperEvent.cycle = timestamp;
     _scheduler.InsertEvent(&_copperEvent);
   }
 }
@@ -47,29 +52,31 @@ void LineExactCopper::Load(uint32_t new_copper_pc)
   if (_copperRegisters.copper_dma == true)
   {
     RemoveEvent();
-    InsertEvent(_clocks.GetFrameMasterCycle() + Clocks::ToMasterCycleFrom280ns(4));
+
+    auto startChipTime = MakeTimestamp(_clocks.GetChipTime(), LoadStartDelay);
+    InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(startChipTime)));
   }
   else
   {
     // DMA is off
+    // TODO: Seems more correct to simply assign "now" to the suspended wait time regardless, as it can be earlier than the suspended wait
+    //       Keeping the wait could prevent the load from starting right await when DMA is turned on
     if (_copperRegisters.copper_suspended_wait == SchedulerEvent::EventDisableCycle)
     {
-      _copperRegisters.copper_suspended_wait = _clocks.GetFrameMasterCycle();
+      _copperRegisters.copper_suspended_wait = _clocks.GetMasterTime();
     }
   }
 }
 
-uint32_t LineExactCopper::GetCheckedWaitCycle(uint32_t waitCycle)
+ChipTimestamp LineExactCopper::GetCheckedWaitTime(ChipTimestamp waitTimestamp)
 {
-  const auto currentFrame280nsCycle = _clocks.GetFrame280nsCycle();
-
-  if (waitCycle <= currentFrame280nsCycle)
+  ChipTimestamp currentChipTime = _clocks.GetChipTime();
+  if (waitTimestamp <= currentChipTime)
   {
-    // Do not ever go back in time
-    waitCycle = currentFrame280nsCycle + 4;
+    return MakeTimestamp(currentChipTime, LoadStartDelay);
   }
 
-  return waitCycle;
+  return waitTimestamp;
 }
 
 //---------------------------------------------------------------
@@ -102,15 +109,9 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
 
     if (_copperRegisters.copper_suspended_wait != SchedulerEvent::EventDisableCycle)
     {
-      const auto currentFrameMasterCycle = _clocks.GetFrameMasterCycle();
-      auto nextCopperMasterCycle = _copperRegisters.copper_suspended_wait;
-
-      if (nextCopperMasterCycle <= currentFrameMasterCycle)
-      {
-        nextCopperMasterCycle = currentFrameMasterCycle + Clocks::ToMasterCycleFrom280ns(4);
-      }
-
-      InsertEvent(nextCopperMasterCycle);
+      // Copper wants to do work but has not been able to due to DMA off
+      auto startChipTime = ChipTimestamp::FromMasterTime(_copperRegisters.copper_suspended_wait, _currentFrameParameters);
+      InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(startChipTime)));
 
       _copperRegisters.copper_suspended_wait = SchedulerEvent::EventDisableCycle;
     }
@@ -122,7 +123,7 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
 void LineExactCopper::NotifyCop1lcChanged()
 {
   // Have been hanging since end of frame
-  if (_copperRegisters.copper_dma == false && _copperRegisters.copper_suspended_wait == CopperFrameStartMasterCycleDelay)
+  if (_copperRegisters.copper_dma == false && _copperRegisters.copper_suspended_wait.Cycle == FrameStartDelay.Offset)
   {
     _copperRegisters.copper_pc = _copperRegisters.cop1lc;
   }
@@ -140,14 +141,15 @@ void LineExactCopper::EventHandler()
   uint32_t maskedY;
   uint32_t maskedX;
   uint32_t waitY;
-  const auto currentY = _clocks.GetAgnusLine();
-  const auto currentX = _clocks.GetAgnusLineCycle();
-  const auto currentFrameCycle = _clocks.GetFrameCycle();
+  const auto currentChipTime = _clocks.GetChipTime();
+  const auto currentY = currentChipTime.Line;
+  const auto currentX = currentChipTime.Cycle;
+  const auto currentFrameChipCycle = currentY * _currentFrameParameters.LongLineChipCycles.Offset + currentX;
 
   _copperEvent.Disable();
   if (_cpuEvent.IsEnabled())
   {
-    _cpuEvent.cycle += 2;
+    _cpuEvent.cycle += CopperCycleCpuDelay;
   }
 
   // retrieve Copper command (two words)
@@ -164,11 +166,14 @@ void LineExactCopper::EventHandler()
       // MOVE instruction
       bswapRegC &= 0x1fe;
 
-      // check if access to $40 - $7f (if so, Copper is using Blitter)
+      // check if access enabled to $40 - $7f
       if ((bswapRegC >= 0x80) || ((bswapRegC >= 0x40) && ((_copperRegisters.copcon & 0xffff) != 0x0)))
       {
-        // move data to Blitter register
-        InsertEvent(cycletable[(_core.Registers.BplCon0 >> 12) & 0xf] + currentFrameCycle);
+        ChipTimeOffset nextEventOffsetWithBitplaneDelay = ChipTimeOffset::FromValue(cycletable[(_core.Registers.BplCon0 >> 12) & 0xf]);
+        ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, nextEventOffsetWithBitplaneDelay);
+
+        InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
+
         memory_iobank_write[bswapRegC >> 1]((uint16_t)bswapRegD, bswapRegC);
       }
     }
@@ -181,21 +186,24 @@ void LineExactCopper::EventHandler()
       {
         // Copper waits until Blitter is finished
         _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc - 4);
-        if ((_core.Events->blitterEvent.cycle + 4) <= currentFrameCycle)
+
+        ChipTimestamp blitterFinishedCycle = MakeTimestamp(ChipTimestamp::FromMasterTime(_core.Events->blitterEvent.cycle, _currentFrameParameters), InstructionInterval);
+
+        if (blitterFinishedCycle <= currentChipTime)
         {
-          InsertEvent(currentFrameCycle + 4);
+          ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+
+          InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
         }
         else
         {
-          InsertEvent(_core.Events->blitterEvent.cycle + 4);
+          InsertEvent(_clocks.ToMasterTime(blitterFinishedCycle));
         }
       }
       else
       {
-        // Copper will not wait for Blitter to finish for executing wait or skip
-
-        // zero is wait (works??)
-        // (not really!)
+        // Copper will not wait for Blitter to finish before executing wait or skip
+        // zero is wait
         if ((bswapRegD & 0x1) == 0x0)
         {
           // WAIT instruction
@@ -216,7 +224,6 @@ void LineExactCopper::EventHandler()
           if (*((uint8_t *)&maskedY) > ((uint8_t)(bswapRegC >> 8)))
           {
             // we have passed the line, set up next instruction immediately
-            // cexit
 
             // to help the copper to wait line 256, do some tests here
             // Here we have detected a wait position that we are past.
@@ -227,9 +234,10 @@ void LineExactCopper::EventHandler()
             // do some tests if line is 255
             if (currentY != 255)
             {
-              // ctrueexit
               // Here we must do a new copper access immediately (in 4 cycles)
-              InsertEvent(currentFrameCycle + 4);
+              ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+
+              InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
             }
             else
             {
@@ -237,9 +245,9 @@ void LineExactCopper::EventHandler()
               if ((bswapRegC >> 8) > 0x40)
               {
                 // line is 256-313, wrong to not wait
-                // ctrueexit
                 // Here we must do a new copper access immediately (in 4 cycles)
-                InsertEvent(currentFrameCycle + 4);
+                ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+                InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
               }
               else
               {
@@ -254,7 +262,7 @@ void LineExactCopper::EventHandler()
                 *((uint8_t *)&maskedY) &= (bswapRegD >> 8);
                 // mask them into vertical position
                 *((uint8_t *)&maskedY) |= (bswapRegC >> 8);
-                maskedY *= _currentFrameParameters.LongLineCycles;
+                maskedY *= _currentFrameParameters.LongLineChipCycles.Offset;
                 bswapRegC &= 0xfe;
                 bswapRegD &= 0xfe;
 
@@ -262,12 +270,9 @@ void LineExactCopper::EventHandler()
                 // mask in horizontal
                 bswapRegC |= maskedX;
                 bswapRegC = bswapRegC + maskedY + 4;
-                if (bswapRegC <= currentFrameCycle)
-                {
-                  // fix
-                  bswapRegC = currentFrameCycle + 4;
-                }
-                InsertEvent(bswapRegC);
+
+                ChipTimestamp nextEventTimestamp = MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(bswapRegC));
+                InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
               }
             }
           }
@@ -296,25 +301,26 @@ void LineExactCopper::EventHandler()
               if (bswapRegD < currentX)
               {
                 // get unmasked bits from current x
-                InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
+                ChipTimestamp nextEventTimestamp =
+                    MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
+                InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
               }
               else
               {
-                // copwaitnotsameline
-                InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                ChipTimestamp nextEventTimestamp = MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
               }
             }
             else
             {
-              // copwaitnotsameline
-              InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+              ChipTimestamp nextEventTimestamp = MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+              InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
             }
           }
           else
           {
             // here we are on the correct line
             // calculate our xposition, masked with hmask
-            // al - masked graph_raster_x
 
             correctLine = true;
             // use mask on graph_raster_x
@@ -325,7 +331,6 @@ void LineExactCopper::EventHandler()
             {
               // here the wait position is not reached yet, calculate cycle when wait is true
               // previous position checks should assure that a calculated position is not less than the current cycle
-              // notnever
 
               // invert masks
               bswapRegD = ~bswapRegD;
@@ -349,24 +354,25 @@ void LineExactCopper::EventHandler()
                 if (bswapRegD < currentX)
                 {
                   // get unmasked bits from current x
-                  InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
+                  ChipTimestamp nextEventTimestamp =
+                      MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
+                  InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
                 }
                 else
                 {
-                  // copwaitnotsameline
-                  InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                  ChipTimestamp nextEventTimestamp = MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                  InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
                 }
               }
               else
               {
-                // copwaitnotsameline
-                InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                ChipTimestamp nextEventTimestamp = MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
               }
             }
             else
             {
               // position reached, set up next instruction immediately
-              // cexit
 
               // to help the copper to wait line 256, do some tests here
               // Here we have detected a wait position that we are past.
@@ -378,9 +384,9 @@ void LineExactCopper::EventHandler()
               // do some tests if line is 255
               if (currentY != 255)
               {
-                // ctrueexit
                 // Here we must do a new copper access immediately (in 4 cycles)
-                InsertEvent(currentFrameCycle + 4);
+                ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+                InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
               }
               else
               {
@@ -388,9 +394,9 @@ void LineExactCopper::EventHandler()
                 if ((bswapRegC >> 8) > 0x40)
                 {
                   // line is 256-313, wrong to not wait
-                  // ctrueexit
                   // Here we must do a new copper access immediately (in 4 cycles)
-                  InsertEvent(currentFrameCycle + 4);
+                  ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+                  InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
                 }
                 else
                 {
@@ -405,7 +411,7 @@ void LineExactCopper::EventHandler()
                   *((uint8_t *)&maskedY) &= (bswapRegD >> 8);
                   // mask them into vertical position
                   *((uint8_t *)&maskedY) |= (bswapRegC >> 8);
-                  maskedY *= _currentFrameParameters.LongLineCycles;
+                  maskedY *= _currentFrameParameters.LongLineChipCycles.Offset;
                   bswapRegC &= 0xfe;
                   bswapRegD &= 0xfe;
 
@@ -413,12 +419,9 @@ void LineExactCopper::EventHandler()
                   // mask in horizontal
                   bswapRegC |= maskedX;
                   bswapRegC = bswapRegC + maskedY + 4;
-                  if (bswapRegC <= currentFrameCycle)
-                  {
-                    // fix
-                    bswapRegC = currentFrameCycle + 4;
-                  }
-                  InsertEvent(GetCheckedWaitCycle(bswapRegC));
+
+                  ChipTimestamp nextEventTimestamp = MakeTimestamp(ChipTimestamp{.Line = 0, .Cycle = 0}, ChipTimeOffset::FromValue(bswapRegC));
+                  InsertEvent(_clocks.ToMasterTime(GetCheckedWaitTime(nextEventTimestamp)));
                 }
               }
             }
@@ -445,12 +448,14 @@ void LineExactCopper::EventHandler()
             // do skip
             // we have passed the line, set up next instruction immediately
             _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 4);
-            InsertEvent(currentFrameCycle + 4);
+            ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+            InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
           }
           else if (*((uint8_t *)&maskedY) < (uint8_t)(bswapRegC >> 8))
           {
             // above line, don't skip
-            InsertEvent(currentFrameCycle + 4);
+            ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+            InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
           }
           else
           {
@@ -469,7 +474,8 @@ void LineExactCopper::EventHandler()
               // position reached, set up next instruction immediately
               _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 4);
             }
-            InsertEvent(currentFrameCycle + 4);
+            ChipTimestamp nextEventTimestamp = MakeTimestamp(currentChipTime, InstructionInterval);
+            InsertEvent(_clocks.ToMasterTime(nextEventTimestamp));
           }
         }
       }
@@ -479,12 +485,15 @@ void LineExactCopper::EventHandler()
 
 void LineExactCopper::EndOfFrame()
 {
+  MasterTimestamp copperStartTimestamp = MasterTimestamp{.Cycle = 0} + FrameStartDelay;
   _copperRegisters.copper_pc = _copperRegisters.cop1lc;
-  _copperRegisters.copper_suspended_wait = CopperFrameStartMasterCycleDelay;
+
+  _copperRegisters.copper_suspended_wait = copperStartTimestamp;
+
   if (_copperRegisters.copper_dma == true)
   {
     RemoveEvent();
-    InsertEvent(CopperFrameStartMasterCycleDelay);
+    InsertEvent(copperStartTimestamp);
   }
 }
 
@@ -503,12 +512,7 @@ void LineExactCopper::EmulationStop()
 }
 
 LineExactCopper::LineExactCopper(
-    Scheduler &scheduler,
-    SchedulerEvent &copperEvent,
-    SchedulerEvent &cpuEvent,
-    FrameParameters &currentFrameParameters,
-    Clocks &clocks,
-    CopperRegisters &copperRegisters)
+    Scheduler &scheduler, SchedulerEvent &copperEvent, SchedulerEvent &cpuEvent, FrameParameters &currentFrameParameters, Clocks &clocks, CopperRegisters &copperRegisters)
   : ICopper(),
     _scheduler(scheduler),
     _copperEvent(copperEvent),

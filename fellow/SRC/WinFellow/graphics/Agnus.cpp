@@ -32,7 +32,7 @@ void Agnus::EndOfLine()
   /* and updates the graphics emulation for a new line            */
   /*==============================================================*/
   graphEndOfLine();
-  _core.CurrentSprites->EndOfLine(_clocks.GetChipLine());
+  _core.CurrentSprites->EndOfLine(_clocks.GetChipTime().Line);
 
   /*==============================================================*/
   /* Update the CIA B event counter                               */
@@ -62,7 +62,7 @@ void Agnus::EndOfLine()
   // Set up the next end of line event
   //==============================================================
 
-  _eolEvent.cycle += MasterTimeOffset{.Offset = _core.CurrentFrameParameters->GetAgnusCyclesInLine(_core.Clocks->GetChipLine() + 1)};
+  _eolEvent.cycle += _core.CurrentFrameParameters->LongLineMasterCycles;
   _core.Scheduler->InsertEvent(&_eolEvent);
 }
 
@@ -136,25 +136,29 @@ void Agnus::EndOfFrame()
 void Agnus::InitializePalLongFrameParameters()
 {
   _palLongFrameParameters = {
-      .HorisontalBlankStart = MasterTimeOffset::FromChipTimeOffset(9),
-      .HorisontalBlankEnd = MasterTimeOffset::FromChipTimeOffset(44),
+      .HorisontalBlankStart = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(9)),
+      .HorisontalBlankEnd = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(44)),
       .VerticalBlankEnd = 26,
-      .ShortLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
-      .LongLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
+      .ShortLineMasterCycles = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(227)),
+      .LongLineMasterCycles = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(227)),
+      .ShortLineChipCycles = ChipTimeOffset::FromValue(227),
+      .LongLineChipCycles = ChipTimeOffset::FromValue(227),
       .LinesInFrame = 313,
-      .CyclesInFrame = MasterTimeOffset::FromChipTimeOffset(313*227)};
+      .CyclesInFrame = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(313 * 227))};
 }
 
 void Agnus::InitializePalShortFrameParameters()
 {
   _palShortFrameParameters = {
-      .HorisontalBlankStart = MasterTimeOffset::FromChipTimeOffset(9),
-      .HorisontalBlankEnd = MasterTimeOffset::FromChipTimeOffset(44),
+      .HorisontalBlankStart = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(9)),
+      .HorisontalBlankEnd = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(44)),
       .VerticalBlankEnd = 26,
-      .ShortLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
-      .LongLineCycles = MasterTimeOffset::FromChipTimeOffset(227),
+      .ShortLineMasterCycles = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(227)),
+      .LongLineMasterCycles = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(227)),
+      .ShortLineChipCycles = ChipTimeOffset::FromValue(227),
+      .LongLineChipCycles = ChipTimeOffset::FromValue(227),
       .LinesInFrame = 312,
-      .CyclesInFrame = MasterTimeOffset::FromChipTimeOffset(312*227)};
+      .CyclesInFrame = _clocks.ToMasterTimeOffset(ChipTimeOffset::FromValue(312 * 227))};
 }
 
 void Agnus::InitializePredefinedFrameParameters()
