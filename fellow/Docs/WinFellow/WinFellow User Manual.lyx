@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.11 (2024/03/21)
+v0.5.12 (2024/04/01)
 \end_layout
 
 \begin_layout Author
@@ -258,12 +258,12 @@ Release Notes
 \end_layout
 
 \begin_layout Section*
-What's New in WinFellow 0.5.11?
+What's New in WinFellow 0.5.12?
 \end_layout
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to the earlier version 0.5.10, the following changes are included
+ Compared to the earlier version 0.5.11, the following changes are included
  in this build:
 \end_layout
 
@@ -273,12 +273,7 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-the default display driver was changed from DirectDraw to Direct3D 11, where
- supported
-\end_layout
-
-\begin_layout Itemize
-implemented support for keyboard-initiated reset in Amiga Forever
+tbd
 \end_layout
 
 \end_deeper
@@ -288,24 +283,7 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-improved logging in case of failure to initialize Direct3d graphics driver
-\end_layout
-
-\begin_layout Itemize
-fix several issues related to creating, loading, applying and saving configurati
-on files
-\end_layout
-
-\begin_layout Itemize
-fix potential memory leaks
-\end_layout
-
-\begin_layout Itemize
-implement more failure checks for Direct3D initialization
-\end_layout
-
-\begin_layout Itemize
-fix crash to desktop when using an emulated joystick in Amiga Forever
+tbd
 \end_layout
 
 \end_deeper
@@ -315,29 +293,7 @@ Maintenance updates:
 
 \begin_deeper
 \begin_layout Itemize
-code refactoring:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-added sound driver interface and classes
-\end_layout
-
-\begin_layout Itemize
-redesign filesystem wrapper and logging
-\end_layout
-
-\begin_layout Itemize
-upgrade to cpp20
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-removed a Windows XP specific workaround from the filesystem module
-\end_layout
-
-\begin_layout Itemize
-reformatted the project using a uniform clang-format configuration
+tbd
 \end_layout
 
 \end_deeper

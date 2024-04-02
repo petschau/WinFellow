@@ -6,7 +6,11 @@ However the project files contained in the Git repository are built using Micros
 
 Currently the following software should be used for development in the Git master branch:
 
-- Visual Studio 2022
+- Visual Studio 2022, including the following additions:
+
+  - the extension "Format document on save" should be installed, to ensure that the solution's .clang-format file is applied on each save
+  - reformatting of the whole solution can also be done by executing the following command in the solution directory via WSL:
+    `find . -iregex '.*\.\(c\|cpp\|hpp\|cc\|cxx\|h\)' -exec clang-format -style=file -i {} \;`
 
 The community edition of Visual Studio 2022 can be used to compile WinFellow; it even features debugging and profiling.
 
@@ -17,11 +21,7 @@ For basic contributions, the components mentioned above should be sufficient.
 To be able to compile release builds using the automated build script, a number of additional components must be
 installed and added to the search path:
 
-- Visual Studio 2022 with C++ desktop development components must be installed, including the following additions:
-    - the extension "Format document on save" should be installed, to ensure that the solution's .clang-format file is applied on each save
-    - reformatting of the whole solution can also be done by executing the following command in the solution directory via WSL:
-      `find . -iregex '.*\.\(c\|cpp\|hpp\|cc\|cxx\|h\)' -exec clang-format -style=file -i {} \;`
-
+- Visual Studio 2022 with C++ desktop development components must be installed
 - PowerShell execution policy must be set to unrestricted (both for the 32 as well as the 64 bit PowerShell)
 - Git for Windows 64 Bit must be installed and added to the search path; usually Notepad++ is used as default editor
 - the module posh-git must be installed
@@ -41,6 +41,7 @@ A documentation (work in progress) targeted specifically at developers can also 
 
 Coding Style Guidelines
 -----------------------
+
 To ensure consistency across the different modules that are developed by different authors, we
 believe it is reasonable to have a common set of guidelines all developers follow.
 

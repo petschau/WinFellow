@@ -59,8 +59,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,5,11,$WCREV$
- PRODUCTVERSION 0,5,11,$WCREV$
+ FILEVERSION 0,5,12,$WCREV$
+ PRODUCTVERSION 0,5,12,$WCREV$
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -81,8 +81,8 @@ BEGIN
             VALUE "LegalCopyright", "©1996-2024 under the GNU General Public License (GPL)"
             VALUE "OriginalFilename", "WinFellow.exe"
             VALUE "ProductName", "WinFellow"
-            VALUE "FileVersion", "0.5.11.$WCREV$"
-            VALUE "ProductVersion", "0.5.11.$WCREV$-$WCBRANCH$-$WCCOMMITSHORT$"    
+            VALUE "FileVersion", "0.5.12.$WCREV$"
+            VALUE "ProductVersion", "0.5.12.$WCREV$-$WCBRANCH$-$WCCOMMITSHORT$"    
         END
     END
     BLOCK "VarFileInfo"
