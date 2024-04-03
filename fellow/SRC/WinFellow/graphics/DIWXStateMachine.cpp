@@ -126,8 +126,8 @@ bool DIWXStateMachine::IsVisible()
 
 void DIWXStateMachine::ChangedValue()
 {
-  const auto currentAgnusLine = _core.Clocks->GetAgnusLine();
-  const auto currentAgnusLineCycle = _core.Clocks->GetAgnusLineCycle();
+  const auto currentAgnusLine = _core.Clocks->GetChipTime().Line;
+  const auto currentAgnusLineCycle = _core.Clocks->GetChipTime().Cycle;
   switch (_state)
   {
     case DIWXStates::DIWX_STATE_WAITING_FOR_START_POS: SetStateWaitingForStartPos(currentAgnusLine, currentAgnusLineCycle * 2); break;

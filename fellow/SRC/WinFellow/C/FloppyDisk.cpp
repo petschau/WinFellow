@@ -160,7 +160,7 @@ void wadcon(uint16_t data, uint32_t address)
 uint16_t rdskbytr(uint32_t address)
 {
   uint16_t tmp = (uint16_t)(floppy_DMA_started << 14);
-  uint32_t currentX = _core.Clocks->GetAgnusLineCycle();
+  uint32_t currentX = _core.Clocks->GetChipTime().Cycle;
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
   if (currentX < 114 && !dskbyt1_read)

@@ -20,8 +20,8 @@ void Logger::Log(uint32_t line, uint32_t cylinder, const char *message)
         _core.Clocks->GetFrameNumber(),
         line,
         cylinder,
-        _core.Clocks->GetAgnusLine(),
-        _core.Clocks->GetAgnusLineCycle(),
+        _core.Clocks->GetChipTime().Line,
+        _core.Clocks->GetChipTime().Cycle,
         message);
   }
 }

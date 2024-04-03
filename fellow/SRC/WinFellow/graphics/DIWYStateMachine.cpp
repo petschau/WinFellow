@@ -102,7 +102,7 @@ bool DIWYStateMachine::IsVisible()
 
 void DIWYStateMachine::ChangedValue()
 {
-  const auto currentAgnusLine = _core.Clocks->GetAgnusLine();
+  const auto currentAgnusLine = _core.Clocks->GetChipTime().Line;
   switch (_state)
   {
     case DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE: SetStateWaitingForStartLine(currentAgnusLine); break;

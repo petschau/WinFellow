@@ -16,7 +16,7 @@ public:
 
   static uint32_t GetCylindersPerLine()
   {
-    return _core.CurrentFrameParameters->GetAgnusCyclesInLine(_core.Clocks->GetChipLine()) * 2;
+    return _core.CurrentFrameParameters->LongLineChipCycles.Offset * 2;
   }
 
   void Clear();
