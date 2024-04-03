@@ -13,6 +13,10 @@ struct ChipTimestamp
   bool operator<=(const ChipTimestamp other) const;
 
   static ChipTimestamp FromOriginAndOffset(const ChipTimestamp timestamp, const ChipTimeOffset offset, const FrameParameters &currentFrameParameters);
+  static ChipTimestamp FromLineAndCycle(uint32_t line, uint32_t cycle, const FrameParameters &currentFrameParameters);
+
+  bool IsEvenCycle() const;
+  bool IsOddCycle() const;
 
   void Clear();
 

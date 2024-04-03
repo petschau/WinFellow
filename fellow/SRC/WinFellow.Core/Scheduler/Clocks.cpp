@@ -25,12 +25,17 @@ uint32_t Clocks::GetDeniseLineCycle() const
 
 MasterTimestamp Clocks::ToMasterTime(const ChipTimestamp chipTimestamp) const
 {
-  return MasterTimestamp{.Cycle = chipTimestamp.Line * _frameParameters.LongLineMasterCycles.Offset + chipTimestamp.Cycle * ClockConstants::MasterTimeCyclesInChipTimeCycle};
+  return MasterTimestamp{.Cycle = chipTimestamp.Line * _frameParameters.LongLineMasterCycles.Offset + chipTimestamp.Cycle * ClockConstants::MasterCyclesInChipCycle};
 }
 
 constexpr MasterTimeOffset Clocks::ToMasterTimeOffset(const ChipTimeOffset chipTimeOffset)
 {
-  return MasterTimeOffset{.Offset = chipTimeOffset.Offset * ClockConstants::MasterTimeCyclesInChipTimeCycle};
+  return MasterTimeOffset{.Offset = chipTimeOffset.Offset * ClockConstants::MasterCyclesInChipCycle};
+}
+
+constexpr MasterTimeOffset Clocks::ToMasterTimeOffset(const CpuTimeOffset cpuTimeOffset)
+{
+  return MasterTimeOffset{.Offset = cpuTimeOffset.Offset * ClockConstants::MasterCyclesInCpuCycle};
 }
 
 void Clocks::SetMasterTime(MasterTimestamp newMasterTime)

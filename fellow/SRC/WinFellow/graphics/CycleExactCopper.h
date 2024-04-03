@@ -31,7 +31,7 @@ private:
   uint16_t ReadWord();
   void IncreasePtr();
 
-  void SetState(CopperStates newState, uint32_t chipLine, uint32_t chipLineCycle);
+  void SetState(CopperStates newState, ChipTimestamp timestamp);
   void SetStateNone();
 
   bool IsRegisterAllowed(uint32_t regno);

@@ -33,6 +33,7 @@
 #include "PaulaInterrupt.h"
 
 #include "VirtualHost/Core.h"
+#include "Scheduler/ClockConstants.h"
 
 using namespace std;
 
@@ -40,16 +41,16 @@ jmp_buf cpu_integration_exception_buffer;
 uint32_t cpu_integration_chip_interrupt_number;
 
 /* Cycles spent by chips (Blitter) as a result of an instruction */
-static uint32_t cpu_integration_chip_cycles;
+static ChipTimeOffset cpu_integration_chip_cycles;
 static uint32_t cpu_integration_chip_slowdown;
 
 /*===========================================================================*/
 /* CPU properties                                                            */
 /*===========================================================================*/
 
-uint32_t cpu_integration_speed;               // The speed as expressed in the fellow configuration settings
-uint32_t cpu_integration_speed_multiplier;    // The cycle multiplier used to adjust the cpu-speed, calculated from cpu_integration_speed
-cpu_integration_models cpu_integration_model; // The cpu model as expressed in the fellow configuration settings
+uint32_t cpu_integration_speed;                   // The speed as expressed in the fellow configuration settings
+uint32_t cpu_integration_master_cycle_multiplier; // Derived from cpu model and configured CPU speed
+cpu_integration_models cpu_integration_model;     // The cpu model as expressed in the fellow configuration settings
 
 /*===========================================================================*/
 /* CPU properties                                                            */
@@ -65,38 +66,38 @@ uint32_t cpuIntegrationGetSpeed()
   return cpu_integration_speed;
 }
 
-static void cpuIntegrationSetSpeedMultiplier(uint32_t multiplier)
+static void cpuIntegrationSetMasterCycleMultiplier(uint32_t multiplier)
 {
-  cpu_integration_speed_multiplier = multiplier;
+  cpu_integration_master_cycle_multiplier = multiplier;
 }
 
-static uint32_t cpuIntegrationGetSpeedMultiplier()
+static uint32_t cpuIntegrationGetMasterCycleMultiplier()
 {
-  return cpu_integration_speed_multiplier;
+  return cpu_integration_master_cycle_multiplier;
 }
 
-void cpuIntegrationCalculateMultiplier()
+void cpuIntegrationCalculateMasterCycleMultiplier()
 {
-  uint32_t multiplier = 12;
+  uint32_t multiplier = ClockConstants::MasterCyclesInCpuCycle;
 
   switch (cpuGetModelMajor())
   {
-    case 0: multiplier = 12; break;
-    case 1: multiplier = 12; break;
-    case 2: multiplier = 11; break;
-    case 3: multiplier = 11; break;
+    case 0: break;
+    case 1: break;
+    case 2: multiplier = multiplier / 2; break;
+    case 3: multiplier = multiplier / 2; break;
   }
 
   if (cpuIntegrationGetSpeed() >= 8)
-    cpuIntegrationSetSpeedMultiplier(multiplier);
+    cpuIntegrationSetMasterCycleMultiplier(multiplier * 2); // Half speed
   else if (cpuIntegrationGetSpeed() >= 4)
-    cpuIntegrationSetSpeedMultiplier(multiplier - 1);
+    cpuIntegrationSetMasterCycleMultiplier(multiplier); // Normal speed
   else if (cpuIntegrationGetSpeed() >= 2)
-    cpuIntegrationSetSpeedMultiplier(multiplier - 2);
+    cpuIntegrationSetMasterCycleMultiplier(multiplier / 2); // 2x speed
   else if (cpuIntegrationGetSpeed() >= 1)
-    cpuIntegrationSetSpeedMultiplier(multiplier - 3);
+    cpuIntegrationSetMasterCycleMultiplier(multiplier / 4); // 4x speed
   else
-    cpuIntegrationSetSpeedMultiplier(multiplier - 4);
+    cpuIntegrationSetMasterCycleMultiplier(multiplier / 8); // 8x speed
 }
 
 BOOLE cpuIntegrationSetModel(cpu_integration_models model)
@@ -121,12 +122,12 @@ cpu_integration_models cpuIntegrationGetModel()
   return cpu_integration_model;
 }
 
-void cpuIntegrationSetChipCycles(uint32_t chip_cycles)
+void cpuIntegrationSetChipCycles(ChipTimeOffset chip_cycles)
 {
   cpu_integration_chip_cycles = chip_cycles;
 }
 
-uint32_t cpuIntegrationGetChipCycles()
+ChipTimeOffset cpuIntegrationGetChipCycles()
 {
   return cpu_integration_chip_cycles;
 }
@@ -157,7 +158,8 @@ void cpuIntegrationSetIrqLevel(uint32_t new_interrupt_level, uint32_t chip_inter
 {
   if (cpuSetIrqLevel(new_interrupt_level))
   {
-    _core.Events->cpuEvent.cycle = _core.Clocks->GetFrameMasterCycle();
+    // TODO: Should this always happen "now" and not next cycle?
+    _core.Events->cpuEvent.cycle = _core.Clocks->GetMasterTime();
   }
   cpuIntegrationSetChipInterruptNumber(chip_interrupt_number);
 }
@@ -201,7 +203,7 @@ void cpuInstructionLogOpen()
 
 void cpuIntegrationPrintBusCycle()
 {
-  fprintf(CPUINSTRUCTIONLOG, "%I64u:%.5u ", _core.Clocks->GetFrameNumber(), _core.Clocks->GetFrameMasterCycle());
+  fprintf(CPUINSTRUCTIONLOG, "%I64u:%.8u ", _core.Clocks->GetFrameNumber(), _core.Clocks->GetMasterTime().Cycle);
 }
 
 void cpuIntegrationInstructionLogging()
@@ -275,7 +277,7 @@ string cpuDisassembleCurrentPC()
   return string(saddress) + " " + sdata + " " + sinstruction + " " + soperands;
 }
 
-void cpuIntegrationExecuteInstructionEventHandler68000Fast()
+void cpuIntegrationExecuteInstructionEventHandler68000()
 {
   DEBUGLOG(DebugLogKind::EventHandler, "68000 Fast");
   DEBUGLOG(DebugLogKind::CPU, cpuDisassembleCurrentPC());
@@ -288,48 +290,67 @@ void cpuIntegrationExecuteInstructionEventHandler68000Fast()
   }
   else
   {
-    _core.Events->cpuEvent.cycle += ((cycles * cpuIntegrationGetChipSlowdown()) >> 1) + cpuIntegrationGetChipCycles();
+    _core.Events->cpuEvent.cycle += MasterTimeOffset::FromValue(
+        cycles * cpuIntegrationGetChipSlowdown() * cpuIntegrationGetMasterCycleMultiplier() + _core.Clocks->ToMasterTimeOffset(cpuIntegrationGetChipCycles()).Offset);
   }
 
-  cpuIntegrationSetChipCycles(0);
+  cpuIntegrationSetChipCycles(ChipTimeOffset::FromValue(0));
 }
 
-void cpuIntegrationExecuteInstructionEventHandler68000General()
-{
-  _core.DebugLog->Log(DebugLogKind::EventHandler, "68000 General");
+// void cpuIntegrationExecuteInstructionEventHandler68000General()
+//{
+//   _core.DebugLog->Log(DebugLogKind::EventHandler, "68000 General");
+//
+//   uint32_t cycles = 0;
+//   uint32_t time_used = 0;
+//
+//   do
+//   {
+//     cycles = cpuExecuteInstruction();
+//     cycles = cycles * cpuIntegrationGetChipSlowdown(); // Compensate for blitter time
+//     time_used += (cpuIntegrationGetChipCycles() << 12) + (cycles << cpuIntegrationGetSpeedMultiplier());
+//   } while (time_used < 8192 && !cpuGetStop());
+//
+//   if (cpuGetStop())
+//   {
+//     _core.Events->cpuEvent.Disable();
+//   }
+//   else
+//   {
+//     _core.Events->cpuEvent.cycle += (time_used >> 12);
+//   }
+//
+//   cpuIntegrationSetChipCycles(0);
+// }
 
-  uint32_t cycles = 0;
-  uint32_t time_used = 0;
-
-  do
-  {
-    cycles = cpuExecuteInstruction();
-    cycles = cycles * cpuIntegrationGetChipSlowdown(); // Compensate for blitter time
-    time_used += (cpuIntegrationGetChipCycles() << 12) + (cycles << cpuIntegrationGetSpeedMultiplier());
-  } while (time_used < 8192 && !cpuGetStop());
-
-  if (cpuGetStop())
-  {
-    _core.Events->cpuEvent.Disable();
-  }
-  else
-  {
-    _core.Events->cpuEvent.cycle += (time_used >> 12);
-  }
-
-  cpuIntegrationSetChipCycles(0);
-}
+// void cpuIntegrationExecuteInstructionEventHandler68020()
+//{
+//   _core.DebugLog->Log(DebugLogKind::EventHandler, "68020");
+//
+//   uint32_t time_used = 0;
+//   do
+//   {
+//     cpuExecuteInstruction();
+//     time_used += (cpuIntegrationGetChipCycles() << 12) + (4 << cpuIntegrationGetSpeedMultiplier());
+//   } while (time_used < 8192 && !cpuGetStop());
+//
+//   if (cpuGetStop())
+//   {
+//     _core.Events->cpuEvent.Disable();
+//   }
+//   else
+//   {
+//     _core.Events->cpuEvent.cycle += (time_used >> 12);
+//   }
+//
+//   cpuIntegrationSetChipCycles(0);
+// }
 
 void cpuIntegrationExecuteInstructionEventHandler68020()
 {
   _core.DebugLog->Log(DebugLogKind::EventHandler, "68020");
 
-  uint32_t time_used = 0;
-  do
-  {
-    cpuExecuteInstruction();
-    time_used += (cpuIntegrationGetChipCycles() << 12) + (4 << cpuIntegrationGetSpeedMultiplier());
-  } while (time_used < 8192 && !cpuGetStop());
+  cpuExecuteInstruction();
 
   if (cpuGetStop())
   {
@@ -337,16 +358,17 @@ void cpuIntegrationExecuteInstructionEventHandler68020()
   }
   else
   {
-    _core.Events->cpuEvent.cycle += (time_used >> 12);
+    _core.Events->cpuEvent.cycle +=
+        MasterTimeOffset::FromValue(4 * cpuIntegrationGetMasterCycleMultiplier() + _core.Clocks->ToMasterTimeOffset(cpuIntegrationGetChipCycles()).Offset);
   }
 
-  cpuIntegrationSetChipCycles(0);
+  cpuIntegrationSetChipCycles(ChipTimeOffset::FromValue(0));
 }
 
 void cpuIntegrationSetDefaultConfig()
 {
   cpuIntegrationSetModel(cpu_integration_models::M68000);
-  cpuIntegrationSetChipCycles(0);
+  cpuIntegrationSetChipCycles(ChipTimeOffset::FromValue(0));
   cpuIntegrationSetChipSlowdown(1);
   cpuIntegrationSetSpeed(4);
 
@@ -367,7 +389,7 @@ void cpuIntegrationSetDefaultConfig()
 
 void cpuIntegrationEmulationStart()
 {
-  cpuIntegrationCalculateMultiplier();
+  cpuIntegrationCalculateMasterCycleMultiplier();
 }
 
 void cpuIntegrationEmulationStop()
@@ -376,7 +398,7 @@ void cpuIntegrationEmulationStop()
 
 void cpuIntegrationHardReset()
 {
-  cpuIntegrationSetChipCycles(0);
+  cpuIntegrationSetChipCycles(ChipTimeOffset::FromValue(0));
   cpuIntegrationSetChipSlowdown(1);
   cpuSetInitialPC(memoryInitialPC());
   cpuSetInitialSP(memoryInitialSP());

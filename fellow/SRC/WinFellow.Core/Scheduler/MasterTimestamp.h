@@ -18,8 +18,11 @@ struct MasterTimestamp
   MasterTimestamp operator+(const MasterTimeOffset offset) const;
   MasterTimeOffset operator-(const MasterTimestamp timestamp) const;
 
+  bool IsEnabled() const;
   bool IsEnabledAndValid() const;
   bool IsNowOrLater(const MasterTimestamp now) const;
+
+  static MasterTimestamp FromValue(uint32_t cycle);
 
   void Clear();
 };

@@ -17,21 +17,16 @@ void CycleExactCopper::IncreasePtr()
   _copperRegisters.copper_pc = chipsetMaskPtr(_copperRegisters.copper_pc + 2);
 }
 
-void CycleExactCopper::SetState(CopperStates newState, uint32_t chipLine, uint32_t chipLineCycle)
+void CycleExactCopper::SetState(CopperStates newState, ChipTimestamp timestamp)
 {
-  const auto chipLineCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(chipLine);
+  const auto chipLineCycleCount = _currentFrameParameters.LongLineChipCycles.Offset;
 
-  assert(chipLineCycle & 1 == 0);
-  assert(chipLineCycle < chipLineCycleCount);
-
-  //if ((chipLineCycle % chipLineCycleCount) & 1)
-  //{
-  //  chipLineCycle++;
-  //}
+  assert(timestamp.IsEvenCycle());
+  assert(timestamp.Cycle < chipLineCycleCount);
 
   _scheduler.RemoveEvent(&_copperEvent);
   _state = newState;
-  _copperEvent.cycle = cycle;
+  _copperEvent.cycle = _clocks.ToMasterTime(timestamp);
   if (_copperRegisters.copper_dma)
   {
     _scheduler.InsertEvent(&_copperEvent);
@@ -43,14 +38,14 @@ void CycleExactCopper::Load(uint32_t new_copper_ptr)
   _copperRegisters.copper_pc = new_copper_ptr;
 
   _skip_next = false;
-  uint32_t startChipCycle = _clocks.GetAgnusLineCycle() + 6;
-  const auto currentLineChipCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
-  if ((startChipCycle % currentLineChipCycleCount) & 1)
+  ChipTimestamp startChipCycle = ChipTimestamp::FromOriginAndOffset(_clocks.GetChipTime(), ChipTimeOffset::FromValue(6), _currentFrameParameters);
+
+  if (startChipCycle.IsOddCycle())
   {
-    startChipCycle++;
+    startChipCycle = ChipTimestamp::FromOriginAndOffset(startChipCycle, ChipTimeOffset::FromValue(1), _currentFrameParameters);
   }
 
-  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, Clocks::ToMasterCycleFrom280ns(startChipCycle));
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, startChipCycle);
 }
 
 void CycleExactCopper::SetStateNone()
@@ -71,19 +66,21 @@ void CycleExactCopper::Move()
   uint32_t regno = (uint32_t)(_first & 0x1fe);
   uint16_t value = _second;
 
-  if (IsRegisterAllowed(regno))
-  {
-    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _clocks.GetFrameMasterCycle() + Clocks::ToMasterCycleFrom280ns(2));
-    if (!_skip_next)
-    {
-      memory_iobank_write[regno >> 1](value, regno);
-    }
-    _skip_next = false;
-  }
-  else
+  if (!IsRegisterAllowed(regno))
   {
     SetStateNone();
+    return;
   }
+
+  ChipTimestamp nextEventTime = ChipTimestamp::FromOriginAndOffset(_clocks.GetChipTime(), ChipTimeOffset::FromValue(2), _currentFrameParameters);
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, nextEventTime);
+
+  if (!_skip_next)
+  {
+    memory_iobank_write[regno >> 1](value, regno);
+  }
+
+  _skip_next = false;
 }
 
 void CycleExactCopper::Wait()
@@ -95,29 +92,35 @@ void CycleExactCopper::Wait()
   uint32_t vp = (uint32_t)(_first >> 8);
   uint32_t hp = (uint32_t)(_first & 0xfe);
 
-  const auto currentLineChipCycleCount = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
-  //const auto currentChipCycle = _clocks.GetAgnusChipFrameCycle();
-  //uint32_t test_cycle = currentCycle + 2;
-  //uint32_t rasterY = test_cycle / currentLineCycleCount;
-  //uint32_t rasterX = test_cycle % currentLineCycleCount;
+  const auto currentLineChipCycleCount = _currentFrameParameters.LongLineChipCycles.Offset;
+  // const auto currentChipCycle = _clocks.GetAgnusChipFrameCycle();
+  // uint32_t test_cycle = currentCycle + 2;
+  // uint32_t rasterY = test_cycle / currentLineCycleCount;
+  // uint32_t rasterX = test_cycle % currentLineCycleCount;
 
-  uint32_t rasterY = _clocks.GetAgnusLine();
-  uint32_t rasterX = _clocks.GetAgnusLineCycle();
+  const ChipTimestamp chipTime = _clocks.GetChipTime();
+  uint32_t rasterY = chipTime.Line;
+  uint32_t rasterX = chipTime.Cycle;
 
-  if (rasterX & 1)
-  {
-    rasterX++;
-  }
+  // This should not be happening
+  // if (rasterX & 1)
+  //{
+  //  rasterX++;
+  //}
+
+  assert(chipTime.IsEvenCycle());
 
   // (rasterY, rasterX) is the starting point, the first possible compare
 
   _skip_next = false;
 
-  // Does the current rasterY already compare as larger?
+  // Does current rasterY compare as larger?
   if ((rasterY & ve) > (vp & ve))
   {
+    // Wait completed immediately
     _skip_next = false;
-    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, _clocks.GetFrameCycle() + 2);
+    ChipTimestamp nextEventTime = ChipTimestamp::FromOriginAndOffset(chipTime, ChipTimeOffset::FromValue(2), _currentFrameParameters);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, nextEventTime);
     return;
   }
 
@@ -125,12 +128,20 @@ void CycleExactCopper::Wait()
   if ((rasterY & ve) == (vp & ve))
   {
     uint32_t initial_wait_rasterX = rasterX;
-    while ((rasterX <= 0xe2) && ((rasterX & he) < (hp & he)))
-      rasterX += 2;
-    if (rasterX < 0xe4)
+    while ((rasterX < currentLineChipCycleCount) && ((rasterX & he) < (hp & he)))
     {
-      if (initial_wait_rasterX == rasterX) rasterX += 2;
-      SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, rasterY * currentLineCycleCount + rasterX);
+      rasterX += 2;
+    }
+
+    if (rasterX < currentLineChipCycleCount)
+    {
+      if (initial_wait_rasterX == rasterX)
+      {
+        rasterX += 2;
+      }
+
+      // Wait completed on current line with horisontal match now or later on the line
+      SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, ChipTimestamp::FromLineAndCycle(rasterY, rasterX, _currentFrameParameters));
       return;
     }
   }
@@ -139,21 +150,27 @@ void CycleExactCopper::Wait()
   rasterY++;
 
   // Find the first horisontal position on a line that match when comparing from the start of a line
-  for (rasterX = 0; (rasterX <= 0xe2) && ((rasterX & he) < (hp & he)); rasterX += 2)
+  for (rasterX = 0; (rasterX < currentLineChipCycleCount) && ((rasterX & he) < (hp & he)); rasterX += 2)
     ;
 
   // Find the first vertical position that match
-  if (rasterX == 0xe4)
+  if (rasterX >= currentLineChipCycleCount)
   {
     // There is no match on the horisontal position. The vertical position must be larger than vp to match
+    rasterX = 0;
+
     while ((rasterY < _currentFrameParameters.LinesInFrame) && ((rasterY & ve) <= (vp & ve)))
+    {
       rasterY++;
+    }
   }
   else
   {
     // A match can either be exact on vp and hp, or the vertical position must be larger than vp.
     while ((rasterY < _currentFrameParameters.LinesInFrame) && ((rasterY & ve) < (vp & ve)))
+    {
       rasterY++;
+    }
   }
 
   if (rasterY >= _currentFrameParameters.LinesInFrame)
@@ -164,12 +181,12 @@ void CycleExactCopper::Wait()
   else if ((rasterY & ve) == (vp & ve))
   {
     // An exact match on both vp and hp was found
-    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, rasterY * currentLineCycleCount + rasterX); // +2);
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, ChipTimestamp::FromLineAndCycle(rasterY, rasterX, _currentFrameParameters));
   }
   else
   {
-    // A match on vp being larger (not equal) was found
-    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, rasterY * currentLineCycleCount + rasterX); // +2);
+    // A match on vp being larger was found
+    SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, ChipTimestamp::FromLineAndCycle(rasterY, 0, _currentFrameParameters));
   }
 }
 
@@ -181,18 +198,21 @@ void CycleExactCopper::Skip()
   uint32_t vp = (uint32_t)(_first >> 8);
   uint32_t hp = (uint32_t)(_first & 0xfe);
 
-  const auto cyclesInCurrentLine = _currentFrameParameters.GetAgnusCyclesInLine(_clocks.GetAgnusLine());
-  const auto currentFrameCycle = _clocks.GetFrameCycle();
-  uint32_t rasterY = _clocks.GetAgnusLine();
-  uint32_t rasterX = _clocks.GetAgnusLineCycle();
+  const auto cyclesInCurrentLine = _currentFrameParameters.LongLineChipCycles.Offset;
+  const ChipTimestamp chipTime = _clocks.GetChipTime();
+  uint32_t rasterY = chipTime.Line;
+  uint32_t rasterX = chipTime.Cycle;
 
-  if (rasterX & 1)
-  {
-    rasterX++;
-  }
+  // This should not happen
+  // if (rasterX & 1)
+  //{
+  //  rasterX++;
+  //}
+
+  assert(chipTime.IsEvenCycle());
 
   _skip_next = (((rasterY & ve) > (vp & ve)) || (((rasterY & ve) == (vp & ve)) && ((rasterX & he) >= (hp & he))));
-  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, currentFrameCycle + 2);
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, ChipTimestamp::FromOriginAndOffset(chipTime, ChipTimeOffset::FromValue(2), _currentFrameParameters));
 }
 
 bool CycleExactCopper::IsMove()
@@ -210,7 +230,7 @@ void CycleExactCopper::ReadFirstWord()
   _first = ReadWord();
   IncreasePtr();
   CopperStates next_state = (IsMove()) ? CopperStates::COPPER_STATE_TRANSFER_SECOND_WORD : CopperStates::COPPER_STATE_READ_SECOND_WORD;
-  SetState(next_state, _clocks.GetFrameCycle() + 2);
+  SetState(next_state, ChipTimestamp::FromOriginAndOffset(_clocks.GetChipTime(), ChipTimeOffset::FromValue(2), _currentFrameParameters));
 }
 
 void CycleExactCopper::ReadSecondWord()
@@ -239,15 +259,19 @@ void CycleExactCopper::EventHandler()
 {
   _debugLog.Log(DebugLogKind::EventHandler, _copperEvent.Name);
 
-  if (_clocks.GetAgnusLineCycle() == 0xe2)
+  ChipTimestamp chipTime = _clocks.GetChipTime();
+
+  // TODO: Should not be handled here, copper must not be given this cycle
+  if ((_currentFrameParameters.LongLineChipCycles.Offset & 1) == 1 && chipTime.Cycle == (_currentFrameParameters.LongLineChipCycles.Offset - 1))
   {
-    SetState(_state, _clocks.GetFrameCycle() + 1);
+    // TODO: Add assert instead
+    SetState(_state, ChipTimestamp::FromOriginAndOffset(_clocks.GetChipTime(), ChipTimeOffset::FromValue(1), _currentFrameParameters));
     return;
   }
 
   if (_cpuEvent.IsEnabled())
   {
-    _cpuEvent.cycle += 2;
+    _cpuEvent.cycle = _cpuEvent.cycle + MasterTimeOffset::FromChipTimeOffset(ChipTimeOffset::FromValue(2));
   }
 
   switch (_state)
@@ -277,10 +301,11 @@ void CycleExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     if (_copperEvent.IsEnabled())
     {
       // dma not hanging
-      const auto currentFrameCycle = _clocks.GetFrameMasterCycle();
-      if (_copperEvent.cycle <= currentFrameCycle)
+      const auto masterTimestamp = _clocks.GetMasterTime();
+      if (_copperEvent.cycle <= masterTimestamp)
       {
-        _copperEvent.cycle = currentFrameCycle + Clocks::ToMasterCycleFrom280ns(2);
+        // TODO: Make sure copper asks for an even cycle
+        _copperEvent.cycle = masterTimestamp + MasterTimeOffset::FromChipTimeOffset(ChipTimeOffset::FromValue(2));
         _scheduler.InsertEvent(&_copperEvent);
       }
       else
@@ -307,7 +332,9 @@ void CycleExactCopper::EndOfFrame()
 {
   _copperRegisters.copper_pc = _copperRegisters.cop1lc;
   _skip_next = false;
-  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, 40);
+
+  // TODO: This delay is from the legacy copper, cannot possibly be an actual thing
+  SetState(CopperStates::COPPER_STATE_READ_FIRST_WORD, ChipTimestamp::FromLineAndCycle(0, 40, _currentFrameParameters));
 }
 
 void CycleExactCopper::HardReset()

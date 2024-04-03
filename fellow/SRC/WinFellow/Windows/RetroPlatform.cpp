@@ -351,7 +351,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
                             "mode...\n");
           lOriginalSpeed = RP.GetCPUSpeed();
           cpuIntegrationSetSpeed(0);
-          cpuIntegrationCalculateMultiplier();
+          cpuIntegrationCalculateMasterCycleMultiplier();
           _core.Cpu->SetCpuInstructionHandlerFromConfig();
           fellowRequestEmulationStop();
         }
@@ -362,7 +362,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
               "turbo mode, reverting back to speed level %u...\n",
               lOriginalSpeed);
           cpuIntegrationSetSpeed(lOriginalSpeed);
-          cpuIntegrationCalculateMultiplier();
+          cpuIntegrationCalculateMasterCycleMultiplier();
           _core.Cpu->SetCpuInstructionHandlerFromConfig();
           fellowRequestEmulationStop();
         }

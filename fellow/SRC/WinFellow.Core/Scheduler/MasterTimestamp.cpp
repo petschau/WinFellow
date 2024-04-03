@@ -55,6 +55,11 @@ bool MasterTimestamp::IsNowOrLater(const MasterTimestamp now) const
   return Cycle >= now.Cycle;
 }
 
+MasterTimestamp MasterTimestamp::FromValue(uint32_t cycle)
+{
+  return MasterTimestamp{.Cycle = cycle};
+}
+
 void MasterTimestamp::Clear()
 {
   Cycle = 0;

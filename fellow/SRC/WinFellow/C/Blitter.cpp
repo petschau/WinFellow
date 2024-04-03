@@ -170,11 +170,11 @@ void blitterRemoveEvent()
   _core.Scheduler->DisableEvent(_core.Events->blitterEvent);
 }
 
-void blitterInsertEvent(uint32_t cycle)
+void blitterInsertEvent(MasterTimestamp timestamp)
 {
-  if (cycle != SchedulerEvent::EventDisableCycle)
+  if (timestamp != SchedulerEvent::EventDisableCycle)
   {
-    _core.Events->blitterEvent.cycle = cycle;
+    _core.Events->blitterEvent.cycle = timestamp;
     _core.Scheduler->InsertEvent(&_core.Events->blitterEvent);
   }
 }
@@ -1345,7 +1345,7 @@ void blitInitiate()
   {
     if (_core.RegisterUtility.IsBlitterPriorityEnabled())
     {
-      cpuIntegrationSetChipCycles(cycle_length); // Delay CPU for the entire time during the blit.
+      cpuIntegrationSetChipCycles(ChipTimeOffset::FromValue(cycle_length)); // Delay CPU for the entire time during the blit.
     }
     else
     {
@@ -1369,7 +1369,7 @@ void blitInitiate()
   blitter.started = TRUE;
   blitSetBlitterBusy();
   wintreq_direct(0x0040, 0xdff09c, true);
-  blitterInsertEvent(_core.Clocks->GetFrameMasterCycle() + Clocks::ToMasterCycleFrom280ns(cycle_length));
+  blitterInsertEvent(_core.Clocks->GetMasterTime() + MasterTimeOffset::FromChipTimeOffset(ChipTimeOffset::FromValue(cycle_length)));
 }
 
 // Handles a blitter event.

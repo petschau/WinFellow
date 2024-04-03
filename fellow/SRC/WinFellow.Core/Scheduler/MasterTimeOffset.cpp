@@ -3,22 +3,22 @@
 
 MasterTimeOffset MasterTimeOffset::FromChipTimeOffset(const ChipTimeOffset chipTimeOffset)
 {
-  return MasterTimeOffset{.Offset = chipTimeOffset.Offset << ClockConstants::MasterTimeOffsetFromChipTimeOffsetShift};
+  return MasterTimeOffset{.Offset = chipTimeOffset.Offset * ClockConstants::MasterCyclesInChipCycle};
 }
 
 MasterTimeOffset MasterTimeOffset::FromCiaTimeOffset(const CiaTimeOffset ciaTimeOffset)
 {
-  return MasterTimeOffset{.Offset = ciaTimeOffset.Offset * ClockConstants::MasterTimeCyclesInCiaTimeCycle};
+  return MasterTimeOffset{.Offset = ciaTimeOffset.Offset * ClockConstants::MasterCyclesInCiaCycle};
 }
 
 CiaTimeOffset MasterTimeOffset::ToCiaTimeOffset() const
 {
-  return CiaTimeOffset{.Offset = Offset / ClockConstants::MasterTimeCyclesInCiaTimeCycle};
+  return CiaTimeOffset{.Offset = Offset / ClockConstants::MasterCyclesInCiaCycle};
 }
 
 MasterTimeOffset MasterTimeOffset::GetCiaTimeRemainder() const
 {
-  return MasterTimeOffset{.Offset = Offset % ClockConstants::MasterTimeCyclesInCiaTimeCycle};
+  return MasterTimeOffset{.Offset = Offset % ClockConstants::MasterCyclesInCiaCycle};
 }
 
 MasterTimeOffset MasterTimeOffset::FromValue(uint32_t offset)

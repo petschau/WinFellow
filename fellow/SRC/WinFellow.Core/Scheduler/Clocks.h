@@ -3,8 +3,9 @@
 #include <cstdint>
 
 #include "FrameParameters.h"
-#include "ChipTimestamp.h"
 #include "MasterTimestamp.h"
+#include "ChipTimestamp.h"
+#include "CpuTimeOffset.h"
 
 class Clocks
 {
@@ -26,6 +27,7 @@ public:
   uint32_t GetDeniseLineCycle() const;
 
   constexpr static MasterTimeOffset ToMasterTimeOffset(const ChipTimeOffset chipTimeOffset);
+  constexpr static MasterTimeOffset ToMasterTimeOffset(const CpuTimeOffset cpuTimeOffset);
   MasterTimestamp ToMasterTime(const ChipTimestamp chipTime) const;
 
   void SetMasterTime(MasterTimestamp newMasterTime);

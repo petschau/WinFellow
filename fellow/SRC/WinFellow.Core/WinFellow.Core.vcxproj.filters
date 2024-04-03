@@ -213,10 +213,13 @@
     <ClInclude Include="Scheduler\ChipTimeOffset.h">
       <Filter>Scheduler</Filter>
     </ClInclude>
-    <ClInclude Include="ClockConstants.h">
+    <ClInclude Include="Scheduler\CiaTimeOffset.h">
       <Filter>Scheduler</Filter>
     </ClInclude>
-    <ClInclude Include="Scheduler\CiaTimeoffset.h">
+    <ClInclude Include="Scheduler\ClockConstants.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler\CpuTimeOffset.h">
       <Filter>Scheduler</Filter>
     </ClInclude>
   </ItemGroup>
@@ -289,6 +292,9 @@
       <Filter>Scheduler</Filter>
     </ClCompile>
     <ClCompile Include="Scheduler\CiaTimeOffset.cpp">
+      <Filter>Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler\CpuTimeOffset.cpp">
       <Filter>Scheduler</Filter>
     </ClCompile>
   </ItemGroup>

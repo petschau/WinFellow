@@ -31,6 +31,7 @@
 #include "Cia.h"
 #include "PaulaInterrupt.h"
 #include "VirtualHost/Core.h"
+#include "Scheduler/ClockConstants.h"
 #include <cassert>
 
 constexpr uint32_t CIA_NO_EVENT = 0;
@@ -61,14 +62,16 @@ uint32_t cia_next_event_type; /* What type of event */
 
 struct cia_state
 {
-  CiaTimeOffset ta;
-  CiaTimeOffset tb;
-  MasterTimeOffset ta_rem; // Preserves remainder when downsizing from master time
-  MasterTimeOffset tb_rem;
-  CiaTimeOffset talatch;
-  CiaTimeOffset tblatch;
-  MasterTimestamp taleft;
-  MasterTimestamp tbleft;
+  uint16_t TimerAValue;
+  uint16_t TimerBValue;
+  uint16_t TimerALatch;
+  uint16_t TimerBLatch;
+
+  MasterTimeOffset TimerAMasterTimeRemainder; // Preserves remainder when downsizing from master time
+  MasterTimeOffset TimerBMasterTimeRemainder;
+  MasterTimestamp TimerAExpireTime;
+  MasterTimestamp TimerBExpireTime;
+
   uint32_t evalarm;
   uint32_t evlatch;
   uint32_t evlatching;
@@ -91,7 +94,7 @@ struct cia_state
 cia_state cia[2];
 
 bool cia_recheck_irq;
-uint32_t cia_recheck_irq_time;
+MasterTimestamp cia_recheck_irq_time;
 
 BOOLE ciaIsSoundFilterEnabled()
 {
@@ -99,16 +102,18 @@ BOOLE ciaIsSoundFilterEnabled()
 }
 
 // Translate timer expiration to master timestamp
-MasterTimestamp ciaUnstabilizeValue(CiaTimeOffset value, MasterTimeOffset remainder)
+MasterTimestamp ciaUnstabilizeValue(uint16_t value, MasterTimeOffset remainder)
 {
-  return _core.Clocks->GetMasterTime() + MasterTimeOffset::FromCiaTimeOffset(value) + remainder;
+  return _core.Clocks->GetMasterTime() + MasterTimeOffset::FromCiaTimeOffset(CiaTimeOffset::FromValue(value)) + remainder;
 }
 
 /* Translate cycles until timeout from current sof -> timer value */
 
-CiaTimeOffset ciaStabilizeValue(MasterTimestamp value)
+uint16_t ciaStabilizeValue(MasterTimestamp value)
 {
-  return (value - _core.Clocks->GetMasterTime()).ToCiaTimeOffset();
+  uint32_t timerValue = (value - _core.Clocks->GetMasterTime()).ToCiaTimeOffset().Offset;
+  assert(timerValue < 65536);
+  return (uint16_t)timerValue;
 }
 
 MasterTimeOffset ciaStabilizeValueRemainder(MasterTimestamp value)
@@ -116,15 +121,16 @@ MasterTimeOffset ciaStabilizeValueRemainder(MasterTimestamp value)
   return (value - _core.Clocks->GetMasterTime()).GetCiaTimeRemainder();
 }
 
-CiaTimeOffset ciaGetTimerValue(CiaTimeOffset value)
+uint16_t ciaGetTimerValue(uint16_t value)
 {
-  if (value.Offset == 0)
+  if (value == 0)
   {
 #ifdef CIA_LOGGING
     Service->Log.AddLogDebug("CIA Warning timer latch is zero. PC %X", cpuGetOriginalPC());
 #endif
-    return CiaTimeOffset{.Offset = 1}; // Avoid getting stuck on zero timeout.
+    return 1; // Avoid getting stuck on zero timeout.
   }
+
   return value;
 }
 
@@ -132,20 +138,23 @@ void ciaTAStabilize(uint32_t i)
 {
   if (cia[i].cra & 1)
   {
-    cia[i].ta = ciaStabilizeValue(cia[i].taleft);
-    cia[i].ta_rem = ciaStabilizeValueRemainder(cia[i].taleft);
+    cia[i].TimerAValue = ciaStabilizeValue(cia[i].TimerAExpireTime);
+    cia[i].TimerAMasterTimeRemainder = ciaStabilizeValueRemainder(cia[i].TimerAExpireTime);
   }
-  cia[i].taleft = SchedulerEvent::EventDisableCycle;
+
+  cia[i].TimerAExpireTime = SchedulerEvent::EventDisableCycle;
 }
 
 void ciaTBStabilize(uint32_t i)
 {
   if ((cia[i].crb & 0x41) == 1)
-  { // Timer B started and not attached to timer A
-    cia[i].tb = ciaStabilizeValue(cia[i].tbleft);
-    cia[i].tb_rem = ciaStabilizeValueRemainder(cia[i].tbleft);
+  {
+    // Timer B started and not attached to timer A
+    cia[i].TimerBValue = ciaStabilizeValue(cia[i].TimerBExpireTime);
+    cia[i].TimerBMasterTimeRemainder = ciaStabilizeValueRemainder(cia[i].TimerBExpireTime);
   }
-  cia[i].tbleft = SchedulerEvent::EventDisableCycle;
+
+  cia[i].TimerBExpireTime = SchedulerEvent::EventDisableCycle;
 }
 
 void ciaStabilize(uint32_t i)
@@ -158,7 +167,7 @@ void ciaTAUnstabilize(uint32_t i)
 {
   if (cia[i].cra & 1)
   {
-    cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, cia[i].ta_rem);
+    cia[i].TimerAExpireTime = ciaUnstabilizeValue(cia[i].TimerAValue, cia[i].TimerAMasterTimeRemainder);
   }
 }
 
@@ -166,7 +175,7 @@ void ciaTBUnstabilize(uint32_t i)
 {
   if ((cia[i].crb & 0x41) == 1) // Timer B started and not attached to timer A
   {
-    cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, cia[i].tb_rem);
+    cia[i].TimerBExpireTime = ciaUnstabilizeValue(cia[i].TimerBValue, cia[i].TimerBMasterTimeRemainder);
   }
 }
 
@@ -226,16 +235,16 @@ void ciaHandleTBTimeout(uint32_t i)
   Service->Log.AddLogDebug("CIA %c Timer B expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (cia[i].crb & 8) ? "one-shot" : "continuous", cia[i].tblatch);
 #endif
 
-  cia[i].tb = ciaGetTimerValue(cia[i].tblatch); /* Reload from latch */
+  cia[i].TimerBValue = ciaGetTimerValue(cia[i].TimerBLatch); /* Reload from latch */
 
   if (cia[i].crb & 8) /* One Shot Mode */
   {
     cia[i].crb &= 0xfe; /* Stop timer */
-    cia[i].tbleft = SchedulerEvent::EventDisableCycle;
+    cia[i].TimerBExpireTime = SchedulerEvent::EventDisableCycle;
   }
   else if (!(cia[i].crb & 0x40)) /* Continuous mode, no attach */
   {
-    cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, MasterTimeOffset::FromValue(0));
+    cia[i].TimerBExpireTime = ciaUnstabilizeValue(cia[i].TimerBValue, MasterTimeOffset::FromValue(0));
   }
 
   ciaRaiseIRQ(i, CIA_TB_IRQ); /* Raise irq */
@@ -247,11 +256,14 @@ void ciaHandleTATimeout(uint32_t i)
   Service->Log.AddLogDebug("CIA %c Timer A expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (cia[i].cra & 8) ? "one-shot" : "continuous", cia[i].talatch);
 #endif
 
-  cia[i].ta = ciaGetTimerValue(cia[i].talatch); /* Reload from latch */
+  cia[i].TimerAValue = ciaGetTimerValue(cia[i].TimerALatch); /* Reload from latch */
+
   if ((cia[i].crb & 0x41) == 0x41)
-  { /* Timer B attached and started */
-    cia[i].tb = (cia[i].tb - CiaTimeOffset::FromValue(1)).MaskTo16Bits();
-    if (cia[i].tb.IsZero())
+  {
+    // Timer B attached and started
+    cia[i].TimerBValue = cia[i].TimerBValue - 1;
+
+    if (cia[i].TimerBValue == 0)
     {
       ciaHandleTBTimeout(i);
     }
@@ -260,11 +272,11 @@ void ciaHandleTATimeout(uint32_t i)
   if (cia[i].cra & 8) /* One Shot Mode */
   {
     cia[i].cra &= 0xfe; /* Stop timer */
-    cia[i].taleft = SchedulerEvent::EventDisableCycle;
+    cia[i].TimerAExpireTime = SchedulerEvent::EventDisableCycle;
   }
   else /* Continuous mode */
   {
-    cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, MasterTimeOffset::FromValue(0));
+    cia[i].TimerAExpireTime = ciaUnstabilizeValue(cia[i].TimerAValue, MasterTimeOffset::FromValue(0));
   }
 
 #ifdef CIA_LOGGING
@@ -289,23 +301,23 @@ void ciaUpdateTimersEOF(const MasterTimeOffset cyclesInEndedFrame)
 {
   for (int i = 0; i < 2; i++)
   {
-    if (cia[i].taleft >= 0)
+    if (cia[i].TimerAExpireTime != SchedulerEvent::EventDisableCycle)
     {
-      cia[i].taleft -= cyclesInEndedFrame;
-      assert((int32_t)cia[i].taleft >= 0);
+      cia[i].TimerAExpireTime -= cyclesInEndedFrame;
+      assert(cia[i].TimerAExpireTime.IsEnabledAndValid());
     }
 
-    if (cia[i].tbleft >= 0)
+    if (cia[i].TimerBExpireTime != SchedulerEvent::EventDisableCycle)
     {
-      cia[i].tbleft -= cyclesInEndedFrame;
-      assert((int32_t)cia[i].tbleft >= 0);
+      cia[i].TimerBExpireTime -= cyclesInEndedFrame;
+      assert(cia[i].TimerBExpireTime.IsEnabledAndValid());
     }
   }
 
   if (cia_recheck_irq)
   {
     cia_recheck_irq_time -= cyclesInEndedFrame;
-    assert((int32_t)cia_recheck_irq_time >= 0);
+    assert(cia_recheck_irq_time.IsEnabledAndValid());
   }
 
   // Already rebased by scheduler if it is active
@@ -326,7 +338,7 @@ void ciaEventSetup()
 
 void ciaSetupNextEvent()
 {
-  uint32_t nextevtime = SchedulerEvent::EventDisableCycle;
+  MasterTimestamp nextevtime = SchedulerEvent::EventDisableCycle;
   uint32_t nextevtype = CIA_NO_EVENT;
 
   if (cia_recheck_irq)
@@ -337,14 +349,15 @@ void ciaSetupNextEvent()
 
   for (uint32_t i = 0; i < 2; i++)
   {
-    if (((uint32_t)cia[i].taleft) < nextevtime)
+    if (cia[i].TimerAExpireTime != SchedulerEvent::EventDisableCycle && cia[i].TimerAExpireTime < nextevtime)
     {
-      nextevtime = cia[i].taleft;
+      nextevtime = cia[i].TimerAExpireTime;
       nextevtype = (i * 2) + 1;
     }
-    if (((uint32_t)cia[i].tbleft) < nextevtime)
+
+    if (cia[i].TimerBExpireTime != SchedulerEvent::EventDisableCycle && cia[i].TimerBExpireTime < nextevtime)
     {
-      nextevtime = cia[i].tbleft;
+      nextevtime = cia[i].TimerBExpireTime;
       nextevtype = (i * 2) + 2;
     }
   }
@@ -389,7 +402,7 @@ void ciaHandleEvent()
 void ciaRecheckIRQ()
 {
   cia_recheck_irq = true;
-  cia_recheck_irq_time = _core.Clocks->GetFrameMasterCycle() + 2 * Cia::CiaMasterCycleRatio;
+  cia_recheck_irq_time = _core.Clocks->GetMasterTime() + MasterTimeOffset::FromValue(2 * ClockConstants::MasterCyclesInCiaCycle);
   ciaSetupNextEvent();
 }
 
@@ -560,19 +573,29 @@ void ciaWritesp(uint32_t i, uint8_t data)
 
 uint8_t ciaReadtalo(uint32_t i)
 {
-  if (cia[i].cra & 1) return (uint8_t)ciaStabilizeValue(cia[i].taleft);
-  return (uint8_t)cia[i].ta;
+  if (cia[i].cra & 1)
+  {
+    // Timer is running
+    return (uint8_t)ciaStabilizeValue(cia[i].TimerAExpireTime);
+  }
+
+  return (uint8_t)cia[i].TimerAValue;
 }
 
 uint8_t ciaReadtahi(uint32_t i)
 {
-  if (cia[i].cra & 1) return (uint8_t)(ciaStabilizeValue(cia[i].taleft) >> 8);
-  return (uint8_t)(cia[i].ta >> 8);
+  if (cia[i].cra & 1)
+  {
+    // Timer is running
+    return (uint8_t)(ciaStabilizeValue(cia[i].TimerAExpireTime) >> 8);
+  }
+
+  return (uint8_t)(cia[i].TimerAValue >> 8);
 }
 
 void ciaWritetalo(uint32_t i, uint8_t data)
 {
-  cia[i].talatch = (cia[i].talatch & 0xff00) | (uint32_t)data;
+  cia[i].TimerALatch = (cia[i].TimerALatch & 0xff00) | (uint32_t)data;
 
 #ifdef CIA_LOGGING
   Service->Log.AddLogDebug("CIA %c Timer A written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].talatch, cpuGetOriginalPC());
@@ -587,13 +610,13 @@ bool ciaMustReloadOnTHiWrite(uint8_t cr)
 
 void ciaWritetahi(uint32_t i, uint8_t data)
 {
-  cia[i].talatch = (cia[i].talatch & 0xff) | (((uint32_t)data) << 8);
+  cia[i].TimerALatch = (cia[i].TimerALatch & 0xff) | (((uint32_t)data) << 8);
 
   if (ciaMustReloadOnTHiWrite(cia[i].cra)) // Reload when not started, or one-shot mode
   {
-    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
-    cia[i].ta_rem = 0;
-    cia[i].taleft = SchedulerEvent::EventDisableCycle;
+    cia[i].TimerAValue = ciaGetTimerValue(cia[i].TimerALatch);
+    cia[i].TimerAMasterTimeRemainder = MasterTimeOffset::FromValue(0);
+    cia[i].TimerAExpireTime = SchedulerEvent::EventDisableCycle;
   }
 
 #ifdef CIA_LOGGING
@@ -616,19 +639,29 @@ void ciaWritetahi(uint32_t i, uint8_t data)
 
 uint8_t ciaReadtblo(uint32_t i)
 {
-  if ((cia[i].crb & 1) && !(cia[i].crb & 0x40)) return (uint8_t)ciaStabilizeValue(cia[i].tbleft);
-  return (uint8_t)cia[i].tb;
+  if ((cia[i].crb & 1) && !(cia[i].crb & 0x40))
+  {
+    // Timer is running
+    return (uint8_t)ciaStabilizeValue(cia[i].TimerBExpireTime);
+  }
+
+  return (uint8_t)cia[i].TimerBValue;
 }
 
 uint8_t ciaReadtbhi(uint32_t i)
 {
-  if ((cia[i].crb & 1) && !(cia[i].crb & 0x40)) return (uint8_t)(ciaStabilizeValue(cia[i].tbleft) >> 8);
-  return (uint8_t)(cia[i].tb >> 8);
+  if ((cia[i].crb & 1) && !(cia[i].crb & 0x40))
+  {
+    // Timer is running
+    return (uint8_t)(ciaStabilizeValue(cia[i].TimerBExpireTime) >> 8);
+  }
+
+  return (uint8_t)(cia[i].TimerBValue >> 8);
 }
 
 void ciaWritetblo(uint32_t i, uint8_t data)
 {
-  cia[i].tblatch = (cia[i].tblatch & 0xff00) | ((uint32_t)data);
+  cia[i].TimerBLatch = (cia[i].TimerBLatch & 0xff00) | ((uint32_t)data);
 #ifdef CIA_LOGGING
   Service->Log.AddLogDebug("CIA %c Timer B written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tblatch, cpuGetOriginalPC());
 #endif
@@ -636,13 +669,13 @@ void ciaWritetblo(uint32_t i, uint8_t data)
 
 void ciaWritetbhi(uint32_t i, uint8_t data)
 {
-  cia[i].tblatch = (cia[i].tblatch & 0xff) | (((uint32_t)data) << 8);
+  cia[i].TimerBLatch = (cia[i].TimerBLatch & 0xff) | (((uint32_t)data) << 8);
 
   if (ciaMustReloadOnTHiWrite(cia[i].crb)) // Reload when not started, or one-shot mode
   {
-    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
-    cia[i].tb_rem = 0;
-    cia[i].tbleft = SchedulerEvent::EventDisableCycle;
+    cia[i].TimerBValue = ciaGetTimerValue(cia[i].TimerBLatch);
+    cia[i].TimerBMasterTimeRemainder = MasterTimeOffset::FromValue(0);
+    cia[i].TimerBExpireTime = SchedulerEvent::EventDisableCycle;
   }
 
 #ifdef CIA_LOGGING
@@ -776,8 +809,8 @@ void ciaWritecra(uint32_t i, uint8_t data)
   ciaStabilize(i);
   if (data & 0x10) // Force load
   {
-    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
-    cia[i].ta_rem = 0;
+    cia[i].TimerAValue = ciaGetTimerValue(cia[i].TimerALatch);
+    cia[i].TimerAMasterTimeRemainder = MasterTimeOffset::FromValue(0);
     data &= 0xef; // Clear force load bit
 #ifdef CIA_LOGGING
     Service->Log.AddLogDebug("CIA %c Timer A force load %X. PC %X\n", (i == 0) ? 'A' : 'B', cia[i].ta, cpuGetOriginalPC());
@@ -807,8 +840,8 @@ void ciaWritecrb(uint32_t i, uint8_t data)
   ciaStabilize(i);
   if (data & 0x10) // Force load
   {
-    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
-    cia[i].tb_rem = 0;
+    cia[i].TimerBValue = ciaGetTimerValue(cia[i].TimerBLatch);
+    cia[i].TimerBMasterTimeRemainder = MasterTimeOffset::FromValue(0);
     data &= 0xef; // Clear force load bit
 #ifdef CIA_LOGGING
     Service->Log.AddLogDebug("CIA %c Timer B force load %X. PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tb, cpuGetOriginalPC());
@@ -953,12 +986,12 @@ void ciaStateClear()
     cia[i].evalarmlatching = 0;
     cia[i].evwritelatch = 0;
     cia[i].evwritelatching = 0;
-    cia[i].taleft = SchedulerEvent::EventDisableCycle; /* Zero out timers */
-    cia[i].tbleft = SchedulerEvent::EventDisableCycle;
-    cia[i].ta = 0xffff;
-    cia[i].tb = 0xffff;
-    cia[i].talatch = 0xffff;
-    cia[i].tblatch = 0xffff;
+    cia[i].TimerAExpireTime = SchedulerEvent::EventDisableCycle; /* Zero out timers */
+    cia[i].TimerBExpireTime = SchedulerEvent::EventDisableCycle;
+    cia[i].TimerAValue = 0xffff;
+    cia[i].TimerBValue = 0xffff;
+    cia[i].TimerALatch = 0xffff;
+    cia[i].TimerBLatch = 0xffff;
     cia[i].pra = 0xff;
     cia[i].prb = 0;
     cia[i].ddra = 0;
