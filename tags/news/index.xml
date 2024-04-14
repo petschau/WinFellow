@@ -6,8 +6,15 @@
     <description>Recent content in News on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 28 Mar 2024 05:49:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2024 05:49:00 +0000</lastBuildDate>
     <atom:link href="https://petschau.github.io/WinFellow/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Legacy Fellow releases</title>
+      <link>https://petschau.github.io/WinFellow/post/2024-04-14-legacy-fellow-releases/</link>
+      <pubDate>Sun, 14 Apr 2024 05:49:00 +0000</pubDate>
+      <guid>https://petschau.github.io/WinFellow/post/2024-04-14-legacy-fellow-releases/</guid>
+      <description>We sometimes get asked about older releases of Fellow for DOS as well as WinFellow, for a variety of reasons. As many of these are no longer readily available in a convenient location, we have decided to publish a few here. For this reason, a new History section has been established that you can visit in the menu at the top. The history section is a work in progress, let us know if you notice any issues or factual mistakes within it.</description>
+    </item>
     <item>
       <title>WinFellow v0.5.11 released</title>
       <link>https://petschau.github.io/WinFellow/post/2024-03-28-winfellow-v0.5.11-released/</link>
