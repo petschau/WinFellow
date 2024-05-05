@@ -4,9 +4,9 @@
     <title>WinFellow - Amiga Emulator for Windows</title>
     <link>https://petschau.github.io/WinFellow/</link>
     <description>Recent content on WinFellow - Amiga Emulator for Windows</description>
-    <generator>Hugo 0.125.1</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Apr 2024 05:43:18 +0100</lastBuildDate>
+    <lastBuildDate>Sun, 05 May 2024 05:43:18 +0100</lastBuildDate>
     <atom:link href="https://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>about</title>
@@ -39,7 +39,7 @@
     <item>
       <title>history</title>
       <link>https://petschau.github.io/WinFellow/history/</link>
-      <pubDate>Mon, 22 Apr 2024 05:43:18 +0100</pubDate>
+      <pubDate>Sun, 05 May 2024 05:43:18 +0100</pubDate>
       <guid>https://petschau.github.io/WinFellow/history/</guid>
       <description>WinFellow is based on the Fellow emulator for DOS that was originally developed by Petter Schau in 1996, seeing its first release in 1997. Fellow was initially developed using Watcom C++ 11.&#xA;The WinFellow project was initially hosted on SourceForge; an archive of its original website from 2016 is still available. To travel even further back in time there is an even older version of the website from 2001.&#xA;In 2016 the project moved to its current home on GitHub.</description>
     </item>
