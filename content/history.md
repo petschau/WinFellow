@@ -2,7 +2,7 @@
 title: history
 menu: main
 weight: 45
-date: 2024-04-22T05:43:18+01:00
+date: 2024-05-05T05:43:18+01:00
 ---
 
 WinFellow is based on the Fellow emulator for DOS that was originally developed by Petter Schau in 1996, seeing its first release in 1997.
@@ -24,10 +24,10 @@ We want to provide access to some of the legacy versions of Fellow that are no l
 | Release Date | Version        | Remarks                                                                       | Downloads                                                                                      |
 | ------------ | -------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | -            | 0022/0023/0024 | experimental private builds of Fellow (DOS)                                   | - missing -                                                                                    |
-| 22.01.1997   | 0024.1         | first version to be widely circulated; required the files rom and df0.adf     | -                                                                                              |
-| 03.02.1997   | 0025 / 0.1     | new versioning scheme; first release to support loading of Kickstart/AmigaDOS | -                                                                                              |
-| 26.03.1997   | 0.1++          | sourcecode release                                                            | -                                                                                              |
-| 08.04.1997   | 0.1a           | linedoubling, several emulation fixes                                         | -                                                                                              |
+| 22.01.1997   | 0024.1         | first version to be widely circulated; required the files rom and df0.adf     | [Binary](../fellow00241.zip)                                                                   |
+| 03.02.1997   | 0025 / 0.1     | new versioning scheme; first release to support loading of Kickstart/AmigaDOS | [Binary](../fellow01.zip)                                                                      |
+| 26.03.1997   | 0.1++          | sourcecode release                                                            | [Source](../fellow01src.zip)                                                                   |
+| 08.04.1997   | 0.1a           | linedoubling, several emulation fixes                                         | [Binary](../fellow01a.zip)                                                                     |
 | ?            | 0.2            |                                                                               | - missing -                                                                                    |
 | 20.07.1997   | 0.2.1          | fastmem expansion support, joystick-related fixes                             | - missing -                                                                                    |
 | ?            | 0.2.2          | green menu color; improved file selector and more config options              | - missing -                                                                                    |
