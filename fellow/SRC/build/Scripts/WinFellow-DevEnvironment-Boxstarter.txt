@@ -36,7 +36,6 @@ $doxygenPath = Resolve-Path "${env:ProgramFiles}\doxygen\bin"
 
 # check for MiKTeX updates
 mpm --admin --update
-initexmf --admin --set-config-value=[MPM]AutoInstall=t
 
 If(-Not(Test-Path $env:ProgramData\WinFellow-DevEnvironment-Boxstarter-FinalReboot.txt)) {
     New-Item -ItemType "File" -Path $env:ProgramData\WinFellow-DevEnvironment-Boxstarter-FinalReboot.txt
