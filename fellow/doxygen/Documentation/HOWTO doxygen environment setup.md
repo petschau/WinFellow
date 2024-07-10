@@ -33,7 +33,7 @@ Accept/confirm all prompts and wait for the packages to install.
 
 cd into the WinFellow source code directory and find the doxygen subdirectory. 
 
-Execute `Build-Doxygen-Documentation.sh`
+Execute `Build-Doxygen-Documentation.sh` (make sure that the file has proper UNIX line endings first)
 
 # doxygen setup using Windows
 
