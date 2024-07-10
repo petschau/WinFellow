@@ -1,0 +1,10 @@
+winget install Microsoft.VisualStudio.2022.Community --silent --accept-package-agreements
+winget install Microsoft.VisualStudio.Locator        --silent --accept-package-agreements
+winget install JanDeDobbeleer.OhMyPosh               --silent --accept-package-agreements
+winget install NSIS.NSIS                             --silent --accept-package-agreements
+winget install 7zip.7zip                             --silent --accept-package-agreements
+winget install MiKTeX.MiKTeX                         --silent --accept-package-agreements
+winget install LyX.LyX                               --silent --accept-package-agreements
+winget install DimitriVanHeesch.Doxygen              --silent --accept-package-agreements
+winget install Graphviz.Graphviz                     --silent --accept-package-agreements
+winget install ArtifexSoftware.GhostScript           --silent --accept-package-agreements
