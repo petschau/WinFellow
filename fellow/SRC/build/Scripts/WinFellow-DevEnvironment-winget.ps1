@@ -18,12 +18,11 @@ If([string]::IsNullOrEmpty($LyXPath)) { $LyxPath = Resolve-Path "${env:ProgramFi
 $7ZipPath = "${env:ProgramFiles}\7-Zip"
 $NSISPath  = Resolve-Path "${env:ProgramFiles(x86)}\NSIS"
 If([string]::IsNullOrEmpty($NSISPath)) { $NSISPath = Resolve-Path "${env:ProgramFiles}\NSIS" }
-$doxygenPath = Resolve-Path "${env:ProgramFiles}\doxygen\bin"
 
-[Environment]::SetEnvironmentVariable("Path", "$env:Path;$LyXPath;$7ZipPath;$NSISPath;$doxygenPath", [System.EnvironmentVariableTarget]::Machine)
+[Environment]::SetEnvironmentVariable("Path", "$env:Path;$LyXPath;$7ZipPath;$NSISPath", [System.EnvironmentVariableTarget]::Machine)
 
 # refresh path variable
 # $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 # check for MiKTeX updates
-mpm --admin --update
+miktex --admin packages update
