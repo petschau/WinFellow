@@ -1,4 +1,4 @@
-winget install Microsoft.VisualStudio.2022.Community --silent --accept-package-agreements --override "--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000 --includeRecommended"
+winget install Microsoft.VisualStudio.2022.Community --silent --accept-package-agreements --override "--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.Tools.ARM64 --add Microsoft.VisualStudio.Component.Windows11SDK.22000 --includeRecommended"
 winget install Microsoft.VisualStudio.Locator        --silent --accept-package-agreements
 winget install JanDeDobbeleer.OhMyPosh               --silent --accept-package-agreements
 winget install NSIS.NSIS                             --silent --accept-package-agreements
