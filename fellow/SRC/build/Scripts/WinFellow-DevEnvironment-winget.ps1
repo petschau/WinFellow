@@ -26,3 +26,4 @@ If([string]::IsNullOrEmpty($NSISPath)) { $NSISPath = Resolve-Path "${env:Program
 
 # check for MiKTeX updates
 miktex --admin packages update
+initexmf --admin --set-config-value=[MPM]AutoInstall=t
