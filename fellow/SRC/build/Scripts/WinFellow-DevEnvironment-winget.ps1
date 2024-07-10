@@ -26,4 +26,5 @@ If([string]::IsNullOrEmpty($NSISPath)) { $NSISPath = Resolve-Path "${env:Program
 
 # check for MiKTeX updates
 miktex --admin packages update
+# the following requires UAC prompts to be confirmed to install missing packages on the first compile, so maybe user-based installation makes more sense?
 initexmf --admin --set-config-value=[MPM]AutoInstall=t
