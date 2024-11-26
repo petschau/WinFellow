@@ -27,10 +27,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
       - name: Build
         working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -47,6 +47,6 @@ jobs:
         run: .\WinFellow.Hardfile.Tests.exe --reporter JUnit::out=WinFellowHardfileTestsResult-junit.xml
 
       - name: Check test results
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v5
         with:
           report_paths: '${{env.SOLUTION_DIRECTORY}}\**\*junit.xml'
