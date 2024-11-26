@@ -2,9 +2,9 @@ name: MSBuild
 
 on:
   push:
-    branches: ["master"]
-  pull_request:
-    branches: ["master"]
+    branches: ["temporarily-disable"]
+#   pull_request:
+#     branches: ["master"]
 
 env:
   # Configuration type to build.
