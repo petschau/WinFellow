@@ -47,6 +47,6 @@ jobs:
         run: .\WinFellow.Hardfile.Tests.exe --reporter JUnit::out=WinFellowHardfileTestsResult-junit.xml
 
       - name: Check test results
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v5
         with:
           report_paths: '${{env.SOLUTION_DIRECTORY}}\**\*junit.xml'
