@@ -29,4 +29,10 @@ namespace CustomChipset
     SOUND_DSOUND_NOTIFICATION,
     SOUND_MMTIMER_NOTIFICATION
   };
+
+  enum class sound_base_clock
+  {
+    Pal,
+    Ntsc
+  };
 }

@@ -1,7 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "gui_general.h"
-
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -18,7 +17,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH,
@@ -187,19 +186,20 @@ LANGUAGE LANG_ENGLISH,
     IDC_STATIC, 175, 82, 60, 40 CONTROL "original", IDC_RADIO_BLITTER_NORMAL, "Button", BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 180, 140, 38, 10 CONTROL "immediate",
     IDC_RADIO_BLITTER_IMMEDIATE, "Button", BS_AUTORADIOBUTTON | WS_TABSTOP, 180, 155, 47, 10 CONTROL "OCS", IDC_RADIO_BLITTER_OCS, "Button",
     BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 180, 92, 31, 10 CONTROL "ECS", IDC_RADIO_BLITTER_ECS, "Button", BS_AUTORADIOBUTTON | WS_TABSTOP, 180, 106, 30,
-    10 GROUPBOX "blitter speed", IDC_STATIC, 175, 125, 60, 45 GROUPBOX "options", IDC_STATIC, 5, 82, 95, 40 CONTROL "Slider1", IDC_SLIDER_SCREEN_AREA, "msctls_trackbar32",
-    TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP, 123, 51, 85, 15 LTEXT "less", IDC_STATIC, 108, 53, 13, 8 LTEXT "more", IDC_STATIC, 212, 53, 16, 8 CTEXT "not set",
-    IDC_STATIC_SCREEN_AREA, 122, 67, 85, 8, SS_CENTERIMAGE CONTROL "use fullscreen", IDC_CHECK_FULLSCREEN, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 108, 17, 61,
-    10 GROUPBOX "fullscreen resolution", IDC_STATIC, 105, 7, 130, 72 CONTROL "Slider2", IDC_SLIDER_FRAME_SKIPPING, "msctls_trackbar32",
-    TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP, 10, 140, 85, 15 CTEXT "not set", IDC_STATIC_FRAME_SKIPPING, 15, 155, 75, 8, SS_CENTERIMAGE CONTROL "multiple buffers",
-    IDC_CHECK_MULTIPLE_BUFFERS, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 10, 93, 63, 10 GROUPBOX "frame skipping", IDC_STATIC, 5, 125, 95, 45 COMBOBOX IDC_COMBO_COLOR_BITS,
-    108, 33, 120, 135, CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP GROUPBOX "line fill strategy", IDC_STATIC, 106, 82, 65, 40 CONTROL "solid",
-    IDC_RADIO_LINE_FILL_SOLID, "Button", BS_AUTORADIOBUTTON | WS_GROUP, 110, 92, 30, 10 CONTROL "scanlines", IDC_RADIO_LINE_FILL_SCANLINES, "Button",
-    BS_AUTORADIOBUTTON | WS_GROUP, 110, 106, 45, 10 COMBOBOX IDC_COMBO_DISPLAY_DRIVER, 10, 107, 85, 135,
+    10 GROUPBOX "blitter speed", IDC_STATIC, 175, 125, 60, 45 GROUPBOX "graphics driver", IDC_STATIC, 5, 82, 95, 40 CONTROL "Slider1", IDC_SLIDER_SCREEN_AREA,
+    "msctls_trackbar32", TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP, 123, 51, 85, 15 LTEXT "less", IDC_STATIC, 108, 53, 13, 8 LTEXT "more", IDC_STATIC, 212, 53, 16,
+    8 CTEXT "not set", IDC_STATIC_SCREEN_AREA, 122, 67, 85, 8, SS_CENTERIMAGE CONTROL "use fullscreen", IDC_CHECK_FULLSCREEN, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 108, 17,
+    61, 10 GROUPBOX "fullscreen resolution", IDC_STATIC, 105, 7, 130, 72 CONTROL "Slider2", IDC_SLIDER_FRAME_SKIPPING, "msctls_trackbar32",
+    TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP, 10, 140, 85, 15 CTEXT "not set", IDC_STATIC_FRAME_SKIPPING, 15, 155, 75, 8, SS_CENTERIMAGE GROUPBOX "frame skipping",
+    IDC_STATIC, 5, 125, 95, 45 COMBOBOX IDC_COMBO_COLOR_BITS, 108, 33, 120, 135, CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP GROUPBOX "line fill strategy",
+    IDC_STATIC, 106, 82, 65, 40 CONTROL "solid", IDC_RADIO_LINE_FILL_SOLID, "Button", BS_AUTORADIOBUTTON | WS_GROUP, 110, 92, 30, 10 CONTROL "scanlines",
+    IDC_RADIO_LINE_FILL_SCANLINES, "Button", BS_AUTORADIOBUTTON | WS_GROUP, 110, 106, 45, 10 COMBOBOX IDC_COMBO_DISPLAY_DRIVER, 10, 93, 85, 135,
     CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP COMBOBOX IDC_COMBO_DISPLAYSCALE, 10, 53, 85, 94,
     CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP COMBOBOX IDC_COMBO_BORDER, 10, 28, 85, 87, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP GROUPBOX "screen size",
-    IDC_STATIC, 5, 7, 95, 72 LTEXT "overscan", IDC_STATIC, 10, 18, 29, 8 LTEXT "scale", IDC_STATIC, 11, 41, 17,
-    8 END
+    IDC_STATIC, 5, 7, 95, 72 LTEXT "overscan", IDC_STATIC, 10, 18, 29, 8 LTEXT "scale", IDC_STATIC, 11, 41, 17, 8 GROUPBOX "display system", IDC_GROUP_DISPLAY_SYSTEM, 106,
+    125, 65, 45 CONTROL "pal", IDC_RADIO_DISPLAY_SYSTEM_PAL, "Button", BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 110, 140, 48, 10 CONTROL "ntsc",
+    IDC_RADIO_DISPLAY_SYSTEM_NTSC, "Button", BS_AUTORADIOBUTTON | WS_TABSTOP, 110, 155, 54,
+    10 END
 
         IDD_DEBUGGER DIALOGEX 0,
     0, 577, 417 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU CAPTION "WinFellow Debugger" FONT 8, "MS Shell Dlg", 400, 0,
@@ -233,106 +233,12 @@ LANGUAGE LANG_ENGLISH,
     WS_DISABLED LTEXT "", IDC_LABEL_PRESETS_FASTRAM, 71, 124, 157, 8, WS_DISABLED LTEXT "", IDC_LABEL_PRESETS_BOGORAM, 71, 134, 157, 8,
     WS_DISABLED END
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
+        /////////////////////////////////////////////////////////////////////////////
+        //
+        // Menu
+        //
 
-#ifdef APSTUDIO_INVOKED
-        GUIDELINES DESIGNINFO BEGIN IDD_MAIN,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 307 TOPMARGIN, 7 BOTTOMMARGIN,
-    163 END
-
-        IDD_CPU,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    149 END
-
-        IDD_FLOPPY,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    149 END
-
-        IDD_SOUND,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    149 END
-
-        IDD_FILESYSTEM,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    175 END
-
-        IDD_HARDFILE,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    149 END
-
-        IDD_MEMORY,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    142 END
-
-        IDD_GAMEPORT,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    167 END
-
-        IDD_VARIOUS,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 228 TOPMARGIN, 7 BOTTOMMARGIN,
-    149 END
-
-        IDD_FILESYSTEM_ADD,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 183 TOPMARGIN, 7 BOTTOMMARGIN,
-    87 END
-
-        IDD_HARDFILE_ADD,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 179 TOPMARGIN, 7 BOTTOMMARGIN,
-    123 END
-
-        IDD_ABOUT,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 208 TOPMARGIN, 7 BOTTOMMARGIN,
-    130 END
-
-        IDD_HARDFILE_CREATE,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 179 TOPMARGIN, 7 BOTTOMMARGIN,
-    91 END
-
-        IDD_DISPLAY,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 235 TOPMARGIN, 7 BOTTOMMARGIN,
-    174 END
-
-        IDD_DEBUGGER,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 570 TOPMARGIN, 7 BOTTOMMARGIN,
-    410 END
-
-        IDD_FLOPPY_ADF_CREATE,
-    DIALOG BEGIN LEFTMARGIN, 7 RIGHTMARGIN, 302 TOPMARGIN, 7 BOTTOMMARGIN,
-    119 END
-
-        IDD_PRESETS,
-    DIALOG BEGIN LEFTMARGIN, 7 VERTGUIDE, 228 TOPMARGIN,
-    7 END END
-#endif // APSTUDIO_INVOKED
-
-#ifdef APSTUDIO_INVOKED
-    /////////////////////////////////////////////////////////////////////////////
-    //
-    // TEXTINCLUDE
-    //
-
-    1 TEXTINCLUDE BEGIN "gui_general.h\0" END
-
-    2 TEXTINCLUDE BEGIN "#include "
-                        "afxres.h"
-                        "\r\0" END
-
-    3 TEXTINCLUDE BEGIN "#include "
-                        "gui_debugger.rc"
-                        "\r\n"
-                        "\0" END
-
-#endif // APSTUDIO_INVOKED
-
-                            /////////////////////////////////////////////////////////////////////////////
-                            //
-                            // Menu
-                            //
-
-                            IDR_FELLOW_GUI_MENU MENU BEGIN POPUP "&File" BEGIN MENUITEM "Open &Configuration...",
+        IDR_FELLOW_GUI_MENU MENU BEGIN POPUP "&File" BEGIN MENUITEM "Open &Configuration...",
     ID_FILE_OPENCONFIGURATION MENUITEM SEPARATOR MENUITEM "&Save Configuration", ID_FILE_SAVECONFIGURATION MENUITEM "Save Configuration &As...",
     ID_FILE_SAVECONFIGURATIONAS MENUITEM SEPARATOR MENUITEM "E&xit",
     ID_FILE_QUIT MENUITEM SEPARATOR END POPUP "&Options" BEGIN MENUITEM "&Pause emulation when window loses focus",
@@ -398,32 +304,32 @@ LANGUAGE LANG_ENGLISH,
 
             IDD_FILESYSTEM AFX_DIALOG_LAYOUT BEGIN 0 END
 
-                /////////////////////////////////////////////////////////////////////////////
-                //
-                // String Table
-                //
+#ifdef APSTUDIO_INVOKED
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    // TEXTINCLUDE
+    //
 
-                STRINGTABLE BEGIN ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?" END
+    1 TEXTINCLUDE BEGIN "resource.h\0" END
 
-#endif // Englisch (USA) resources
+    2 TEXTINCLUDE BEGIN "\0" END
+
+    3 TEXTINCLUDE BEGIN "\r\n"
+                        "\0" END
+
+#endif // APSTUDIO_INVOKED
+
 /////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
 
-/////////////////////////////////////////////////////////////////////////////
-// Norwegisch Bokmål (Norwegen) resources
+#ifdef APSTUDIO_INVOKED
+                            GUIDELINES DESIGNINFO BEGIN IDD_DISPLAY,
+    DIALOG BEGIN END END
+#endif // APSTUDIO_INVOKED
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
-                    LANGUAGE LANG_NORWEGIAN,
-    SUBLANG_NORWEGIAN_BOKMAL
-#pragma code_page(1252)
-
-        /////////////////////////////////////////////////////////////////////////////
-        //
-        // Bitmap
-        //
-
-        IDB_DEBUG_ARROW BITMAP "icons\\arrow.bmp"
-
-#endif // Norwegisch Bokmål (Norwegen) resources
+#endif // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 #ifndef APSTUDIO_INVOKED
@@ -431,7 +337,6 @@ LANGUAGE LANG_ENGLISH,
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-#include "gui_debugger.rc"
 
 /////////////////////////////////////////////////////////////////////////////
 #endif // not APSTUDIO_INVOKED

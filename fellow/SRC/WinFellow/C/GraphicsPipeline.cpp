@@ -37,6 +37,7 @@
 #include "draw_interlace_control.h"
 
 #include "graphics/Graphics.h"
+#include <cassert>
 
 /*======================================================================*/
 /* flag that handles loss of surface content due to DirectX malfunction */
@@ -96,6 +97,7 @@ uint32_t evenscroll, evenhiscroll, oddscroll, oddhiscroll;
 uint32_t diwstrt, diwstop;
 uint32_t diwxleft, diwxright, diwytop, diwybottom;
 uint32_t dmacon;
+uint16_t beamcon0;
 
 /*===========================================================================*/
 /* Framebuffer data about each line, max triple buffering                    */
@@ -190,6 +192,7 @@ static void graphIORegistersClear()
   oddhiscroll = 0;
   _core.Registers.DmaConR = 0;
   dmacon = 0;
+  beamcon0 = 0x0020;
 }
 
 /*===========================================================================*/
@@ -224,13 +227,22 @@ uint32_t graphAdjustVPosY(uint32_t y, uint32_t x)
 
 uint16_t rvposr(uint32_t address)
 {
-  uint32_t y = graphAdjustVPosY(busGetRasterY(), busGetRasterX());
+  const uint32_t y = graphAdjustVPosY(busGetRasterY(), busGetRasterX());
+  uint16_t agnusChipId = 0;
 
   if (chipsetGetECS())
   {
-    return (uint16_t)((lof | (y >> 8)) | 0x2000);
+    if (drawGetBaseDisplaySystem() == DisplaySystem::Pal)
+    {
+      agnusChipId = 0x2000;
+    }
+    else
+    {
+      agnusChipId = 0x3000;
+    }
   }
-  return (uint16_t)(lof | (y >> 8));
+
+  return (uint16_t)(lof | (y >> 8) | agnusChipId);
 }
 
 /*===========================================================================*/
@@ -895,6 +907,21 @@ void wcolor(uint16_t data, uint32_t address)
 }
 
 /*===========================================================================*/
+/* BEAMCON0 - $dff1dc Write                                                  */
+/*                                                                           */
+/* Bit 5 - PAL                                                               */
+/*===========================================================================*/
+
+void wbeamcon0(uint16_t data, uint32_t address)
+{
+  beamcon0 = data & 0x7fff;
+
+  assert(chipsetGetECS());
+
+  _core.Log->AddLog("BEAMCON0: %.4x, frame no %I64d, Y %d X %d\n", beamcon0, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+}
+
+/*===========================================================================*/
 /* Registers the graphics IO register handlers                               */
 /*===========================================================================*/
 
@@ -929,6 +956,11 @@ void graphIOHandlersInstall()
   memorySetIoWriteStub(0x10a, wbpl2mod);
   for (uint32_t i = 0x180; i < 0x1c0; i += 2)
     memorySetIoWriteStub(i, wcolor);
+
+  if (chipsetGetECS())
+  {
+    memorySetIoWriteStub(0x1dc, wbeamcon0);
+  }
 }
 
 /*===========================================================================*/
@@ -2164,7 +2196,9 @@ void graphEndOfLine()
   // skip this frame?
   if (draw_frame_skip == 0)
   {
+    const uint32_t firstSpriteLineHardStart = drawGetActiveDisplaySystem() == DisplaySystem::Ntsc ? 19 : 25;
     uint32_t currentY = busGetRasterY();
+
     // update diw state
     graphPlayfieldOnOff();
 
@@ -2177,7 +2211,7 @@ void graphEndOfLine()
       // decode sprites if DMA is enabled and raster is after line $18
       if ((dmacon & 0x20) == 0x20)
       {
-        if (currentY >= 0x18)
+        if (currentY >= firstSpriteLineHardStart)
         {
           line_exact_sprites->DMASpriteHandler();
           line_exact_sprites->ProcessActionList();
@@ -2248,6 +2282,7 @@ void graphHardReset()
 {
   graphIORegistersClear();
   graphLineDescClear();
+  beamcon0 = drawGetActiveDisplaySystem() == DisplaySystem::Pal ? 0x0020 : 0x0000;
 }
 
 /*===========================================================================*/

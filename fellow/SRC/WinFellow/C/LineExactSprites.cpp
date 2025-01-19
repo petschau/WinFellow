@@ -1362,6 +1362,7 @@ void LineExactSprites::DMASpriteHandler()
   uint32_t local_data_pos;
   uint32_t i, count;
   uint32_t currentY = busGetRasterY();
+  const uint32_t firstSpriteLineHardStart = drawGetActiveDisplaySystem() == DisplaySystem::Ntsc ? 19 : 25;
 
   sprites_online = false;
   uint32_t sprnr = 0;
@@ -1591,7 +1592,7 @@ void LineExactSprites::DMASpriteHandler()
               sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
             }
 
-            if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+            if ((currentY < firstSpriteLineHardStart) && ((local_data_ctl == 0) && (local_data_pos == 0)))
             {
               sprite_state[sprnr] = 0;
             }

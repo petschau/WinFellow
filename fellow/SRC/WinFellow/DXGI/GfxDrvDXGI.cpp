@@ -634,6 +634,9 @@ void GfxDrvDXGI::CalculateDestinationRectangle(uint32_t output_width, uint32_t o
   float srcClipWidth = drawGetBufferClipWidthAsFloat();
   float srcClipHeight = drawGetBufferClipHeightAsFloat();
 
+  auto displaySystem = drawGetActiveDisplaySystem();
+  float additionalDstHeightScale = displaySystem == DisplaySystem::Ntsc ? 1.2f : 1.0f;
+
   if (drawGetDisplayScale() != DISPLAYSCALE::DISPLAYSCALE_AUTO)
   {
     float internalScaleFactor = static_cast<float>(drawGetInternalScaleFactor());
@@ -641,7 +644,7 @@ void GfxDrvDXGI::CalculateDestinationRectangle(uint32_t output_width, uint32_t o
     float scaleRatio = outputScaleFactor / internalScaleFactor;
 
     dstHalfWidth = srcClipWidth * scaleRatio * 0.5f;
-    dstHalfHeight = srcClipHeight * scaleRatio * 0.5f;
+    dstHalfHeight = srcClipHeight * scaleRatio * 0.5f * additionalDstHeightScale;
   }
   else
   {
@@ -656,13 +659,13 @@ void GfxDrvDXGI::CalculateDestinationRectangle(uint32_t output_width, uint32_t o
     {
       // Stretch to full height, black vertical borders
       dstHalfWidth = 0.5f * srcClipWidth * dstHeight / srcClipHeight;
-      dstHalfHeight = dstHeight * 0.5f;
+      dstHalfHeight = dstHeight * 0.5f * additionalDstHeightScale;
     }
     else
     {
       // Stretch to full width, black horisontal borders
       dstHalfWidth = dstWidth * 0.5f;
-      dstHalfHeight = 0.5f * srcClipHeight * dstWidth / srcClipWidth;
+      dstHalfHeight = additionalDstHeightScale * 0.5f * srcClipHeight * dstWidth / srcClipWidth;
     }
   }
 }
@@ -933,6 +936,8 @@ void GfxDrvDXGI::FlipTexture()
   }
 }
 
+static unsigned int flipcount = 0;
+
 void GfxDrvDXGI::Flip()
 {
   FlipTexture();
@@ -942,6 +947,8 @@ void GfxDrvDXGI::Flip()
   {
     _currentAmigaScreenTexture = 0;
   }
+
+  //_core.Log->AddLog("Flip no %u\n", flipcount++);
 }
 
 void GfxDrvDXGI::SetMode(draw_mode *dm, bool windowed)

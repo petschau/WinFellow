@@ -22,7 +22,10 @@ private:
   unsigned int _output_height;
   bool _output_windowed;
 
-  int _frametime_target;
+  int _frametimeTargetPal;
+  int _frametimeTargetNtsc;
+  int _currentFrametimeTarget;
+
   int _previous_flip_time;
   volatile int _time;
   volatile int _wait_for_time;

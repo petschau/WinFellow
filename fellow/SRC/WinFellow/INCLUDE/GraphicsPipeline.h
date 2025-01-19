@@ -87,6 +87,7 @@ extern uint32_t diwxleft;
 extern uint32_t diwxright;
 extern uint32_t diwytop;
 extern uint32_t diwybottom;
+extern uint16_t beamcon0;
 
 extern BOOLE graph_playfield_on;
 

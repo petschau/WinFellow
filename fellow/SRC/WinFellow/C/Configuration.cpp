@@ -395,6 +395,16 @@ DISPLAYDRIVER cfgGetDisplayDriver(cfg *config)
   return config->m_displaydriver;
 }
 
+void cfgSetBaseDisplaySystem(cfg *config, DisplaySystem baseDisplaySystem)
+{
+  config->m_baseDisplaySystem = baseDisplaySystem;
+}
+
+DisplaySystem cfgGetBaseDisplaySystem(cfg *config)
+{
+  return config->m_baseDisplaySystem;
+}
+
 /*===========================================================================*/
 /* Graphics emulation configuration property access                          */
 /*===========================================================================*/
@@ -865,6 +875,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetScreenDrawLEDs(config, true);
   cfgSetDeinterlace(config, true);
   cfgSetDisplayDriver(config, DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
+  cfgSetBaseDisplaySystem(config, DisplaySystem::Pal);
 
   /*==========================================================================*/
   /* Default graphics emulation configuration                                 */
@@ -1348,6 +1359,34 @@ static const char *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
   return "directdraw";
 }
 
+static DisplaySystem cfgGetBaseDisplaySystemFromString(const string &value)
+{
+  string lowercaseValue = cfgGetLowercaseString(value);
+
+  if (lowercaseValue == "pal")
+  {
+    return DisplaySystem::Pal;
+  }
+
+  if (lowercaseValue == "ntsc")
+  {
+    return DisplaySystem::Ntsc;
+  }
+
+  return DisplaySystem::Pal; // Default
+}
+
+static const char *cfgGetBaseDisplaySystemToString(DisplaySystem baseDisplaySystem)
+{
+  switch (baseDisplaySystem)
+  {
+    case DisplaySystem::Pal: return "pal";
+    case DisplaySystem::Ntsc: return "ntsc";
+  }
+
+  return "pal";
+}
+
 static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(const string &value)
 {
   string lowercaseValue = cfgGetLowercaseString(value);
@@ -1715,6 +1754,10 @@ BOOLE cfgSetOption(cfg *config, const char *optionstr)
   {
     cfgSetDisplayDriver(config, cfgGetDisplayDriverFromString(value));
   }
+  else if (name == "base_display_system")
+  {
+    cfgSetBaseDisplaySystem(config, cfgGetBaseDisplaySystemFromString(value));
+  }
   else if (name == "gfx_emulation_mode")
   {
     cfgSetGraphicsEmulationMode(config, cfgGetGraphicsEmulationModeFromString(value));
@@ -2006,6 +2049,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "gfx_display_scale=%s\n", cfgGetDisplayScaleToString(cfgGetDisplayScale(config)));
   fprintf(cfgfile, "gfx_display_scale_strategy=%s\n", cfgGetDisplayScaleStrategyToString(cfgGetDisplayScaleStrategy(config)));
   fprintf(cfgfile, "gfx_framerate=%u\n", cfgGetFrameskipRatio(config));
+  fprintf(cfgfile, "base_display_system=%s\n", cfgGetBaseDisplaySystemToString(cfgGetBaseDisplaySystem(config)));
   fprintf(cfgfile, "show_leds=%s\n", cfgGetboolToString(cfgGetScreenDrawLEDs(config)));
   fprintf(cfgfile, "fellow.gfx_deinterlace=%s\n", cfgGetBOOLEToString(cfgGetDeinterlace(config)));
   fprintf(cfgfile, "fellow.measure_speed=%s\n", cfgGetboolToString(cfgGetMeasureSpeed(config)));
@@ -2027,10 +2071,15 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
 
 void cfgUpgradeLegacyConfigToCurrentVersion(cfg *config)
 {
-  //  New options:
-  //  ------------
+  //  New options for config version 4:
+  //  ---------------------------------
+  //  base_display_system = <text>
+  //  * Values: pal|ntsc
+  //  Default value is pal, no upgrade needed, if option is missing, use pal
+
+  //  New options for config version 2:
+  //  ---------------------------------
   //  config_version = <integer>
-  //  * Current file version is 2.
 
   //  gfx_driver = <text>
   //  * Values: "directdraw" (default if missing) and "direct3d11".
@@ -2402,6 +2451,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
   drawSetDisplayDriver(cfgGetDisplayDriver(config));
+  needreset |= drawSetBaseDisplaySystem(cfgGetBaseDisplaySystem(config));
   drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(config));
 
   if (cfgGetScreenWindowed(config))
@@ -2426,6 +2476,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   _core.Sound->SetWAVDump(cfgGetSoundWAVDump(config));
   _core.Sound->SetNotification(cfgGetSoundNotification(config));
   _core.Sound->SetBufferLength(cfgGetSoundBufferLength(config));
+  _core.Sound->SetBaseClock(cfgGetBaseDisplaySystem(config) == DisplaySystem::Pal ? sound_base_clock::Pal : sound_base_clock::Ntsc);
 
   /*==========================================================================*/
   /* CPU configuration                                                        */

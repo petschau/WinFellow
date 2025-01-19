@@ -80,11 +80,11 @@ void GfxDrvCommon::DelayFlipWait(int milliseconds)
 
 void GfxDrvCommon::MaybeDelayFlip()
 {
-  int elapsed_time = GetTimeSinceLastFlip();
+  const int elapsed_time = GetTimeSinceLastFlip();
 
-  if (elapsed_time < _frametime_target)
+  if (elapsed_time < _currentFrametimeTarget)
   {
-    DelayFlipWait(_frametime_target - elapsed_time);
+    DelayFlipWait(_currentFrametimeTarget - elapsed_time);
   }
   RememberFlipTime();
 }
@@ -571,6 +571,8 @@ bool GfxDrvCommon::EmulationStart()
 {
   RunEventReset(); /* At this point, app is paused */
 
+  _currentFrametimeTarget = drawGetActiveDisplaySystem() == DisplaySystem::Pal ? _frametimeTargetPal : _frametimeTargetNtsc;
+
   _win_active = false;
   _win_active_original = false;
   _win_minimized_original = false;
@@ -631,9 +633,11 @@ void GfxDrvCommon::Shutdown()
   ReleaseDelayFlipEvent();
 }
 
-GfxDrvCommon::GfxDrvCommon()
-  : _run_event(nullptr), _hwnd(nullptr), _ini(nullptr), _frametime_target(18), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
+GfxDrvCommon::GfxDrvCommon() : _run_event(nullptr), _hwnd(nullptr), _ini(nullptr), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
 {
+  _frametimeTargetPal = 18;
+  _frametimeTargetNtsc = 14;
+  _currentFrametimeTarget = _frametimeTargetPal;
 }
 
 GfxDrvCommon::~GfxDrvCommon()

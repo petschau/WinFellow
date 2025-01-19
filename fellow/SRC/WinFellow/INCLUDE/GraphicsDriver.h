@@ -6,6 +6,7 @@
 /* Implementing these functions creates a graphics driver for Fellow         */
 /*===========================================================================*/
 
+extern void gfxDrvReinitializeVertexAndIndexBuffers();
 extern void gfxDrvClearCurrentBuffer();
 
 extern void gfxDrvBufferFlip();

@@ -1725,7 +1725,7 @@ void wguiInstallDisplayScaleConfigInGUI(HWND hwndDlg, cfg *conf)
   ComboBox_SetCurSel(borderComboboxHWND, currentBorderSelectionIndex);
 }
 
-void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf)
+void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf, DisplaySystem baseDisplaySystem)
 {
   uint32_t currentScaleSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAYSCALE);
   DISPLAYSCALE selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_1X;
@@ -1743,33 +1743,71 @@ void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf)
 
   uint32_t currentBorderSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_BORDER);
 
-  switch (currentBorderSelectionIndex)
+  if (baseDisplaySystem == DisplaySystem::Ntsc)
   {
-    case 0:
-      cfgSetClipLeft(conf, 129); // 640x512
-      cfgSetClipTop(conf, 44);
-      cfgSetClipRight(conf, 449);
-      cfgSetClipBottom(conf, 300);
-      break;
-    case 1:
-      cfgSetClipLeft(conf, 109); // 720x270
-      cfgSetClipTop(conf, 37);
-      cfgSetClipRight(conf, 469);
-      cfgSetClipBottom(conf, 307);
-      break;
-    case 2:
-      cfgSetClipLeft(conf, 96); // 752x576
-      cfgSetClipTop(conf, 26);
-      cfgSetClipRight(conf, 472);
-      cfgSetClipBottom(conf, 314);
-      break;
-    case 3:
-      cfgSetClipLeft(conf, 88); // 768x576
-      cfgSetClipTop(conf, 26);
-      cfgSetClipRight(conf, 472);
-      cfgSetClipBottom(conf, 314);
-      break;
+    switch (currentBorderSelectionIndex)
+    {
+      case 0:
+        cfgSetClipLeft(conf, 129); // 640x512 or 640x426 scaled up (1.2) (Slightly larger than 400 to use same scaling for all sizes)
+        cfgSetClipTop(conf, 38);
+        cfgSetClipRight(conf, 449);
+        cfgSetClipBottom(conf, 251);
+        break;
+      case 1:
+        cfgSetClipLeft(conf, 109); // 720x540 or 720x450 scaled up (1.2)
+        cfgSetClipTop(conf, 31);
+        cfgSetClipRight(conf, 469);
+        cfgSetClipBottom(conf, 259);
+        break;
+      case 2:
+        cfgSetClipLeft(conf, 96); // 752x576, or 752x480 scaled up (1.2)
+        cfgSetClipTop(conf, 20);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 263);
+        break;
+      case 3:
+        cfgSetClipLeft(conf, 88); // 768x576, or 768x480 scaled up (1.2)
+        cfgSetClipTop(conf, 20);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 263);
+        break;
+    }
   }
+  else
+  {
+    switch (currentBorderSelectionIndex)
+    {
+      case 0:
+        cfgSetClipLeft(conf, 129); // 640x512
+        cfgSetClipTop(conf, 44);
+        cfgSetClipRight(conf, 449);
+        cfgSetClipBottom(conf, 300);
+        break;
+      case 1:
+        cfgSetClipLeft(conf, 109); // 720x540
+        cfgSetClipTop(conf, 37);
+        cfgSetClipRight(conf, 469);
+        cfgSetClipBottom(conf, 307);
+        break;
+      case 2:
+        cfgSetClipLeft(conf, 96); // 752x576
+        cfgSetClipTop(conf, 26);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 314);
+        break;
+      case 3:
+        cfgSetClipLeft(conf, 88); // 768x576
+        cfgSetClipTop(conf, 26);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 314);
+        break;
+    }
+  }
+}
+
+void wguiExtractDisplaySystemConfig(HWND hwndDlg, cfg *conf)
+{
+  cfgSetBaseDisplaySystem(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_DISPLAY_SYSTEM_PAL) ? DisplaySystem::Pal : DisplaySystem::Ntsc);
 }
 
 void wguiInstallColorBitsConfigInGUI(HWND hwndDlg, cfg *conf)
@@ -1849,6 +1887,13 @@ void wguiInstallDisplayScaleStrategyConfigInGUI(HWND hwndDlg, cfg *conf)
   }
 }
 
+void wguiInstallDisplaySystemConfigInGUI(HWND hwndDlg, cfg *conf)
+{
+  DisplaySystem baseDisplaySystem = cfgGetBaseDisplaySystem(conf);
+  ccwButtonCheckConditional(hwndDlg, IDC_RADIO_DISPLAY_SYSTEM_PAL, baseDisplaySystem == DisplaySystem::Pal);
+  ccwButtonCheckConditional(hwndDlg, IDC_RADIO_DISPLAY_SYSTEM_NTSC, baseDisplaySystem == DisplaySystem::Ntsc);
+}
+
 void wguiInstallFullScreenResolutionConfigInGUI(HWND hwndDlg, cfg *conf)
 {
   bool hasFullscreenModes = wgui_dm.HasFullscreenModes();
@@ -1903,6 +1948,7 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
   wguiInstallFullScreenResolutionConfigInGUI(hwndDlg, conf);
   wguiInstallFrameSkipConfigInGUI(hwndDlg, conf);
   wguiInstallBlitterConfig(hwndDlg, conf);
+  wguiInstallDisplaySystemConfigInGUI(hwndDlg, conf);
 }
 
 /* extract display config */
@@ -1936,6 +1982,9 @@ void wguiExtractDisplayFullscreenConfig(HWND hwndDlg, cfg *cfg)
 
 void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 {
+  wguiExtractDisplaySystemConfig(hwndDlg, conf);
+  const DisplaySystem baseDisplaySystem = cfgGetBaseDisplaySystem(conf);
+
   // get current colorbits
   cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS)));
 
@@ -1949,7 +1998,7 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
   cfgSetScreenWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
 
   // get scaling
-  wguiExtractDisplayScaleConfigFromGUI(hwndDlg, conf);
+  wguiExtractDisplayScaleConfigFromGUI(hwndDlg, conf, baseDisplaySystem);
 
   cfgSetDisplayScaleStrategy(
       conf,
@@ -1965,6 +2014,12 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
         (cfgGetDisplayScale(conf) == DISPLAYSCALE::DISPLAYSCALE_AUTO) ? wguiDecideScaleFromDesktop(unscaled_width, unscaled_height) : (unsigned int)cfgGetDisplayScale(conf);
     unsigned int width = unscaled_width * scale;
     unsigned int height = unscaled_height * scale;
+
+    if (baseDisplaySystem == DisplaySystem::Ntsc)
+    {
+      height = height * 1.2;
+    }
+
     cfgSetScreenWidth(conf, width);
     cfgSetScreenHeight(conf, height);
   }

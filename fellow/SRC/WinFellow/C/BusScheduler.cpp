@@ -54,6 +54,8 @@ bus_state bus;
 
 bus_screen_limits pal_long_frame;
 bus_screen_limits pal_short_frame;
+bus_screen_limits ntsc_long_frame;
+bus_screen_limits ntsc_short_frame;
 
 bus_event cpuEvent;
 bus_event copperEvent;
@@ -506,6 +508,7 @@ void busInitializePalLongFrame()
   pal_long_frame.max_lines_in_frame = 314;
   pal_long_frame.cycles_in_this_frame = 313 * 227;
 }
+
 void busInitializePalShortFrame()
 {
   pal_short_frame.cycles_in_this_line = 227;
@@ -515,14 +518,48 @@ void busInitializePalShortFrame()
   pal_short_frame.cycles_in_this_frame = 312 * 227;
 }
 
+void busInitializeNtscLongFrame()
+{
+  ntsc_long_frame.cycles_in_this_line = 227;
+  ntsc_long_frame.max_cycles_in_line = 227;
+  ntsc_long_frame.lines_in_this_frame = 263;
+  ntsc_long_frame.max_lines_in_frame = 264;
+  ntsc_long_frame.cycles_in_this_frame = 263 * 227;
+}
+
+void busInitializeNtscShortFrame()
+{
+  ntsc_short_frame.cycles_in_this_line = 227;
+  ntsc_short_frame.max_cycles_in_line = 227;
+  ntsc_short_frame.lines_in_this_frame = 262;
+  ntsc_short_frame.max_lines_in_frame = 264;
+  ntsc_short_frame.cycles_in_this_frame = 262 * 227;
+}
+
 void busInitializeScreenLimits()
 {
   busInitializePalLongFrame();
   busInitializePalShortFrame();
+  busInitializeNtscLongFrame();
+  busInitializeNtscShortFrame();
 }
 
-void busSetScreenLimits(bool is_long_frame)
+void busSetScreenLimits(bool is_long_frame, DisplaySystem displaySystem)
 {
+  if (displaySystem == DisplaySystem::Ntsc)
+  {
+    if (is_long_frame)
+    {
+      bus.screen_limits = &ntsc_long_frame;
+    }
+    else
+    {
+      bus.screen_limits = &ntsc_short_frame;
+    }
+
+    return;
+  }
+
   if (is_long_frame)
   {
     bus.screen_limits = &pal_long_frame;
@@ -587,11 +624,8 @@ void busSoftReset()
 
 void busHardReset()
 {
+  busSetScreenLimits(drawGetFrameIsLong(), drawGetBaseDisplaySystem());
   busInitializeQueue();
-
-  // Continue to use the selected cycle layout, interlace control will switch it when necessary
-  // it must only be changed in the end of frame handler to maintain event time consistency
-  busSetScreenLimits(drawGetFrameIsLong());
 }
 
 /*===========================================================================*/

@@ -118,6 +118,12 @@ extern DISPLAYDRIVER drawGetDisplayDriver();
 extern void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode);
 extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
 
+extern bool drawSetBaseDisplaySystem(DisplaySystem baseDisplaySystem);
+extern DisplaySystem drawGetBaseDisplaySystem();
+
+extern void drawSetActiveDisplaySystem(DisplaySystem activeDisplaySystem);
+extern DisplaySystem drawGetActiveDisplaySystem();
+
 /*===========================================================================*/
 /* Which part of the Amiga screen is visible in the host buffer              */
 /* Units are cylinders (lores-pixels, non-interlaced height)                 */

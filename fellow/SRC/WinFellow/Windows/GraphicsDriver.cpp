@@ -11,6 +11,14 @@ bool gfx_drv_use_dxgi = false;
 GfxDrvCommon *gfxDrvCommon = nullptr;
 GfxDrvDXGI *gfxDrvDXGI = nullptr;
 
+void gfxDrvReinitializeVertexAndIndexBuffers()
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->CreateVertexAndIndexBuffers();
+  }
+}
+
 void gfxDrvClearCurrentBuffer()
 {
   if (gfx_drv_use_dxgi)

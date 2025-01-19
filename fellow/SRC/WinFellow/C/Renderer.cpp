@@ -68,6 +68,8 @@ DISPLAYSCALE draw_displayscale;
 DISPLAYSCALE_STRATEGY draw_displayscale_strategy;
 DISPLAYDRIVER draw_displaydriver;
 GRAPHICSEMULATIONMODE draw_graphicsemulationmode;
+DisplaySystem draw_base_display_system;
+DisplaySystem draw_active_display_system;
 
 BOOLE draw_allow_multiple_buffers; /* allows the use of more buffers */
 uint32_t draw_clear_buffers;
@@ -133,6 +135,7 @@ float drawGetBufferClipHeightAsFloat()
 /*============================================================================*/
 
 draw_rect draw_clip_max_pal;
+draw_rect draw_clip_max_ntsc;
 
 draw_rect draw_internal_clip;
 draw_rect draw_output_clip;
@@ -169,6 +172,11 @@ void drawInitializePredefinedClipRectangles()
   draw_clip_max_pal.top = 26;
   draw_clip_max_pal.right = 472;
   draw_clip_max_pal.bottom = 314;
+
+  draw_clip_max_ntsc.left = 88;
+  draw_clip_max_ntsc.top = 20;
+  draw_clip_max_ntsc.right = 472;
+  draw_clip_max_ntsc.bottom = 263;
 }
 
 /*============================================================================*/
@@ -638,6 +646,28 @@ GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode()
   return draw_graphicsemulationmode;
 }
 
+bool drawSetBaseDisplaySystem(DisplaySystem baseDisplaySystem)
+{
+  const bool needReset = draw_base_display_system != baseDisplaySystem;
+  draw_base_display_system = baseDisplaySystem;
+  return needReset;
+}
+
+DisplaySystem drawGetBaseDisplaySystem()
+{
+  return draw_base_display_system;
+}
+
+void drawSetActiveDisplaySystem(DisplaySystem activeDisplaySystem)
+{
+  draw_active_display_system = activeDisplaySystem;
+}
+
+DisplaySystem drawGetActiveDisplaySystem()
+{
+  return draw_active_display_system;
+}
+
 void drawSetFrameskipRatio(uint32_t frameskipratio)
 {
   draw_frame_skip_factor = frameskipratio;
@@ -1008,6 +1038,8 @@ void drawInvalidateBufferPointer()
 void drawHardReset()
 {
   draw_switch_bg_to_bpl = FALSE;
+
+  drawSetActiveDisplaySystem(drawGetBaseDisplaySystem());
 }
 
 /*============================================================================*/
@@ -1079,6 +1111,9 @@ BOOLE drawStartup()
   {
     return FALSE;
   }
+
+  drawSetBaseDisplaySystem(DisplaySystem::Pal);
+  drawSetActiveDisplaySystem(DisplaySystem::Pal);
 
   draw_mode_windowed.width = 640;
   draw_mode_windowed.height = 400;
@@ -1164,6 +1199,7 @@ void drawReinitializeRendering()
 {
   drawModeTablesInitialize();
   graphLineDescClear();
+  gfxDrvReinitializeVertexAndIndexBuffers();
 }
 
 /*==============================================================================*/

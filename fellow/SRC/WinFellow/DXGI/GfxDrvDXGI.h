@@ -93,7 +93,6 @@ private:
   bool CreateVertexShader();
   void DeleteVertexShader();
 
-  bool CreateVertexAndIndexBuffers();
   void DeleteVertexAndIndexBuffers();
 
   bool CreateDepthDisabledStencil();
@@ -105,6 +104,7 @@ private:
   void CalculateSourceRectangle(float &srcLeft, float &srcTop, float &srcRight, float &srcBottom);
 
 public:
+  bool CreateVertexAndIndexBuffers();
   void ClearCurrentBuffer();
   void SetMode(draw_mode *dm, bool windowed);
   void SizeChanged(unsigned int width, unsigned int height);

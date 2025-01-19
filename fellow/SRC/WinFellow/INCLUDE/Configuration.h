@@ -55,6 +55,12 @@ enum class DISPLAYDRIVER
   DISPLAYDRIVER_DIRECT3D11 = 1
 };
 
+enum class DisplaySystem
+{
+  Pal = 0,
+  Ntsc = 1
+};
+
 enum class GRAPHICSEMULATIONMODE
 {
   GRAPHICSEMULATIONMODE_LINEEXACT = 0,
@@ -68,7 +74,7 @@ enum class GRAPHICSEMULATIONMODE
 /* when changed here.                                                         */
 /*============================================================================*/
 
-constexpr unsigned int CONFIG_CURRENT_FILE_VERSION = 3;
+constexpr unsigned int CONFIG_CURRENT_FILE_VERSION = 4;
 
 struct cfg
 {
@@ -125,6 +131,7 @@ struct cfg
   bool m_measurespeed;
   DISPLAYDRIVER m_displaydriver;
   GRAPHICSEMULATIONMODE m_graphicsemulationmode;
+  DisplaySystem m_baseDisplaySystem;
 
   /*==========================================================================*/
   /* Hold the option for using multiple graphical buffers                     */
@@ -266,6 +273,8 @@ extern void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_gr
 extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *config);
 extern void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver);
 extern DISPLAYDRIVER cfgGetDisplayDriver(cfg *config);
+extern void cfgSetBaseDisplaySystem(cfg *config, DisplaySystem displaySystem);
+extern DisplaySystem cfgGetBaseDisplaySystem(cfg *config);
 
 /*===========================================================================*/
 /* Graphics emulation configuration property access                          */

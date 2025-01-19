@@ -26,6 +26,7 @@
 #include "Renderer.h"
 #include "draw_interlace_control.h"
 #include "VirtualHost/Core.h"
+#include "chipset.h"
 
 struct draw_interlace_status
 {
@@ -52,6 +53,24 @@ bool drawDecideUseInterlacedRendering()
   return interlace_status.enable_deinterlace && interlace_status.frame_is_interlaced;
 }
 
+bool drawSelectDisplaySystemForNextFrame()
+{
+  if (!chipsetGetECS())
+  {
+    return false;
+  }
+
+  DisplaySystem beamcon0DisplaySystem = (beamcon0 & 0x0020) ? DisplaySystem::Pal : DisplaySystem::Ntsc;
+  bool displaySystemWasChanged = (beamcon0DisplaySystem != drawGetActiveDisplaySystem());
+
+  if (displaySystemWasChanged)
+  {
+    drawSetActiveDisplaySystem(beamcon0DisplaySystem);
+  }
+
+  return displaySystemWasChanged;
+}
+
 void drawDecideInterlaceStatusForNextFrame()
 {
   bool lace_bit = _core.RegisterUtility.IsInterlaceEnabled();
@@ -64,20 +83,40 @@ void drawDecideInterlaceStatusForNextFrame()
   }
 
   interlace_status.frame_is_long = ((lof & 0x8000) == 0x8000);
-  busSetScreenLimits(interlace_status.frame_is_long);
+
+  bool clearBuffers = false;
+  bool reinitializeRendering = false;
+  const bool displaySystemWasChanged = drawSelectDisplaySystemForNextFrame();
+
+  if (displaySystemWasChanged)
+  {
+    clearBuffers = true;
+    reinitializeRendering = true;
+  }
+
+  busSetScreenLimits(interlace_status.frame_is_long, drawGetActiveDisplaySystem());
 
   bool use_interlaced_rendering = drawDecideUseInterlacedRendering();
   if (use_interlaced_rendering != interlace_status.use_interlaced_rendering)
   {
-
     if ((drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES) && interlace_status.use_interlaced_rendering)
     {
       // Clear buffers when switching back to scanlines from interlaced rendering
       // to avoid a ghost image remaining in the scanlines.
-      draw_clear_buffers = drawGetBufferCount();
+      clearBuffers = true;
     }
 
     interlace_status.use_interlaced_rendering = use_interlaced_rendering;
+    reinitializeRendering = true;
+  }
+
+  if (clearBuffers)
+  {
+    draw_clear_buffers = drawGetBufferCount();
+  }
+
+  if (reinitializeRendering)
+  {
     drawReinitializeRendering();
   }
 

@@ -42,6 +42,7 @@ private:
   bool _wavCapture;
   CustomChipset::sound_filters _filter;
   CustomChipset::sound_notifications _notification;
+  CustomChipset::sound_base_clock _baseClock;
   int _volume;
   bool _deviceFound;
 
@@ -143,6 +144,8 @@ private:
 
   void VolumeTableInitialize(bool isStereo);
   void PeriodTableInitialize(uint32_t outputRate);
+  double GetClockspeed() const;
+  double GetInternalSamplerateConstant() const;
   void PlaybackInitialize();
 
   void IOHandlersInstall();
@@ -164,6 +167,7 @@ public:
   CustomChipset::sound_notifications GetNotification();
   void SetRate(CustomChipset::sound_rates rate);
   void SetBufferLength(uint32_t ms);
+  void SetBaseClock(CustomChipset::sound_base_clock baseClock);
 
   void ChannelKill(uint32_t channel);
   void ChannelEnable(uint32_t channel);
