@@ -73,7 +73,7 @@ extern uint32_t busGetCyclesInThisFrame();
 
 extern uint32_t busGetMaxLinesInFrame();
 
-extern void busSetScreenLimits(bool is_long_frame);
+extern void busSetScreenLimits(bool is_long_frame, bool ntsc);
 
 constexpr uint32_t BUS_CYCLE_DISABLE = 0xffffffff;
 

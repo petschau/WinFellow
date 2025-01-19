@@ -631,9 +631,10 @@ void GfxDrvCommon::Shutdown()
   ReleaseDelayFlipEvent();
 }
 
-GfxDrvCommon::GfxDrvCommon()
-  : _run_event(nullptr), _hwnd(nullptr), _ini(nullptr), _frametime_target(18), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
+GfxDrvCommon::GfxDrvCommon() : _run_event(nullptr), _hwnd(nullptr), _ini(nullptr), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
 {
+  bool ntsc = true;
+  _frametime_target = ntsc ? 14 : 18;
 }
 
 GfxDrvCommon::~GfxDrvCommon()

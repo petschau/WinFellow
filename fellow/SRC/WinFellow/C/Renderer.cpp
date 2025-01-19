@@ -133,6 +133,7 @@ float drawGetBufferClipHeightAsFloat()
 /*============================================================================*/
 
 draw_rect draw_clip_max_pal;
+draw_rect draw_clip_max_ntsc;
 
 draw_rect draw_internal_clip;
 draw_rect draw_output_clip;
@@ -169,6 +170,11 @@ void drawInitializePredefinedClipRectangles()
   draw_clip_max_pal.top = 26;
   draw_clip_max_pal.right = 472;
   draw_clip_max_pal.bottom = 314;
+
+  draw_clip_max_ntsc.left = 88;
+  draw_clip_max_ntsc.top = 20;
+  draw_clip_max_ntsc.right = 472;
+  draw_clip_max_ntsc.bottom = 263;
 }
 
 /*============================================================================*/
@@ -1091,8 +1097,18 @@ BOOLE drawStartup()
 
   if (!RP.GetHeadlessMode())
   {
-    drawSetInternalClip(draw_clip_max_pal);
-    drawSetOutputClip(draw_clip_max_pal);
+    bool ntsc = true;
+
+    if (ntsc)
+    {
+      drawSetInternalClip(draw_clip_max_ntsc);
+      drawSetOutputClip(draw_clip_max_ntsc);
+    }
+    else
+    {
+      drawSetInternalClip(draw_clip_max_pal);
+      drawSetOutputClip(draw_clip_max_pal);
+    }
   }
 
   draw_switch_bg_to_bpl = FALSE;

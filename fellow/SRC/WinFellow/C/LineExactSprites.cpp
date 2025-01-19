@@ -1591,7 +1591,10 @@ void LineExactSprites::DMASpriteHandler()
               sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
             }
 
-            if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+            bool ntsc = true;
+            uint32_t firstSpriteLine = ntsc ? 19 : 25;
+
+            if ((currentY < firstSpriteLine) && ((local_data_ctl == 0) && (local_data_pos == 0)))
             {
               sprite_state[sprnr] = 0;
             }

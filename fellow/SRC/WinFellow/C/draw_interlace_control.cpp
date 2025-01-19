@@ -64,7 +64,7 @@ void drawDecideInterlaceStatusForNextFrame()
   }
 
   interlace_status.frame_is_long = ((lof & 0x8000) == 0x8000);
-  busSetScreenLimits(interlace_status.frame_is_long);
+  busSetScreenLimits(interlace_status.frame_is_long, true);
 
   bool use_interlaced_rendering = drawDecideUseInterlacedRendering();
   if (use_interlaced_rendering != interlace_status.use_interlaced_rendering)

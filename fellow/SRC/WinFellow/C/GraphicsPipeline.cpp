@@ -2164,7 +2164,10 @@ void graphEndOfLine()
   // skip this frame?
   if (draw_frame_skip == 0)
   {
+    bool ntsc = true;
+    const uint32_t firstSpriteDMALine = ntsc ? 0x13 : 0x19;
     uint32_t currentY = busGetRasterY();
+
     // update diw state
     graphPlayfieldOnOff();
 
@@ -2177,7 +2180,7 @@ void graphEndOfLine()
       // decode sprites if DMA is enabled and raster is after line $18
       if ((dmacon & 0x20) == 0x20)
       {
-        if (currentY >= 0x18)
+        if (currentY >= firstSpriteDMALine)
         {
           line_exact_sprites->DMASpriteHandler();
           line_exact_sprites->ProcessActionList();

@@ -1742,33 +1742,67 @@ void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf)
   cfgSetDisplayScale(conf, selectedDisplayScale);
 
   uint32_t currentBorderSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_BORDER);
+  bool ntsc = true;
 
-  switch (currentBorderSelectionIndex)
+  if (ntsc)
   {
-    case 0:
-      cfgSetClipLeft(conf, 129); // 640x512
-      cfgSetClipTop(conf, 44);
-      cfgSetClipRight(conf, 449);
-      cfgSetClipBottom(conf, 300);
-      break;
-    case 1:
-      cfgSetClipLeft(conf, 109); // 720x270
-      cfgSetClipTop(conf, 37);
-      cfgSetClipRight(conf, 469);
-      cfgSetClipBottom(conf, 307);
-      break;
-    case 2:
-      cfgSetClipLeft(conf, 96); // 752x576
-      cfgSetClipTop(conf, 26);
-      cfgSetClipRight(conf, 472);
-      cfgSetClipBottom(conf, 314);
-      break;
-    case 3:
-      cfgSetClipLeft(conf, 88); // 768x576
-      cfgSetClipTop(conf, 26);
-      cfgSetClipRight(conf, 472);
-      cfgSetClipBottom(conf, 314);
-      break;
+    switch (currentBorderSelectionIndex)
+    {
+      case 0:
+        cfgSetClipLeft(conf, 129); // 640x512 or 640x426 scaled up (1.2) (Slightly larger than 400 to use same scaling for all sizes)
+        cfgSetClipTop(conf, 38);
+        cfgSetClipRight(conf, 449);
+        cfgSetClipBottom(conf, 251);
+        break;
+      case 1:
+        cfgSetClipLeft(conf, 109); // 720x540 or 720x450 scaled up (1.2)
+        cfgSetClipTop(conf, 31);
+        cfgSetClipRight(conf, 469);
+        cfgSetClipBottom(conf, 259);
+        break;
+      case 2:
+        cfgSetClipLeft(conf, 96); // 752x576, or 752x480 scaled up (1.2)
+        cfgSetClipTop(conf, 20);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 263);
+        break;
+      case 3:
+        cfgSetClipLeft(conf, 88); // 768x576, or 768x480 scaled up (1.2)
+        cfgSetClipTop(conf, 20);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 263);
+        break;
+    }
+  }
+  else
+  {
+    switch (currentBorderSelectionIndex)
+    {
+      case 0:
+        cfgSetClipLeft(conf, 129); // 640x512
+        cfgSetClipTop(conf, 44);
+        cfgSetClipRight(conf, 449);
+        cfgSetClipBottom(conf, 300);
+        break;
+      case 1:
+        cfgSetClipLeft(conf, 109); // 720x540
+        cfgSetClipTop(conf, 37);
+        cfgSetClipRight(conf, 469);
+        cfgSetClipBottom(conf, 307);
+        break;
+      case 2:
+        cfgSetClipLeft(conf, 96); // 752x576
+        cfgSetClipTop(conf, 26);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 314);
+        break;
+      case 3:
+        cfgSetClipLeft(conf, 88); // 768x576
+        cfgSetClipTop(conf, 26);
+        cfgSetClipRight(conf, 472);
+        cfgSetClipBottom(conf, 314);
+        break;
+    }
   }
 }
 
@@ -1965,6 +1999,14 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
         (cfgGetDisplayScale(conf) == DISPLAYSCALE::DISPLAYSCALE_AUTO) ? wguiDecideScaleFromDesktop(unscaled_width, unscaled_height) : (unsigned int)cfgGetDisplayScale(conf);
     unsigned int width = unscaled_width * scale;
     unsigned int height = unscaled_height * scale;
+
+    bool ntsc = true;
+
+    if (ntsc)
+    {
+      height = height * 1.2;
+    }
+
     cfgSetScreenWidth(conf, width);
     cfgSetScreenHeight(conf, height);
   }
