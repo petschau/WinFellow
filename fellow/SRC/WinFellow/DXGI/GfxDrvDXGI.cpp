@@ -937,6 +937,8 @@ void GfxDrvDXGI::FlipTexture()
   }
 }
 
+static unsigned int flipcount = 0;
+
 void GfxDrvDXGI::Flip()
 {
   FlipTexture();
@@ -946,6 +948,8 @@ void GfxDrvDXGI::Flip()
   {
     _currentAmigaScreenTexture = 0;
   }
+
+  _core.Log->AddLog("Flip no %u\n", flipcount++);
 }
 
 void GfxDrvDXGI::SetMode(draw_mode *dm, bool windowed)

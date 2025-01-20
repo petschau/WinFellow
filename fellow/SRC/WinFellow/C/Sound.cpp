@@ -625,12 +625,25 @@ void Sound::PeriodTableInitialize(uint32_t outputRate)
     outputRate *= 2; // Internally, can not run slower than max Amiga rate
   }
 
-  SetScale((uint32_t)(((double)(65536.0 * 2.0 * 31200.0)) / ((double)outputRate)));
+  bool ntsc = true;
+  constexpr double palBaseInternalSamplerate = 15625.08810572687 * 2.0;
+  constexpr double palClockspeed = 3546895.0;
+
+  // constexpr double ntscBaseInternalSamplerate = 15734.26373626374 * 2.0;
+  // constexpr double ntscClockspeed = 3579545.0;
+
+  constexpr double ntscBaseInternalSamplerate = 15768.92070484581 * 2.0;
+  constexpr double ntscClockspeed = 3579545.0;
+
+  const double baseInternalSamplerate = ntsc ? ntscBaseInternalSamplerate : palBaseInternalSamplerate;
+  const double clockspeed = ntsc ? ntscClockspeed : palClockspeed;
+
+  SetScale((uint32_t)(((double)(65536.0 * 2.0 * baseInternalSamplerate)) / ((double)outputRate)));
 
   SetPeriodValue(0, 0x10000);
   for (int32_t i = 1; i < 65536; i++)
   {
-    double j = 3546895 / i; // Sample rate
+    double j = clockspeed / i; // Sample rate
     int32_t periodvalue = (uint32_t)((j * 65536) / outputRate);
     if (periodvalue > 0x10000)
     {
