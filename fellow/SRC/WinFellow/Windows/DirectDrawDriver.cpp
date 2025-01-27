@@ -1890,7 +1890,8 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const char *f
       // width and height in RP mode are sized for maximum scale factor
       //  use harcoded RetroPlatform max PAL dimensions from WinUAE
       width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
-      height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+      // height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+      height = RETRO_PLATFORM_MAX_NTSC_LORES_HEIGHT * 2;
     }
     else
 #endif

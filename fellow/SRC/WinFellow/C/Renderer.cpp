@@ -525,7 +525,8 @@ void drawSetFullScreenMode(uint32_t width, uint32_t height, uint32_t colorbits, 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
   {
-    height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+    // height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+    height = RETRO_PLATFORM_MAX_NTSC_LORES_HEIGHT * 2;
     width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
   }
 #endif
