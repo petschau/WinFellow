@@ -2,7 +2,7 @@
 title: history
 menu: main
 weight: 45
-date: 2024-05-05T05:43:18+01:00
+date: 2025-04-05T05:43:18+01:00
 ---
 
 WinFellow is based on the Fellow emulator for DOS that was originally developed by Petter Schau in 1996, seeing its first release in 1997.
@@ -32,7 +32,7 @@ We want to provide access to some of the legacy versions of Fellow that are no l
 | 20.07.1997   | 0.2.1          | fastmem expansion support, joystick-related fixes                             | - missing -                                                                                    |
 | ?            | 0.2.2          | green menu color; improved file selector and more config options              | - missing -                                                                                    |
 | 11.09.1997   | 0.3            | much better console-based menu, hardfile support, more config options         | [Binary](../fellow03.zip) [Source](../fellow03src.zip)                                         |
-| 12.11.1997   | 0.3.1          |                                                                               | - missing -                                                                                    |
+| 11.11.1997   | 0.3.1          |                                                                               | [Binary](../fellow031.zip) (Source missing)                                                    |
 | 28.12.1997   | 0.3.2          |                                                                               | [Binary](../fellow032.zip) [CompatibleBinary](../fellowc032.zip) [Source](../fellow032src.zip) |
 | 25.01.1998   | 0.3.2a         | 0.3.2 with low-pass audio filter                                              | [Binary](../fellow032a.zip) [Source](../fellow032src_to_032asrc.zip)                           |
 | 27.09.1998   | 0.3.3          |                                                                               | [Binary](../fellow033.zip) (Source missing)                                                    |
