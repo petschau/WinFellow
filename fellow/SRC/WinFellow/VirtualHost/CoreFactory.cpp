@@ -15,6 +15,7 @@
 
 #include "DebugApi/M68K.h"
 #include "DebugApi/MemorySystem.h"
+#include "Configuration.h"
 
 using namespace Service;
 using namespace Debug;
@@ -22,7 +23,8 @@ using namespace fellow::hardfile;
 
 void CoreFactory::CreateDrivers()
 {
-  if (cfgGetSoundDriver(config) == SoundDriverType::WASAPI)
+  cfg *config = cfgManagerGetCurrentConfig(&cfg_manager);
+  if (cfgGetSoundDriver(config) == SOUNDDRIVER::SOUNDDRIVER_WASAPI)
   {
     _core.Drivers.SoundDriver = new WASAPISoundDriver();
   }
