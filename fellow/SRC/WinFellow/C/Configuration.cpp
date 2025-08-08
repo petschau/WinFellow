@@ -588,7 +588,7 @@ void cfgSetSoundDriver(cfg *config, SOUNDDRIVER driver)
   config->m_sounddriver = driver;
 }
 
-SOUNDRRIVER cfgGetSoundDriver(cfg *config)
+SOUNDDRIVER cfgGetSoundDriver(cfg *config)
 {
   return config->m_sounddriver;
 }
