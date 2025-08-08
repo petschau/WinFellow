@@ -456,6 +456,10 @@ static void fellowModulesStartup(int argc, const char **argv)
 
   sysinfoLogSysInfo();
 
+  iniStartup();
+  kbdStartup();
+  cfgStartup(argc, argv);
+
   CoreFactory::CreateDrivers();
   CoreFactory::CreateDebugVM();
   CoreFactory::CreateModules();
@@ -465,9 +469,7 @@ static void fellowModulesStartup(int argc, const char **argv)
   _core.HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
-  iniStartup();
-  kbdStartup();
-  cfgStartup(argc, argv);
+
   if (!drawStartup()) fellowDrawFailed();
   gameportStartup();
   busStartup();
