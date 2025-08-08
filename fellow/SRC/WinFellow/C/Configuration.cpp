@@ -583,7 +583,7 @@ uint32_t cfgGetSoundBufferLength(cfg *config)
   return config->m_bufferlength;
 }
 
-void cfgSetSoundDriver(cfg *config, SOUNDRRIVER driver)
+void cfgSetSoundDriver(cfg *config, SOUNDDRIVER driver)
 {
   config->m_sounddriver = driver;
 }
