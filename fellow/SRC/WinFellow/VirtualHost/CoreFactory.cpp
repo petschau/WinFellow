@@ -24,6 +24,15 @@ using namespace fellow::hardfile;
 void CoreFactory::CreateDrivers()
 {
   cfg *config = cfgManagerGetCurrentConfig(&cfg_manager);
+  if (!config)
+  {
+    if (_core.Log)
+    {
+      _core.Log->AddLog("CoreFactory::CreateDrivers: ERROR: Configuration is not initialized, cannot create sound driver.\n");
+    }
+    _core.Drivers.SoundDriver = nullptr;
+    return;
+  }
   if (cfgGetSoundDriver(config) == SOUNDDRIVER::SOUNDDRIVER_WASAPI)
   {
     _core.Drivers.SoundDriver = new WASAPISoundDriver();
