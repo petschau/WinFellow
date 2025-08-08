@@ -40,7 +40,7 @@ void CoreFactory::CreateDrivers()
   else
   {
     _core.Drivers.SoundDriver = new DirectSoundDriver();
-  }
+  ]
 }
 
 void CoreFactory::DestroyDrivers()
