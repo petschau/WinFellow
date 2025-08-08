@@ -1279,6 +1279,23 @@ static const char *cfgGetSoundFilterToString(sound_filters filter)
   return "original";
 }
 
+static SOUNDDRIVER cfgGetSoundDriverFromString(const std::string &value)
+{
+  std::string lowercaseValue = cfgGetLowercaseString(value);
+  if (lowercaseValue == "wasapi") return SOUNDDRIVER::SOUNDDRIVER_WASAPI;
+  return SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND;
+}
+
+static const char *cfgGetSoundDriverToString(SOUNDDRIVER driver)
+{
+  switch (driver)
+  {
+    case SOUNDDRIVER::SOUNDDRIVER_WASAPI: return "WASAPI";
+    case SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND:
+    default: return "DirectSound";
+  }
+}
+
 static uint32_t cfgGetBufferLengthFromString(const string &value)
 {
   uint32_t buffer_length = cfgGetUint32FromString(value);
@@ -2587,21 +2604,4 @@ void cfgStartup(int argc, const char **argv)
 void cfgShutdown()
 {
   cfgManagerShutdown(&cfg_manager);
-}
-
-static SOUNDDRIVER cfgGetSoundDriverFromString(const std::string &value)
-{
-  std::string lowercaseValue = cfgGetLowercaseString(value);
-  if (lowercaseValue == "wasapi") return SOUNDDRIVER::SOUNDDRIVER_WASAPI;
-  return SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND;
-}
-
-static const char *cfgGetSoundDriverToString(SOUNDDRIVER driver)
-{
-  switch (driver)
-  {
-    case SOUNDDRIVER::SOUNDDRIVER_WASAPI: return "WASAPI";
-    case SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND:
-    default: return "DirectSound";
-  }
 }
