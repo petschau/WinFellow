@@ -719,6 +719,35 @@ void Sound::EndOfLine()
 
   if (GetEmulation() == sound_emulations::SOUND_PLAY)
   {
+#ifdef _DEBUG
+    /*
+    // log the first eight values from both channels
+    char buf[256];
+    snprintf(
+        buf,
+        sizeof(buf),
+        "Sound.cpp: Play: L=%d %d %d %d %d %d %d %d | R=%d %d %d %d %d %d %d %d (Samples: %u)\n",
+        _left[_currentBuffer][0],
+        _left[_currentBuffer][1],
+        _left[_currentBuffer][2],
+        _left[_currentBuffer][3],
+        _left[_currentBuffer][4],
+        _left[_currentBuffer][5],
+        _left[_currentBuffer][6],
+        _left[_currentBuffer][7],
+        _right[_currentBuffer][0],
+        _right[_currentBuffer][1],
+        _right[_currentBuffer][2],
+        _right[_currentBuffer][3],
+        _right[_currentBuffer][4],
+        _right[_currentBuffer][5],
+        _right[_currentBuffer][6],
+        _right[_currentBuffer][7],
+        GetBufferSampleCountMax());
+    _core.Log->AddLog("%s", buf);
+    */
+#endif
+
     _core.Drivers.SoundDriver->Play(_left[_currentBuffer], _right[_currentBuffer], GetBufferSampleCountMax());
   }
 
