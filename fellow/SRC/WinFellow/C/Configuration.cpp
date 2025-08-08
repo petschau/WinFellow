@@ -583,6 +583,16 @@ uint32_t cfgGetSoundBufferLength(cfg *config)
   return config->m_bufferlength;
 }
 
+void cfgSetSoundDriver(cfg *config, SOUNDDRIVER driver)
+{
+  config->m_sounddriver = driver;
+}
+
+SOUNDDRIVER cfgGetSoundDriver(cfg *config)
+{
+  return config->m_sounddriver;
+}
+
 /*============================================================================*/
 /* CPU configuration property access                                          */
 /*============================================================================*/
@@ -892,6 +902,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetSoundWAVDump(config, FALSE);
   cfgSetSoundNotification(config, sound_notifications::SOUND_MMTIMER_NOTIFICATION);
   cfgSetSoundBufferLength(config, 60);
+  cfgSetSoundDriver(config, SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND);
 
   /*==========================================================================*/
   /* Default CPU configuration                                                */
@@ -1268,6 +1279,23 @@ static const char *cfgGetSoundFilterToString(sound_filters filter)
   return "original";
 }
 
+static SOUNDDRIVER cfgGetSoundDriverFromString(const std::string &value)
+{
+  std::string lowercaseValue = cfgGetLowercaseString(value);
+  if (lowercaseValue == "wasapi") return SOUNDDRIVER::SOUNDDRIVER_WASAPI;
+  return SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND;
+}
+
+static const char *cfgGetSoundDriverToString(SOUNDDRIVER driver)
+{
+  switch (driver)
+  {
+    case SOUNDDRIVER::SOUNDDRIVER_WASAPI: return "WASAPI";
+    case SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND:
+    default: return "DirectSound";
+  }
+}
+
 static uint32_t cfgGetBufferLengthFromString(const string &value)
 {
   uint32_t buffer_length = cfgGetUint32FromString(value);
@@ -1633,6 +1661,10 @@ BOOLE cfgSetOption(cfg *config, const char *optionstr)
   {
     cfgSetSoundVolume(config, cfgGetUint32FromString(value));
   }
+  else if (name == "sound_driver")
+  {
+    cfgSetSoundDriver(config, cfgGetSoundDriverFromString(value));
+  }
   else if (name == "fellow.sound_wav" || name == "sound_wav")
   {
     cfgSetSoundWAVDump(config, cfgGetBOOLEFromString(value));
@@ -1967,6 +1999,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "cpu_compatible=%s\n", cfgGetBOOLEToString(TRUE));
   fprintf(cfgfile, "cpu_type=%s\n", cfgGetCPUTypeToString(cfgGetCPUType(config)));
   fprintf(cfgfile, "sound_output=%s\n", cfgGetSoundEmulationToString(cfgGetSoundEmulation(config)));
+  fprintf(cfgfile, "sound_driver=%s\n", cfgGetSoundDriverToString(cfgGetSoundDriver(config)));
   fprintf(cfgfile, "sound_channels=%s\n", cfgGetSoundStereoToString(cfgGetSoundStereo(config)));
   fprintf(cfgfile, "sound_bits=%s\n", cfgGetSound16BitsToString(cfgGetSound16Bits(config)));
   fprintf(cfgfile, "sound_frequency=%s\n", cfgGetSoundRateToString(cfgGetSoundRate(config)));
