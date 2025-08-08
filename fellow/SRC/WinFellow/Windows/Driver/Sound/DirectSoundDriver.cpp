@@ -1044,3 +1044,10 @@ DirectSoundDriver::~DirectSoundDriver()
     _mutex = nullptr;
   }
 }
+
+bool DirectSoundDriver::CanAcceptSamples(uint32_t /*sampleCount*/)
+{
+  // DirectSound is always ready to accept samples in this model.
+  // You may refine this if you want to check buffer fullness.
+  return true;
+}

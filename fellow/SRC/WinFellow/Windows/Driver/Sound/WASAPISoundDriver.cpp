@@ -789,3 +789,10 @@ void WASAPISoundDriver::OnDefaultDeviceChanged()
     _core.Log->AddLog("WASAPISoundDriver: Failed to reinitialize WASAPI after device change.\n");
   }
 }
+
+bool WASAPISoundDriver::CanAcceptSamples(uint32_t sampleCount)
+{
+  // Calculate available space in ring buffer
+  uint32_t used = (_ringWritePos >= _ringReadPos) ? (_ringWritePos - _ringReadPos) : (_ringBufferSize - _ringReadPos + _ringWritePos);
+  return (_ringBufferSize - used) >= sampleCount;
+}

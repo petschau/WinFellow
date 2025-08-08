@@ -108,6 +108,7 @@ public:
   void Play(int16_t *left, int16_t *right, uint32_t sampleCount) override;
   void PollBufferPosition() override;
   bool SetCurrentSoundDeviceVolume(int volume) override;
+  bool CanAcceptSamples(uint32_t sampleCount) override;
 
   void HardReset();
   bool EmulationStart(SoundDriverRuntimeConfiguration runtimeConfiguration) override;

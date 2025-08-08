@@ -14,6 +14,8 @@ public:
 
   virtual bool IsInitialized() = 0;
 
+  virtual bool CanAcceptSamples(uint32_t sampleCount) = 0;
+
   ISoundDriver() = default;
   virtual ~ISoundDriver() = default;
 };
