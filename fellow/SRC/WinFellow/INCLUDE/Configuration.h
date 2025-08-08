@@ -61,6 +61,12 @@ enum class GRAPHICSEMULATIONMODE
   GRAPHICSEMULATIONMODE_CYCLEEXACT = 1
 };
 
+enum class SOUNDDRIVER
+{
+  SOUNDDRIVER_DIRECTSOUND = 0,
+  SOUNDDRIVER_WASAPI = 1
+};
+
 /*============================================================================*/
 /* struct that holds a complete Fellow configuration                          */
 /* the struct is copied in cfgManagerGetCopyOfCurrentConfig()                 */
@@ -145,6 +151,7 @@ struct cfg
   BOOLE m_soundWAVdump;
   CustomChipset::sound_notifications m_notification;
   uint32_t m_bufferlength;
+  SOUNDDRIVER m_sounddriver;
 
   /*==========================================================================*/
   /* CPU configuration                                                        */
@@ -314,6 +321,8 @@ extern void cfgSetSoundNotification(cfg *config, CustomChipset::sound_notificati
 extern CustomChipset::sound_notifications cfgGetSoundNotification(cfg *config);
 extern void cfgSetSoundBufferLength(cfg *config, uint32_t buffer_length);
 extern uint32_t cfgGetSoundBufferLength(cfg *config);
+extern void cfgSetSoundDriver(cfg *config, SOUNDDRIVER driver);
+extern SOUNDDRIVER cfgGetSoundDriver(cfg *config);
 
 /*============================================================================*/
 /* CPU configuration property access                                          */
