@@ -709,7 +709,7 @@ bool WASAPISoundDriver::EmulationStart(SoundDriverRuntimeConfiguration runtimeCo
   _modeCurrent = *currentMode;
   _modeCurrent.BufferSampleCount = _runtimeConfiguration.MaximumBufferSampleCount;
 
-  _ringBufferSize = 8 * _modeCurrent.BufferSampleCount; // e.g., 8x emulation buffer
+  _ringBufferSize = 2 * _modeCurrent.BufferSampleCount; // e.g., 2x emulation buffer
   _ringBufferLeft.resize(_ringBufferSize);
   _ringBufferRight.resize(_ringBufferSize);
   _ringReadPos = _ringWritePos = 0;
