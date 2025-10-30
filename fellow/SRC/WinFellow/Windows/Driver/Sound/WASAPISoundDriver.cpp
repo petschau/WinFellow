@@ -243,6 +243,14 @@ bool WASAPISoundDriver::InitializeWASAPI()
     return false;
   }
 
+  // Event to notify producer that space is available in ring buffer
+  _canAddData = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  if (!_canAddData)
+  {
+    _core.Log->AddLog("WASAPISoundDriver: Failed to create canAddData event.\n");
+    // not fatal, continue without it
+  }
+
   _core.Log->AddLog("WASAPISoundDriver: Initialization complete.\n");
   _isInitialized = true;
   return true;
@@ -271,6 +279,11 @@ void WASAPISoundDriver::ReleaseWASAPI()
   {
     CloseHandle(_mutex);
     _mutex = nullptr;
+  }
+  if (_canAddData)
+  {
+    CloseHandle(_canAddData);
+    _canAddData = nullptr;
   }
   if (_renderClient)
   {
@@ -493,9 +506,33 @@ DWORD WINAPI WASAPISoundDriver::ThreadProc(void *in)
  */
 DWORD WASAPISoundDriver::HandleThreadProc()
 {
-  _audioClient->Start();
-  UINT32 bufferFrameCount = 0;
+  UINT32 bufferFrameCount =0;
   _audioClient->GetBufferSize(&bufferFrameCount);
+
+  // Prime the buffer: fill it once before starting playback to avoid initial underrun
+  {
+    HRESULT hr;
+    BYTE *pData = nullptr;
+    UINT32 numFramesPadding =0;
+    _audioClient->GetCurrentPadding(&numFramesPadding);
+    UINT32 numFramesAvailable = bufferFrameCount - numFramesPadding;
+    if (numFramesAvailable >0)
+    {
+      hr = _renderClient->GetBuffer(numFramesAvailable, &pData);
+      if (SUCCEEDED(hr))
+      {
+        AcquireSoundMutex();
+        FillBuffer(pData, numFramesAvailable);
+        ReleaseSoundMutex();
+        _renderClient->ReleaseBuffer(numFramesAvailable,0);
+      }
+    }
+  }
+
+  if (FAILED(_audioClient->Start()))
+  {
+    _core.Log->AddLog("WASAPISoundDriver: Failed to start audio client.\n");
+  }
 
   _core.Log->AddLog("WASAPISoundDriver: Playback thread started.\n");
 
@@ -507,7 +544,7 @@ DWORD WASAPISoundDriver::HandleThreadProc()
     _audioClient->GetCurrentPadding(&numFramesPadding);
     UINT32 numFramesAvailable = bufferFrameCount - numFramesPadding;
 
-    if (numFramesAvailable == 0) continue;
+    if (numFramesAvailable ==0) continue;
 
     BYTE *pData = nullptr;
     HRESULT hr = _renderClient->GetBuffer(numFramesAvailable, &pData);
@@ -516,9 +553,10 @@ DWORD WASAPISoundDriver::HandleThreadProc()
       AcquireSoundMutex();
       FillBuffer(pData, numFramesAvailable);
       ReleaseSoundMutex();
-#ifdef _DEBUG
-      // _core.Log->AddLog("WASAPISoundDriver: Released %u frames to WASAPI\n", numFramesAvailable);
-#endif
+
+      // signal producers that space may be available now
+      if (_canAddData) SetEvent(_canAddData);
+
       _renderClient->ReleaseBuffer(numFramesAvailable, 0);
     }
     else
@@ -527,6 +565,8 @@ DWORD WASAPISoundDriver::HandleThreadProc()
     }
   }
   _audioClient->Stop();
+  // signal producers to wake if waiting
+  if (_canAddData) SetEvent(_canAddData);
   _core.Log->AddLog("WASAPISoundDriver: Playback thread stopped.\n");
   return 0;
 }
@@ -541,177 +581,138 @@ DWORD WASAPISoundDriver::HandleThreadProc()
  */
 void WASAPISoundDriver::Play(int16_t *left, int16_t *right, uint32_t sampleCount)
 {
+  if (!left || !right || sampleCount == 0) return;
+
   AcquireSoundMutex();
-  _pendingDataLeft = (uint16_t *)left;
-  _pendingDataRight = (uint16_t *)right;
-  _pendingDataSampleCount = sampleCount;
 
-#ifdef _DEBUG
-  // Format mismatch detection between source buffer and WASAPI mix format
-  // Assumption: int16_t* means 16 bits per sample, left+right != nullptr means stereo
-  uint8_t expectedBits = _pwfx ? _pwfx->wBitsPerSample : 0;
-  uint8_t expectedChannels = _pwfx ? _pwfx->nChannels : 0;
-  uint8_t actualBits = 16;
-  uint8_t actualChannels = (left && right) ? 2 : 1;
-
-  bool mismatch = false;
-  std::string mismatchMsg;
-
-  // Compare bits per sample
-  if (expectedBits != actualBits)
+  // If resampling is not required, copy samples directly (but do not overflow ring buffer)
+  if (!_needResample)
   {
-    mismatch = true;
-    mismatchMsg += "BitsPerSample: expected " + std::to_string(expectedBits) + ", got " + std::to_string(actualBits) + ". ";
-  }
-  // Compare channel count
-  if (expectedChannels != actualChannels)
-  {
-    mismatch = true;
-    mismatchMsg += "Channels: expected " + std::to_string(expectedChannels) + ", got " + std::to_string(actualChannels) + ". ";
-  }
-
-  // Log only if a mismatch is detected
-  if (mismatch)
-  {
-    // Only log if the format is not handled by FillBuffer
-    if ((expectedBits != 16 && expectedBits != 32) || (expectedChannels != 1 && expectedChannels != 2))
+    for (uint32_t i =0; i < sampleCount; ++i)
     {
-      _core.Log->AddLog("WASAPISoundDriver: UNHANDLED FORMAT MISMATCH! %s\n", mismatchMsg.c_str());
+      size_t next = (_ringWritePos +1) % _ringBufferSize;
+      // If buffer full, stop writing to avoid overwrite. This can happen if emulator runs faster than consumer.
+      if (next == _ringReadPos)
+      {
+        // buffer full, wait briefly for space to become available
+        Sleep(1);
+        next = (_ringWritePos + 1) % _ringBufferSize;
+        // check again, if still full, just drop the sample
+        if (next == _ringReadPos)
+        {
+          break;
+        }
+      }
+      _ringBufferLeft[_ringWritePos] = left[i];
+      _ringBufferRight[_ringWritePos] = right[i];
+      _ringWritePos = next;
     }
   }
-#endif
-
-  // Copy samples into the ring buffer for WASAPI consumption
-  for (uint32_t i = 0; i < sampleCount; ++i)
+  else
   {
-    _ringBufferLeft[_ringWritePos] = left[i];
-    _ringBufferRight[_ringWritePos] = right[i];
-    _ringWritePos = (_ringWritePos + 1) % _ringBufferSize;
+    // Linear resampling: source = emulator samples, target = mix samples
+    // We step through source samples and produce floor(sampleCount * ratio) samples into ring
+    // Use _resampleSrcPos to carry fractional position across calls
+
+    // Save last input sample for interpolation continuity
+    int16_t prevL = _lastInputLeft;
+    int16_t prevR = _lastInputRight;
+    if (sampleCount > 0)
+    {
+      prevL = left[0];
+      prevR = right[0];
+    }
+
+    for (uint32_t si = 0; si < sampleCount; ++si)
+    {
+      // push current source sample for interpolation usage
+      int16_t srcL = left[si];
+      int16_t srcR = right[si];
+
+      // while we need to produce output samples that map to this source interval
+      while (_resampleSrcPos <= 1.0)
+      {
+        // fractional interpolation between prev and src
+        double t = _resampleSrcPos;
+        int16_t outL = static_cast<int16_t>((1.0 - t) * prevL + t * srcL);
+        int16_t outR = static_cast<int16_t>((1.0 - t) * prevR + t * srcR);
+
+        size_t next = (_ringWritePos + 1) % _ringBufferSize;
+        if (next == _ringReadPos)
+        {
+          // buffer full, stop producing
+          break;
+        }
+        _ringBufferLeft[_ringWritePos] = outL;
+        _ringBufferRight[_ringWritePos] = outR;
+        _ringWritePos = next;
+
+        _resampleSrcPos += (1.0 / _resampleRatio);
+      }
+
+      // advance to next source sample interval
+      _resampleSrcPos -= 1.0; // bring into [0,1] for the next source interval
+      prevL = srcL;
+      prevR = srcR;
+    }
+
+    // store last input sample for next call continuity
+    _lastInputLeft = left[sampleCount - 1];
+    _lastInputRight = right[sampleCount - 1];
   }
 
-#ifdef _DEBUG
-  if (left && right)
-  {
-    _core.Log->AddLog(
-        "WASAPISoundDriver::Play: L=%d %d %d %d %d %d %d %d | R=%d %d %d %d %d %d %d %d (Samples: %u)\n",
-        left[0],
-        left[1],
-        left[2],
-        left[3],
-        left[4],
-        left[5],
-        left[6],
-        left[7],
-        right[0],
-        right[1],
-        right[2],
-        right[3],
-        right[4],
-        right[5],
-        right[6],
-        right[7],
-        sampleCount);
-  }
-
-  _core.Log->AddLog("WASAPISoundDriver: Play called, sampleCount=%u\n", sampleCount);
-#endif
   ReleaseSoundMutex();
+
+  // Signal that new data is available
+  SetEvent(_canAddData);
 }
 
 /**
- * @brief Not required for WASAPI event-driven playback.
- */
-void WASAPISoundDriver::PollBufferPosition()
-{
-  // Not required for WASAPI event loopback
-}
-
-/**
- * @brief Sets the output device volume.
- * @param volume Volume level (0-100).
- * @return true if successful, false otherwise.
- */
-bool WASAPISoundDriver::SetCurrentSoundDeviceVolume(int volume)
-{
-  // volume: 0-100
-  if (!_device) return false;
-  IAudioEndpointVolume *endpointVolume = nullptr;
-  HRESULT hr = _device->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL, nullptr, (void **)&endpointVolume);
-  if (FAILED(hr) || !endpointVolume)
-  {
-    _core.Log->AddLog("WASAPISoundDriver: Failed to activate IAudioEndpointVolume (0x%08lx)\n", hr);
-    return false;
-  }
-  float vol = (float)volume / 100.0f;
-  hr = endpointVolume->SetMasterVolumeLevelScalar(vol, nullptr);
-  endpointVolume->Release();
-  if (FAILED(hr))
-  {
-    _core.Log->AddLog("WASAPISoundDriver: SetMasterVolumeLevelScalar failed (0x%08lx)\n", hr);
-    return false;
-  }
-  _core.Log->AddLog("WASAPISoundDriver: Volume set to %d%%.\n", volume);
-  return true;
-}
-
-/**
- * @brief Resets the driver state.
- */
-void WASAPISoundDriver::HardReset()
-{
-  _core.Log->AddLog("WASAPISoundDriver: HardReset called.\n");
-}
-
-/**
- * @brief Starts audio emulation with the given configuration.
- *        Initializes the ring buffer and starts the playback thread.
- * @param runtimeConfiguration The runtime configuration for sound.
- * @return true if successful, false otherwise.
+ * @brief Initializes the driver state and prepares for audio emulation.
+ *        This includes setting up the ring buffer, starting the playback thread,
+ *        and configuring the audio device.
+ * @param runtimeConfiguration The desired runtime configuration for the sound driver.
+ * @return true if the emulation was successfully started, false otherwise.
  */
 bool WASAPISoundDriver::EmulationStart(SoundDriverRuntimeConfiguration runtimeConfiguration)
 {
-  // Force WASAPI mix format
-  runtimeConfiguration.ActualSampleRate = _pwfx->nSamplesPerSec;
-  runtimeConfiguration.IsStereo = (_pwfx->nChannels == 2);
-  runtimeConfiguration.Is16Bits = (_pwfx->wBitsPerSample == 16);
-
+  // Do not force mix format; honor emulator requested rate but setup resampling if needed
   _runtimeConfiguration = runtimeConfiguration;
 
-  _core.Log->AddLog(
-      "WASAPISoundDriver: EmulationStart (forced WASAPI mix format): %u Hz, %s, %s\n",
-      runtimeConfiguration.ActualSampleRate,
-      runtimeConfiguration.IsStereo ? "stereo" : "mono",
-      runtimeConfiguration.Is16Bits ? "16bit" : "32bit");
+  uint32_t mixRate = _pwfx ? _pwfx->nSamplesPerSec : runtimeConfiguration.ActualSampleRate;
+  bool mixStereo = _pwfx ? (_pwfx->nChannels == 2) : runtimeConfiguration.IsStereo;
+  bool mix16 = _pwfx ? (_pwfx->wBitsPerSample == 16) : runtimeConfiguration.Is16Bits;
 
-  // Find mode matching the mix format
-  auto currentMode = FindMode(runtimeConfiguration.IsStereo, runtimeConfiguration.Is16Bits ? 16 : 32, runtimeConfiguration.ActualSampleRate);
-
-  if (!currentMode)
+  // Determine if resampling is required
+  _needResample = (runtimeConfiguration.ActualSampleRate != mixRate);
+  if (_needResample)
   {
-    _core.Log->AddLog("WASAPISoundDriver: No suitable mode found for WASAPI mix format. Available modes:\n");
-    for (const auto *mode : _modes)
-    {
-      _core.Log->AddLog(
-          "WASAPISoundDriver: Available mode: %u Hz, %s, %s\n",
-          mode->Rate,
-          mode->IsStereo ? "stereo" : "mono",
-          mode->BitsPerSample == 32 ? "32bit" : (mode->BitsPerSample == 16 ? "16bit" : "8bit"));
-    }
-    return false;
+    _resampleRatio = static_cast<double>(mixRate) / static_cast<double>(runtimeConfiguration.ActualSampleRate);
+    _resampleSrcPos = 0.0;
+    _core.Log->AddLog("WASAPISoundDriver: Resampling enabled: emulator %u Hz -> mix %u Hz, ratio=%f\n", runtimeConfiguration.ActualSampleRate, mixRate, _resampleRatio);
+  }
+  else
+  {
+    _resampleRatio = 1.0;
+    _resampleSrcPos = 0.0;
   }
 
-  _core.Log->AddLog(
-      "WASAPISoundDriver: Using mode: %u Hz, %s, %s\n",
-      currentMode->Rate,
-      currentMode->IsStereo ? "stereo" : "mono",
-      currentMode->BitsPerSample == 32 ? "32bit" : (currentMode->BitsPerSample == 16 ? "16bit" : "8bit"));
+  // Keep the rest of the startup as before but pick a mode matching the mix format if possible
+  auto currentMode = FindMode(mixStereo, mix16 ? 16 : 32, mixRate);
+  if (!currentMode)
+  {
+    _core.Log->AddLog("WASAPISoundDriver: No suitable mode found for mix format. Aborting start.\n");
+    return false;
+  }
 
   _modeCurrent = *currentMode;
   _modeCurrent.BufferSampleCount = _runtimeConfiguration.MaximumBufferSampleCount;
 
-  _ringBufferSize = 2 * _modeCurrent.BufferSampleCount; // e.g., 2x emulation buffer
-  _ringBufferLeft.resize(_ringBufferSize);
-  _ringBufferRight.resize(_ringBufferSize);
+  // Grow ring buffer to hold more headroom: 4x emulation buffer to tolerate jitter
+  _ringBufferSize = static_cast<size_t>(4u * _modeCurrent.BufferSampleCount);
+  if (_ringBufferSize < 1024) _ringBufferSize = 1024;
+  _ringBufferLeft.assign(_ringBufferSize, 0);
+  _ringBufferRight.assign(_ringBufferSize, 0);
   _ringReadPos = _ringWritePos = 0;
 
   _running = true;
@@ -792,7 +793,53 @@ void WASAPISoundDriver::OnDefaultDeviceChanged()
 
 bool WASAPISoundDriver::CanAcceptSamples(uint32_t sampleCount)
 {
-  // Calculate available space in ring buffer
-  uint32_t used = (_ringWritePos >= _ringReadPos) ? (_ringWritePos - _ringReadPos) : (_ringBufferSize - _ringReadPos + _ringWritePos);
-  return (_ringBufferSize - used) >= sampleCount;
+ // Calculate available space in ring buffer
+ size_t used = (_ringWritePos >= _ringReadPos) ? (_ringWritePos - _ringReadPos) : (_ringBufferSize - _ringReadPos + _ringWritePos);
+ return (_ringBufferSize - used) >= sampleCount;
+}
+
+// Implementations added below
+
+void WASAPISoundDriver::PollBufferPosition()
+{
+ // For WASAPI we rely on event-driven notifications; this poll can be used to
+ // wake producers waiting on _canAddData. Keep it lightweight.
+ AcquireSoundMutex();
+ // No internal state to update here in current implementation; keep for API compatibility
+ ReleaseSoundMutex();
+}
+
+bool WASAPISoundDriver::SetCurrentSoundDeviceVolume(int volume)
+{
+ // Try to set device volume via endpoint volume if available. If not possible, return true as a no-op.
+ if (!_device) return false;
+
+ IAudioEndpointVolume *endpointVolume = nullptr;
+ HRESULT hr = _device->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL, nullptr, (void **)&endpointVolume);
+ if (SUCCEEDED(hr) && endpointVolume)
+ {
+ // Volume expected in0..100
+ float fLevel = (volume <=0) ?0.0f : (volume >=100) ?1.0f : (static_cast<float>(volume) /100.0f);
+ // Convert to scalar level (simple linear mapping)
+ hr = endpointVolume->SetMasterVolumeLevelScalar(fLevel, nullptr);
+ endpointVolume->Release();
+ return SUCCEEDED(hr);
+ }
+
+ // Fallback: not supported, but not fatal
+ _core.Log->AddLog("WASAPISoundDriver: SetCurrentSoundDeviceVolume not supported on this device\n");
+ return false;
+}
+
+void WASAPISoundDriver::HardReset()
+{
+ AcquireSoundMutex();
+ // Clear ring buffer
+ std::fill(_ringBufferLeft.begin(), _ringBufferLeft.end(),0);
+ std::fill(_ringBufferRight.begin(), _ringBufferRight.end(),0);
+ _ringReadPos = _ringWritePos =0;
+ _pendingDataSampleCount =0;
+ _resampleSrcPos =0.0;
+ _lastInputLeft = _lastInputRight =0;
+ ReleaseSoundMutex();
 }

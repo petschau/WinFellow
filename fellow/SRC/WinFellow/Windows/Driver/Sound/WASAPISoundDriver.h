@@ -18,6 +18,7 @@ private:
   HANDLE _eventHandle = nullptr;
   HANDLE _thread = nullptr;
   HANDLE _mutex = nullptr;
+  HANDLE _canAddData = nullptr; // event signaled by audio thread when space available
   WAVEFORMATEX *_pwfx = nullptr;
   std::list<WASAPISoundMode *> _modes;
   WASAPISoundMode _modeCurrent;
@@ -30,6 +31,13 @@ private:
   // Ring buffer for audio data
   std::vector<int16_t> _ringBufferLeft, _ringBufferRight;
   size_t _ringReadPos = 0, _ringWritePos = 0, _ringBufferSize = 0;
+
+  // Resampling state
+  bool _needResample = false;     // True if emulator sample rate != WASAPI mix rate
+  double _resampleRatio = 1.0;   // mixRate / emulatorRate
+  double _resampleSrcPos = 0.0;  // fractional source position progress between Play() calls
+  int16_t _lastInputLeft = 0;    // last sample from previous Play() to aid interpolation
+  int16_t _lastInputRight = 0;
 
   class DeviceNotificationClient : public IMMNotificationClient
   {
