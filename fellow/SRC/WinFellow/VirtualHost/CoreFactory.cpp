@@ -2,6 +2,7 @@
 #include "VirtualHost/CoreFactory.h"
 
 #include "Driver/Sound/DirectSoundDriver.h"
+#include "Driver/Sound/WASAPISoundDriver.h"
 
 #include "Service/Log.h"
 #include "Service/FileInformation.h"
@@ -14,6 +15,7 @@
 
 #include "DebugApi/M68K.h"
 #include "DebugApi/MemorySystem.h"
+#include "Configuration.h"
 
 using namespace Service;
 using namespace Debug;
@@ -21,7 +23,24 @@ using namespace fellow::hardfile;
 
 void CoreFactory::CreateDrivers()
 {
-  _core.Drivers.SoundDriver = new DirectSoundDriver();
+  cfg *config = cfgManagerGetCurrentConfig(&cfg_manager);
+  if (!config)
+  {
+    if (_core.Log)
+    {
+      _core.Log->AddLog("CoreFactory::CreateDrivers: ERROR: Configuration is not initialized, cannot create sound driver.\n");
+    }
+    _core.Drivers.SoundDriver = nullptr;
+    return;
+  }
+  if (cfgGetSoundDriver(config) == SOUNDDRIVER::SOUNDDRIVER_WASAPI)
+  {
+    _core.Drivers.SoundDriver = new WASAPISoundDriver();
+  }
+  else
+  {
+    _core.Drivers.SoundDriver = new DirectSoundDriver();
+  }
 }
 
 void CoreFactory::DestroyDrivers()

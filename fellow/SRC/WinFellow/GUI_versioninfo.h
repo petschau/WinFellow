@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by GUI_versioninfo.rc
 
-// Nächste Standardwerte für neue Objekte
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

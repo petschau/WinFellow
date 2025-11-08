@@ -414,6 +414,7 @@ BOOLE iniSetOption(ini *initdata, char *initoptionstr)
         {
           iniSetCurrentConfigurationFilename(initdata, value);
         }
+        delete fileProperties;
       }
     }
     else if (stricmp(option, "last_used_cfg_dir") == 0)

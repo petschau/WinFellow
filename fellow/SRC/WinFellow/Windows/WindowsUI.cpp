@@ -458,12 +458,32 @@ DISPLAYDRIVER wguiGetDisplayDriverFromComboboxIndex(LONG index)
   return DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
 }
 
+SOUNDDRIVER wguiGetSoundDriverFromComboboxIndex(LONG index)
+{
+  switch (index)
+  {
+    case 0: return SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND;
+    case 1: return SOUNDDRIVER::SOUNDDRIVER_WASAPI;
+  }
+  return SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND;
+}
+
 LONG wguiGetComboboxIndexFromDisplayDriver(DISPLAYDRIVER displaydriver)
 {
   switch (displaydriver)
   {
     case DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW: return 0;
     case DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11: return 1;
+  }
+  return 0;
+}
+
+LONG wguiGetComboboxIndexFromSoundDriver(SOUNDDRIVER sounddriver)
+{
+  switch (sounddriver)
+  {
+    case SOUNDDRIVER::SOUNDDRIVER_DIRECTSOUND: return 0;
+    case SOUNDDRIVER::SOUNDDRIVER_WASAPI: return 1;
   }
   return 0;
 }
@@ -1221,6 +1241,12 @@ void wguiInstallSoundConfig(HWND hwndDlg, cfg *conf)
   /* set slider of buffer length */
   ccwSliderSetRange(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH, 10, 80);
   ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH, cfgGetSoundBufferLength(conf));
+
+  HWND soundDriverComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_SOUND_DRIVER);
+  ComboBox_ResetContent(soundDriverComboboxHWND);
+  ComboBox_AddString(soundDriverComboboxHWND, "DirectSound");
+  ComboBox_AddString(soundDriverComboboxHWND, "WASAPI");
+  ComboBox_SetCurSel(soundDriverComboboxHWND, wguiGetComboboxIndexFromSoundDriver(cfgGetSoundDriver(conf)));
 }
 
 /* Extract sound config */
@@ -1267,6 +1293,9 @@ void wguiExtractSoundConfig(HWND hwndDlg, cfg *conf)
 
   /* get slider of buffer length */
   cfgSetSoundBufferLength(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH));
+
+  // get sound driver combo
+  cfgSetSoundDriver(conf, wguiGetSoundDriverFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_SOUND_DRIVER)));
 }
 
 /*============================================================================*/

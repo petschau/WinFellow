@@ -142,6 +142,8 @@ bool DirectSoundDriver::DSoundInitialize()
   _dataAvailable = CreateEvent(nullptr, 0, 0, nullptr);
   _canAddData = CreateEvent(nullptr, 0, 0, nullptr);
 
+  _core.Log->AddLog("DirectSoundDriver: Initialization successful.\n");
+
   return true;
 }
 
@@ -1043,4 +1045,11 @@ DirectSoundDriver::~DirectSoundDriver()
     CloseHandle(_mutex);
     _mutex = nullptr;
   }
+}
+
+bool DirectSoundDriver::CanAcceptSamples(uint32_t /*sampleCount*/)
+{
+  // DirectSound is always ready to accept samples in this model.
+  // You may refine this if you want to check buffer fullness.
+  return true;
 }

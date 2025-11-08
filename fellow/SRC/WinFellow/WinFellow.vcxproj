@@ -488,6 +488,7 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClCompile Include="DebugApi\MemorySystem.cpp" />
     <ClCompile Include="VirtualHost\CoreFactory.cpp" />
     <ClCompile Include="Windows\Driver\Sound\DirectSoundDriver.cpp" />
+    <ClCompile Include="Windows\Driver\Sound\WASAPISoundDriver.cpp" />
     <ClCompile Include="Windows\Service\FileopsWin32.cpp" />
     <ClCompile Include="Windows\Service\Hud.cpp" />
     <ClCompile Include="Windows\Service\RetroPlatformWrapper.cpp" />
@@ -1173,6 +1174,8 @@ PowerShell.exe ..\build\Scripts\GitWCRev.ps1 -InputFileName GUI_versioninfo-wcre
     <ClInclude Include="VirtualHost\CoreFactory.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundDriver.h" />
     <ClInclude Include="Windows\Driver\Sound\DirectSoundMode.h" />
+    <ClInclude Include="Windows\Driver\Sound\WASAPISoundDriver.h" />
+    <ClInclude Include="Windows\Driver\Sound\WASAPISoundMode.h" />
     <ClInclude Include="Windows\Service\FileopsWin32.h" />
     <ClInclude Include="Windows\Service\Hud.h" />
     <ClInclude Include="Windows\Service\RetroPlatformWrapper.h" />

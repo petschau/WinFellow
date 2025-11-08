@@ -29,6 +29,8 @@
 #include "GraphicsPipeline.h"
 #include "interrupt.h"
 #include "VirtualHost/Core.h"
+#include <thread>
+#include <chrono>
 
 using namespace CustomChipset;
 
@@ -719,6 +721,10 @@ void Sound::EndOfLine()
 
   if (GetEmulation() == sound_emulations::SOUND_PLAY)
   {
+    while (!_core.Drivers.SoundDriver->CanAcceptSamples(GetBufferSampleCountMax()))
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
     _core.Drivers.SoundDriver->Play(_left[_currentBuffer], _right[_currentBuffer], GetBufferSampleCountMax());
   }
 

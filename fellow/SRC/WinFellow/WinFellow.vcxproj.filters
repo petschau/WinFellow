@@ -456,6 +456,9 @@
     <ClCompile Include="DebugApi\MemorySystem.cpp">
       <Filter>DebugApi</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\Driver\Sound\WASAPISoundDriver.cpp">
+      <Filter>Windows\Driver\Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xdms\include\cdata.h">
@@ -844,6 +847,12 @@
     </ClInclude>
     <ClInclude Include="Windows\Service\RetroPlatformWrapper.h">
       <Filter>Windows\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Driver\Sound\WASAPISoundDriver.h">
+      <Filter>Windows\Driver\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\Driver\Sound\WASAPISoundMode.h">
+      <Filter>Windows\Driver\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

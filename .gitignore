@@ -22,3 +22,5 @@ fellow/Docs/WinFellow/WinFellow User Manual.pdf
 **/.vs/
 fellow/SRC/WinFellow/DXGI/PixelShader.h
 fellow/SRC/WinFellow/DXGI/VertexShader.h
+fellow/doxygen/latex/*
+*.aps
